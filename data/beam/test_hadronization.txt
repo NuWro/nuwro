@@ -1,0 +1,16 @@
+#Test beam for hadronization comparisons
+beam_type=0
+beam_energy = 1000 61000 40 30 20 15 12 10 8.57 7.5 6.67 6 5.45 5 4.62 4.29 4 3.75 3.53 3.33 3.16 3 2.86 2.73 2.61 2.5 2.4 2.31 2.22 2.14 2.07 2 1.93 1.875 1.818 1.765 1.714 1.667 1.622 1.579 1.538 1.5 1.463 1.429 1.395 1.364 1.333 1.304 1.277 1.25 1.224 1.2 1.176 1.154 1.132 1.111 1.091 1.071 1.053 1.034 1.017 1 
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1

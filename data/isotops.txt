@@ -1,0 +1,26 @@
+#number before ':' is atomic number of element
+#isotops in line are sort (desc.) by their probability
+#each prob is sum of previous prob
+#so it looks like:
+#N1 prob1 N2 prob2 N3 prob3 ...
+#e.
+#for some element with Z = X we have following isotops:
+#no. of neutrons 6 with prob 80%, 7 with 5%, and 8 - 15%
+#sorting:
+#X: 6 0.8 8 0.15 7 0.05
+#sum
+#X: 6 0.8 8 0.95 7 1
+
+1: 0 0.99985 1 1
+
+6: 6 0.99 7 1
+7: 7 0.996 8 1
+8: 8 0.997 10 0.999 9 1
+11: 12 1
+13: 14 1
+
+17: 18 0.7577 20 1
+
+
+27: 32 1
+

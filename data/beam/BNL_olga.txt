@@ -1,0 +1,16 @@
+#BNL 7-foot bubble chamber energy beam from Olga Lalakulich
+beam_type=0
+beam_energy = 350 5550 41 79 119 151 162 169 173 183 150 149 157 145 136 108 92 87 69 70 63 39 45 30 34 37 29 25 21 17 15 12 12 11 10 9 9 9 9 8 7 7 6 6 6 6 6 6 5 5 5 4 4 4 3 3 3
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1

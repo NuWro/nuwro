@@ -1,0 +1,11 @@
+#beam_type=2
+
+# beam_content parameter is intended for mixed (neutino, antineutrino) beams
+# to use it please set beam_type =1
+# each beam_content line is of the form
+# beam_content = beam_particle percentage% beam_energy 
+
+# beam_content = 14 50% 0 3000 
+# beam_content += -14 50% 0 6000  
+
+

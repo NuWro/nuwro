@@ -1,0 +1,6 @@
+#single block geometry 4m x 4m x 2m
+geo_file=target/block.root
+geo_name=SingleBlock
+#geo_volume=vBlock1
+geo_o = 0 0 0 // coordinates of the center of the box: ox oy oz
+#geo_d = 5000 5000 5000000 // half dimension of the box: dx dy dx

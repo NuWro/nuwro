@@ -1,0 +1,16 @@
+#True ANL beam from Krzysztof Graczyk
+beam_type=0
+beam_energy = 203 6100 0.567 1.13 1.11 0.854 0.591 0.374 0.227 0.129 0.073 0.044 0.027 0.0177 0.0126 0.00934 0.00734 0.00602 0.00537 0.00486 0.00457 0.00422 0.00402 0.00376 0.00354 0.00324 0.00302 0.00257 0.00221 0.00182 0.00151
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1

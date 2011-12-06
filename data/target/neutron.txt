@@ -1,0 +1,8 @@
+# number of protons
+nucleus_p	    = 0
+
+# number of neutrons
+nucleus_n           = 1
+
+# free nucleon
+nucleus_target     =  0

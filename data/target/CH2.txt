@@ -1,0 +1,8 @@
+#target_cntent line = tar
+# taget_content += protons neutron count x 
+# or
+# taget_content += protons neutrons count x nucleus_Eb nucleus_kf target_model
+# below H2O target is defined as an example
+target_type=1
+target_content = 6 6 1x
+target_content += 1 0 2x

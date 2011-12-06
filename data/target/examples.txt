@@ -1,0 +1,65 @@
+################################################################
+#
+# Target specification
+#
+################################################################
+
+# 1) for a single isotope is obtained by the parameters:
+#    nucleus_p, nucleus_n, nucleus_E_b, nucleus_kf, nucleus_model
+
+# Example: Oxygen target
+# nucleus_p	= 8 // number of protons
+# nucleus_n   = 8 // number of neutrons
+# nucleus_E_b =  34   // [MeV] binding energy, used in qelevent.cc, target.h as Eb
+# nucleus_kf  = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
+# nucleus_target = 1  // Fermi Gas (other choices meaning is described below)
+
+# Models for the description of nucleus as a target:
+# nucleus_target = 0 // free target; 
+# nucleus_target = 1 // Fermi gas; 
+# nucleus_target = 2 // local Fermi gas; 
+# nucleus_target = 3 // Bodek-Ritchie; 
+# nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
+# nucleus_target = 5 // deuterium; 
+# nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
+
+
+# 2) for mixtures use a multiline parameter target_content:
+# which gives 5 the parameters of a single isotope in a single line:
+# taget_content += protons neutrons count x nucleus_Eb nucleus_kf nucleus_target
+ 
+# Example: Water:
+# target_content = 1 0 2x 0 0 0
+# target_content += 8 8 1x 34 220 1 
+
+# It the parameter target_content is non empty, the 
+# parameters nucleus_p, nucleus_n, nucleus_Eb, nucleus_kf, nucleus_target
+# are not taken into account
+# instead they are automaticly changed from event to event 
+
+# 3) It is also possible to use the whole ND280 geometry as a target
+#    by defining non empty geo_file parameter specifying the relative path 
+#    to the root file with the ND280 geometry 
+# geo_file=target/ND280.root
+
+# If the parameter geo_file is non empty, the 
+# parameters nucleus_p, nucleus_n, nucleus_Eb, nucleus_kf, nucleus_target
+# and target_content are not taken into account
+# instead they are automaticly changed from event to event 
+ 
+# to limit the simulation to some box within the detector geometry use
+# the parameters: geo_o and geo_d
+
+# Example: Limit the simulation to the module 5
+# geo_o = 0 0 0 // coordinated of the center of the box: ox oy oz
+# geo_d = 0 0 0 // half dimension of the box: dx dy dx
+
+# It is a good idea to include a predefined target configuration
+# from the target directory with the @ operator e.g.
+
+#@target/proton.txt
+#@target/h2o.txt
+
+#@target/ND280.txt
+
+

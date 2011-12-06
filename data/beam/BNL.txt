@@ -1,0 +1,16 @@
+#True BNL beam from Krzysztof Graczyk
+beam_type=0
+beam_energy = 500 5750 0.357 0.605 0.658 0.561 0.535 0.364 0.257 0.177 0.114 0.119 0.0754 0.0467 0.0367 0.0312 0.0264 0.0218 0.0171 0.0146 0.0126 0.0106 0.00866
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1

@@ -1,0 +1,120 @@
+# The paramaters file for the NuWro neutrino interactions simulation software
+#
+#
+# the meaning of the paramaters descrobed in commented lines
+#
+
+# The number of events to generate i.e.
+
+number_of_test_events = 1000
+number_of_events   = 100000
+
+random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
+#random_seed= 1   // 1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
+#random_seed=12312 // other values - use given number as the seed for the generator
+
+# beam_energy is the beam energy in MeV 
+# Can also be given in the form of the distribution 
+# Emin Emax val1 val2 ...  valn
+
+
+################################################################################################
+beam_type = 0
+beam_energy = 150
+
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 211
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1
+
+#beam_placement     = 0  //  nucleus center
+#beam_placement     = 1  // transparency mode: interaction starts at random nucleon 
+beam_placement     = 2  // scattering mode -  start just  under the surface of the nucleus 
+ 
+# The following parameters specify the target 
+
+# number of protons
+nucleus_p	   = 6 
+
+# number of neutrons
+nucleus_n           = 6
+
+#proc_dis
+# density profile of the target 
+# 1 - means constant density
+# w wiekszosci do zawieszenia; zostawic tylko kf oraz Eb
+
+# nucleus_density     = 1
+nucleus_E_b         =  27     // MeV
+# wykorzystany w qelevent.cc, target.h dalej jako Eb
+nucleus_kf          = 225   // MeV
+
+nucleus_model       = 1  // 0 - flatnucleus, 1 - /anynucleus
+nucleus_target = 1
+
+#####################################################################################################
+#proc_qel_nc      = 1
+#proc_qel_cc      = 1
+#proc_qel         = 1
+#proc_dis         = 0
+
+#dynamics
+dyn_qel_cc =1
+dyn_qel_nc =1
+dyn_res_cc =1
+dyn_res_nc =1
+dyn_dis_cc =1
+dyn_dis_nc =1
+dyn_coh_cc =1
+dyn_coh_nc =1
+
+qel_cc_axial_mass= 1030   //MeV
+qel_nc_axial_mass= 1030   //MeV
+
+delta_FF_set=11
+# The choice of Delta production FF
+# 1 - Graczyk Sobczyk C5A=0.8228
+# 11 - Graczyk Sobczyk C5A=1.2
+# 2 - Paschos Lalakulich 2.12 MA=1.05 BNL fit
+# 3 - Paschos Lalakulich 2.12 MA=0.84 ANL fit
+# 4   Paschos Lalakulich page 4, bottom right
+# 5 - Paschos Lalakulich page 5, top left
+# 6 - Eq.(13), L. Alvarez-Ruso, S. K. Singh, M. J. Vincente Vascas, Phys. Rev. C 57, (1998) 2693
+
+spp_precision= 500
+res_dis_cut = 1600	//res dis boundary in MeV
+
+# qel_kinematics   = 0   // relativistic Czarek 
+# qel_kinematics   = 1   //
+# qel_kinematics   = 2  //
+# qel_kinematics   = 3  //momentum dependent kinematics
+# qel_kinematics   = 4  //momentum dependent kinematics with outgoing nucleon energy edjustment
+
+#   The choice of the kinematics for the qel interaction vertex  
+#   	0 - relativistic  
+#       1 - 
+#       2 - bodek 
+#       3 - momentum dependent potential
+#       4 - Fermi gas with 
+
+coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion production
+
+# qel_relat        = 0  // relativistic correction is on
+# qel_relat        = 1  // relativistic correction is off
+
+kaskada_on 	 = 1  // use kaskade in qasielastic events 
+pauli_blocking   = 1 // enable Pauli blocking
+kaskada_newangle = 1
+xsec = 1
+formation_zone = nofz
+first_step = 0
+

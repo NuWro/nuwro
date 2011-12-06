@@ -1,0 +1,17 @@
+#MiniBooNE nu mode flux from http://www-boone.fnal.gov/for_physicists/data_release/flux/pospolarity_fluxes.dat
+# with cut at 3GeV (only muon neutrinos)
+beam_type=0
+beam_energy = 0 3000 2.272e-12  8.566e-12  1.112e-11  1.335e-11  1.658e-11  1.820e-11  1.946e-11  2.045e-11  2.161e-11  2.241e-11  2.279e-11  2.292e-11  2.275e-11  2.253e-11  2.214e-11  2.156e-11  2.078e-11  1.992e-11  1.894e-11  1.789e-11  1.677e-11  1.558e-11  1.439e-11  1.318e-11  1.193e-11  1.069e-11  9.503e-12  8.356e-12  7.278e-12  6.292e-12  5.396e-12  4.601e-12  3.902e-12  3.285e-12  2.760e-12  2.312e-12  1.932e-12  1.616e-12  1.355e-12  1.138e-12  9.589e-13  8.150e-13  6.928e-13  5.937e-13  5.147e-13  4.478e-13  3.935e-13  3.500e-13  3.150e-13  2.867e-13  2.615e-13  2.409e-13  2.273e-13  2.110e-13  1.995e-13  1.920e-13  1.815e-13  1.726e-13  1.665e-13  1.601e-13  
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1
