@@ -56,7 +56,7 @@ geomy* NuWro::make_detector(params &p)
 		    }
 		catch(...)
 			{
-				cerr<<"Failted to make detector."<<endl;
+				cerr<<"Failed to make detector."<<endl;
 				exit(0);
 			}
         }
@@ -643,9 +643,12 @@ int NuWro::main (int argc, char **argv)
 	    else
 	    {
 			if(not p.beam_test_only)
-				test_events(p);
-			if(false)  	 
-			    analizer_events(p);
+				{
+				 if(p.user_events>0)  	 
+			        analizer_events(p);
+			     else
+			     	test_events(p);
+			    }
 			real_events(p);
 		}
 		genrand_write_state();

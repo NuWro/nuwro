@@ -22,7 +22,7 @@
 //#include "sobek.h"
 #include<TMCParticle.h>
 #include<TPythia6.h>
-#include "singlepion.h"
+#include "singlepionhadr.h"
 
 TPythia6 *pythia3 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);

@@ -17,7 +17,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
                 formParam test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies boone1 \
+                fsi niwg ladek_topologies \
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -37,8 +37,8 @@ EVENT_OBJS =  $(addprefix src/, event1.o event1dict.o pdg.o particle.o generator
 
 all:            $(TRGTS)
 
-$(BIN)/boone1:         src/generatormt.o src/boone1.o
-		$(LINK.cc) $^ -o $@
+#$(BIN)/boone1:         src/generatormt.o src/boone1.o
+#		$(LINK.cc) $^ -o $@
 
 
 $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o \
@@ -125,11 +125,13 @@ src/event1dict.h src/event1dict.cc:    src/event1.h src/event1LinkDef.h src/even
 		cd src;$(ROOTSYS)/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
 		
 
+
 %.d: %.cc
 	@echo Making dependencies for $<
-	@$(SHELL) -ec '$(CC) -MM -MT "$< $@" $(CXXFLAGS) $< \
-	| sed s/.cc\ /.o\ / > $@;\
+	@$(SHELL) -ec '$(CC) -MM -MT "$@ $<" $(CXXFLAGS) $< \
+	| sed s/.cc\:/.o:/ > $@;\
 	[ -s $@ ] || rm -f $@'
+
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
