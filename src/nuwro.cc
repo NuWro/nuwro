@@ -410,7 +410,7 @@ void NuWro::analizer_events(params &p)
   Analyser analyser;
 //   UserAction analyser;
 // Useraction(procesy,mixer.e.p,neutrino_beam,detector)
-  while(analyser.loop(0,2000,10))
+  while(analyser.loop(1000,2000,100))
   { procesy.reset(active);
   for (int i = 0; i < p.number_of_test_events; i++)
     { 

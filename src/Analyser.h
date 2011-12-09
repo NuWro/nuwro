@@ -4,6 +4,8 @@
 
 #include "event1.h"
 #include "boone1.h"
+#include "ff.h"
+
 ///class Analyser
 /*
 	@usage example:
@@ -79,6 +81,7 @@ class Analyser
 	{ 
 		//p.sf_axial_mass=ma;
 		p.qel_cc_axial_mass=ma;
+		ff_configure(p);
     }
 	void process_event(event &e,params &p)
 	{
