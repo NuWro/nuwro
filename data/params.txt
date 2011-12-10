@@ -196,7 +196,7 @@ nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and
 # Models for the description of nucleus as a target:
 # nucleus_target = 0 // free target; 
 # nucleus_target = 1 // Fermi gas; 
-nucleus_target = 2 // local Fermi gas; 
+# nucleus_target = 2 // local Fermi gas; 
 # nucleus_target = 3 // Bodek-Ritchie; 
 # nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
 # nucleus_target = 5 // deuterium; 
