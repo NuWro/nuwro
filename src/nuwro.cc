@@ -1,4 +1,3 @@
-#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <vector>
@@ -73,7 +72,7 @@ int NuWro::init (int argc, char **argv)
   a.read (argc, argv);
   p.read (a.input);
   p.read (a.params, "command line");
-//  p.list ();
+  p.list ();
   p1=&p;
   progress.open(a.progress);
   frandom_init(p.random_seed);
@@ -410,7 +409,7 @@ void NuWro::analizer_events(params &p)
   Analyser analyser;
 //   UserAction analyser;
 // Useraction(procesy,mixer.e.p,neutrino_beam,detector)
-  while(analyser.loop(0,2000,10))
+  while(analyser.loop(1000,2000,50))
   { procesy.reset(active);
   for (int i = 0; i < p.number_of_test_events; i++)
     { 
