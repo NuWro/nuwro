@@ -454,6 +454,7 @@ void NuWro::real_events(params& p)
  	  procesy.short_report(cout);
 	  procesy.short_report(f);
 	}
+	
 	event *e = new event;
 	
 	string output=a.output;
@@ -461,6 +462,13 @@ void NuWro::real_events(params& p)
 	TTree *tf = new TTree ("treeout", "Tree of events");
 	tf->Branch ("e", "event", &e);
 	delete e;
+    TH1 * xsections= new TH1D("xsections","xsections",8,0,7);
+    for(int i=0;i<8;i++)
+       {xsections->SetBinContent(i+1,procesy.avg(i));
+        xsections->SetBinError(i+1,procesy.sigma(i)); 
+	   }
+    
+
 
 /////////////////////////////////////////////////////////////
 // The main loop in NPROC -- generate file with unweighted events
