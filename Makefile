@@ -17,7 +17,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
                 formParam test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies \
+                fsi niwg ladek_topologies test \
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -91,6 +91,9 @@ $(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/e
 
 $(BIN)/ladek_topologies: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generatormt.o src/ladek_topologies.o src/dirs.o \
           src/fsi.o src/pitab.o
+		$(LINK.cc) $^ -o $@
+
+$(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generatormt.o src/test.o src/dirs.o
 		$(LINK.cc) $^ -o $@
 
 #$(BIN)/plots:           src/event1.o src/event1dict.o src/pdg.o src/particle.o src/generatormt.o src/dirs.o

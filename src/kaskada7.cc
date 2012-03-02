@@ -86,6 +86,8 @@ void procinfo(particle p1, particle p2, int n, particle p[])
 //double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res);//, int nofpi);
 //double formation2 (particle &p, params &par);//, vect q, bool qel, vect p0, bool res);//, int nofpi);
 
+/*
+
 double test_fun(vector<particle>& input,vect q)
     {
 	    double t = 0;
@@ -97,12 +99,85 @@ double test_fun(vector<particle>& input,vect q)
 		  if (nucleon_or_pion (p.pdg))
 		  {
 			  double pt = help.dir()*p.p();
-			  pt = sqrt(p.momentum2() - pt*pt);
-			  t += 0.1*p.mass()*p.E()/(p.mass2() + pt*pt);
+			  pt = 0; //sqrt(p.momentum2() - pt*pt);
+			 
+			  double tau = 0.03;
+			  if (p.pdg == 2212 or p.pdg == 2112)
+				tau = 0.2;
+			 
+			  t += tau*p.mass()*p.E()/(p.mass2() + pt*pt);
 		  }
 		}
 		return t;
 	}
+
+double test_fun(particle p[], int n)
+    {
+	    double t = 0;
+
+		for (int i = 0; i < n; i++)
+		{
+			double tau = 0.03;
+			if (p[i].pdg == 2212 or p[i].pdg == 2112)
+				tau = 0.2;
+				
+			  t += tau*p[i].E()/p[i].mass();
+		}
+		return t;
+	}
+
+*/
+	
+vec test_fun(vector<particle>& input,vect q)
+    {
+	    double t = 0;
+	    double e = 0;
+	    vec ped = vec(0,0,0);
+	    			
+		for (int i = 0; i < input.size (); i++)
+		{
+  		  particle p = input[i];
+		  if (nucleon_or_pion (p.pdg))
+		  {
+			  double tau = 0.01;
+			  if (p.pdg == 2212 or p.pdg == 2112)
+				tau = 0.35;
+			 
+			  t += tau;
+			  e += p.E();
+			  ped += p.p();
+		  }
+		}
+		double mom = ped.length();
+		double m = sqrt(e*e - mom*mom);
+		
+		return ped*t/m;
+	}
+	
+vec test_fun(particle p[], int n)
+    {
+	    double t = 0;
+	    double e = 0;
+	    vec ped = vec(0,0,0);
+
+		for (int i = 0; i < n; i++)
+		{
+			double tau = 0.01;
+			if (p[i].pdg == 2212 or p[i].pdg == 2112)
+				tau = 0.35;
+				
+			  t += tau;
+			  e += p[i].E();
+			  ped += p[i].p();
+		}
+		
+		double mom = ped.length();
+		double m = sqrt(e*e - mom*mom);
+
+		return ped*t/m;
+	}
+	
+	
 	
 void set_pt(particle &p, vect q, vect p0, bool res, bool dis)
 {
@@ -160,38 +235,43 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
   if (e.in[0].lepton()) // if there was lepton in the primary vertex (it is nuwro)
        nucl.remove_nucleon(e.in[1]); // remove nucleon used in the primary vertex
       
-  bool test=0;
+  bool test=false;
   bool writeall=true;
 //  bool writeall=false;
-	double t = 0;
-    if(test)	
-		t=test_fun(input,q);
+	//double t = 0;
+//    if(test)	
+		vec t=test_fun(input,q)*fermi;
      
   // take all nucleons and pions from input vector
   // others copy directly to the output vector
-  
+
   for (int i = 0; i < input.size (); i++)
     {
-      particle p = input[i];
+      particle p;
+      
+      if (i < input.size()) p = input[i];
+      else p = nucl.get_nucleon(input[i].r);
       p.set_new();
       if (nucleon_or_pion (p.pdg))
 	  {
 		  set_pt(p, q, e.in[1], e.flag.res, e.flag.dis);
 		  
-		  double fz = formation1(p, par, q, qel, pin, res, input.size()-1);
+		  double fz = formation1(p, par, q, qel, pin, res, input.size()-1, e.W());
 		  //if (!qel) fz = formation3((q+e.in[1].p4()).v().length(), input.size()-1);
 		  
-		  //if (test) fz = fermi*t*p.momentum()/p.E();
+		  //if (test) 
+		  //fz = fermi*t;//*p.momentum()/p.E();
 		  
 		  /// only for tests 
-		  ///p.wfz(fz); 
-		  ///double pt = help.dir()*p.p();
-		  ///pt = sqrt(p.momentum2() - pt*pt);
-		  ///p.wpt(pt);
-		  ///p.endproc=escape;
-		  ///output.push_back (p);
+		  //double pt = help.dir()*p.p();
+		  //pt = sqrt(p.momentum2() - pt*pt);
+		  //p.wpt(pt);
+		  //p.wfz(fz); 
+		  //p.endproc=escape;
+		  //output.push_back (p);
 		  ///must be commented
 		  
+		  //p.krok(t);
 		  p.krok(fz);
 		  parts.push (p); 
 	  }
@@ -203,6 +283,7 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 			all.push_back(p);
       }
     }
+    
     ////////////////////////////
     /// initialize statistics
 	for (int i = 0; i<12; i++)
@@ -327,7 +408,7 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 
 	      if ( (I.process_id() != 25) // Why absorption can not be Pauli blocked?
 	          and 
-	          nucl.pauli_blocking (p, n)// and (par.xsec == 0)
+	          nucl.pauli_blocking (p, n) and (p1.pdg == 2112 or p1.pdg == 2212)// and (par.xsec == 0)
 	          )	
 			{ // some particle was Pauli blocked
 				parts.push (p1);	// Pauli blocked, so nothing happened - put p1 to end of queue
@@ -408,9 +489,12 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 					  czas += 0.1*p[l].mass()*p[l].E()/(p[l].mass2() + pt*pt);
 				}
 			}
+			
+			vec time = test_fun(p,n)*fermi;
 
 		  for (int i = 0; i < n; i++)
 		    {
+			  p[i].r = p1.r;
 		      p[i].travelled = 0;
 		      p[i].set_mother(p1);
 		      
@@ -422,10 +506,11 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 
 			  //if (I.process_id() != 25)
 			  //{
-				  double fz = formation2(p[i], par, n-1);//, qhelp, qel2, p2, res2);
-				  
+				  double fz = formation2(p[i], par, n);//, qhelp, qel2, p2, res2);
+				  //fz = time*fermi;//*p[i].momentum()/p[i].E();
 				  //fz = 1.0*fermi;
 				  
+				  //p[i].krok(time);
 				  p[i].krok(fz);
 				  
 //				  if (!test) p[i].krok(formation2(p[i], par, q, qel2, pin, res2));//, nofpi));

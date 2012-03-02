@@ -176,9 +176,18 @@ for(int i=0;i<nD;i++)
 // E1 E2 sii1 sii2 sij1 sij2 sabs1 sabs2 fxii fxij fx0 fceii fceij fce0 Aii Aij A0 Bii Bij B0 Cii Cij1 Cij2 C01 C02 fpi(ii) fpi(ij) fpi(0) f2pi
 //  0  1  2     3    4    5    6     7    8     9    10  11    12   13   14  15 16  17  18 19  20  21   22   23 24    25      26      27    28
   if(i==0)  E[j]=tab2[J][0];
-	   sii[j][i]=tab2[J][2 ];
+  if (J==0)
+  {	   
+	   sii[j][i]=tab[i][prog-1][3 ];
+	   sij[j][i]=tab[i][prog-1][5 ];
+      sabs[j][i]=tab[i][prog-1][7 ];  
+  }
+  else
+  {
+  	   sii[j][i]=tab2[J][2 ];
 	   sij[j][i]=tab2[J][4 ];
-	  sabs[j][i]=tab2[J][6 ];  
+  	  sabs[j][i]=tab2[J][6 ];  
+  }
 	  fxii[j][i]=tab2[J][8 ]; 
 	  fxij[j][i]=tab2[J][9 ]; 
 	  fx0 [j][i]=tab2[J][10]; 

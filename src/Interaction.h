@@ -156,8 +156,8 @@ void NData::get_sij (double Ek_,double &resii,double &resij)
 	{   Ek_=max(Ek, 80 * MeV); 
 		const double M = (mass_proton + mass_neutron) / 2;
 		double v = sqrt (1 - pow2 (M / (Ek+M)));
-		resii=((10.63 / v - 29.92) / v + 42.9)* millibarn; // 
-		resij=((34.10 / v - 82.20) / v + 82.2)* millibarn; // 
+		resij=((34.10 / v - 82.20) / v + 82.2)* millibarn;		
+		resii=((10.63 / v - 29.92) / v + 42.9)* millibarn;
 	}
 	else
     { 
@@ -411,12 +411,14 @@ public:
 	double a4(bool cex)
 	{		  
 		//if (cex and Ek < 51) return 1.5;
+		//if (cex) return dval(A[0]);
 		//return dval(A[ij]);
 		return angle_par(cex, 4);
 	}
 	double a5(bool cex)
 	{
 		//if (cex and Ek < 51) return -2.5;
+		//if (cex) return dval(B[0]);
 		//return dval(B[ij]);
 		return angle_par(cex, 5);
 	}
@@ -424,7 +426,7 @@ public:
 	{
 		//if (cex and Ek < 51) return 0;
 		//if (cex) return cinel();
-		//else return cel();
+		//return cel();
 		return angle_par(cex, 6);
 	}
 	double a7(bool cex)
@@ -438,10 +440,10 @@ public:
 		return angle_par(cex, 8);
 	}
 		
-  double finel(){return dval2(F[ij]);}    
-  double fce(){return dval2(Fc[ij]);}    
-  double fp(){return dval2(Fp[ij]);}
-  double f2p(){return dval2(F2p);}
+  double finel(){return dval(F[ij]);}    //dval2 or dval - skalowanie z energią lub bez
+  double fce(){return dval(Fc[ij]);}    
+  double fp(){return dval(Fp[ij]);}
+  double f2p(){return dval(F2p);}
   double fabs_inel() // absorption/inelastic
 	  {//cout<<"ij="<<ij<<" i="<<i<<" iD="<<iD<<"["<<s[ij][i*nD+iD]<<"]"<< " {"<<sij(0)<<','<<sij(1)<<','<<sij(2)<<")"<<endl;
 		  switch(ij) 
@@ -488,7 +490,7 @@ public:
   /// Ek = kinetic energy 
 double PiData::sij (int k)
   { 
-    if (Ek <= 51*MeV && xsec==0)
+    if (Ek <= 49*MeV && xsec==0)
       {	// Low energy Metropolis formula
         double x = Ek / PDG::mass_pi;
         switch (k)
@@ -527,7 +529,7 @@ bool PiData::pion_scattering (particle & p1, particle & p2, nucleus &t,
 		p2.z *= -1;
 		set_Ek(Ekm);
       }*/
-    if(frandom()<fabs_inel())
+    if(frandom()<fabs_inel() and canal != 0 and canal != 5)
        return pion_abs (p1, p2, t, n, p);
     if(frandom()>=finel())
        return pion_elastic (p1, p2, n, p); 
@@ -565,9 +567,9 @@ bool PiData::pion_elastic (particle& p1, particle& p2,  int &n, particle p[])
 bool PiData::pion_ce (particle& p1, particle& p2, int &n, particle p[])
   {  
  	   k2=ce_;
-	   int canal=((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
 	   
-	   if(canal==0 || canal==5) return 0;
+	   int canal=((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
+	   //if(canal==0 || canal==5) return 0;
 		
 	   static const channel cnls[6][2]=
 	   {{1,"ee"},//-n
@@ -653,10 +655,12 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 	if(t.Ar()<2) return 0;
     n=2;  
 	k2=abs_;
-    int canal = ((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
-    switch(canal)  
-    { case 0: case 5: return 0; // no absorbtion for (pi- n) and (pi+ p) 
-    }
+    
+    //int canal = ((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
+    //switch(canal)  
+    //{ case 0: case 5: return 0; // no absorbtion for (pi- n) and (pi+ p) 
+    //}
+    
 	t.remove_nucleon(p2);       // pretend that p2 is already removed
     p2a = t.get_nucleon (p1.r);	// get nucleon from this place in Nucleus
     t.spectator=&p2a;            // remember to remove p2a later (if PB permits)

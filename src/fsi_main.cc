@@ -14,12 +14,12 @@ void make_simulations (int expr, int fz, int xs)
 {
 	switch (expr){
 		case 0: K2K(fz, xs); break;
-		case 1: MB(fz, xs, 1); break;
+		case 1: MB(fz, xs, 0);break; //1); break;
 		case 2: MB(fz, xs, 0); break;
 		case 3: PNS(fz, xs); break;
 		case 4: PrT(fz, xs, (char *)"high_energy"); break;
 		case 5: PrT(fz, xs, (char *)"low_energy"); break;
-		case 6: PiT3(); break; //(fz, xs, (char *)"high_energy"); break;
+		case 6: PiT(fz, xs, (char *)"high_energy"); break;
 		case 7: PiT(fz, xs, (char *)"low_energy"); break;
 		case 8: Nomad(fz, xs); break;
 		case 9: AtmNu(fz, xs); break;
@@ -40,12 +40,12 @@ void make_calculations (int expr, int fz, int xs)
 {
 	switch (expr){
 		case 0: calcK2K(fz, xs); break;
-		case 1: {calcMB(fz, xs, 0); calcMB(fz, xs, 1);} break;
+		case 1: {calcMB(fz, xs, 0);} break;// calcMB(fz, xs, 1);} break;
 		case 2: calcSB(fz, xs); break;
 		case 3: calcPNS(fz, xs); break;
 		case 4: calcPrThe(fz, xs); break;
 		case 5: calcPrTle(fz, xs); break;
-		case 6: calcPiTrans3(); break;
+		case 6: calcPiThe(fz, xs); break;
 		case 7: calcPiTle(fz, xs); break;
 		case 8: calcNomad(fz, xs); break;
 		case 9: calcAtmNu(fz, xs); break;
@@ -442,6 +442,8 @@ int main(int argc, char** argv)
 	//angle_test();
 	//ang_calc();
 	
+	viviNomad_new(0, 1);
+	//viviNomad_new(8, 1);
 	
 	run("rm -r tmp/");
 	logfile.close();

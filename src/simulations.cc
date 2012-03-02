@@ -112,15 +112,15 @@ void PiT2le (int fz, int xs)
 {
 	get_date();
 	
-	string com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_carbon_" + fzwork[fz] + sep + xsec[xs] + sep + date + ".root ";
+	string com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_carbon_" + fzwork[fz] + sep + xsec[1] + sep + date + ".root ";
 	com += events100k + carbon + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
 	run(com);
 	
-	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_lithium_" + fzwork[fz] + sep + xsec[xs] + sep + date + ".root ";
+	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_lithium_" + fzwork[fz] + sep + xsec[3] + sep + date + ".root ";
 	com += events100k + lithium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
 	run(com);
 
-	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_aluminium_" + fzwork[fz] + sep + xsec[xs] + sep + date + ".root ";
+	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_aluminium_" + fzwork[fz] + sep + xsec[2] + sep + date + ".root ";
 	com += events100k + aluminium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
 	run(com);
 		
@@ -130,21 +130,21 @@ void K2K (int fz, int xs)
 {
 	get_date();
 	
-	string k2k = date + rot + events100k + numu + K2Kbeam;
+	string k2k = date + rot + events1m + numu + K2Kbeam;
 	
-	string command (get_bin_dir()+"nuwro -o root_files/K2K_NC_Hydrogen_100k_");
+	string command (get_bin_dir()+"nuwro -o root_files/K2K_NC_Hydrogen_1m_");
 	command += k2k + hydrogen + NCwocoh;
 	
 	simlog(command);
-	run(command);
+	//run(command);
 		
-	command = get_bin_dir()+"nuwro -o root_files/K2K_NC_Oxygen_100k_";
+	command = get_bin_dir()+"nuwro -o root_files/K2K_NC_Oxygen_1mc_";
 	command += fzwork[fz] + sep + xsec[xs] + sep + k2k + oxygen + NCdyn + fzp(fz) + xpar(xs);
 
 	simlog(command);
-	run(command);
+	//run(command);
 	
-	if (noFile("root_files/K2K_CC_Hydrogen_0k.root.txt"))
+	//if (noFile("root_files/K2K_CC_Hydrogen_0k.root.txt"))
 	{
 		k2k = events0k + CCwocoh + numu + K2Kbeam;
 		command = get_bin_dir()+"nuwro -o root_files/K2K_CC_Hydrogen_0k.root ";
@@ -153,7 +153,7 @@ void K2K (int fz, int xs)
 		simlog(command);
 		run(command);
 	}
-	if (noFile("root_files/K2K_CC_Oxygen_0k.root.txt"))
+	//if (noFile("root_files/K2K_CC_Oxygen_0k.root.txt"))
 	{
 		k2k = events0k + CCdyn + numu + K2Kbeam;
 		command = get_bin_dir()+"nuwro -o root_files/K2K_CC_Oxygen_0k.root ";
@@ -168,15 +168,15 @@ void MB (int fz, int xs, bool anti)
 {
 	get_date();
 	
-	string mb = date + rot + events100k + numu + MBbeam;
+	string mb = date + rot + events5m + numu + MBbeam;
 	
-	string command (get_bin_dir()+"nuwro -o root_files/MB_NC_Hydrogen_100k_");
+	string command (get_bin_dir()+"nuwro -o root_files/MB_NC_Hydrogen_5m_");
 	command += mb + hydrogen + NCwocoh;
 	
 	simlog(command);
-	run(command);
+	//run(command);
 	
-	command = get_bin_dir()+"nuwro -o root_files/MB_NC_Carbon_100k_";
+	command = get_bin_dir()+"nuwro -o root_files/MB_NC_Carbon_5m_";
 	command += fzwork[fz] + sep + xsec[xs] + sep + mb + carbon + NCdyn + fzp(fz) + xpar(xs);
 
 	simlog(command);
@@ -184,15 +184,15 @@ void MB (int fz, int xs, bool anti)
 
 	if(anti)
 	{
-		string mba = sep + date + rot + events100k + antinumu + MBbeamanti;
+		string mba = sep + date + rot + events5m + antinumu + MBbeamanti;
 		
-		command = get_bin_dir()+"nuwro -o root_files/MB_anti_NC_Hydrogen_100k_";
+		command = get_bin_dir()+"nuwro -o root_files/MB_anti_NC_Hydrogen_5m_";
 		command +=  mba + hydrogen + NCwocoh;
 			
 		simlog(command);
 		run(command);
 		
-		command = get_bin_dir()+"nuwro -o root_files/MB_anti_NC_Carbon_100k_";
+		command = get_bin_dir()+"nuwro -o root_files/MB_anti_NC_Carbon_5m_";
 		command += fzwork[fz] + sep + xsec[xs] + mba + carbon + NCdyn + fzp(fz) + xpar(xs);
 
 		simlog(command);
@@ -206,6 +206,7 @@ void MB (int fz, int xs, bool anti)
 		command += mb + hydrogen;
 		
 		simlog(command);
+		cout << endl << command << endl << endl;
 		run(command);
 	}
 	if (noFile("root_files/MB_CC_Carbon_0k.root.txt"))
@@ -223,7 +224,7 @@ void simMBback (int fz, int xsprob, bool anti)
 {
 	get_date();
 	int xs = xsprob;
-	if (xsprob == 1) xs = 2;
+	if (xsprob == 1) xs = 1;
 	
 	string mb = date + rot + events1m + numu + MBbeam;
 	
@@ -445,7 +446,7 @@ void PNS (int fz, int xsprob)
 	
 	string pns = fzwork[fz] + sep + xsec[xsprob] + sep + date + rot + events100k + piP + surface + PNSbeam + fzp(fz) + string("-p 'first_step = 0' ");
 	
-	string command = "./kaskada -o root_files/PionNucleus_Carbon_100k_";
+	string command = "./bin/kaskada -o root_files/PionNucleus_Carbon_100k_";
 	command +=  pns + carbon + xpar(xs);
 	
 	simlog(command);
@@ -453,7 +454,7 @@ void PNS (int fz, int xsprob)
 
 	if (xsprob == 1) xs = 2;
 	
-	command = "./kaskada -o root_files/PionNucleus_Iron_100k_";
+	command = "./bin/kaskada -o root_files/PionNucleus_Iron_100k_";
 	command += pns + iron + xpar(xs);
 
 	simlog(command);	
@@ -467,13 +468,13 @@ void PrT (int fz, int xs, char *which)
 			
 	if (strcmp(which, "high_energy") == 0)
 	{
-		string command = "./kaskada -o root_files/ProtonTransparency_he_Carbon_100k_";
+		string command = "./bin/kaskada -o root_files/ProtonTransparency_he_Carbon_100k_";
 		command += prt + PrThe + carbon;
 	
 		simlog(command);
 		run(command);
 		
-		command = "./kaskada -o root_files/ProtonTransparency_he_Iron_100k_";
+		command = "./bin/kaskada -o root_files/ProtonTransparency_he_Iron_100k_";
 		command += prt + PrThe + iron;
 	
 		simlog(command);
@@ -505,7 +506,7 @@ void PrT (int fz, int xs, char *which)
 void PiT2 (int fz, int xs)
 {
 	get_date();
-	string pit = fzwork[fz] + sep + xsec[xs] + sep + date + rot + events100k + fzp(fz);
+	string pit = fzwork[fz] + sep + xsec[xs] + sep + date + rot + events1m + fzp(fz);
 	
 	string command = get_bin_dir()+"nuwro -o root_files/PiTrans_he_Carbon_1m_";
 	command += pit + pitbeam + carbon + onlydis + xpar(1);
@@ -518,12 +519,12 @@ void PiT2 (int fz, int xs)
 	run(command);
 
 	command = get_bin_dir()+"nuwro -o root_files/PiTrans_he_Copper_1m_";
-	command += pit + pitbeam + copper + onlydis + xpar(3);
+	command += pit + pitbeam + copper + onlydis + xpar(2);
 	
 	run(command);
 }	
 
-void PiT3()
+void PiT3(int fz)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -539,11 +540,11 @@ void PiT3()
 		temp << energy;
 		temp >> en;
 		
-		string command = "./kaskada -o root_files/PiTrans_e" + en + string("_carbon_100k.root ") + xpar(2) + carbon + piP + events100k + pos_ran + string("-p 'formation_zone = trans' -p 'beam_energy = ") + en + string("' ");
+		string command = "./bin/kaskada -o root_files/PiTrans_e" + en + string("_carbon_100k_") + fzwork[fz] + rot + xpar(1) + carbon + piP + events100k + pos_ran + fzp(fz) + string("-p 'beam_energy = ") + en + string("' ");
 		run(command);
-		command = "./kaskada -o root_files/PiTrans_e" + en + string("_aluminium_100k.root ") + xpar(1) + aluminium + piP + events100k + pos_ran + string("-p 'formation_zone = trans' -p 'beam_energy = ") + en + string("' ");
+		command = "./bin/kaskada -o root_files/PiTrans_e" + en + string("_aluminium_100k_") + fzwork[fz] + rot + xpar(3) + aluminium + piP + events100k + pos_ran + fzp(fz) + string("-p 'beam_energy = ") + en + string("' ");
 		run(command);		
-		command = "./kaskada -o root_files/PiTrans_e" + en + string("_copper_100k.root ") + xpar(3) + copper + piP + events100k + pos_ran + string("-p 'formation_zone = trans' -p 'beam_energy = ") + en + string("' ");
+		command = "./bin/kaskada -o root_files/PiTrans_e" + en + string("_copper_100k_") + fzwork[fz] + rot + xpar(2) + copper + piP + events100k + pos_ran + fzp(fz) + string("-p 'beam_energy = ") + en + string("' ");
 		run(command);			
 	}
 }
@@ -551,62 +552,62 @@ void PiT3()
 void PiT (int fz, int xs, char *which)
 {
 	get_date();
-	string pit = fzwork[fz] + sep + xsec[xs] + sep + date + rot + events100k + pos_ran + fzp(fz) + xpar(3);	
+	string pit = fzwork[fz] + sep + xsec[xs] + sep + date + rot + events100k + pos_ran + fzp(fz);	
 	
 	if (strcmp(which, "high_energy") == 0)
 	{
-		string command = "./kaskada -o root_files/PionTransparency_he_Carbon_100k_";
-		command += pit + PiThe + piP + carbon;
+		string command = "./bin/kaskada -o root_files/PionTransparency_he_Carbon_100k_";
+		command += pit + PiThe + piP + carbon + xpar(1);
 		
 		simlog(command);
 		run(command);
 
-		command = "./kaskada -o root_files/PionTransparency_he_Aluminium_100k_";
-		command += pit + PiThe + piP + aluminium;
+		command = "./bin/kaskada -o root_files/PionTransparency_he_Aluminium_100k_";
+		command += pit + PiThe + piP + aluminium + xpar(3);
 		
 		simlog(command);
 		run(command);
 		
-		command = "./kaskada -o root_files/PionTransparency_he_Copper_100k_";
-		command += pit + PiThe + piP + copper;
+		command = "./bin/kaskada -o root_files/PionTransparency_he_Copper_100k_";
+		command += pit + PiThe + piP + copper + xpar(2);
 		
 		simlog(command);
 		run(command);
 	}
 	else if (strcmp(which, "low_energy") == 0)
 	{
-		string command = "./kaskada -o root_files/PionTransparency_le_pip_Lithium_100k_";
-		command += pit + PiTle + piP + lithium;
+		string command = "./bin/kaskada -o root_files/PionTransparency_le_pip_Lithium_100k_";
+		command += pit + PiTle + piP + lithium + xpar(3);
 		
 		simlog(command);
 		run(command);
 	
-		command = "./kaskada -o root_files/PionTransparency_le_pip_Carbon_100k_";
-		command += pit + PiTle + piP + carbon;
+		command = "./bin/kaskada -o root_files/PionTransparency_le_pip_Carbon_100k_";
+		command += pit + PiTle + piP + carbon + xpar(1);
 		
 		simlog(command);
 		run(command);
 
-		command = "./kaskada -o root_files/PionTransparency_le_pip_Aluminium_100k_";
-		command += pit + PiTle + piP + aluminium;
+		command = "./bin/kaskada -o root_files/PionTransparency_le_pip_Aluminium_100k_";
+		command += pit + PiTle + piP + aluminium + xpar(3);
 		
 		simlog(command);
 		run(command);
 		
-		command = "./kaskada -o root_files/PionTransparency_le_pi0_Lithium_100k_";
-		command += pit + PiTle + pi0 + lithium;
+		command = "./bin/kaskada -o root_files/PionTransparency_le_pi0_Lithium_100k_";
+		command += pit + PiTle + pi0 + lithium + xpar(3);
 		
 		simlog(command);
 		run(command);
 	
-		command = "./kaskada -o root_files/PionTransparency_le_pi0_Carbon_100k_";
-		command += pit + PiTle + pi0 + carbon;
+		command = "./bin/kaskada -o root_files/PionTransparency_le_pi0_Carbon_100k_";
+		command += pit + PiTle + pi0 + carbon + xpar(2);
 		
 		simlog(command);
 		run(command);
 
-		command = "./kaskada -o root_files/PionTransparency_le_pi0_Aluminium_100k_";
-		command += pit + PiTle + pi0 + aluminium;
+		command = "./bin/kaskada -o root_files/PionTransparency_le_pi0_Aluminium_100k_";
+		command += pit + PiTle + pi0 + aluminium + xpar(2);
 		
 		simlog(command);
 		run(command);	
@@ -617,10 +618,10 @@ void Nomad (int fz, int xsprob)
 {
 	get_date();
 	int xs = xsprob;
-	if (xsprob == 1) xs = 3;
+//	if (xsprob == 1) xs = 3;
 	
 	string command = get_bin_dir()+"nuwro -o root_files/Nomad_100k_";
-	command += fzwork[fz] + sep + xsec[xsprob] + sep + date + rot + events100k + CCdyn + "-p '@beam/nomad.txt' " + fzp(fz) + carbon + xpar(xs); // + nomdet;
+	command += fzwork[fz] + sep + xsec[xsprob] + sep + date + rot + events5m+ CCdyn + "-p '@beam/nomad.txt' " + fzp(fz) + carbon + xpar(xs); // + nomdet;
 	
 	simlog(command);
 	run(command);

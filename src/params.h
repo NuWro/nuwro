@@ -81,6 +81,7 @@
         PARAM(bool, kaskada_redo,0)\
         PARAM(bool, pauli_blocking,1)\
 		PARAM(string, formation_zone, "nofz")\
+		PARAM(double, tau, 0)\
 		PARAM(bool, first_step, 1)\
 		PARAM(double, step, 0.2)\
 		PARAM(int, xsec, 0)\

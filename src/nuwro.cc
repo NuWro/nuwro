@@ -310,9 +310,9 @@ void NuWro::finishevent(event* e, params &p)
 			registration(e->all,p);
 		}
 		
-		e->pr=nucleuss->Zr(); 	
-		e->nr=nucleuss->Nr(); 	
-		
+		//e->pr=nucleuss->Zr(); 	// 1. po co to?
+		//e->nr=nucleuss->Nr(); 	// 2. powoduje break, segmentation fault
+				
 		if (e->flag.coh && p.kaskada_on)                        // copy particle from out to post if coherent interaction
 		{
 			for (int j = 0; j<e->out.size(); j++)

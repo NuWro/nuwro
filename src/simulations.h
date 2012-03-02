@@ -2,10 +2,11 @@
 #define _simalations_h_
 #include "fsi.h"
 
+const string events5m = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 5000000' ";
 const string events1m = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 1000000' ";
 const string events100k = "-p 'number_of_test_events = 1000000' -p 'number_of_events = 100000' ";
 const string events10k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 10000' ";
-const string events0k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 1' ";
+const string events0k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 10' ";
 const string events25k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 25000' ";
 const string evtest    = "-p 'number_of_test_events = 5000' -p 'number_of_events = 25000' ";
 
@@ -84,7 +85,7 @@ void simMINOSCCtotal(int fz, int xs);
 void PNS (int fz, int xs);
 void PrT (int fz, int xs, char *which);
 void PiT2 (int fz, int xs);
-void PiT3();
+void PiT3(int fz);
 void PiT (int fz, int xs, char *which);
 void Nomad (int fz, int xs);
 void AtmNu (int fz, int xs);

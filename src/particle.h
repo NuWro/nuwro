@@ -72,6 +72,7 @@ inline vec v();                              ///< the velocity as a 3-vector
 inline double v2();                          ///< the velocity squared
 inline void krok_czasowy(double dt);         ///< move the particle by v*dt                  
 inline void krok(double dl);                 ///< move the particle by dl                   
+inline void krok(vec dl);                 ///< move the particle by dl                   
 inline double momentum ();                   ///< value of the momentum 
 inline double momentum2 ();                  ///< momenutm squared
 inline bool is_valid();                             ///< checkes for nan in energy an momentum
@@ -274,6 +275,11 @@ void particle::krok(double dl)
   double V=v().length(); 
   r+=vect(dl*v()/V, dl/V);
   travelled+=dl;
+}
+
+void particle::krok(vec dl)
+{ 
+  r+=vect(dl, 0);
 }
 
 void particle::krok_czasowy(double dt)

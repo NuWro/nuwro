@@ -2,37 +2,41 @@
 
 int main()
 {
-	TFile *tf1 = new TFile("root_files/PiTrans_he_Carbon_1m_nofz_Oset_2011.05.04.root");
+	for (int i  = 0; i < 10; i++)
+	{
+		int a = i*40.0/50.0;
+		cout << a << endl;
+	}
+	
+	TFile *tf1 = new TFile("fz.root");
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
 	event *e1   = new event();
 		
 	tt1->SetBranchAddress("e",&e1);
 	
-	const int bins = 30;
+	const int bins = 16;
 	
-	double r[bins];
-	double ile[bins]; zero(ile, bins);
-	double rest;
+	double momentum[bins];
+	for (int i = 0; i < bins; i++) momentum[i] = (i + 1)*50.0;
 	
-	for (int i = 0; i < bins; i++) r[i] = (i + 1)*0.15;
+	double fzp[bins] = {0};
+	double fzn[bins] = {0};
+	
+	double normp[bins] = {0};
+	double normn[bins] = {0};
 	
 	for (int i = 0; i < 1000000; i++)
 	{
 		tt1->GetEntry(i);
 		
-		if (e1->flag.dis and e1->nof(111) + e1->nof(211) + e1->nof(-211) == 1) put(e1->out[0].r.length()/fermi, r, ile, rest, bins);
+		for (int k = 0; k < e1->f(); k++)
+		{
+			if (e1->post[k].pdg == 2212 or e1->post[k].pdg == 2112)
+			{
+				int a = e1->post[k].momentum()/50.0 - 1;
+			}
+		}
 	}
-
-	int norma = 0;
-
-	for (int i = 0; i < bins; i++) r[i] = (i + 0.5)*0.15;
-	for (int i = 0; i < bins; i++) norma += ile[i];
-	
-	ofstream plik("newr.txt");
-	
-	for (int i = 0; i < bins; i++) plik << r[i] << " " << 1000.0*ile[i]/norma << endl;
-	
-	plik.close();
 	
 	delete e1;
 	delete tt1;

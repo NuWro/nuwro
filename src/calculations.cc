@@ -161,10 +161,10 @@ int calcK2K (int fz, int xs)
 {	
 	cout<<endl<<endl<<"Calculating K2K ("<<fzname[fz]<<", "<<xsec[xs]<<"): "<<endl<<endl;
 	
-	string help = "root_files/K2K_NC_Oxygen_100k_";
+	string help = "root_files/K2K_NC_Oxygen_1m_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
-	string Hfile = find_last("root_files/K2K_NC_Hydrogen_100k_*.root");
+	string Hfile = find_last("root_files/K2K_NC_Hydrogen_1m_*.root");
 	string Ofile = find_last(help);
 	
 	if (noFile(Hfile) or noFile(Ofile) or noFile(Hfile+string(".txt")) or noFile(Ofile + string(".txt")) or noFile("root_files/K2K_CC_Hydrogen_0k.root.txt") or noFile("root_files/K2K_CC_Oxygen_0k.root.txt"))
@@ -176,7 +176,7 @@ int calcK2K (int fz, int xs)
 		
 	get_date();
 	
-	const int events     = 100000;
+	const int events     = 1000000;
 	const int bins       = 8;
 	
 	double H[bins]; zero(H, bins);
@@ -393,14 +393,14 @@ int calcMB (int fz, int xs, bool anti)
 	
 	string help;
 	
-	if (anti) help = "root_files/MB_anti_NC_Carbon_100k_";
-	else help = "root_files/MB_NC_Carbon_100k_";
+	if (anti) help = "root_files/MB_anti_NC_Carbon_1m_";
+	else help = "root_files/MB_NC_Carbon_1m_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
 	string Hfile;
 	
-	if (anti) Hfile = find_last("root_files/MB_anti_NC_Hydrogen_100k_*.root");
-	else Hfile = find_last("root_files/MB_NC_Hydrogen_100k_*.root");
+	if (anti) Hfile = find_last("root_files/MB_anti_NC_Hydrogen_1m_*.root");
+	else Hfile = find_last("root_files/MB_NC_Hydrogen_1m_*.root");
 	
 	string Cfile = find_last(help);
 	
@@ -413,7 +413,7 @@ int calcMB (int fz, int xs, bool anti)
 		
 	get_date();
 	
-	const int events = 100000;
+	const int events = 1000000;
 
 	int ile;
 	if (anti) ile = 10;
@@ -492,6 +492,9 @@ int calcMB (int fz, int xs, bool anti)
 					put(val, mom, H, rest, bins);
 					val = e1->out[k].p().z/val;
 					put(val, ang, Hang, rest, angbins);
+					//int a = val/0.2 + 5;
+					//if (a == 10) a--;
+					//Hang[a]++;					
 				}
 			}
 		}
@@ -535,6 +538,9 @@ int calcMB (int fz, int xs, bool anti)
 					
 					val = e2->out[k].p().z/val;
 					put(val, ang, Cang[0], rest, angbins);					
+					//int a = val/0.2 + 5;
+					//if (a == 10) a--;
+					//Cang[0][a]++;	
 				}
 			}
 		}
@@ -557,6 +563,9 @@ int calcMB (int fz, int xs, bool anti)
 					
 					val = e2->post[k].p().z/val;
 					put(val, ang, Cang[1], rest, angbins);
+					//int a = val/0.2 + 5;
+					//if (a == 10) a--;
+					//Cang[1][a]++;	
 				}
 			}
 		}
@@ -622,9 +631,9 @@ int calcMB (int fz, int xs, bool anti)
 	
 	for (int i = 0; i < angbins; i++)
 	{	
-		double widthang;
-		if (anti) widthang = 2*MBantiAnglexerr[i]*events;
-		else widthang = 2*MBAnglexerr[i]*events;
+		double widthang;// = 0.2 * events;
+		if (anti) widthang = 2.0*MBantiAnglexerr[i]*events;
+		else widthang = 2.0*MBAnglexerr[i]*events;
 
 		CH2ang[0][i] /= widthang;
 		CH2ang[1][i] /= widthang;		
@@ -1126,10 +1135,10 @@ int calcSB (int fz, int xs)
 {	
 	cout<<endl<<endl<<"Calculating SciBooNE ("<<fzname[fz]<<", "<<xsec[xs]<<"): "<<endl<<endl;
 	
-	string help = "root_files/MB_NC_Carbon_100k_";
+	string help = "root_files/MB_NC_Carbon_1m_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
-	string Hfile = find_last("root_files/MB_NC_Hydrogen_100k_*.root");
+	string Hfile = find_last("root_files/MB_NC_Hydrogen_1m_*.root");
 	string Cfile = find_last(help);
 	
 	if (noFile(Hfile) or noFile(Cfile) or noFile(Hfile+string(".txt")) or noFile(Cfile + string(".txt")) or noFile("root_files/MB_CC_Hydrogen_0k.root.txt") or noFile("root_files/MB_CC_Carbon_0k.root.txt"))
@@ -1141,37 +1150,35 @@ int calcSB (int fz, int xs)
 		
 	get_date();
 	
-	const int events     = 100000;
+	const int events     = 1000000;
 	const int bins       = 9;
+	const int binsang    = 10;
 	
-	double H[bins]; zero(H, bins);
-	double C[2][bins]; zero(C[0], bins); zero(C[1], bins);  //0 - before FSI, 1 - after FSi
-	double vivi[2][4][bins];
-	double mom[bins];
+	double H[bins] = {0};
+	double C[bins] = {0};
 	
-	for (int i = 0; i < bins; i++) mom[i] = SBx[i] + SBxerr[i];
+	double Hang[binsang] = {0};
+	double Cang[binsang] = {0};
 	
-	/*
-	 * [0][0] - pi0 -> 0pi          [1][0] - 0pi -> pi0
-	 * [0][1] - pi0 -> pi-          [1][1] - pi- -> pi0
-	 * [0][2] - pi0 -> pi+          [1][2] - pi+ -> pi0
-	 * [0][3] - pi0 -> more pis     [1][3] - more pis -> pi0
-	 * 
-	 */
-	
-	for (int i = 0; i < 4; i++) {zero(vivi[0][i], bins); zero(vivi[1][i], bins);}
+	int Hsinglepi0 = 0;
+	int Hdoublepi0 = 0;
+	int Hpi0pic = 0;
+
+	int Csinglepi0 = 0;
+	int Cdoublepi0 = 0;
+	int Cpi0pic = 0;
 	
 	double restH = 0;
-	double restC[2] = {0, 0};
+	double restC = 0;
 	
 	int counterH = 0;
-	int counterC[2] = {0, 0};
+	int counterC = 0;
 	
 	help = Hfile + string(".txt");
 	double crossH = crosssection(help);
 	help = Cfile + string(".txt");
 	double crossC = crosssection(help);
-	
+		
 	TFile *tf1 = new TFile(Hfile.c_str());
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
 	event *e1   = new event();
@@ -1184,7 +1191,7 @@ int calcSB (int fz, int xs)
 		
 		int pion = 100*e1->nof(211) + 10*e1->nof(-211) + e1->nof(111);
 				
-		if (pion == 1)
+		if (e1->nof(111) > 0)
 		{
 			counterH++;
 			
@@ -1192,10 +1199,21 @@ int calcSB (int fz, int xs)
 			{
 				if (e1->out[k].pdg==111)
 				{
-					double val = e1->out[k].momentum();
-					put(val, mom, H, restH, bins);
+					int a = e1->out[k].momentum()/80.0;
+					
+					if (a < 9) H[a]++;
+					else restH++;
+					
+					int b = e1->out[k].p().z/e1->out[k].momentum()/0.2 + 5;
+					if (b == 10) b--;
+					
+					Hang[b]++;					
 				}
 			}
+			
+			if (pion == 1) Hsinglepi0++;
+			else if (pion == 2) Hdoublepi0++;
+			else Hpi0pic++;
 		}
 		cout<<Hfile<<": "<<100*i/events<<"%\r"<<flush;
 	}
@@ -1216,49 +1234,31 @@ int calcSB (int fz, int xs)
 	{
 		tt2->GetEntry(i);
 		
-		int pion    = 100*e2->nof(211) + 10*e2->nof(-211) + e2->nof(111);
-		int pionfsi = 100*e2->fof(211) + 10*e2->fof(-211) + e2->fof(111);
-				
-		if (pion == 1)
+		int pion = 100*e2->fof(211) + 10*e2->fof(-211) + e2->fof(111);
+						
+		if (e2->fof(111) > 0)
 		{
-			counterC[0]++;
-			
-			for (int k = 0; k < e2->n(); k++)
-			{
-				if (e2->out[k].pdg==111)
-				{
-					double val = e2->out[k].momentum();
-					put(val, mom, C[0], restC[0], bins);
-					
-					double rest;
-					
-					if (pionfsi == 0) put(val, mom, vivi[0][0], rest, bins);
-					else if (pionfsi == 10) put(val, mom, vivi[0][1], rest, bins);
-					else if (pionfsi == 100) put(val, mom, vivi[0][2], rest, bins);
-					else if (pionfsi != 1) put(val, mom, vivi[0][3], rest, bins);
-				}
-			}
-		}
-		
-		if (pionfsi == 1)
-		{
-			counterC[1]++;
+			counterC++;
 			
 			for (int k = 0; k < e2->f(); k++)
 			{
 				if (e2->post[k].pdg==111)
 				{
-					double val = e2->post[k].momentum();
-					put(val, mom, C[1], restC[1], bins);
+					int a = e2->post[k].momentum()/80.0;
 					
-					double rest;
+					if (a < 9) C[a]++;
+					else restC++;
 					
-					if (pion == 0) put(val, mom, vivi[1][0], rest, bins);
-					else if (pion == 10) put(val, mom, vivi[1][1], rest, bins);
-					else if (pion == 100) put(val, mom, vivi[1][2], rest, bins);
-					else if (pion != 1) put(val, mom, vivi[1][3], rest, bins);
+					int b = e2->post[k].p().z/e2->post[k].momentum()/0.2 + 5;
+					if (b == 10) b--;
+					
+					Cang[b]++;	
 				}
 			}
+			
+			if (pion == 1) Csinglepi0++;
+			else if (pion == 2) Cdoublepi0++;
+			else Cpi0pic++;
 		}
 		
 		cout<<Cfile<<": "<<100*i/events<<"%\r"<<flush;
@@ -1272,81 +1272,85 @@ int calcSB (int fz, int xs)
 
 	for (int i = 0; i < bins; i++)
 	{
-		C[0][i] *= crossC;
-		C[1][i] *= crossC;
-		H[i]    *= crossH;
-		
-		for (int k = 0; k < 4; k++)
-		{
-			vivi[0][k][i] *= crossC;
-			vivi[1][k][i] *= crossC;
-		}
+		C[i] *= crossC;
+		H[i] *= crossH;		
+	}
+
+	for (int i = 0; i < binsang; i++)
+	{
+		Cang[i] *= crossC;
+		Hang[i] *= crossH;		
 	}
 	
-	restC[0] *= crossC;
-	restC[1] *= crossC;
+	restC *= crossC;
 	restH    *= crossH;
 	
-	double C8H8[2][bins];
-	double C8H8rest[2];
+	double C8H8[bins];
+	double C8H8ang[binsang];
+	double C8H8rest;
 	
-	C8H8rest[0] = (8.0*restH + 96.0*restC[0])/(8.0 + 96.0);
-	C8H8rest[1] = (8.0*restH + 96.0*restC[1])/(8.0 + 96.0);	
+	C8H8rest = (8.0*restH + 96.0*restC)/(8.0 + 96.0);	
 		
-	merge(H, 8.0, C[0], 96.0, C8H8[0], bins);
-	merge(H, 8.0, C[1], 96.0, C8H8[1], bins);
+	merge(H, 8.0, C, 96.0, C8H8, bins);
+	merge(Hang, 8.0, Cang, 96.0, C8H8ang, binsang);
 	
-	double factor0 = factor(C8H8[0], SBy, bins);
-	double factor1 = factor(C8H8[1], SBy, bins);
+	double factormom = factor(C8H8, SBy, bins);
+	double factorang = factor(C8H8ang, SByang, binsang);
 	
 	for (int i = 0; i < bins; i++)
 	{
-		C8H8[0][i] *= factor0;
-		C8H8[1][i] *= factor1;
-		
-		for (int k = 0; k < 4; k++)
-		{
-			vivi[0][k][i] *= factor0;
-			vivi[1][k][i] *= factor1;
-		}
+		C8H8[i] *= factormom;
+	}
+
+	for (int i = 0; i < binsang; i++)
+	{
+		C8H8ang[i] *= factorang;
 	}
 	
-	C8H8rest[0] *= factor0;
-	C8H8rest[1] *= factor1;
+	C8H8rest *= factormom;
 		
 	double crossHcc = crosssection("root_files/MB_CC_Hydrogen_0k.root.txt");
 	double crossCcc = crosssection("root_files/MB_CC_Carbon_0k.root.txt");
 	
-	double ratio[2];
-	ratio[0] = (8.0*counterH*crossH + 96.0*counterC[0]*crossC)/(8.0*crossHcc + 96.0*crossCcc)/events;
-	ratio[1] = (8.0*counterH*crossH + 96.0*counterC[1]*crossC)/(8.0*crossHcc + 96.0*crossCcc)/events;
+	double ratio;
+	ratio = (8.0*counterH*crossH + 96.0*counterC*crossC)/(8.0*crossHcc + 96.0*crossCcc)/events;
+	
+	double spi0 = (8.0*Hsinglepi0 + 96*Csinglepi0)/(8.0*counterH + 96.0*counterC);
+	double dpi0 = (8.0*Hdoublepi0 + 96*Cdoublepi0)/(8.0*counterH + 96.0*counterC);
+	double mixpi = (8.0*Hpi0pic + 96*Cpi0pic)/(8.0*counterH + 96.0*counterC);
+	
+	double sigma = (8.0*counterH*crossH + 96.0*counterC*crossC)/events;
 	
 	help = "results/SB/";
 	run(string("mkdir -p ") + help);
 	help += string("sb_") + fzwork[fz] + sep + xsec[xs] + sep + date + string(".txt");
 	ofstream file(help.c_str());
-	
-	cout<<"NCpi0/CCall ratio before FSI: "<<ratio[0]<<endl<<endl<<"NCpi0/CCall ration after FSI: "<<ratio[1]<<endl<<endl;
-	file<<"#NCpi0/CCall ratio before FSI: "<<ratio[0]<<endl<<endl<<"#NCpi0/CCall ration after FSI: "<<ratio[1]<<endl<<endl;
 
-	cout<<"Momentum | SB data | NuWro before FSI | NuWro after FSI ("<<fzname[fz]<<")"<<endl<<endl;
-	file<<"#Momentum | NuWro before FSI | NuWro after FSI ("<<fzname[fz]<<")"<<endl<<endl;
+	help = "results/SB/";
+	run(string("mkdir -p ") + help);
+	help += string("sb_ang_") + fzwork[fz] + sep + xsec[xs] + sep + date + string(".txt");
+	ofstream fileang(help.c_str());
+	
+	file<<"#NCpi0/CCall ratio: "<<ratio<<endl<<endl;
+	file<<"#with singlepi0: "<< spi0 << " double pi0: " << dpi0 << " pi0+pic: " << mixpi << endl << endl;
+	file<<"#sigma total: " << sigma << endl << endl;
+	file<<"factorang: " << factorang << endl << endl;
 	
 	for (int i = 0; i < bins; i++)
 	{
-		cout<<SBx[i]<<" "<<SBy[i]<<" "<<C8H8[0][i]<<" "<<C8H8[1][i]<<endl;
-		file<<SBx[i]<<" "<<C8H8[0][i]<<" "<<C8H8[1][i]<<" "<<vivi[0][0][i]<<" "<<vivi[1][0][i]<<" "<<vivi[0][1][i] + vivi[0][2][i]<<" "<<vivi[1][1][i] + vivi[1][2][i]<<" "<<vivi[0][3][i]<<" "<<vivi[1][3][i];
+		file<<SBx[i]<<" "<<C8H8[i];
 		if (i < (bins - 2)) file<<endl;
-		else if (i == (bins - 2)) file<<" "<<SBx[bins]-SBxerr[bins]<<" "<<C8H8rest[0]<<" "<<C8H8rest[1]<<endl;
-		else if (i == (bins - 1)) file<<" "<<SBx[bins]+SBxerr[bins]<<" "<<C8H8rest[0]<<" "<<C8H8rest[1]<<endl;
+		else if (i == (bins - 2)) file<<" "<<SBx[bins]-SBxerr[bins]<<" "<<C8H8rest<<endl;
+		else if (i == (bins - 1)) file<<" "<<SBx[bins]+SBxerr[bins]<<" "<<C8H8rest<<endl;
 	}
 	
-	cout<<SBx[bins]<<" "<<SBy[bins]<<" "<<C8H8rest[0]<<" "<<C8H8rest[1]<<endl;
 	
-	cout<<endl<<help<<" created."<<endl<<endl;
-	help += string(" created from ") + Hfile + string(" and ")  + Cfile + string(" files");
-	calclog(help);
 	file.close();
+	
+	for (int i = 0; i < binsang; i++)
+		fileang << SBxang[i] << " " << C8H8ang[i] << endl;
+		
+	fileang.close();
 
 	return 1;	
 }
@@ -1836,7 +1840,7 @@ int calcPiTrans(int fz, int xs)
 		
 	get_date();
 	
-	const int events  = 100000;
+	const int events  = 1000000;
 	const int bins    = 10; //6;
 	
 	double ppi[bins];
@@ -1856,7 +1860,7 @@ int calcPiTrans(int fz, int xs)
 	
 	calcTrans2(Cfile, ppi, C, normC, bins, events);
 	calcTrans2(Afile, ppi, A, normA, bins, events);
-	calcTrans2(Mfile, ppi, M, normM, bins, events);
+	//calcTrans2(Mfile, ppi, M, normM, bins, events);
 	
 	for (int i = 0; i < bins; i++)
 	{
@@ -1938,7 +1942,7 @@ double calcPiTrans3b(string filename)
 	return counter/100000.0;
 }
 
-int calcPiTrans3()
+int calcPiTrans3(int fz)
 {
 	double C[5];
 	double A[5];
@@ -1958,19 +1962,25 @@ int calcPiTrans3()
 		temp << energy;
 		temp >> en;
 		
-		string rf = "root_files/PiTrans_e" + en + string("_carbon_100k.root");
+		string rf = "root_files/PiTrans_e" + en + string("_carbon_100k_") + fzwork[fz] + rot;
 		C[i] = calcPiTrans3b(rf);
 		
-		rf = "root_files/PiTrans_e" + en + string("_aluminium_100k.root");
-		A[i] = calcPiTrans3b(rf);
+		rf = "root_files/PiTrans_e" + en + string("_aluminium_100k_") + fzwork[fz] + rot;
+		//A[i] = calcPiTrans3b(rf);
 
-		rf = "root_files/PiTrans_e" + en + string("_copper_100k.root");
+		rf = "root_files/PiTrans_e" + en + string("_copper_100k_") + fzwork[fz] + rot;
 		M[i] = calcPiTrans3b(rf);
 	}
 	
-	ofstream fileC("results/car_fz.txt");
-	ofstream fileA("results/alum_fz.txt");
-	ofstream fileM("results/cop_fz.txt");
+	string name = "results/car_" + fzwork[fz] + ".txt";
+	
+	ofstream fileC(name.c_str());
+
+	name = "results/alum_" + fzwork[fz] + ".txt";
+	ofstream fileA(name.c_str());
+
+	name = "results/cop_" + fzwork[fz] + ".txt";
+	ofstream fileM(name.c_str());
 		
 	for (int i = 0; i < 5; i++)
 	{
@@ -2254,8 +2264,7 @@ int calcPiTle (int fz, int xs)
 	return 1;
 }
 
-
-void calcFZ ()
+/*void calcFZ ()
 {	
 	ofstream pqfile("tmp/pion_qel.txt");
 	ofstream pifile("tmp/pion_inel.txt");
@@ -2365,7 +2374,7 @@ void calcFZ ()
 	pifile.close();
 	nqfile.close();
 	nifile.close();
-}
+}*/
 
 int viviNomad3(int fz, int xs)
 {
@@ -2616,37 +2625,28 @@ int viviNomad2(int fz, int xs)
 	return 1;
 }	
 
-int viviNomad(int fz, int xs)
+int viviNomad_new(int fz, int xs)
 {
 	string help = "root_files/Nomad_100k_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
 	string file = find_last(help);
 
-	const int events = 1000000;
-	const int bins   = 20;
+	const int events = 5000000;
 	
-	double ang[bins];
-	for (int i = 0; i < bins; i++) ang[i] = (i + 1.0) * 0.1 - 1.0;
+	double x[7] = {0};
+	double sum = 0;
 	
-	double qel[10][2][bins] = {{0}, {0}}; 
-	double cex[10][2][bins] = {{0}, {0}}; 
-	double spp[10][2][bins] = {{0}, {0}}; 
-	double dpp[10][2][bins] = {{0}, {0}}; 
-	double tpp[10][2][bins] = {{0}, {0}}; 
-	double nsp[10][2][bins] = {{0}, {0}}; 
-	double ndp[10][2][bins] = {{0}, {0}}; 
+	/*
+	 * 0 - in primary vertex
+	 * 1 - in single pion production
+	 * 2 - in double pion production
+	 * 3 - in triple pion production
+	 * 4 - in nucleon pion production
+	 * 5 - in nucleon double pp
+	 * 6 - other there was more than one pion production in FSI
+	 */
 	
-	int norm_qel[10] = {0};
-	int norm_cex[10] = {0};
-	int norm_spp[10] = {0};
-	int norm_dpp[10] = {0};
-	int norm_tpp[10] = {0};
-	int norm_nsp[10] = {0};
-	int norm_ndp[10] = {0};
-	
-	double rest;
-
 	TFile *tf1 = new TFile(file.c_str());
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
 	event *e1   = new event();
@@ -2657,84 +2657,28 @@ int viviNomad(int fz, int xs)
 	{
 		tt1->GetEntry(i);
 		
-		for (int k = 0; k < e1->all.size(); k++)
+		for (int k = 0; k < e1->post.size(); k++)
 		{
-			
-			if (e1->all[k].mother_pdg != 0 and e1->all[k].mother_pdg < 2500 and e1->all[k].mother_pdg > -250)
-			{			
-				int which = 10;
+			if (e1->post[k].pdg == -211 && e1->post[k].p().z < 0 && e1->post[k].momentum() > 350 && e1->post[k].momentum() < 800)
+			{
+				int spp = e1->post[k].his_pspp;
+				int dpp = e1->post[k].his_pdpp;
+				int tpp = e1->post[k].his_ptpp;
+				int nspp = e1->post[k].his_nspp;
+				int ndpp = e1->post[k].his_ndpp;
 				
-				for (int z = 0; z < 10; z++)
-				{
-					if (e1->all[k].mother_ek >= z*500.0 and e1->all[k].mother_ek < (z+1)*500.0)
-					{
-						which = z;
-						break;
-					}
-				}
-							
-				if (which == 10) break;
+				//int el = e1->post[k].his_pqel;				
+				//int cx = e1->post[k].his_pcex;
 				
-				if (e1->all[k].pdg == 211 or e1->all[k].pdg == -211 or e1->all[k].pdg == 111)
-				{
-					double angle1 = e1->all[k].p().z/e1->all[k].momentum();
-					double angle2 = (e1->all[k].p()*e1->all[k].mother_momentum)/e1->all[k].momentum()/e1->all[k].mother_momentum.length();
-					
-					switch(e1->all[k].mother_proc)
-					{
-						case 20:
-						{
-							put(angle1, ang, qel[which][0], rest, bins);
-							put(angle2, ang, qel[which][1], rest, bins);
-							norm_qel[which]++;
-							break;
-						}						
-						case 21:
-						{
-							put(angle1, ang, cex[which][0], rest, bins);
-							put(angle2, ang, cex[which][1], rest, bins);
-							norm_cex[which]++;
-							break;
-						}
-						case 22:
-						{
-							put(angle1, ang, spp[which][0], rest, bins);
-							put(angle2, ang, spp[which][1], rest, bins);
-							norm_spp[which]++;
-							break;
-						}
-						case 23:
-						{
-							put(angle1, ang, dpp[which][0], rest, bins);
-							put(angle2, ang, dpp[which][1], rest, bins);		
-							norm_dpp[which]++;				
-							break;
-						}
-						case 24:
-						{
-							put(angle1, ang, tpp[which][0], rest, bins);
-							put(angle2, ang, tpp[which][1], rest, bins);
-							norm_tpp[which]++;
-							break;
-						}
-						case 12:
-						{
-							put(angle1, ang, nsp[which][0], rest, bins);
-							put(angle2, ang, nsp[which][1], rest, bins);
-							norm_nsp[which]++;
-							break;
-						}
-						case 13:
-						{
-							put(angle1, ang, ndp[which][0], rest, bins);
-							put(angle2, ang, ndp[which][1], rest, bins);
-							norm_ndp[which]++;
-							break;
-						}
-						default: break;
-					}
+				if (spp + dpp + tpp + nspp + ndpp == 0)	x[0]++;
+				else if (spp == 1 and dpp + tpp + nspp + ndpp == 0) x[1]++;		
+				else if (dpp == 1 and spp + tpp + nspp + ndpp == 0) x[2]++;		
+				else if (tpp == 1 and spp + dpp + nspp + ndpp == 0) x[3]++;		
+				else if (nspp == 1 and spp + dpp + tpp + ndpp == 0) x[4]++;		
+				else if (ndpp == 1 and spp + dpp + tpp + nspp == 0) x[5]++;		
+				else if (spp + dpp + tpp + nspp + ndpp > 1) x[6]++;
 				
-				}
+				sum++;
 			}
 		}
 
@@ -2747,70 +2691,15 @@ int viviNomad(int fz, int xs)
 	delete tt1;
 	delete tf1;
 	
-	for (int k = 0; k < 10; k++)
-	{
-		stringstream temp;
-		string ek;
-
-		temp << (k+1)*500.0;
-		temp >> ek;
-		
-		string help = "results/nomvivi/angle" + ek + ".txt";
-		ofstream plik(help.c_str());
-
-		if (norm_qel[k] < 500) norm_qel[k] = 0;
-		if (norm_cex[k] < 500) norm_cex[k] = 0;
-		if (norm_spp[k] < 500) norm_spp[k] = 0;
-		if (norm_dpp[k] < 500) norm_dpp[k] = 0;
-		if (norm_tpp[k] < 500) norm_tpp[k] = 0;
-		if (norm_nsp[k] < 500) norm_nsp[k] = 0;
-		if (norm_ndp[k] < 500) norm_ndp[k] = 0;
-		
-		for (int i = 0; i < bins; i++)
-		{		
-			if (norm_qel[k] == 0)
-			{
-				qel[k][0][i] = 0;
-				qel[k][1][i] = 0;
-			}
-			if (norm_cex[k] == 0)
-			{
-				cex[k][0][i] = 0;
-				cex[k][1][i] = 0;
-			}
-			if (norm_spp[k] == 0)
-			{
-				spp[k][0][i] = 0;
-				spp[k][1][i] = 0;
-			}
-			if (norm_dpp[k] == 0)
-			{
-				dpp[k][0][i] = 0;
-				dpp[k][1][i] = 0;
-			}
-			if (norm_tpp[k] == 0)
-			{
-				tpp[k][0][i] = 0;
-				tpp[k][1][i] = 0;
-			}
-			if (norm_nsp[k] == 0)
-			{
-				nsp[k][0][i] = 0;
-				nsp[k][1][i] = 0;
-			}
-			if (norm_ndp[k] == 0)
-			{
-				ndp[k][0][i] = 0;
-				ndp[k][1][i] = 0;
-			}
-			
-			plik << (i + 0.5) * 0.1 - 1.0 << " " << qel[k][0][i]/norm_qel[k] << " " << qel[k][1][i]/norm_qel[k] << " " << cex[k][0][i]/norm_cex[k] << " " << cex[k][1][i]/norm_cex[k] << " " << spp[k][0][i]/norm_spp[k] << " " << spp[k][1][i]/norm_spp[k] << " " << dpp[k][0][i]/norm_dpp[k] << " " << dpp[k][1][i]/norm_dpp[k] << " " << tpp[k][0][i]/norm_tpp[k] << " " << tpp[k][1][i]/norm_tpp[k] << " " << nsp[k][0][i]/norm_nsp[k] << " " << nsp[k][1][i]/norm_nsp[k] << " " << ndp[k][0][i]/norm_ndp[k] << " " << ndp[k][1][i]/norm_ndp[k] << endl;
-		}
-		
-		plik.close();
-	}		
+	ofstream plik("nomad_vivi.txt");
 	
-	return 1;//viviNomad2(fz, xs);
+	for (int i = 0; i < 7; i++)
+	{
+		plik << 100*x[i]/sum << " ";
+	}
+	
+	plik.close();
+	return 1;
 }
 
 int viviNomad4(int fz, int xs)
@@ -2820,13 +2709,14 @@ int viviNomad4(int fz, int xs)
 	
 	string file = find_last(help);
 	
-	const int events = 1000000;
+	const int events = 5000000;
 	const int bins = 10;
 	
 	double mom2[bins];
 	for (int i = 0; i < bins; i++) mom2[i] = (i + 1.0) * 0.1;
 	
 	double distr[bins] = {0};
+	double norma[bins] = {0};
 	double norm = 0;
 	double rest;
 	
@@ -2846,13 +2736,16 @@ int viviNomad4(int fz, int xs)
 
 			for (int k = 0; k < e1->post.size(); k++)
 			{
-				if (e1->post[k].pdg == -211 and e1->post[k].p().z < 0)
+				if (e1->post[k].pdg == -211)
 				{
-					double P = e1->post[k].momentum()/1000.0;
-					double E = e1->post[k].E()/1000.0;
-					P *= P;
-					
-					put(P, mom2, distr, rest, bins, E/P);
+					if (e1->post[k].p().z < 0)
+					{
+						double P = e1->post[k].momentum()/1000.0;
+						double E = e1->post[k].E()/1000.0;
+						P *= P;
+						
+						put(P, mom2, distr, rest, bins);//, E/P);
+					}
 				}
 			}
 		}				
@@ -2866,16 +2759,16 @@ int viviNomad4(int fz, int xs)
 	delete tt1;
 	delete tf1;
 	
-	ofstream plik("results/nomvivi/rozklad.txt");
+	ofstream plik("results/rozklad.txt");
 		
 	for (int i = 0; i < bins; i++)
 	{
 		mom2[i] = (i + 0.5)*0.1;
 		
-		//double P = sqrt(mom2[i]);
-		//double E = sqrt(mom2[i] + 0.0196);
+		double P = sqrt(mom2[i]);
+		double E = sqrt(mom2[i] + 0.0196);
 		
-		plik << mom2[i] << " " << distr[i]/norm << endl;
+		plik << mom2[i] << " " << E/P*distr[i]/norm/0.1 << endl;
 	}
 	
 	plik.close();
@@ -2904,7 +2797,7 @@ int calcNomad (int fz, int xs)
 		
 	get_date();
 	
-	const int events     = 100000;
+	const int events     = 5000000;
 	const int prbins     = 8;
 	const int pibins     = 6;
 	

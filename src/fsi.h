@@ -47,7 +47,7 @@ void get_date();
 void run(string com);
 bool noFile(string filename);
 string find_last (string name);
-double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res, int n);//, int nofpi)
+double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res, int n, double W);//, int nofpi)
 double formation2 (particle &p, params &par, int n);//, int nofpi)
 double formation3 (double v, int n);
 #endif

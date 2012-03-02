@@ -965,7 +965,7 @@ int plotPiTle(int fz, int xs)
 
 void plotFZ ()
 {
-	calcFZ();
+//	calcFZ();
 	
 	ofstream gfile("tmp/gnuplot.gnu");
 	

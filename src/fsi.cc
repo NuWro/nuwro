@@ -6,7 +6,6 @@
 #include <TFile.h>
 #include <TTree.h>
 
-
 bool expr_on[nof_expr];
 bool fz_on[nof_fz];
 bool options_on[nof_opt];
@@ -108,7 +107,7 @@ double ran_exp(double p)
 	return -p*log(1.0 - frandom00());
 }
 
-double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res, int n)//, int nofpi)
+double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res, int n, double W)//, int nofpi)
 {
 	double flength;
 	
@@ -139,7 +138,65 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 		if (strcmp(fz.c_str(), "fz") == 0)
 		{
 			if (qel) flength = p.momentum()/(p.mass2() - p.p4()*p0);
-			else if (res and p0.t != 0)
+			else if (W < 1400)
+			{
+				double e = q.t + p0.t;
+				vec pa;
+				
+				pa.x = q.x + p0.x;
+				pa.y = q.y + p0.y;
+				pa.z = q.z + p0.z;
+				
+				double mass = sqrt(e*e - pa.length()*pa.length());
+				
+				flength = pa.length()*ran_exp(1.0/120.0)/mass;
+			}
+			else if (W > 1800)
+			{
+				vec help;
+				help.x = q.x;
+				help.y = q.y;
+				help.z = q.z;
+								
+				double pt = help.dir()*p.p();
+				pt = sqrt(p.momentum2() - pt*pt);
+				
+				double tau = ran_exp(par.tau)/200.0;
+					
+				flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
+				//if (n > 0) flength *= n;
+			}
+			else
+			{
+				double e = q.t + p0.t;
+				vec pa;
+				
+				pa.x = q.x + p0.x;
+				pa.y = q.y + p0.y;
+				pa.z = q.z + p0.z;
+				
+				double mass = sqrt(e*e - pa.length()*pa.length());
+				
+				double f1 = pa.length()*ran_exp(1.0/120.0)/mass;
+				
+				vec help;
+				help.x = q.x;
+				help.y = q.y;
+				help.z = q.z;
+								
+				double pt = help.dir()*p.p();
+				pt = sqrt(p.momentum2() - pt*pt);
+												
+				double tau = ran_exp(par.tau)/200.0;
+					
+				double f2 = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
+				
+				
+				flength = (W - 1400.0)*f2 + (1800.0 - W)*f1;
+				flength /= 400.0;
+			}
+			
+			/*else if (res and p0.t != 0)
 			{
 				double e = q.t + p0.t;
 				vec pa;
@@ -171,7 +228,7 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 				double param = 1.0;
 				if (p.pdg == 211 or p.pdg == -211 or p.pdg == 111) param = 0.7;
 				flength = 2e-6*p.momentum()/param;
-			}				
+			}		*/		
 		}
 		else if (strcmp(fz.c_str(), "nofz") == 0) flength = 0;
 		else if (strcmp(fz.c_str(), "trans") == 0)
@@ -250,8 +307,8 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 								
 			double pt = help.dir()*p.p();
 			pt = sqrt(p.momentum2() - pt*pt);
-					
-			double tau = ran_exp(8.0)/200.0;
+									
+			double tau = ran_exp(par.tau)/200.0;
 					
 			flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
 		}
@@ -296,15 +353,11 @@ double formation2 (particle &p, params &par, int n) //, vect q, bool qel, vect p
 {
 	par.first_step = true;
 	
-	double tau = ran_exp(8.0)/200.0;
-	double pt = 0;
-			
-	double fl = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
-
 	//double fl = (n-1.0)*200.0*fermi*1e-6*p.momentum()/0.6;
 	//if (fl < 0.5*fermi) fl = 0.5*fermi;
 
 	string fz;
+	double fl = 0;
 	
 	for (int i=0; i<par.formation_zone.size();i++)
 	{
@@ -312,7 +365,12 @@ double formation2 (particle &p, params &par, int n) //, vect q, bool qel, vect p
 		fz += par.formation_zone[i];
 	}
 
-	if (strcmp(fz.c_str(), "nofz") == 0) fl = 0;
+	if (strcmp(fz.c_str(), "nofz") != 0)
+	{
+		double tau = ran_exp(par.tau);
+		fl = fermi*tau*p.momentum()/p.mass();
+		//if (n > 0) fl *= n;
+	}
 						
 	return fl;
 	
