@@ -235,6 +235,12 @@ void particle::set_energy (double E)
     x*=k;
     y*=k;
     z*=k;
+    while(v2()>1)
+    {
+     x*=0.9999999;
+     y*=0.9999999;
+     z*=0.9999999;
+    }
   }
 
 vec particle::p ()

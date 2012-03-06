@@ -190,7 +190,7 @@ void NuWro::makeevent(event* e, params &p)
         return;
       }
     double factor=1.0;
-     if(p.cc_smoothing and e->flag.cc and !e->flag.coh) // coherent makes own thing
+     if(p.cc_smoothing and e->flag.cc and e->flag.qel) //use only in qel
       {double A=nucleuss->n+nucleuss->p;
          if(e->in[0].pdg>0)
            {

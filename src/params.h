@@ -86,7 +86,7 @@
 		PARAM(double, step, 0.2)\
 		PARAM(int, xsec, 0)\
         PARAM(int, sf_method,0)\
-        PARAM(bool, cc_smoothing,1)\
+        PARAM(bool, cc_smoothing,0)\
         PARAM(bool, mixed_order,1)\
         PARAM(double,rmin,0)\
         PARAM(double,rmax,0)
