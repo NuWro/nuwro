@@ -1,7 +1,11 @@
 #ifndef _vec_h_
 #define _vec_h_
 #include <iostream>
+#include <sstream>
 #include <cmath>
+//#include <stdlib.h>
+//#include <string>
+//#include <string.h>
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////
@@ -17,6 +21,7 @@ public:
    inline double &operator[] (int i);              ///< treat vec as double[3]
    inline vec();                                   ///< vec=0 
    inline vec (double x1, double x2, double x3);   ///< vec from coordinates
+   inline vec (string v);                    ///< vec from string ex. "1 2 3"
    inline double length ();                        ///< vector length
    inline double norm () const;                    ///< vector length
    inline double norm2 () const;                   ///< vector length squared
@@ -59,6 +64,21 @@ double & vec::operator[] (int i)
   vec::vec (double x1, double x2, double x3):x (x1), y (x2), z (x3)
   {
   }
+  vec::vec(string v) 
+  {
+	stringstream(v)>>x>>y>>z;
+  }
+/*  vec::vec(const string v) {
+      char * str = strdup(v.c_str());
+      char * pch;
+      pch = strtok (str,", ");
+      x=atof(pch);
+      pch = strtok(NULL,", ");
+      y=atof(pch);
+      pch = strtok(NULL,", ");
+      z=atof(pch);
+}
+*/
   double vec::length ()
   {
     return sqrt (x * x + y * y + z * z);

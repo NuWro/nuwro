@@ -190,7 +190,7 @@ void NuWro::makeevent(event* e, params &p)
         return;
       }
     double factor=1.0;
-     if(p.cc_smoothing and e->flag.cc and e->flag.qel) //use only in qel
+     if(p.cc_smoothing and e->flag.cc and !e->flag.coh) // coherent makes own thing
       {double A=nucleuss->n+nucleuss->p;
          if(e->in[0].pdg>0)
            {
@@ -335,15 +335,17 @@ void NuWro::raport(double i,double n,const char* text,int precision, int k, bool
    {   
 	   prev=proc;
 	   cerr.precision(3);
-	   if(k>=0) 
-	       cerr<<"Dyn["<<k<<"] ";
-	   cerr.precision();
-	   cerr<<showpoint<<proc*100.0/precision<<text<<'\r'<<flush;
 	   if(toFile){
 		progress.seekp(ios_base::beg);
-		progress << proc*100.0/precision;
+		progress << proc*100.0/precision<<" "<<text<<'\r'<<flush;
 		progress.flush();
-	   }
+	   }else{
+                if(k>=0) 
+                        cerr<<"Dyn["<<k<<"] ";
+                cerr<<showpoint<<proc*100.0/precision<<text<<'\r'<<flush;
+           }
+	   cerr.precision();
+                
 //	   printf("%f3.1 %s\r", proc/10.0,text);
    }
 }//end of report
@@ -381,7 +383,7 @@ void NuWro::test_events(params & p)
           hT.insert_value(e->in[0].E(),e->weight*cm2);
          }
        delete e;
-       raport(i+1,p.number_of_test_events," % of test events ready...");
+       raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));
      } // end of nuwro loop
      cout<<endl;
     procesy.report();
@@ -431,7 +433,7 @@ void NuWro::analizer_events(params &p)
        procesy.add (e->dyn, e->weight, bias);
        
        delete e;
-       raport(i+1,p.number_of_test_events," % of analyser events ready...");
+       raport(i+1,p.number_of_test_events," % of analyser events ready...",1000,-1,bool(a.progress));
      } // end of nuwro loop
      
    analyser.partial_raport();
@@ -522,7 +524,7 @@ void NuWro::real_events(params& p)
 			  t1->GetEntry (jj);
 			  tf->Fill ();
 			  delete e;
-			  raport(jj-start+1,nn-start," % events copied...",100,k);
+			  raport(jj-start+1,nn-start," % events copied...",100,k,bool(a.progress));
 			}
 		  cout<<endl;
 	  }
@@ -571,7 +573,7 @@ void NuWro::real_events(params& p)
 		tf->Fill();
 		ile--;
 		u[i]--;	  
- 	   raport(nn-ile,nn," % events copied...",100,i,false);
+ 	   raport(nn-ile,nn," % events copied...",100,i,bool(a.progress));
 	  }  
       delete e;
 	  for (int k = 0; k < procesy.size(); k++)
@@ -625,7 +627,7 @@ void NuWro::kaskada_redo(string input,string output)
 //		delete e;
 		//if(i%1000==0)
 		//cout<<i/1000<<"/"<<nn/1000<<"\r"<<endl;
-		raport(i+1,nn," % events processed...",100,e->dyn,false);
+		raport(i+1,nn," % events processed...",100,e->dyn,bool(a.progress));
 	}
 	cout<<endl;
 	fi->Close ();

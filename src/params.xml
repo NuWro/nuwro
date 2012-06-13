@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params> 
+  <param name="random_seed" type="text" ctype="int" default="0">
+    <description>Control the random seed persistence
+    0 - use time(NULL) as a seed for random number generator
+    1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
+    other values - use given number as the seed for the generator</description>
+  </param>
+  <param name="number_of_events" type="text" ctype="int" default="100000">
+    <description>The number of equally weighted events to be saved</description>
+  </param>
+  <param name="number_of_test_events" type="text" ctype="int" default="1000000">
+    <description>The number of events used to calculate the cross sections</description>
+  </param>
+  <param name="user_events" type="text" ctype="int" default="0">
+    <description></description>
+  </param>
+  
+  <param name="beam_type" type="radio" ctype="int" default="0">
+    <description></description>
+    <conditions>
+        <condition value="1" description="1">
+          <param name="beam_energy" type="text" ctype="line" default="1000">
+            <description></description>
+          </param>
+          <param name="beam_particle" type="text" ctype="int" default="14">
+            <description></description>
+          </param>
+          <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
+            <description></description>
+          </param>
+        </condition>
+        <condition value="2" description="2">
+          <param name="beam_content" type="text" ctype="line" default="">
+            <description></description>
+          </param>
+          <paramclone name="beam_direction" />
+        </condition>
+        <condition value="3" description="3">
+          <param name="beam_folder" type="text" ctype="string" default="flux">
+            <description></description>
+          </param>
+          <param name="beam_file_first" type="text" ctype="int" default="1">
+            <description></description>
+          </param>
+          <param name="beam_file_limit" type="text" ctype="int" default="0">
+            <description></description>
+          </param>
+          <param name="beam_weighted" type="checkbox" ctype="bool" default="0">
+            <description></description>
+          </param>
+          <param name="beam_file" type="text" ctype="string" default="beam/ND280hist.txt">
+            <description></description>
+          </param>
+          <param name="beam_offset" type="text" ctype="vec" default="0 0 0">
+            <description></description>
+          </param>
+          <param name="beam_placement" type="text" ctype="int" default="0">
+            <description></description>
+          </param>
+        </condition>
+        <condition value="file" description="select from file" exclude="1">
+            <param name="beam" type="select" default="" path="beam/">
+                <description></description>
+            </param>
+        </condition>
+    </conditions>
+  </param>
+  <param name="beam_test_only" type="hidden" ctype="int" default="0">
+    <description></description>
+  </param>
+  
+  <param name="target_type" type="radio" ctype="int" default="0">
+    <description></description>
+    <conditions>
+        <condition value="0" description="0">
+          <param name="nucleus_p" type="text" ctype="int" default="0">
+            <description></description>
+          </param>
+          <param name="nucleus_n" type="text" ctype="int" default="0">
+            <description></description>
+          </param>
+          <param name="nucleus_density" type="text" ctype="string" default="0">
+              <description></description>
+          </param>
+          <param name="nucleus_E_b" type="text" ctype="double" default="0">
+              <description></description>
+          </param>
+          <param name="nucleus_kf" type="text" ctype="double" default="0">
+              <description></description>
+          </param>
+          <param name="nucleus_target" type="text" ctype="int" default="0">
+              <description></description>
+          </param>
+          <param name="nucleus_model" type="text" ctype="int" default="0">
+              <description></description>
+          </param>
+        </condition>
+        <condition value="1" description="1">
+          <param name="target_content" type="text" ctype="line" default="">
+              <description></description>
+          </param>
+        </condition>
+        <condition value="2" description="2">
+          <param name="geo_file" type="text" ctype="string" default="">
+              <description></description>
+          </param>
+          <param name="geo_name" type="text" ctype="string" default="ND280Geometry">
+              <description></description>
+          </param>
+          <param name="geo_volume" type="text" ctype="string" default="">
+              <description></description>
+          </param>
+          <param name="geo_o" type="text" ctype="vec" default="0 0 0">
+              <description></description>
+          </param>
+          <param name="geo_d" type="text" ctype="vec" default="0 0 0">
+              <description></description>
+          </param>
+        </condition>
+        <condition value="file" description="select from file" exclude="1">
+            <param name="target" type="select" default="" path="target/">
+                <description></description>
+            </param>
+        </condition>
+    </conditions>
+  </param>
+  
+
+<!--  <param name="beam" type="select" default="ND280.txt">
+    <description>It is convenient to include one of the predefined beam specifications</description>
+    <options>
+      <option key="beam/ANL.txt">beam/ANL.txt</option>
+      <option key="beam/ND280.txt">beam/ND280.txt</option>
+      <option key="beam/nomad.txt">beam/nomad.txt</option>
+      <option key="beam/newMB.txt">beam/newMB.txt</option>
+    </options>
+  </param>
+  <param name="target" type="select" default="proton.txt">
+    <description>Target specification</description>
+    <options>
+      <option key="target/proton.txt">target/proton.txt</option>
+      <option key="target/C.txt">target/C.txt</option>
+      <option key="target/ND280_975.txt">target/ND280_975.txt</option>
+      <option key="target/neutron.txt">target/neutron.txt</option>
+      <option key="target/CH2.txt">target/CH2.txt</option>
+    </options>
+  </param>
+-->
+  <param name="dyn_qel_cc" type="checkbox" ctype="bool" default="1">
+    <description>Quasi elastic charged current</description>
+  </param>
+  <param name="dyn_qel_nc" type="checkbox" ctype="bool" default="1">
+    <description>Quasi elastic neutral current</description>
+  </param>
+  <param name="dyn_res_cc" type="checkbox" ctype="bool" default="1">
+    <description>Resonant charged current</description>
+  </param>
+  <param name="dyn_res_nc" type="checkbox" ctype="bool" default="1">
+    <description>Resonant neutral current</description>
+  </param>
+  <param name="dyn_dis_cc" type="checkbox" ctype="bool" default="1">
+    <description>Deep inelastic charged current</description>
+  </param>
+  <param name="dyn_dis_nc" type="checkbox" ctype="bool" default="1">
+    <description>Deep inelastic neutral current</description>
+  </param>
+  <param name="dyn_coh_cc" type="checkbox" ctype="bool" default="1">
+    <description>Coherent charged current</description>
+  </param>
+  <param name="dyn_coh_nc" type="checkbox" ctype="bool" default="1">
+    <description>Coherent neutral current</description>
+  </param>
+  <param name="qel_vector_ff_set" type="select" ctype="int" default="2">
+    <description>electromagnetic Form factors</description>
+    <options>
+      <option key="1"><![CDATA[dipole, dipole electric form factor G_E^V]]></option>
+      <option key="2"><![CDATA[BBBA05, hep-ex/0602017 BBBA05 for Q2<18 GeV]]></option>
+      <option key="3"><![CDATA[BBA03, hep-ex/0308005 BBA-2003 for Q2<6 GeV]]></option>
+      <option key="4"><![CDATA[JLab, PHYSICAL REVIEW C, VOLUME 65, 051001(R)]]></option>
+      <option key="5"><![CDATA[Kgraczyk]]></option>
+      <option key="6"><![CDATA[(1990:) parametryzacja JS z old qelcc]]></option>
+    </options>
+  </param>
+  <param name="qel_axial_ff_set" type="select" ctype="int" default="1">
+    <description></description>
+    <options>
+      <option key="1"><![CDATA[dipole]]></option>
+      <option key="2"><![CDATA[2-fold parabolic modification of axial FF]]></option>
+      <option key="3"><![CDATA[3-fold parabolic modification of axial FF]]></option>
+      <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
+    </options>
+  </param>
+  <param name="qel_strange" type="text" ctype="int" default="0">
+    <description>use the strangenes in the axial ff</description>
+  </param>
+  <param name="qel_strangeEM" type="text" ctype="int" default="0">
+    <description>dont use the strangenes in the vector ff</description>
+  </param>
+  <param name="delta_s" type="text" ctype="double" default="-0.15">
+    <description></description>
+  </param>
+  <param name="qel_cc_vector_mass" type="text" ctype="double" default="840">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="qel_cc_axial_mass" type="text" ctype="double" default="1030">
+    <description><![CDATA[[MeV] axial mass]]></description>
+  </param>
+  <param name="qel_nc_axial_mass" type="text" ctype="double" default="1030">
+    <description><![CDATA[[MeV] axial mass]]></description>
+  </param>
+  <param name="qel_s_axial_mass" type="text" ctype="double" default="1030">
+    <description><![CDATA[[MeV] axial mass used in the strange dipole ff]]></description>
+  </param>
+  <param name="flux_correction" type="checkbox" ctype="bool" default="1">
+    <description>no flux correction</description>
+  </param>
+  <param name="sf_method" type="select" ctype="int" default="0">
+    <description><![CDATA[For certain nuclei (C12, O16, Ar40, Ca40, Fe56) it is possible to use the spectral function model instead of the Fermi gas model in the quasi ellastic events. For other nuclei the parameter is ignored.]]></description>
+    <options>
+      <option key="0"><![CDATA[don't use spectral function]]></option>
+      <option key="1"><![CDATA[use grid spectral function: (C12, O16, Ar40, Fe56)]]></option>
+      <option key="2"><![CDATA[use factorized spectral function: (O16, Ar40, Ca40)]]></option>
+    </options>
+  </param>
+  <param name="cc_smoothing" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[A little performace gain in the QEL channel can be obtained by using: cc_smoothing=1]]></description>
+  </param>
+  <param name="delta_FF_set" type="select" ctype="int" default="1">
+    <description><![CDATA[Dipole delta form factors]]></description>
+    <options>
+      <option key="1"><![CDATA[dipole with 2 parameters: pion_axial_mass and pion_C5A; Graczyk&JS preferred choices are: MA=0.94 and C5A=1.19]]></option>
+      <option key="2"><![CDATA[Paschos Lalakulich 2.12 MA=1.05 BNL fit]]></option>
+      <option key="3"><![CDATA[Paschos Lalakulich 2.12 MA=0.84 ANL fit]]></option>
+      <option key="4"><![CDATA[Paschos Lalakulich page 4, bottom right]]></option>
+      <option key="5"><![CDATA[Paschos Lalakulich page 5, top left]]></option>
+      <option key="6"><![CDATA[Eq.(13), L. Alvarez-Ruso, S. K. Singh, M. J. Vincente Vascas, Phys. Rev. C 57, (1998) 2693]]></option>
+      <option key="7"><![CDATA[taken from Bariquila-Cano.et al (chiral quark model)]]></option>
+    </options>
+  </param>
+  <param name="pion_axial_mass" type="text" ctype="double" default="0.94">
+    <description><![CDATA[in GeV units]]></description>
+  </param>
+  <param name="pion_C5A" type="text" ctype="double" default="1.19">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="spp_precision" type="text" ctype="int" default="0">
+    <description><![CDATA[recommended value is  500, this controls the precision in RES-DIS boundary region]]></description>
+  </param>
+  <param name="res_dis_cut" type="text" ctype="double" default="0">
+    <description><![CDATA[res dis boundary in MeV, should be 1600]]></description>
+  </param>
+  <param name="coh_mass_correction" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[Rein Sehgal correction to CC coherent single pion production]]></description>
+  </param>
+  <param name="coh_new" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[]]></description>
+  </param>
+<!--  
+  <param name="nucleus_model" type="select" ctype="int" default="0">
+    <description><![CDATA[Models for the description of nucleus in the cascade]]></description>
+    <options>
+      <option key="1"><![CDATA["flatnucleus" i.e. nucleus is a ball]]></option>
+      <option key="2"><![CDATA["anynucleus" i.e. realistic density profile]]></option>
+    </options>
+  </param>
+  
+  <param name="nucleus_density" type="text" default="1">
+    <description><![CDATA[options below are kept only for historical reasons]]></description>
+  </param>
+  <param name="nucleus_E_b" type="text" default="34">
+    <description><![CDATA[[MeV] binding energy]]></description>
+  </param>
+  <param name="nucleus_kf" type="text" default="220">
+    <description><![CDATA[[MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking]]></description>
+  </param>
+  -->
+  <!--
+  <param name="nucleus_target" type="select" ctype="int" default="0">
+    <description><![CDATA[Models for the description of nucleus as a target]]></description>
+    <options>
+      <option key="0"><![CDATA[free target]]></option>
+      <option key="1"><![CDATA[Fermi gas]]></option>
+      <option key="2"><![CDATA[local Fermi gas]]></option>
+      <option key="3"><![CDATA[Bodek-Ritchie]]></option>
+      <option key="4"><![CDATA["effective" spectral function (carbon or oxygen)]]></option>
+      <option key="5"><![CDATA[deuterium]]></option>
+      <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
+    </options>
+  </param>
+  -->
+  <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[use (1) or not (0) the cascade]]></description>
+  </param>
+  <param name="kaskada_newangle" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="kaskada_redo" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[]]></description>
+  </param>
+<!--  
+  <param name="kaskada_debug" type="bool" ctype="bool" default="0">
+    <description><![CDATA[print debug info for cascade]]></description>
+  </param>
+  -->
+  <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
+  </param>
+  <param name="formation_zone" type="text" ctype="string" default="nofz">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="tau" type="text" ctype="double" default="0">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="first_step" type="text" ctype="bool" default="1">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="step" type="text" ctype="double" default="0.2">
+    <description><![CDATA[length of one step in cascade]]></description>
+  </param>
+  <param name="xsec" type="text" ctype="int" default="0" >
+    <description><![CDATA[model of cross sections in cascade]]></description>
+    <options>
+      <option key="0"><![CDATA[metropolis]]></option>
+      <option key="1"><![CDATA[oset]]></option>
+    </options>
+  </param>
+  <param name="mixed_order" type="checkbox" ctype="bool" default="1">
+    <description></description>
+  </param>
+  <param name="rmin" type="text" ctype="double" default="0">
+    <description></description>
+  </param>
+  <param name="rmax" type="text" ctype="double" default="0">
+    <description></description>
+  </param>
+  
+</params>
+
+<!--
+nazwa parametru
+typ parametru (int,double, select, bool- checkbox, radio)
+wartosc domyslna
+opis parametru
+- opcje parametru (jesli select)
+  -->

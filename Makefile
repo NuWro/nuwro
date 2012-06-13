@@ -16,7 +16,7 @@ CC 	      = g++
 
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
-                formParam test_beam_rf test_makehist test_nucleus test_beam \
+                dumpParams test_beam_rf test_makehist test_nucleus test_beam \
                 fsi niwg ladek_topologies test \
                 )
 
@@ -98,7 +98,7 @@ $(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generat
 
 #$(BIN)/plots:           src/event1.o src/event1dict.o src/pdg.o src/particle.o src/generatormt.o src/dirs.o
 
-$(BIN)/formParam:      src/formParam.o src/dirs.o
+$(BIN)/dumpParams:      src/dumpParams.o src/dirs.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/test_nucleus:   src/generatormt.o src/anynucleus.o src/test_nucleus.o src/pdg.o src/dirs.o
@@ -123,10 +123,19 @@ clean:;         @rm -f          *.o *.d src/event1dict.* core src/dis/*.o src/di
 distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
 		src/gui/*.o src/gui/*.d src/gui/moc_*  *.root *.root.txt
 
-src/event1dict.h src/event1dict.cc:    src/event1.h src/event1LinkDef.h src/event1.o
+
+src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
 		@echo "Generating dictionary ..."
 		cd src;$(ROOTSYS)/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
 		
+
+src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
+		@echo "Building params_all.h"
+		@echo "#define PARAMS_ALL()\\">src/params_all.h
+#		@sed '/<!--.*-->/d;/<!--/,/-->/d;s/.*<param .*name="\([^"]*\)".*ctype="\([^"]*\)".*default="\([^"]*\)".*/PARAM(\2,\1,\3)\\/;tx;d;:x s/\(PARAM(\(vec\|line\|string\),[^,]*,\)\(.*\))\\/\1"\3")\\/'  src/params.xml >> src/params_all.h 
+		@sed -f src/params.sed src/params.xml >> src/params_all.h 
+		@echo "" >> src/params_all.h
+
 
 
 %.d: %.cc
