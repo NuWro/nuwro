@@ -1,6 +1,6 @@
 #ifndef _util_h_
 #define _util_h_ 
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <class F, class Y>
 class Fix2nd
 { F _f;
@@ -526,5 +526,5 @@ void plot(F f, double x1, double x2, const char * filename , int npoints=100, do
     } 
 }
 
-
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 #endif
