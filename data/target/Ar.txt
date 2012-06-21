@@ -1,14 +1,11 @@
+
+target_type=0
+
 # number of protons
-nucleus_p	    = 6
+nucleus_p	    = 18
 
 # number of neutrons
-nucleus_n           = 6
-
-# options below are kept only for historical reasons
-# proc_dis
-# density profile of the target 
-# 1 - means constant density
-# to be cancelled only kf and Eb survive
+nucleus_n           = 22
 
 # options below are kept only for historical reasons
 # nucleus_density     = 1
