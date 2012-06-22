@@ -61,6 +61,8 @@ resevent2 (params & p, event & e, bool cc)
   double m2 = m * m;
 
   vect nu0 = e.in[0];
+  
+  e.weight=0;  // in case of error it is not changed
 
 
 
@@ -183,6 +185,8 @@ double Meff2=Meff*Meff;
       double cth = (E2 + kprim * kprim - q * q) / 2 / E / kprim;//final lepton
 
       vec kkprim;		//the unit vector in the direction of scattered lepton
+      if(abs(cth)>1) 
+		return; // e.weight=0 already
       kinfinder (numom, kkprim, cth);	//produces kkprim 
 
       kkprim = kprim * kkprim;	//multiplied by its length
