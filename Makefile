@@ -17,7 +17,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies test \
+                fsi niwg ladek_topologies test mb_nce\
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -83,6 +83,10 @@ $(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o
 
 $(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o\
        src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/dirs.o src/fsi_main.o
+		$(LINK.cc) $^ -o $@
+
+$(BIN)/mb_nce:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o\
+       src/mb_nce.o src/pitab.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o \

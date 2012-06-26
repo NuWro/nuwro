@@ -4,6 +4,7 @@
 using namespace std;
 
 double crosssection (string filename);
+double crosssection (string filename, int dyn);
 void crosssection (string filename, double *xsec, int nc);
 void calclog(string command);
 void zero (double *tab, int bins);
@@ -55,4 +56,19 @@ int viviNomad_new(int fz, int xs);
 int viviNomad4(int fz, int xs);
 void ptcalc();
 void ang_calc();
+void kendall_calc(string pdg, string p);
+void make_dist(string filename, double res[20][20]);
+void xsec_calc();
+void xsec_calc2();
+void xsec_calc3();
+void xsec_calc4();
+void towork_calc();
+void ccqe_calc(string filename, double tab[][20], double *q2);
+void res_calc(string filename, double *mom, double tab[][20]);
+void new_distr();
+void calc_new_distr(string filename, double tab[][20]);
+void prepare_distr(double tab[][20], string out);
+void ccpip_js_calc();
+void ccpip_js_calcH(string filename, double *res);
+void ccpip_js_calcC(string filename, double *res);
 #endif

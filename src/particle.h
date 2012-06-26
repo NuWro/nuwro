@@ -41,6 +41,7 @@ public:
   int his_pspp;
   int his_pdpp;
   int his_ptpp;
+  double his_fermi;
   
 public:
 inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;}
@@ -112,6 +113,7 @@ inline void set_mother (particle &p1);
 inline void set_new ();
 inline double Ek_in_frame(vec v);	///<
 inline double fozo();
+inline double set_fermi(double V);
 
 friend ostream & operator<<(ostream & out,particle p)
 {
@@ -373,6 +375,10 @@ double particle::fozo()
 	return fz;
 }
 
+double particle::set_fermi(double V)
+{
+	his_fermi = V;
+}
 double particle::Ek_in_frame (vec v)
 {
   vect plab = p4 ();

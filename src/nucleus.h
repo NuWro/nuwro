@@ -67,6 +67,7 @@ public:
   virtual int  add_charge(int);                    /// convert neutron to proton or back
   virtual double radius()=0;			           ///< end of nucleus
   virtual double V(){return _V;};	               ///< bounding energy
+  virtual double calculate_V(particle &p);                   ///< calculate potential
   virtual double frac_proton ();                   ///< percentage of protons 
   virtual double frac_neutron ();                  ///< percentage of neutrons
   virtual double density (double r)=0;             ///< nucleon density at dist r from center
@@ -344,5 +345,14 @@ inline void nucleus::insert_nucleon(particle P)
     }
     p4=p4+P.p4();
   }
+
+///////////////////////////////////////////////////////////////////////////////
+/// calculate potential
+///////////////////////////////////////////////////////////////////////////////
+inline double nucleus::calculate_V(particle &p)
+{
+	double lkf = localkf(p);
+	return (sqrt(p.mass2() + lkf*lkf) - p.mass());// + 7*MeV);// + 5*MeV;
+}
 
 #endif

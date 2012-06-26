@@ -66,6 +66,7 @@ PARAM(double,tau,0)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
 PARAM(int,xsec,0)\
+PARAM(double,kaskada_w,7)\
 PARAM(bool,mixed_order,1)\
 PARAM(double,rmin,0)\
 PARAM(double,rmax,0)\

@@ -42,6 +42,70 @@ double crosssection (string filename)
 
 int main()
 {
+	ofstream file("ccqe_test2_numu_sf.txt");
+	//ofstream file("ccqe_test2_numu_fg.txt");
+	
+	file << "#muon neutrino energy = 550 - 600, target = carbon, cos(theta) = 0.9 - 1.0, Spectral Function" << endl << endl;
+	//file << "#muon neutrino energy = 550 - 600, target = carbon, cos(theta) = 0.9 - 1.0, Fermi Gas (binding energy = 27)" << endl << endl;
+	
+	TFile *tf1 = new TFile("ccqe/E550_600_6_6_14_SF.root");
+	//TFile *tf1 = new TFile("ccqe/E550_600_6_6_14_FG.root");
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	int count = 0;
+	
+	for (int i = 0; i < 500000; i++)
+	{
+		tt1->GetEntry(i);
+		
+		double mom = e1->out[0].momentum();
+		double cos = e1->out[0].p().z/mom;
+				
+		if (cos >= 0.9)
+		{
+			//if ((mom >= 425 and mom < 475) or (mom >= 575 and mom < 625))
+			if (mom >= 575 and mom < 625)
+			{
+				count++;
+								
+				file << "LEPTON MOMENTUM: " << mom << endl;
+				file << "COSINUS(THETA): " << cos << endl << endl;
+				
+				particle p1 = e1->in[0];
+				file << "Neutrino: (" << p1.E() << ", " << p1.p().x << ", " << p1.p().y << ", " << p1.p().z << ") " << endl;
+				particle p2 = e1->in[1];
+				file << "Initial nucleon: (" << p2.E() << ", " << p2.p().x << ", " << p2.p().y << ", " << p2.p().z << ") " << endl;
+				particle p3 = e1->out[0];
+				file << "Lepton: (" << p3.E() << ", " << p3.p().x << ", " << p3.p().y << ", " << p3.p().z << ") " << endl;
+				particle p4 = e1->out[1];
+				file << "Final nucleon: (" << p4.E() << ", " << p4.p().x << ", " << p4.p().y << ", " << p4.p().z << ") " << endl << endl;
+
+				file << " final energy - inital energy = " << p3.E() + p4.E() - p2.E() - p1.E() + 27 << endl;
+				
+				file << " final momentum - inital momentum = (" << p4.p().x + p3.p().x - p2.p().x - p1.p().x << ", " << p4.p().y + p3.p().y - p2.p().y - p1.p().y << ", " << p4.p().z + p3.p().z - p2.p().z - p1.p().z << ")" << endl;
+				
+				file << endl << "------------------------------------------------------------" << endl << endl;
+			}
+		}
+		
+		if (count == 9) break;
+			
+		cout << 100*i/500000 << "%\r" << flush;
+	}
+	
+	delete e1;
+	delete tt1;
+	delete tf1;
+	
+	return 0;
+}
+
+/*
+int main()
+{
 	double oxygen[36];
 	double carbon[36];
 	

@@ -569,7 +569,7 @@ bool PiData::pion_ce (particle& p1, particle& p2, int &n, particle p[])
  	   k2=ce_;
 	   
 	   int canal=((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
-	   //if(canal==0 || canal==5) return 0;
+	   if(canal==0 || canal==5) return 0;
 		
 	   static const channel cnls[6][2]=
 	   {{1,"ee"},//-n
@@ -749,7 +749,7 @@ bool Interaction::particle_scattering (particle & p1, particle &p2, double frac_
 	t.spectator=NULL;
     p2 = t.get_nucleon (p1.r);
 
-	p2.set_momentum(vec(0,0,0));
+	//p2.set_momentum(vec(0,0,0));
 
     if(p2.v().length()>=1) 
          cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<p2<<endl;

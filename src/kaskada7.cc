@@ -273,6 +273,9 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 		  
 		  //p.krok(t);
 		  p.krok(fz);
+		  if (nucleon (p.pdg))
+			p.set_fermi(e.in[1].Ek());
+		  		  
 		  parts.push (p); 
 	  }
       else
@@ -324,6 +327,18 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 		 }*/
 	  
       double r = p1.r.length ();
+      
+      if (nucleon (p1.pdg))
+      {
+		  double V = nucl.calculate_V(p1) + par.kaskada_w;
+		  
+		  if (p1.Ek() < V)
+		  {
+			p1.endproc=jailed;				
+			nucl.insert_nucleon (p1);
+			continue;
+		}
+	  }
 
       double dens = nucl.density (r);
       assert(dens>=0);
@@ -350,10 +365,16 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
       }
       if (stotal==0 || nucl.radius()<=p1.r.length ()) // leaving nucleus
 		{
-		  if (nucleon (p1.pdg))	// reduce momentum when leaving nucleus
-			p1.set_momentum (p1.p () * (1 - nucl.V() / p1.E ()));
-		  p1.endproc=escape;
-		  output.push_back (p1);
+		  if (nucleon (p1.pdg))	// reduce momentum when leaving nucleus or jailed the nucleon
+		  {	
+			  double V = p1.his_fermi + par.kaskada_w;
+			  		
+				p1.set_momentum (p1.p () /p1.momentum() * sqrt(p1.momentum()*p1.momentum() - 2.0*p1.E()*V  + V*V)); //p1.set_momentum (p1.p () * (1 - nucl.V() / p1.E ())); OLD!!!
+			}
+			
+			p1.endproc=escape;
+            output.push_back (p1);
+				
 		  if(writeall) 
 		     all.push_back (p1);
 		}
@@ -518,15 +539,24 @@ kaskadaevent (params & par, event&e, vector<particle> &input, vector<particle>& 
 			  //}
 
 		      js = js + p[i];
-		      if (nucleon (p[i].pdg) and p[i].Ek () < nucl.V())	// to low energy to leave nucleus
+		      if (nucleon (p[i].pdg))
+		      {
+				  if (nucleon (p1.pdg))
+					p[i].set_fermi((p2.Ek()+p1.his_fermi)/2.0);
+				  else
+					p[i].set_fermi(p2.Ek());
+				}
+/*				  if(p[i].Ek () < nucl.calculate_V(p[i]) + par.kaskada_w)	// to low energy to leave nucleus (old, now shouldn't get here)
 				{
 					p[i].endproc=jailed;
 					if(writeall) 
 						all.push_back(p[i]);
 					nucl.insert_nucleon (p[i]);
 				}
-		      else
+			}
+		      else*/
 			    //output.push_back (p[i]);	// only to test
+				
 				parts.push (p[i]);	// queue for further processing
 		    }
 		  procinfo(p1,p2,n,p);

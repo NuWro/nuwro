@@ -5,12 +5,14 @@
 const string events5m = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 5000000' ";
 const string events1m = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 1000000' ";
 const string events100k = "-p 'number_of_test_events = 1000000' -p 'number_of_events = 100000' ";
+const string events500k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 500000' ";
 const string events10k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 10000' ";
 const string events0k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 10' ";
 const string events25k = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 25000' ";
 const string evtest    = "-p 'number_of_test_events = 5000' -p 'number_of_events = 25000' ";
 
 const string NCdyn      = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 1' ";
+const string NCcoh      = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 1' ";
 const string NCwocoh    = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string CCdyn      = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 1' -p 'dyn_coh_nc = 0' ";
 const string ALLdyn     = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 1' -p 'dyn_coh_nc = 1' ";
@@ -19,8 +21,10 @@ const string QEL        = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_c
 const string onlydis    = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string wocoh      = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string resdis     = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
+const string CCresdis   = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string onlyres    = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string NCQEL      = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
+const string CCQEL      = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 
 const string numu       = "-p 'beam_particle = 14' ";
 const string antinumu   = "-p 'beam_particle = -14' ";
@@ -35,6 +39,7 @@ const string surface    = "-p 'beam_placement = 2' ";
 const string K2Kbeam    = "-p 'beam_type = 0' -p 'beam_energy = 0 4000 0.102189781022 0.953771289538 1.95133819951 2.70559610706 3.92214111922 5.6496350365 7.54744525547 9.22627737226 10.5158150852 11.4647201946 12.1946472019 12.3163017032 11.9270072993 11.1727493917 10.102189781 8.83698296837 7.49878345499 6.20924574209 5.0900243309 4.04379562044 3.21654501217 2.51094890511 1.95133819951 1.48905109489 1.12408759124 0.856447688564 0.661800486618 0.491484184915 0.394160583942 0.296836982968 0.199513381995 0.150851581509 0.126520681265 0.102189781022 0.102189781022 0.102189781022 0.0778588807786 0.0778588807786 0.0778588807786 0.029197080292' ";
 const string MBbeam     = "-p 'beam_type = 0' -p 'beam_energy = 0 7200 2.272e-12 8.566e-12 1.112e-11 1.335e-11 1.658e-11 1.82e-11 1.946e-11 2.045e-11 2.161e-11 2.241e-11 2.279e-11 2.292e-11 2.275e-11 2.253e-11 2.214e-11 2.156e-11 2.078e-11 1.992e-11 1.894e-11 1.789e-11 1.677e-11 1.558e-11 1.439e-11 1.318e-11 1.193e-11 1.069e-11 9.503e-12 8.356e-12 7.278e-12 6.292e-12 5.396e-12 4.601e-12 3.902e-12 3.285e-12 2.76e-12 2.312e-12 1.932e-12 1.616e-12 1.355e-12 1.138e-12 9.589e-13 8.15e-13 6.928e-13 5.937e-13 5.147e-13 4.478e-13 3.935e-13 3.5e-13 3.15e-13 2.867e-13 2.615e-13 2.409e-13 2.273e-13 2.11e-13 1.995e-13 1.92e-13 1.815e-13 1.726e-13 1.665e-13 1.601e-13 1.554e-13 1.493e-13 1.442e-13 1.412e-13 1.363e-13 1.323e-13 1.265e-13 1.217e-13 1.183e-13 1.14e-13 1.102e-13 1.06e-13 1.014e-13 9.7e-14 9.34e-14 9.001e-14 8.641e-14 8.19e-14 7.867e-14 7.464e-14 7.146e-14 6.812e-14 6.499e-14 6.185e-14 5.858e-14 5.614e-14 5.32e-14 5.016e-14 4.765e-14 4.561e-14 4.281e-14 4.087e-14 3.841e-14 3.632e-14 3.432e-14 3.263e-14 3.016e-14 2.857e-14 2.689e-14 2.529e-14 2.372e-14 2.227e-14 2.103e-14 1.957e-14 1.834e-14 1.73e-14 1.615e-14 1.513e-14 1.406e-14 1.303e-14 1.214e-14 1.129e-14 1.047e-14 9.569e-15 8.87e-15 8.148e-15 7.429e-15 6.765e-15 6.097e-15 5.492e-15 4.977e-15 4.445e-15 3.967e-15 3.492e-15 3.037e-15 2.595e-15 2.225e-15 1.854e-15 1.537e-15 1.22e-15 9.78e-16 7.842e-16 6.198e-16 4.786e-16 3.334e-16 1.971e-16 9.391e-17 2.738e-17 6.065e-18 4.135e-18 1.933e-18 9.888e-19 4.494e-20 0' ";
 const string MBbeamanti = "-p 'beam_type = 0' -p 'beam_energy = 0 7600 2.157e-12 7.84e-12 9.731e-12 1.141e-11 1.319e-11 1.438e-11 1.477e-11 1.479e-11 1.5e-11 1.485e-11 1.447e-11 1.406e-11 1.345e-11 1.287e-11 1.221e-11 1.152e-11 1.075e-11 9.98e-12 9.177e-12 8.411e-12 7.658e-12 6.907e-12 6.18e-12 5.505e-12 4.877e-12 4.269e-12 3.686e-12 3.151e-12 2.678e-12 2.262e-12 1.898e-12 1.58e-12 1.311e-12 1.083e-12 8.917e-13 7.285e-13 5.941e-13 4.834e-13 3.937e-13 3.18e-13 2.577e-13 2.066e-13 1.665e-13 1.346e-13 1.081e-13 8.837e-14 7.136e-14 5.707e-14 4.62e-14 3.778e-14 3.028e-14 2.412e-14 1.977e-14 1.638e-14 1.323e-14 1.038e-14 8.707e-15 6.981e-15 6.078e-15 5.111e-15 3.919e-15 3.328e-15 2.861e-15 2.382e-15 2.295e-15 2.269e-15 1.828e-15 1.613e-15 1.537e-15 1.375e-15 1.247e-15 1.044e-15 9.532e-16 8.148e-16 7.485e-16 7.837e-16 6.202e-16 6.614e-16 5.495e-16 5.132e-16 4.9e-16 4.984e-16 4.479e-16 2.406e-16 2.196e-16 1.973e-16 1.762e-16 1.339e-16 1.256e-16 9.669e-17 7.546e-17 5.98e-17 6.291e-17 4.74e-17 3.581e-17 3.289e-17 2.808e-17 2.706e-17 2.439e-17 1.477e-17 1.24e-17 1.035e-17 9.001e-18 6.87e-18 8.575e-18 4.392e-18 4.736e-18 3.038e-18 2.413e-18 2.072e-18 2.061e-18 1.113e-18 9.256e-19 6.533e-19 8.079e-19 6.662e-19 3.475e-19 3.808e-19 3.495e-19 2.521e-19 1.967e-19 1.264e-19 6.892e-20 7.387e-20 3.467e-20 1.026e-19 1.603e-20 1.62e-20 1.13e-20 1.395e-20 2.114e-21 3.943e-21 1.888e-21 6.712e-21 5.944e-21 0 1.436e-21 0 0 0 0 0 0 1.436e-21 0 0 0 0 0 0 0 0' ";
+const string E1         = "-p 'beam_type = 0' -p 'beam_energy = 1000' ";
 const string PNSbeam    = "-p 'beam_type = 0' -p 'beam_energy = 150 700' ";
 const string PrThe      = "-p 'beam_type = 0' -p 'beam_energy = 1000 5000' ";
 const string Pr2        = "-p 'beam_type = 0' -p 'beam_energy = 1000 2300' ";
@@ -100,4 +105,11 @@ void hayato_sim4();
 void dens_test_sim();
 void ptsim();
 void angle_test();
+void kendall_sim(string pdg, string p, string n, string pf, string eb);
+void xsec_sim();
+void xsec_sim2();
+void xsec_sim3();
+void xsec_sim4();
+void towork_sim();
+void ccpip_js_sim();
 #endif

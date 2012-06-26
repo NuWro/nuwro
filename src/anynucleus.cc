@@ -34,11 +34,11 @@ anynucleus::anynucleus(params &par):
 		nr=n;	 
 		double A = n+p;			
 		double Ap = pow(A, 1.0 / 3);
-		_V = sqrt(mass_proton*mass_proton + kf*kf) - mass_proton + 7*MeV;
+		_V = sqrt(mass_proton*mass_proton + kf*kf) - mass_proton;// + 7*MeV;// + 5*MeV;
 		//potencjal, wartosc do ustalenia
 		_r=calculate_radius();
 	}
-
+	
 ///////////////////////////////////////////////////////////////////////////////
 /// calculate radius  
 ///////////////////////////////////////////////////////////////////////////////

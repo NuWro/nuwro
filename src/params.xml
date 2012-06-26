@@ -325,6 +325,9 @@
       <option key="1"><![CDATA[oset]]></option>
     </options>
   </param>
+  <param name="kaskada_w" type="text" ctype="double" default="7">
+    <description><![CDATA[work function [MeV]]]></description>
+  </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description></description>
   </param>

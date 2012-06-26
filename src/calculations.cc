@@ -41,6 +41,35 @@ double crosssection (string filename)
 	return result;
 }
 
+double crosssection (string filename, int dyn)
+{
+	string y;
+	double x;
+		
+	vector<double> v(8);
+	ifstream Input (filename.c_str());
+
+	if (Input)
+	{
+		do
+		{
+			getline (Input, y);
+			for (int j = 0; j < 8; j++)
+				{
+					for (int k = 0; k < 3; k++)
+					{
+						Input>>y;
+					}
+					Input>>v[j];
+				}
+		}while (Input);
+	}
+	
+	double result = v[dyn];
+		
+	return result;
+}
+
 void crosssection (string filename, double *xsec, int nc)
 {
 	string y;
@@ -393,14 +422,14 @@ int calcMB (int fz, int xs, bool anti)
 	
 	string help;
 	
-	if (anti) help = "root_files/MB_anti_NC_Carbon_1m_";
-	else help = "root_files/MB_NC_Carbon_1m_";
+	if (anti) help = "root_files/MB_anti_NC_Carbon_5m_";
+	else help = "root_files/MB_NC_Carbon_5m_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
 	string Hfile;
 	
-	if (anti) Hfile = find_last("root_files/MB_anti_NC_Hydrogen_1m_*.root");
-	else Hfile = find_last("root_files/MB_NC_Hydrogen_1m_*.root");
+	if (anti) Hfile = find_last("root_files/MB_anti_NC_Hydrogen_5m_*.root");
+	else Hfile = find_last("root_files/MB_NC_Hydrogen_5m_*.root");
 	
 	string Cfile = find_last(help);
 	
@@ -413,7 +442,7 @@ int calcMB (int fz, int xs, bool anti)
 		
 	get_date();
 	
-	const int events = 1000000;
+	const int events = 5000000;
 
 	int ile;
 	if (anti) ile = 10;
@@ -1135,10 +1164,10 @@ int calcSB (int fz, int xs)
 {	
 	cout<<endl<<endl<<"Calculating SciBooNE ("<<fzname[fz]<<", "<<xsec[xs]<<"): "<<endl<<endl;
 	
-	string help = "root_files/MB_NC_Carbon_1m_";
+	string help = "root_files/MB_NC_Carbon_5m_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
 	
-	string Hfile = find_last("root_files/MB_NC_Hydrogen_1m_*.root");
+	string Hfile = find_last("root_files/MB_NC_Hydrogen_5m_*.root");
 	string Cfile = find_last(help);
 	
 	if (noFile(Hfile) or noFile(Cfile) or noFile(Hfile+string(".txt")) or noFile(Cfile + string(".txt")) or noFile("root_files/MB_CC_Hydrogen_0k.root.txt") or noFile("root_files/MB_CC_Carbon_0k.root.txt"))
@@ -1150,7 +1179,7 @@ int calcSB (int fz, int xs)
 		
 	get_date();
 	
-	const int events     = 1000000;
+	const int events     = 5000000;
 	const int bins       = 9;
 	const int binsang    = 10;
 	
@@ -1191,7 +1220,7 @@ int calcSB (int fz, int xs)
 		
 		int pion = 100*e1->nof(211) + 10*e1->nof(-211) + e1->nof(111);
 				
-		if (e1->nof(111) > 0)
+		if (pion == 1)
 		{
 			counterH++;
 			
@@ -1236,7 +1265,7 @@ int calcSB (int fz, int xs)
 		
 		int pion = 100*e2->fof(211) + 10*e2->fof(-211) + e2->fof(111);
 						
-		if (e2->fof(111) > 0)
+		if (pion == 1)
 		{
 			counterC++;
 			
@@ -1299,15 +1328,15 @@ int calcSB (int fz, int xs)
 	
 	for (int i = 0; i < bins; i++)
 	{
-		C8H8[i] *= factormom;
+		//C8H8[i] *= factormom;
 	}
 
 	for (int i = 0; i < binsang; i++)
 	{
-		C8H8ang[i] *= factorang;
+		//C8H8ang[i] *= factorang;
 	}
 	
-	C8H8rest *= factormom;
+	//C8H8rest *= factormom;
 		
 	double crossHcc = crosssection("root_files/MB_CC_Hydrogen_0k.root.txt");
 	double crossCcc = crosssection("root_files/MB_CC_Carbon_0k.root.txt");
@@ -5011,3 +5040,682 @@ void ang_calc()
 		plik.close();
 	}
 }
+
+void make_dist(string filename, double res[100][20])
+{	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < 500000; i++)
+	{
+		tt1->GetEntry(i);
+		
+		int a = e1->out[0].momentum()/50;
+		if (a == 100) a--;
+		
+		int b = e1->out[0].p().z/e1->out[0].momentum()/0.1 + 10;
+		if (b == 20) b--;
+		
+		if (a < 100 and b < 20)
+			res[a][b]++;
+					
+		cout << filename << ": "<< i/5000 << "\r" << flush; 
+	}
+	
+	cout << endl;
+	
+	delete e1;
+	delete tt1;
+	delete tf1;
+}
+
+void kendall_calc(string pdg, string p)
+{
+	string fname = "ccqe/xsec/xsec_" + pdg + "_" + p + ".txt";
+	
+	ofstream f(fname.c_str());
+	
+	for (int i = 3; i < 23; i++)
+	{
+		int en = (i+1)*50;
+		if (i > 18) en = (i-18)*1000;
+		
+		int en2 = (i+2)*50;
+		if (i > 18) en2 = (i-17)*1000;
+		
+		f << "#energy | FG | SF | FG/SF " << endl;
+		
+		f << (en2 - en)/2.0 + en << " ";
+
+		stringstream temp;
+		stringstream temp2;
+		string energy;
+		string energy2;
+
+		temp << en;
+		temp >> energy;
+		temp2 << en2;
+		temp2 >> energy2;
+		
+		string file1 = "ccqe/E" + energy + "_" + energy2 + "_" + p + "_" + p + "_" + pdg + "_FG.root";
+		string file2 = "ccqe/E" + energy + "_" + energy2 + "_" + p + "_" + p + "_" + pdg + "_SF.root";
+		string file1txt = file1 + ".txt";
+		string file2txt = file2 + ".txt";
+		
+		double cross1 = crosssection(file1txt);
+		double cross2 = crosssection(file2txt);
+		
+		f << cross1 << " " << cross2 << " " << cross1/cross2 << " " << (cross1 - cross2)/cross1 << endl;
+		
+		cross1 /= 500000.0;
+		cross2 /= 500000.0;
+		
+		double res1[100][20] = {{0}};
+		double res2[100][20] = {{0}};
+		
+		make_dist(file1, res1);
+		make_dist(file2, res2);
+		
+		string txtname = "ccqe/results/ccqe_E" + energy + "_" + energy2 + "_PDG_" + pdg + "_TARGET_" + p + ".txt";
+		
+		ofstream plik(txtname.c_str());
+		
+		for (int a = 0; a < 100; a++)
+		{
+			for (int b = 0; b < 20; b ++)
+			{
+				plik << (a+1)*50 << " " << b*0.1 - 0.9 << " " << res1[a][b] << " " << res2[a][b] << " " << res1[a][b]*cross1 << " " << res2[a][b]*cross2 << endl;
+			}
+		}
+		
+		plik.close();
+	}
+	
+	f.close();
+}
+
+void xsec_calc()
+{
+	ofstream file("towork/xsec.txt");
+	file << "#energy | qel cc | qel nc | res cc | res nc | dis cc | dis nc | cctotal | nctotal" << endl;
+	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string fproton = "towork/E" + energy + "_proton.root.txt";
+		string fneutron = "towork/E" + energy + "_neutron.root.txt";
+		
+		double proton[6];
+		double neutron[6];
+		double res[6];
+		
+		double energia = en/1000.0;
+		file << energia;
+		
+		for (int i = 0; i < 6; i++)
+		{
+			proton[i] = 1e38*crosssection(fproton, i);
+			neutron[i] = 1e38*crosssection(fneutron, i);
+			res[i] = (proton[i] + neutron[i])/2.0;
+			file << " " << res[i]/energia;
+		}
+		
+		file << " " << (res[0] + res[2] + res[4])/energia << " " << (res[1] + res[3] + res[5])/energia << endl;
+	}
+	
+	file.close();
+}
+
+void xsec_calc2()
+{
+	ofstream file("towork/xsec_anti.txt");
+	file << "#energy | qel cc | qel nc | res cc | res nc | dis cc | dis nc | cctotal | nctotal" << endl;
+	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string fproton = "towork/E" + energy + "_proton_anti.root.txt";
+		string fneutron = "towork/E" + energy + "_neutron_anti.root.txt";
+		
+		double proton[6];
+		double neutron[6];
+		double res[6];
+		
+		double energia = en/1000.0;
+		file << energia;
+		
+		for (int i = 0; i < 6; i++)
+		{
+			proton[i] = 1e38*crosssection(fproton, i);
+			neutron[i] = 1e38*crosssection(fneutron, i);
+			res[i] = (proton[i] + neutron[i])/2.0;
+			file << " " << res[i]/energia;
+		}
+		
+		file << " " << (res[0] + res[2] + res[4])/energia << " " << (res[1] + res[3] + res[5])/energia << endl;
+	}
+	
+	file.close();
+}
+
+void xsec_calc4()
+{
+	ofstream file("towork/xsec_1350.txt");
+	file << "#energy | qel cc | qel nc | res cc | res nc | dis cc | dis nc | cctotal | nctotal" << endl;
+	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string fproton = "towork/E" + energy + "_proton_1350.root.txt";
+		string fneutron = "towork/E" + energy + "_neutron_1350.root.txt";
+		
+		double proton[6];
+		double neutron[6];
+		double res[6];
+		
+		double energia = en/1000.0;
+		file << energia;
+		
+		for (int i = 0; i < 6; i++)
+		{
+			proton[i] = 1e38*crosssection(fproton, i);
+			neutron[i] = 1e38*crosssection(fneutron, i);
+			res[i] = (proton[i] + neutron[i])/2.0;
+			file << " " << res[i]/energia;
+		}
+		
+		file << " " << (res[0] + res[2] + res[4])/energia << " " << (res[1] + res[3] + res[5])/energia << endl;
+	}
+	
+	file.close();
+}
+
+void xsec_calc3()
+{
+	ofstream file("towork/xsec_coh.txt");
+	file << "#energy | NC coh" << endl;
+		
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string cohin = "towork/E" + energy + "_carbon_coh.root.txt";
+				
+		double energia = en/1000.0;
+		file << energia << " " << 1e40*crosssection(cohin) << endl;		
+	}
+	
+	file.close();
+}
+
+void ccqe_calc(string filename, double tab[][20], double *q2)
+{
+	string txt = filename + ".txt";
+	double xsec = crosssection(txt);
+	
+	int events = 5000000;
+	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		double tk = e1->out[0].Ek();
+		double cos = e1->out[0].p().z/e1->out[0].momentum();
+		
+		int a = tk/50;
+		int b = cos/0.1 + 10;
+		if (b == 20) b--;
+		
+		tab[a][b]++;
+		
+		double q = -e1->q2()/1000000.0;
+		int c = q/0.05;
+		if (c == 20) c--;
+		
+		q2[c]++;
+		
+		cout<<filename<<": "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<filename<<": done"<<endl<<endl;
+	
+	
+	delete e1;
+	delete tt1;
+	delete tf1;
+	
+	for (int a = 0; a < 20; a ++)
+		for (int b = 0; b < 20; b++)
+			tab[a][b] *= xsec/events/100/0.1;
+			
+	for (int c = 0; c < 20; c++)
+		q2[c] *= xsec/events/0.05;
+}
+
+void res_calc(string filename, double *mom, double tab[][20])
+{
+	string txt = filename + ".txt";
+	double xsec = crosssection(txt);
+	
+	int events = 5000000;
+	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		double tk = e1->out[0].Ek();
+		double cos = e1->out[0].p().z/e1->out[0].momentum();
+		
+		int a = tk/50;
+		int b = cos/0.1 + 10;
+		if (b == 20) b--;
+		
+		tab[a][b]++;
+		
+		int piony = 100*e1->nof(211) + 10*e1->nof(-211) + e1->nof(111);
+		
+		if (piony == 100)
+		{
+			for (int x = 0; x < e1->n(); x++)
+			{
+				if (e1->out[x].pdg == 211)
+				{
+					int y = e1->out[x].momentum()/1000/0.05;
+					mom[y]++;
+				}
+			}
+		}
+		
+		cout<<filename<<": "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<filename<<": done"<<endl<<endl;
+
+	
+	delete e1;
+	delete tt1;
+	delete tf1;
+	
+	for (int a = 0; a < 20; a ++)
+		for (int b = 0; b < 20; b++)
+			tab[a][b] *= xsec/events/100/0.1;
+
+	for (int y = 0; y < 20; y++)
+		mom[y] *= xsec/events/0.05;
+}
+
+void calc_new_distr(string filename, double tab[][20])
+{
+	string txt = filename + ".txt";
+	double xsec = crosssection(txt);
+	
+	int events = 5000000;
+	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		double tk = e1->out[0].momentum();//Ek();
+		double cos = e1->out[0].p().z/e1->out[0].momentum();
+		
+		int a = tk/50;
+		int b = cos/0.1 + 10;
+		if (b == 20) b--;
+		
+		tab[a][b]++;
+				
+		cout<<filename<<": "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<filename<<": done"<<endl<<endl;
+
+	
+	delete e1;
+	delete tt1;
+	delete tf1;
+	
+	for (int a = 0; a < 20; a ++)
+		for (int b = 0; b < 20; b++)
+			tab[a][b] *= xsec/events/100/0.1;
+}
+
+void prepare_distr(double tab[][20], string out)
+{
+	ofstream plik(out.c_str());
+	
+	double max = 0;
+	
+	for (int i = 0; i < 20; i++)
+		for (int j = 0; j < 20; j++)
+			if (max < tab[i][j])
+				max = tab[i][j];
+				
+	for (int i = 0; i < 20; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			double scale = sqrt(tab[i][j]/max);
+			double shiftx = 0.05 - scale*0.05;
+			double shifty = 0.1 - scale*0.1;			
+			
+			double x1 = i*0.05 + shiftx/2;
+			double x2 = (i+1)*0.05 - shiftx/2;
+			
+			double y1 = j*0.1 - 1.0 + shifty/2;
+			double y2 = (j+1)*0.1 - 1.0 - shifty/2;
+			
+			plik << x1 << " " << y1 << endl;
+			plik << x2 << " " << y1 << endl;
+			plik << x2 << " " << y2 << endl;
+			plik << x1 << " " << y2 << endl;
+			plik << x1 << " " << y1 << endl;
+			
+			plik << endl;
+		}
+	}
+
+	plik.close();
+}
+
+void new_distr()
+{
+	string fg = "towork/E1_ccqe_carbon_fg.root";
+	string sf = "towork/E1_ccqe_carbon_sf.root";
+	string res = "towork/E1_carbon.root";
+	
+	double qfg[20][20] = {{0}};
+	double qsf[20][20] = {{0}};
+	double lep[20][20] = {{0}};
+	
+	calc_new_distr(fg, qfg);
+	calc_new_distr(sf, qsf);
+	calc_new_distr(res, lep);
+	
+	prepare_distr(qfg, "towork/fg_box_mom.txt");
+	prepare_distr(qsf, "towork/sf_box_mom.txt");
+	prepare_distr(lep, "towork/res_box_mom.txt");
+}	
+
+void towork_calc()
+{
+	string fg = "towork/E1_ccqe_carbon_fg.root";
+	string sf = "towork/E1_ccqe_carbon_sf.root";
+	
+	double fgt[20][20] = {{0}};
+	double sft[20][20] = {{0}};
+	
+	double qfg[20] = {0};
+	double qsf[20] = {0};
+	
+	ccqe_calc(fg, fgt, qfg);
+	ccqe_calc(sf, sft, qsf);
+	
+	ofstream fgr("towork/fg.txt");
+	ofstream sfr("towork/sf.txt");
+	
+	for (int a = 0; a < 20; a++)
+	{
+		for (int b = 0; b < 20; b++)
+		{
+			fgr << a*0.05 << " " << b*0.1 - 1.0 << " " << fgt[a][b] << endl;
+			fgr << a*0.05 << " " << b*0.1 - 0.9 << " " << fgt[a][b] << endl;
+			sfr << a*0.05 << " " << b*0.1 - 1.0 << " " << sft[a][b] << endl;
+			sfr << a*0.05 << " " << b*0.1 - 0.9 << " " << sft[a][b] << endl;
+
+		}
+
+		fgr << endl;
+		sfr << endl;
+					
+		for (int b = 0; b < 20; b++)
+		{
+			fgr << a*0.05 + 0.05 << " " << b*0.1 - 1.0 << " " << fgt[a][b] << endl;
+			fgr << a*0.05 + 0.05 << " " << b*0.1 - 0.9 << " " << fgt[a][b] << endl;
+			sfr << a*0.05 + 0.05 << " " << b*0.1 - 1.0 << " " << sft[a][b] << endl;
+			sfr << a*0.05 + 0.05 << " " << b*0.1 - 0.9 << " " << sft[a][b] << endl;
+		}
+		
+		fgr << endl;
+		sfr << endl;
+	}
+	
+	fgr.close();
+	sfr.close();
+	
+	ofstream qfgr("towork/qfg.txt");
+	ofstream qsfr("towork/qsf.txt");
+	
+	for (int c = 0; c < 20; c++)
+	{
+		qfgr << 0.025 + c*0.05 << " " << qfg[c] << endl;
+		qsfr << 0.025 + c*0.05 << " " << qsf[c] << endl;
+	}
+	
+	qfgr.close();
+	qsfr.close();
+	
+	string res = "towork/E1_carbon.root";
+	
+	double pimom[20] = {0};
+	double lep[20][20] = {{0}};
+	
+	res_calc(res, pimom, lep);
+	
+	ofstream resl("towork/reslepton.txt");
+	
+	for (int a = 0; a < 20; a++)
+	{
+		for (int b = 0; b < 20; b++)
+		{
+			resl << a*0.05 << " " << b*0.1 - 1.0 << " " << lep[a][b] << endl;
+			resl << a*0.05 << " " << b*0.1 - 0.9 << " " << lep[a][b] << endl;
+		}
+		
+		resl << endl;
+		
+		for (int b = 0; b < 20; b++)
+		{
+			resl << a*0.05 + 0.05 << " " << b*0.1 - 1.0 << " " << lep[a][b] << endl;
+			resl << a*0.05 + 0.05 << " " << b*0.1 - 0.9 << " " << lep[a][b] << endl;
+		}
+		
+		resl << endl;
+	}
+	
+	resl.close();
+	
+	ofstream pi("towork/pimom.txt");
+	
+	for (int c = 0; c < 20; c++)
+		pi << 0.025 + c*0.05 << " " << pimom[c] << endl;
+	
+	pi.close();
+}
+
+void ccpip_js_calcH(string filename, double *res)
+{
+	int events = 2000000;
+	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		int pion = 100*e1->nof(211) + 10*e1->nof(-211) + e1->nof(111);
+		
+		if (pion == 100)
+		{
+			double Tk = 0;
+			
+			for (int k = 0; k < e1->n(); k++)
+			{
+				if (e1->out[k].pdg == 211)
+				{
+					Tk = e1->out[k].Ek();
+					break;
+				}
+			}
+			
+			int a = 0;
+			
+			if (Tk > 50) a = (Tk - 50)/25 + 1;
+			
+			if (a < 15) res[a]++;
+			
+		}
+		cout<<filename<<": "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<filename<<": done"<<endl<<endl;
+
+	delete e1;
+	delete tt1;
+	delete tf1;
+
+}
+
+void ccpip_js_calcC(string filename, double *res)
+{
+	int events = 2000000;
+	
+	TFile *tf1 = new TFile(filename.c_str());
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		int pion = 100*e1->fof(211) + 10*e1->fof(-211) + e1->fof(111);
+		
+		if (pion == 100)
+		{
+			double Tk = 0;
+			
+			for (int k = 0; k < e1->f(); k++)
+			{
+				if (e1->post[k].pdg == 211)
+				{
+					Tk = e1->post[k].Ek();
+					break;
+				}
+			}
+			
+			int a = 0;
+			
+			if (Tk > 50) a = (Tk - 50)/25 + 1;
+			
+			if (a < 15) res[a]++;
+			
+		}
+		cout<<filename<<": "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<filename<<": done"<<endl<<endl;
+
+	delete e1;
+	delete tt1;
+	delete tf1;
+
+}
+	
+void ccpip_js_calc()
+{
+	double H[15] = {0};
+	double C[15] = {0};
+	
+	double xsecH = crosssection("ccpip/H.root.txt");
+	double xsecC = crosssection("ccpip/C.root.txt");
+	
+	ccpip_js_calcH("ccpip/H.root", H);
+	ccpip_js_calcC("ccpip/C.root", C);
+	
+	double res[15] = {0};
+	
+	for (int i = 0; i < 15; i++)
+		res[i] = (2.08*xsecH*H[i] + 12.0*xsecC*C[i])*1e41/2000000;
+		
+	ofstream file("ccpip/ccpip.txt");
+	
+	file << "0 " << res[0]/50 << endl;
+	file << "50 " << res[0]/50 << endl;
+	
+	for (int i = 0; i < 14; i++)
+		file << 50 + i*25 << " " << res[i+1]/25 << endl << 50 + (i+1)*25 << " " << res[i+1]/25 << endl;
+	
+	file.close();
+
+	ofstream file2("ccpip/ccpip2.txt");
+	
+	file2 << "25 " << res[0]/50 << endl;
+	
+	for (int i = 0; i < 14; i++)
+		file2 << 62.5 + i*25.0 << " " << res[i+1]/25 << endl;
+		
+	file2.close();
+}	
+
+

@@ -190,7 +190,7 @@ void MB (int fz, int xs, bool anti)
 		command +=  mba + hydrogen + NCwocoh;
 			
 		simlog(command);
-		run(command);
+		//run(command);
 		
 		command = get_bin_dir()+"nuwro -o root_files/MB_anti_NC_Carbon_5m_";
 		command += fzwork[fz] + sep + xsec[xs] + mba + carbon + NCdyn + fzp(fz) + xpar(xs);
@@ -843,4 +843,144 @@ void angle_test()
 		simlog(com);
 		run(com);
 	}
+}
+
+void kendall_sim(string pdg, string p, string n, string pf, string eb)
+{
+	string beam = "-p 'beam_type = 0' -p 'beam_particle = " + pdg + "' ";
+	string target_fg = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 0' -p 'nucleus_E_b = " + eb + "' -p 'nucleus_kf = " + pf + "' ";
+	string target_sf = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 1' ";
+	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*50;
+		if (i > 18) en = (i-18)*1000;
+		
+		int en2 = (i+2)*50;
+		if (i > 18) en2 = (i-17)*1000;
+
+		stringstream temp;
+		stringstream temp2;
+		string energy;
+		string energy2;
+
+		temp << en;
+		temp >> energy;
+		temp2 << en2;
+		temp2 >> energy2;
+		
+		string com1 = "./bin/nuwro -o 'ccqe/E" + energy + "_" + energy2 + "_" + p + "_" + n + "_" + pdg + "_FG.root' " + events500k + beam + target_fg + "-p 'beam_energy = " + energy + " " + energy2 + "' " + CCQEL;
+		string com2 = "./bin/nuwro -o 'ccqe/E" + energy + "_" + energy2 + "_" + p + "_" + n + "_" + pdg + "_SF.root' " + events500k + beam + target_sf + "-p 'beam_energy = " + energy + " " + energy2 + "' " + CCQEL;
+							
+		run(com1);
+		//run(com2);
+	}
+}
+
+void xsec_sim()
+{	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string com1 = "./bin/nuwro -o 'towork/E" + energy + "_proton.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + hydrogen;
+		string com2 = "./bin/nuwro -o 'towork/E" + energy + "_neutron.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + fneutron;
+		
+		run(com1);
+		run(com2);
+	}
+}
+
+void xsec_sim2()
+{	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string com1 = "./bin/nuwro -o 'towork/E" + energy + "_proton_anti.root' " + events0k + wocoh + antinumu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + hydrogen;
+		string com2 = "./bin/nuwro -o 'towork/E" + energy + "_neutron_anti.root' " + events0k + wocoh + antinumu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + fneutron;
+		
+		run(com1);
+		run(com2);
+	}
+}
+
+void xsec_sim3()
+{	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string com1 = "./bin/nuwro -o 'towork/E" + energy + "_carbon_coh.root' " + events0k + NCcoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + carbon;
+		
+		run(com1);
+	}
+}
+
+void xsec_sim4()
+{	
+	for (int i = 0; i < 23; i++)
+	{
+		int en = (i+1)*100;
+		if (i > 9) en = 1000 + (i-9)*500;
+		if (i > 17) en = 5000 + (i-17)*1000;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+		
+		string com1 = "./bin/nuwro -o 'towork/E" + energy + "_proton_1350.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1350' -p 'qel_cc_axial_mass = 1350' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + hydrogen;
+		string com2 = "./bin/nuwro -o 'towork/E" + energy + "_neutron_1350.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1350' -p 'qel_cc_axial_mass = 1350' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + fneutron;
+		
+		run(com1);
+		run(com2);
+	}
+}
+
+void towork_sim()
+{
+	string com1 = "./bin/nuwro -o 'towork/E1_ccqe_carbon_fg.root' " + events5m + CCQEL + numu + E1 + carbon;
+	string com2 = "./bin/nuwro -o 'towork/E1_ccqe_carbon_sf.root' " + events5m + CCQEL + numu + E1 + carbon + sf;
+	string com3 = "./bin/nuwro -o 'towork/E1_carbon.root' " + events5m + CCresdis + numu + E1 + carbon;
+
+	run(com1);
+	run(com2);
+	run(com3);
+}
+
+void ccpip_js_sim()
+{
+	const string par = "-p 'number_of_test_events = 5000000' -p 'number_of_events = 2000000' -p '@data/beam/newMB.txt' -p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 1' -p 'dyn_coh_nc = 0' ";
+	
+	string command1 = "./bin/nuwro -o 'ccpip/C.root' " + par + carbon;
+	//run(command1);
+	
+	string command2 = "./bin/nuwro -o 'ccpip/H.root' " + par + hydrogen;
+	run(command2);
 }
