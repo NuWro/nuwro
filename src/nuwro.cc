@@ -26,6 +26,7 @@
 #include "ff.h"
 #include "hist.h"
 #include "nucleusmaker.h"
+#include "rpa_lib.h"
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
