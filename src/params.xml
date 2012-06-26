@@ -191,6 +191,15 @@
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
     </options>
   </param>
+  <param name="qel_rpa" type="select" ctype="int" default="0">
+    <description>Use rpa corretions of KG in qel cc events</description>
+    <options>
+      <option key="0"><![CDATA[disabled]]></option>
+      <option key="1"><![CDATA[enabled RPA only]]></option>
+      <option key="2"><![CDATA[enabled effective mass only]]></option>
+      <option key="3"><![CDATA[enabled RPA and effective mass]]></option>
+    </options>
+  </param>
   <param name="qel_strange" type="text" ctype="int" default="0">
     <description>use the strangenes in the axial ff</description>
   </param>

@@ -84,6 +84,15 @@ public:
     vect q = in[0] - out[0];
     return q;
   }
+  double q0 ()
+  {
+    return in[0].t - out[0].t;
+  }
+  double qv ()
+  {
+    vect q = in[0] - out[0];
+    return vec(q).norm();
+  }
   
   /// fourmomentum transfer squared
   double q2 ()

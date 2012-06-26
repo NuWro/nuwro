@@ -17,6 +17,7 @@
 #include <cstdlib>
 #define LOCALKF localkf_O
 
+#include "rpa_lib.h"
 //double qelm;
 
 //static double E_b(int choice,ped,
@@ -194,6 +195,16 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
      e.out.push_back(N1);
      e.weight=x/cm2;
 
+     if(!nc)
+		 if(p.qel_rpa)
+		 {
+			rpa::znak=e.in[0].pdg>0?1:-1;
+			
+			double rpa_frac=rpa::ratio_rpa_fg(e.in[0].t,e.q0(),e.qv(),p.nucleus_kf);
+			
+			if(rpa_frac==rpa_frac) //assert no nan
+				e.weight*=rpa_frac;
+		 } 
 	//cout<<"kFP="<<kF_P<<endl;
 
 	//cout<<"CR="<<e.weight<<endl;

@@ -40,6 +40,7 @@ PARAM(bool,dyn_coh_cc,1)\
 PARAM(bool,dyn_coh_nc,1)\
 PARAM(int,qel_vector_ff_set,2)\
 PARAM(int,qel_axial_ff_set,1)\
+PARAM(int,qel_rpa,0)\
 PARAM(int,qel_strange,0)\
 PARAM(int,qel_strangeEM,0)\
 PARAM(double,delta_s,-0.15)\
