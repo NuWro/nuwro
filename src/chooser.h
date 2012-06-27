@@ -261,7 +261,7 @@ inline void chooser<N>::report()
              <<setw(12)<< efficiency(j)*100 << " %  | "
              <<setw(12)<< avg (j)    <<             " cm2| "
              <<setw(12)<< sqrt(var(j))<<            " cm2| "
-             <<setw(12)<< sqrt(var(j)/n[j])<<       " cm2| "
+             <<setw(12)<< sigma(j)<<       " cm2| "
              << endl;
  cout<<"--------------------------------------------------------------";
  cout<<"-------------------------------------------"<<endl;
@@ -299,9 +299,11 @@ inline int chooser<N>::ready(int i)
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::efficiency(int i)
-	{
-      return sxw[i]/n[i]/maxxw[i];
+	{ if(n[i]>0 && maxxw[i]>0)
+		return sxw[i]/n[i]/maxxw[i];
 //      return avg(i)/maxxw[i];
+	  else
+		return 0;
 	}
  
 ////////////////////////////////////////////////////////////////////////
