@@ -16,6 +16,25 @@
 enum {nucleon_=10,pion_=20};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
+class interaction_parameters
+{
+	public:
+		double r; //distance from a center
+		double dens; //density in r
+		double dens_n; //neutron density in r
+		double dens_p; //proton density in r
+		double xsec; //total cross section
+		double xsec_n; //xsec for neutron
+		double xsec_p; //xsec for proton
+		double frac_proton;
+		int pdg; //particle pdg
+		double Ek; //particle kinetic energy
+		double freepath;
+		particle p2;	//nucleon from nucleus (initialized in particle_scattering)
+		particle p[5];	//place for the results of scatering
+		int n;			//place for the number of particles after scattering
+};
+
 inline int kod(int i)
 {switch(i)
   {
@@ -685,9 +704,8 @@ class Interaction
 	NData ND;
   public: 
     Interaction(int xsec):PD(xsec),ND(xsec){}
-  	inline void total_cross_sections(int pdg, double Ek, double &s0, double &s1, double dens);
-	inline bool particle_scattering (particle & p1, particle & p2, double fracproton,  
-				 			         int &n, nucleus & t, particle p[], double dens);
+  	inline void total_cross_sections(interaction_parameters &X);
+	inline bool particle_scattering (particle & p1, nucleus &t, interaction_parameters &X);
     inline int test ();
 	int process_id()
 		{ 
@@ -702,36 +720,35 @@ class Interaction
 /// scattering of pion or nucleon on nucleus
 /// returns: s0 - cross setion on neutron
 ///          s1 - cross setion on proton
-void Interaction::total_cross_sections(int pdg, double Ek,  
-                                       double &s0, double &s1, double dens)
+void Interaction::total_cross_sections(interaction_parameters &X)
   {
-    switch (pdg)
+    switch (X.pdg)
       {
-      case pdg_neutron: ND.get_sij (Ek,s0,s1);break;
-	  case pdg_proton:	ND.get_sij (Ek,s1,s0);break;
+      case pdg_neutron: ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);break;
+	  case pdg_proton:	ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);break;
 	  default:
 	     { 
-	      PD.set_density(dens);
-	      PD.set_Ek(Ek);
+	      PD.set_density(X.dens);
+	      PD.set_Ek(X.Ek);
 	      double rii=PD.sij(0)*millibarn;
 	      double rij=PD.sij(1)*millibarn;
 	      double rabs=PD.sij(2)*millibarn;
-	      switch(pdg)
+	      switch(X.pdg)
 	      {
 			  case pdg_pi:  
-				s0 =(rii+rij+rabs)/2; //.n 
-				s1 = s0;              //.p
+				X.xsec_n =(rii+rij+rabs)/2; //.n 
+				X.xsec_p = X.xsec_n;              //.p
 				break;
 			  case pdg_piP: 
-				s0 =  rij+rabs;//+n
-				s1 =  rii;     //+p
+				X.xsec_n =  rij+rabs;//+n
+				X.xsec_p =  rii;     //+p
 				break;
 			  case -pdg_piP:
-				s0 =  rii;     //-n
-				s1 =  rij+rabs;//-p
+				X.xsec_n =  rii;     //-n
+				X.xsec_p =  rij+rabs;//-p
 				break;
 			  default:
-				s0=s1=0;
+				X.xsec_n=X.xsec_p=0;
 		   };
           };
       }
@@ -743,32 +760,31 @@ void Interaction::total_cross_sections(int pdg, double Ek,
 /// scattering results are writen to table p 
 /// and n is set to number of outgoing particles
 ///////////////////////////////////////////////////////////
-bool Interaction::particle_scattering (particle & p1, particle &p2, double frac_proton,
-			   int &n, nucleus & t, particle p[], double dens)
+bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_parameters &X)
   {
 	t.spectator=NULL;
-    p2 = t.get_nucleon (p1.r);
-
+    X.p2 = t.get_nucleon (p1.r);
+    
 	//p2.set_momentum(vec(0,0,0));
 
-    if(p2.v().length()>=1) 
-         cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<p2<<endl;
-	assert(p2.v().length()<1 && "particle scattering");
+    if(X.p2.v().length()>=1) 
+         cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
+	assert(X.p2.v().length()<1 && "particle scattering");
 
-    if (frandom () < frac_proton) p2.set_proton ();
-    else                    	  p2.set_neutron ();
+    if (frandom () < X.frac_proton) X.p2.set_proton ();
+    else                    	  X.p2.set_neutron ();
 
     switch (p1.pdg)
     {
       case pdg_proton: 
       case pdg_neutron:
 						k1=nucleon_;	
-						return ND.nucleon_scattering (p1, p2 , n,  p);
+						return ND.nucleon_scattering (p1, X.p2 , X.n,  X.p);
       case pdg_pi: 
       case pdg_piP: 
       case -pdg_piP:
 					    k1=pion_;
-					    return PD.pion_scattering (p1, p2, t, n, p, dens);
+					    return PD.pion_scattering (p1, X.p2, t, X.n, X.p, X.dens);
       default:	        
 						return 0;
     }

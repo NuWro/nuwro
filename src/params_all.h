@@ -61,6 +61,7 @@ PARAM(bool,coh_new,1)\
 PARAM(bool,kaskada_on,1)\
 PARAM(bool,kaskada_newangle,1)\
 PARAM(bool,kaskada_redo,0)\
+PARAM(bool,kaskada_writeall,0)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(string,formation_zone,"nofz")\
 PARAM(double,tau,0)\

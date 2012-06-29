@@ -130,21 +130,21 @@ void K2K (int fz, int xs)
 {
 	get_date();
 	
-	string k2k = date + rot + events1m + numu + K2Kbeam;
+	string k2k = date + rot + events100k + numu + K2Kbeam;
 	
 	string command (get_bin_dir()+"nuwro -o root_files/K2K_NC_Hydrogen_1m_");
 	command += k2k + hydrogen + NCwocoh;
 	
 	simlog(command);
-	//run(command);
+	run(command);
 		
-	command = get_bin_dir()+"nuwro -o root_files/K2K_NC_Oxygen_1mc_";
+	command = get_bin_dir()+"nuwro -o root_files/K2K_NC_Oxygen_1m_";
 	command += fzwork[fz] + sep + xsec[xs] + sep + k2k + oxygen + NCdyn + fzp(fz) + xpar(xs);
 
 	simlog(command);
-	//run(command);
+	run(command);
 	
-	//if (noFile("root_files/K2K_CC_Hydrogen_0k.root.txt"))
+	if (noFile("root_files/K2K_CC_Hydrogen_0k.root.txt"))
 	{
 		k2k = events0k + CCwocoh + numu + K2Kbeam;
 		command = get_bin_dir()+"nuwro -o root_files/K2K_CC_Hydrogen_0k.root ";
@@ -153,7 +153,7 @@ void K2K (int fz, int xs)
 		simlog(command);
 		run(command);
 	}
-	//if (noFile("root_files/K2K_CC_Oxygen_0k.root.txt"))
+	if (noFile("root_files/K2K_CC_Oxygen_0k.root.txt"))
 	{
 		k2k = events0k + CCdyn + numu + K2Kbeam;
 		command = get_bin_dir()+"nuwro -o root_files/K2K_CC_Oxygen_0k.root ";

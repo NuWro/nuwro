@@ -107,36 +107,29 @@ double ran_exp(double p)
 	return -p*log(1.0 - frandom00());
 }
 
-double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res, int n, double W)//, int nofpi)
+double formation_zone (particle &p, params &par, event &e)
 {
 	double flength;
-	
-	string fz;
-	
-	for (int i=0; i<par.formation_zone.size();i++)
-	{
-		if(par.formation_zone[i]!=' ')
-		fz += par.formation_zone[i];
-	}
-	
-	/*if (p0.t == 0 and qel)
-	{
-		particle phelp;
-		phelp.set_mass(mass_proton);
-		phelp.set_momentum(rand_from_ball(225.0));
-		
-		p0.t = phelp.p4().t;
-		p0.x = phelp.p4().x;
-		p0.y = phelp.p4().y;
-		p0.z = phelp.p4().z;
-		
-		q = p.p4() - p0;
-	}*/
-	
+			
 	if (par.first_step)
 	{	
+		string fz;
+		
+		vect p0 = e.in[1].p4();
+		vect q = e.q();
+	
+		for (int i=0; i<par.formation_zone.size();i++)
+		{
+			if(par.formation_zone[i]!=' ')
+			fz += par.formation_zone[i];
+		}
+
+		bool qel = e.flag.qel;
+
 		if (strcmp(fz.c_str(), "fz") == 0)
 		{
+			double W = e.W();
+			
 			if (qel) flength = p.momentum()/(p.mass2() - p.p4()*p0);
 			else if (W < 1400)
 			{
@@ -164,7 +157,6 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 				double tau = ran_exp(par.tau)/200.0;
 					
 				flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
-				//if (n > 0) flength *= n;
 			}
 			else
 			{
@@ -195,40 +187,6 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 				flength = (W - 1400.0)*f2 + (1800.0 - W)*f1;
 				flength /= 400.0;
 			}
-			
-			/*else if (res and p0.t != 0)
-			{
-				double e = q.t + p0.t;
-				vec pa;
-				
-				pa.x = q.x + p0.x;
-				pa.y = q.y + p0.y;
-				pa.z = q.z + p0.z;
-				
-				double mass = sqrt(e*e - pa.length()*pa.length());
-				
-				flength = pa.length()*ran_exp(1.0/120.0)/mass;
-			}
-			else if (p0.t != 0)
-			{
-				vec help;
-				help.x = q.x;
-				help.y = q.y;
-				help.z = q.z;
-								
-				double pt = help.dir()*p.p();
-				pt = sqrt(p.momentum2() - pt*pt);
-					
-				double tau = ran_exp(0.342)/200.0;
-					
-				flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
-			}
-			else
-			{
-				double param = 1.0;
-				if (p.pdg == 211 or p.pdg == -211 or p.pdg == 111) param = 0.7;
-				flength = 2e-6*p.momentum()/param;
-			}		*/		
 		}
 		else if (strcmp(fz.c_str(), "nofz") == 0) flength = 0;
 		else if (strcmp(fz.c_str(), "trans") == 0)
@@ -255,12 +213,7 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 					break;
 				}
 			}
-			
-			//double pt = p.momentum()*sin(theta[k]);
-			//double tau = ran_exp(1.0)/200.0;
-			
-			//flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
-			
+
 			flength = 2e-6*p.momentum()/0.6; 
 			flength *= 0.5*(1.0 - 0.5/q2[k]);
 						
@@ -292,9 +245,9 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 			
 			if (factor < 0.5) factor = 0.5;
 			
-			flength *= (n-1.0)*factor;
+			//flength *= (n-1.0)*factor;
 			
-			//if (flength < 0.5/200.0) flength = 0.5/200.0;
+			if (flength < 0.5/200.0) flength = 0.5/200.0;
 
 			if (qel) flength = p.momentum()/(p.mass2() - p.p4()*p0);
 		}
@@ -349,13 +302,10 @@ double formation1 (particle &p, params &par, vect q, bool qel, vect p0, bool res
 	return flength;
 }
 
-double formation2 (particle &p, params &par, int n) //, vect q, bool qel, vect p0, bool res)//, int nofpi)
+double formation_zone (particle &p, params &par)
 {
 	par.first_step = true;
 	
-	//double fl = (n-1.0)*200.0*fermi*1e-6*p.momentum()/0.6;
-	//if (fl < 0.5*fermi) fl = 0.5*fermi;
-
 	string fz;
 	double fl = 0;
 	
@@ -369,15 +319,7 @@ double formation2 (particle &p, params &par, int n) //, vect q, bool qel, vect p
 	{
 		double tau = ran_exp(par.tau);
 		fl = fermi*tau*p.momentum()/p.mass();
-		//if (n > 0) fl *= n;
 	}
 						
 	return fl;
-	
-	//return formation1(p, par, q, qel, p0, res);//, nofpi);
-}	
-
-double formation3 (double v, int n)
-{	
-	return v*(n-1)*0.05*fermi/sqrt(1.0-v*v);
-}	
+}

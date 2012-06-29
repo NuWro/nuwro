@@ -324,8 +324,11 @@ void NuWro::finishevent(event* e, params &p)
 				e->post.push_back(p);
 			}
 		}
-		else 
-		  kaskadaevent(p,*e);  // runs only if p.kaskada_on is true
+		else
+		{
+			kaskada k(p, *e);
+			k.kaskadaevent();  // runs only if p.kaskada_on is true
+		}
 }//end of finishevent
 
 

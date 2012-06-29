@@ -50,7 +50,8 @@ int main(int argc,  char** argv)
 	 e->in.push_back(p0);
 	 e->in.push_back(p0);
 	 e->in[1].p4().t = 0;
-     kaskadaevent(p,*e);
+	 kaskada k(p,*e);
+     k.kaskadaevent();
      t2->Fill();
      delete e;
      cout<<"event "<<i<<": completed.\r"; 

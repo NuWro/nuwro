@@ -7,11 +7,11 @@
 
 # The number of events used to calculate the cross sections: 
 
-number_of_test_events = 5000000
+number_of_test_events = 1000000
 
 # The number of equally weighted events to be saved:
 
-number_of_events   = 1000000
+number_of_events   = 100000
  
 # Control the random seed persistence:
 
@@ -55,13 +55,13 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 ################################################################
 
 dyn_qel_cc =1      // Quasi elastic charged current
-dyn_qel_nc =0      // Quasi elastic neutral current
-dyn_res_cc =0      // Resonant charged current 
-dyn_res_nc =0      // Resonant neutral current
-dyn_dis_cc =0      // Deep inelastic charged current 
-dyn_dis_nc =0      // Deep inelastic neutral current 
-dyn_coh_cc =0      // Coherent charged current  
-dyn_coh_nc =0      // Coherent neutral current  
+dyn_qel_nc =1      // Quasi elastic neutral current
+dyn_res_cc =1      // Resonant charged current 
+dyn_res_nc =1      // Resonant neutral current
+dyn_dis_cc =1      // Deep inelastic charged current 
+dyn_dis_nc =1      // Deep inelastic neutral current 
+dyn_coh_cc =1      // Coherent charged current  
+dyn_coh_nc =1      // Coherent neutral current  
 
 
 ################################################################

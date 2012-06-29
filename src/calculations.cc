@@ -205,7 +205,7 @@ int calcK2K (int fz, int xs)
 		
 	get_date();
 	
-	const int events     = 1000000;
+	const int events     = 100000;
 	const int bins       = 8;
 	
 	double H[bins]; zero(H, bins);
