@@ -592,7 +592,6 @@ void NuWro::real_events(params& p)
   ff->Write ();
   ff->Close ();
   progress.close();
-  remove(a.progress);
   delete ff;
   procesy.report();
 

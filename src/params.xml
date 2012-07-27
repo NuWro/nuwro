@@ -19,6 +19,7 @@
   <param name="beam_type" type="radio" ctype="int" default="0">
     <description></description>
     <conditions>
+        <condition value="0" description="0"></condition>
         <condition value="1" description="1">
           <param name="beam_energy" type="text" ctype="line" default="1000">
             <description></description>
@@ -83,16 +84,16 @@
           <param name="nucleus_density" type="text" ctype="string" default="0">
               <description></description>
           </param>
-          <param name="nucleus_E_b" type="text" ctype="double" default="0">
+          <param name="nucleus_E_b" type="text" ctype="double" default="34">
               <description></description>
           </param>
-          <param name="nucleus_kf" type="text" ctype="double" default="0">
+          <param name="nucleus_kf" type="text" ctype="double" default="220">
               <description></description>
           </param>
-          <param name="nucleus_target" type="text" ctype="int" default="0">
+          <param name="nucleus_target" type="text" ctype="int" default="2">
               <description></description>
           </param>
-          <param name="nucleus_model" type="text" ctype="int" default="0">
+          <param name="nucleus_model" type="text" ctype="int" default="1">
               <description></description>
           </param>
         </condition>
@@ -105,7 +106,7 @@
           <param name="geo_file" type="text" ctype="string" default="">
               <description></description>
           </param>
-          <param name="geo_name" type="text" ctype="string" default="ND280Geometry">
+          <param name="geo_name" type="text" ctype="string" default="ND280Geometry_v9r7p5">
               <description></description>
           </param>
           <param name="geo_volume" type="text" ctype="string" default="">
@@ -114,7 +115,7 @@
           <param name="geo_o" type="text" ctype="vec" default="0 0 0">
               <description></description>
           </param>
-          <param name="geo_d" type="text" ctype="vec" default="0 0 0">
+          <param name="geo_d" type="text" ctype="vec" default="2000 2000 5000">
               <description></description>
           </param>
         </condition>
@@ -212,19 +213,19 @@
   <param name="qel_cc_vector_mass" type="text" ctype="double" default="840">
     <description><![CDATA[]]></description>
   </param>
-  <param name="qel_cc_axial_mass" type="text" ctype="double" default="1030">
+  <param name="qel_cc_axial_mass" type="text" ctype="double" default="1200">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>
-  <param name="qel_nc_axial_mass" type="text" ctype="double" default="1030">
+  <param name="qel_nc_axial_mass" type="text" ctype="double" default="1350">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>
-  <param name="qel_s_axial_mass" type="text" ctype="double" default="1030">
+  <param name="qel_s_axial_mass" type="text" ctype="double" default="1200">
     <description><![CDATA[[MeV] axial mass used in the strange dipole ff]]></description>
   </param>
-  <param name="flux_correction" type="checkbox" ctype="bool" default="1">
+  <param name="flux_correction" type="checkbox" ctype="bool" default="0">
     <description>no flux correction</description>
   </param>
-  <param name="sf_method" type="select" ctype="int" default="0">
+  <param name="sf_method" type="select" ctype="int" default="1">
     <description><![CDATA[For certain nuclei (C12, O16, Ar40, Ca40, Fe56) it is possible to use the spectral function model instead of the Fermi gas model in the quasi ellastic events. For other nuclei the parameter is ignored.]]></description>
     <options>
       <option key="0"><![CDATA[don't use spectral function]]></option>
@@ -253,13 +254,13 @@
   <param name="pion_C5A" type="text" ctype="double" default="1.19">
     <description><![CDATA[]]></description>
   </param>
-  <param name="spp_precision" type="text" ctype="int" default="0">
+  <param name="spp_precision" type="text" ctype="int" default="500">
     <description><![CDATA[recommended value is  500, this controls the precision in RES-DIS boundary region]]></description>
   </param>
-  <param name="res_dis_cut" type="text" ctype="double" default="0">
+  <param name="res_dis_cut" type="text" ctype="double" default="1600">
     <description><![CDATA[res dis boundary in MeV, should be 1600]]></description>
   </param>
-  <param name="coh_mass_correction" type="checkbox" ctype="bool" default="0">
+  <param name="coh_mass_correction" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Rein Sehgal correction to CC coherent single pion production]]></description>
   </param>
   <param name="coh_new" type="checkbox" ctype="bool" default="1">
@@ -318,7 +319,7 @@
   <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
   </param>
-  <param name="formation_zone" type="text" ctype="string" default="nofz">
+  <param name="formation_zone" type="text" ctype="string" default="cosyn">
     <description><![CDATA[]]></description>
   </param>
   <param name="tau" type="text" ctype="double" default="0">

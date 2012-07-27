@@ -20,16 +20,16 @@ PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,0)\
 PARAM(int,nucleus_n,0)\
 PARAM(string,nucleus_density,"0")\
-PARAM(double,nucleus_E_b,0)\
-PARAM(double,nucleus_kf,0)\
-PARAM(int,nucleus_target,0)\
-PARAM(int,nucleus_model,0)\
+PARAM(double,nucleus_E_b,34)\
+PARAM(double,nucleus_kf,220)\
+PARAM(int,nucleus_target,2)\
+PARAM(int,nucleus_model,1)\
 PARAM(line,target_content,"")\
 PARAM(string,geo_file,"")\
-PARAM(string,geo_name,"ND280Geometry")\
+PARAM(string,geo_name,"ND280Geometry_v9r7p5")\
 PARAM(string,geo_volume,"")\
 PARAM(vec,geo_o,"0 0 0")\
-PARAM(vec,geo_d,"0 0 0")\
+PARAM(vec,geo_d,"2000 2000 5000")\
 PARAM(bool,dyn_qel_cc,1)\
 PARAM(bool,dyn_qel_nc,1)\
 PARAM(bool,dyn_res_cc,1)\
@@ -45,25 +45,25 @@ PARAM(int,qel_strange,0)\
 PARAM(int,qel_strangeEM,0)\
 PARAM(double,delta_s,-0.15)\
 PARAM(double,qel_cc_vector_mass,840)\
-PARAM(double,qel_cc_axial_mass,1030)\
-PARAM(double,qel_nc_axial_mass,1030)\
-PARAM(double,qel_s_axial_mass,1030)\
-PARAM(bool,flux_correction,1)\
-PARAM(int,sf_method,0)\
+PARAM(double,qel_cc_axial_mass,1200)\
+PARAM(double,qel_nc_axial_mass,1350)\
+PARAM(double,qel_s_axial_mass,1200)\
+PARAM(bool,flux_correction,0)\
+PARAM(int,sf_method,1)\
 PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
 PARAM(double,pion_axial_mass,0.94)\
 PARAM(double,pion_C5A,1.19)\
-PARAM(int,spp_precision,0)\
-PARAM(double,res_dis_cut,0)\
-PARAM(bool,coh_mass_correction,0)\
+PARAM(int,spp_precision,500)\
+PARAM(double,res_dis_cut,1600)\
+PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(bool,kaskada_on,1)\
 PARAM(bool,kaskada_newangle,1)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\
 PARAM(bool,pauli_blocking,1)\
-PARAM(string,formation_zone,"nofz")\
+PARAM(string,formation_zone,"cosyn")\
 PARAM(double,tau,0)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
