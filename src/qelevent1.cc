@@ -13,6 +13,7 @@
 #include "kinematics.h"
 #include "pdg.h"
 #include "nucleus.h"
+#include "nucleus_data.h"
 #include "dis/LeptonMass.h"
 #include <cstdlib>
 #define LOCALKF localkf_O
@@ -197,10 +198,9 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
      if(!nc)
 		 if(p.qel_rpa)
-		 {
-			rpa::znak=e.in[0].pdg>0?1:-1;
-			
-			double rpa_frac=rpa::ratio_rpa_fg(e.in[0].t,e.q0(),e.qv(),p.nucleus_kf);
+		 {  //nucleus_data *data=best_data(t.p,t.n);
+			rpa::configure(e.in[0].t, 0, e.in[0].pdg, p.qel_rpa==2, 0,t.kF(),t.Mf());
+			double rpa_frac=rpa::ratio_rpa_fg(e.in[0].t,e.q0(),e.qv());
 			
 			if(rpa_frac==rpa_frac) //assert no nan
 				e.weight*=rpa_frac;

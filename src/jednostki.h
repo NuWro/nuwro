@@ -79,6 +79,7 @@ static const double  angstrom  = 1.e-10*meter;
 static const double  fermi     = 1.e-15*meter;
 static const double  fermi2     = fermi*fermi;
 static const double  fermi3     = fermi2*fermi;
+static const double  fm 	    = 1.e-15*meter;
 
 static const double      barn = 1.e-28*meter2;
 static const double millibarn = 1.e-3 *barn;

@@ -1,8 +1,6 @@
 #ifndef _nucleusmaker_h_
 #define _nucleusmaker_h_
 #include "nucleus.h"
-#include "flatnucleus.h"
-#include "anynucleus.h"
 #include "params.h"
 #include "generatormt.h"
 
@@ -10,8 +8,8 @@ inline nucleus * make_nucleus(params& p)
 { 
   switch(p.nucleus_model)
   {
-    case 0: return new flatnucleus(p);
-    case 1: return new anynucleus(p);
+    case 0:
+    case 1: return new nucleus(p);
     default: throw "unknown nucleus model";
   }
 }

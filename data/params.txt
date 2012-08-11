@@ -114,8 +114,8 @@ flux_correction = 0 // no flux correction
 # instead of the Fermi gas model in the quasi ellastic events.
 # For other nuclei the parameter is ignored.
  
-#sf_method = 0 // don't use spectral function
-sf_method = 1 // use grid spectral function: (C12, O16, Ar40, Fe56)
+sf_method = 0 // don't use spectral function
+#sf_method = 1 // use grid spectral function: (C12, O16, Ar40, Fe56)
 #sf_method = 2 // use factorized spectral function: (O16, Ar40, Ca40)
 
 

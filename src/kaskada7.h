@@ -10,8 +10,6 @@
 #include <queue>
 #include "pdg.h"
 #include "nucleus.h"
-#include "flatnucleus.h"
-#include "anynucleus.h"
 #include <TROOT.h>
 #include <TTree.h>
 #include "beam.h"

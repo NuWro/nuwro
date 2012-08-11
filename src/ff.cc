@@ -29,9 +29,9 @@ static double gA=-1.2673;
 static int axialFFset=0;
 static int strangeFFset=0;
 static int strange=0; 
-//stange =0 nie strange FF
-//stange =1 old implementation (recover old bahaviour) 
-//stange =2 new implementation (uses strange axial mass != nc axial mass) 
+//strange =0 nie strange FF
+//strange =1 old implementation (recover old bahaviour) 
+//strange =2 new implementation (uses strange axial mass != nc axial mass) 
 
 static int strangeEM=0;
 
@@ -262,8 +262,8 @@ FF npar_FF(const double q2)
 	
 	ff.GEn = -a *mu_n*tau*GD/(1+b*tau);
 	 
-	bool stange=false;
-	if (stange)
+	bool strange=false; // comment out next 2 lines
+	if (strange)
 	  ff.GEp=ff.GMp/mu_p *(1-0.14*(-q2/GeV2-0.3)); 
 
     return ff;	
@@ -403,7 +403,7 @@ double axialcorr(int axialFF,double q2)
 	double szer;//reduction in Q2
 	double dlug;//enhancement range
 		
-	switch(axialFF)
+	switch(axialFF)			
 	{
 	case 2:	min=0.9;//maximal reduction
 		    max=1.1; //maximal enhancement

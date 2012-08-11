@@ -42,7 +42,7 @@ all:            $(TRGTS)
 
 
 $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o \
-        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o anynucleus.o  sfevent.o ff.o dirs.o rpa_lib.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_lib.o nucleus_data.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o main.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
@@ -51,7 +51,7 @@ $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o
 #			moc $< -o $@
 
 #QtNuwro:  $(addprefix src/, event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o dirs.o \
-#        qel_sigma.o kinsolver.o kinematics.o pdg.o scatter.o kaskada7.o  Interaction.o target_mixer.o anynucleus.o  sfevent.o ff.o nuwro.o\
+#        qel_sigma.o kinsolver.o kinematics.o pdg.o scatter.o kaskada7.o  Interaction.o target_mixer.o nucleus.o  sfevent.o ff.o nuwro.o\
 #        beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o) $(SF_OBJS) $(DIS_OBJS)  $(GUI_OBJS)\
 #        gui/CMainWindow.o gui/moc_CMainWindow.o gui/QtNuwro.o gui/CGeneralTab.o gui/moc_CGeneralTab.o gui/CBeamTab.o gui/moc_CBeamTab.o \
 #        gui/CTargetTab.o gui/moc_CTargetTab.o gui/CPhysicsTab.o gui/moc_CPhysicsTab.o gui/CElement.o gui/moc_CElement.o \
@@ -60,7 +60,7 @@ $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o
 
 
 $(BIN)/kaskada:   $(addprefix src/, scatter.o generatormt.o particle.o event1.o event1dict.o kaskada7.o Interaction.o dirs.o\
-				  pdg.o anynucleus.o kaskada.o fsi.o pitab.o)
+				  pdg.o nucleus.o kaskada.o fsi.o pitab.o  nucleus_data.o elements.o)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/myroot:  $(EVENT_OBJS) src/myroot.o
@@ -81,15 +81,15 @@ $(BIN)/nuwro2neut:  $(EVENT_OBJS) src/nuwro2neut.o
 $(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o
 		 $(LINK.cc) $^ -o $@
 
-$(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o\
-       src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/dirs.o src/fsi_main.o
+$(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/elements.o\
+       src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/dirs.o src/fsi_main.o 
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/mb_nce:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o\
+$(BIN)/mb_nce:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/elements.o\
        src/mb_nce.o src/pitab.o
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/anynucleus.o \
+$(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/elements.o\
         src/fsi.o src/pitab.o src/calculations.o src/niwg_ccqe.o src/niwg_tech.o src/niwg_ccpi.o src/niwg.o  
 		$(LINK.cc) $^ -o $@
 
@@ -105,7 +105,7 @@ $(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generat
 $(BIN)/dumpParams:      src/dumpParams.o src/dirs.o
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_nucleus:   src/generatormt.o src/anynucleus.o src/test_nucleus.o src/pdg.o src/dirs.o
+$(BIN)/test_nucleus:   src/generatormt.o src/nucleus.o src/test_nucleus.o src/pdg.o src/dirs.o  src/nucleus_data.o src/elements.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/test_beam:	src/generatormt.o src/pdg.o src/test_beam.o 

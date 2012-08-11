@@ -81,9 +81,11 @@
           <param name="nucleus_n" type="text" ctype="int" default="0">
             <description></description>
           </param>
+<!--
           <param name="nucleus_density" type="text" ctype="string" default="0">
               <description></description>
           </param>
+-->
           <param name="nucleus_E_b" type="text" ctype="double" default="34">
               <description></description>
           </param>
@@ -93,9 +95,13 @@
           <param name="nucleus_target" type="text" ctype="int" default="2">
               <description></description>
           </param>
-          <param name="nucleus_model" type="text" ctype="int" default="1">
-              <description></description>
-          </param>
+		  <param name="nucleus_model" type="select" ctype="int" default="0">
+			<description><![CDATA[Models for the description of nucleus in the cascade]]></description>
+			<options>
+			  <option key="0"><![CDATA[constant density]]></option>
+			  <option key="1"><![CDATA[realistic density profile]]></option>
+			</options>
+		  </param>
         </condition>
         <condition value="1" description="1">
           <param name="target_content" type="text" ctype="line" default="">
@@ -126,8 +132,6 @@
         </condition>
     </conditions>
   </param>
-  
-
 <!--  <param name="beam" type="select" default="ND280.txt">
     <description>It is convenient to include one of the predefined beam specifications</description>
     <options>
@@ -197,8 +201,7 @@
     <options>
       <option key="0"><![CDATA[disabled]]></option>
       <option key="1"><![CDATA[enabled RPA only]]></option>
-      <option key="2"><![CDATA[enabled effective mass only]]></option>
-      <option key="3"><![CDATA[enabled RPA and effective mass]]></option>
+      <option key="2"><![CDATA[enabled RPA and effective mass]]></option>
     </options>
   </param>
   <param name="qel_strange" type="text" ctype="int" default="0">
@@ -267,13 +270,6 @@
     <description><![CDATA[]]></description>
   </param>
 <!--  
-  <param name="nucleus_model" type="select" ctype="int" default="0">
-    <description><![CDATA[Models for the description of nucleus in the cascade]]></description>
-    <options>
-      <option key="1"><![CDATA["flatnucleus" i.e. nucleus is a ball]]></option>
-      <option key="2"><![CDATA["anynucleus" i.e. realistic density profile]]></option>
-    </options>
-  </param>
   
   <param name="nucleus_density" type="text" default="1">
     <description><![CDATA[options below are kept only for historical reasons]]></description>

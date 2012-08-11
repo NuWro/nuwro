@@ -19,11 +19,10 @@ PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,0)\
 PARAM(int,nucleus_n,0)\
-PARAM(string,nucleus_density,"0")\
 PARAM(double,nucleus_E_b,34)\
 PARAM(double,nucleus_kf,220)\
 PARAM(int,nucleus_target,2)\
-PARAM(int,nucleus_model,1)\
+PARAM(int,nucleus_model,0)\
 PARAM(line,target_content,"")\
 PARAM(string,geo_file,"")\
 PARAM(string,geo_name,"ND280Geometry_v9r7p5")\

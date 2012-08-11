@@ -9,10 +9,6 @@
 namespace rpa
 {
 
-const double index_M_Mef=1;
-
-
-
 const double tablica_Mef[3000]= 
 {
 938.919,938.918,938.918,938.918,938.917,938.915,938.913,938.909,938.904,
@@ -350,22 +346,28 @@ const double tablica_Mef[3000]=
 2.55322,2.55151,2.54981,2.54811,2.54641,2.54471,2.54302,2.54133,2.53963,
 2.53794,2.53626,2.53457};
 
-
-
-double Masa_Efektywna(double ped)
+inline double Masa_Efektywna(double ped)
 {
 	int ped_int = int(ped);
 	double reszta = ped-ped_int;
 
 	if(ped_int>2999)
-		return 2;
+		return 2;//or maybe tablica_Mef[2999];
 	else 
-	{  
-		if(reszta==0)
-			return tablica_Mef[ped_int];
-		else 
-			return (tablica_Mef[ped_int]+tablica_Mef[ped_int+1])/2;
-	}
+		return tablica_Mef[ped_int  ]*(1-reszta)
+			  +tablica_Mef[ped_int+1]*reszta;
+}
+
+inline double MEF(double ped)
+{
+	int ped_int = int(ped);
+	double reszta = ped-ped_int;
+
+	if(ped_int>2999)
+		return 2;//or maybe tablica_Mef[2999];
+	else 
+		return tablica_Mef[ped_int  ]*(1-reszta)
+			  +tablica_Mef[ped_int+1]*reszta;
 }
 
 }

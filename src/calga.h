@@ -102,5 +102,4 @@ calg5dokl (T & t, double (T::*f) (double, double), double x1, double x2,
     }
 }
 
-
 #endif

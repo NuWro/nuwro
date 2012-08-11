@@ -147,7 +147,7 @@ bool kaskada::make_interaction()
 		    return false;
 		}
 
-	if ((p->pdg == 2112 or p->pdg == 2212) and nucl->pauli_blocking (X.p, X.n)) //check if there was Pauli blocking
+	if ((p->pdg == 2112 or p->pdg == 2212) and nucl->pauli_blocking(X.p, X.n)) //check if there was Pauli blocking
 		return false;
 	
 	assert(check(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));

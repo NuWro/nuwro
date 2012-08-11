@@ -26,7 +26,6 @@
 #include "ff.h"
 #include "hist.h"
 #include "nucleusmaker.h"
-#include "rpa_lib.h"
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
@@ -165,7 +164,7 @@ void NuWro::makeevent(event* e, params &p)
    e->in.push_back (nu);	// insert neutrino
    if(dyn<6)
    {
-	e->in.push_back (nucleuss->shoot ());	// insert target nucleon
+	e->in.push_back (nucleuss->get_nucleon());	// insert target nucleon
 	e->in[0].r=e->in[1].r;
     assert(e->in[1]*e->in[1]>0);
    }
@@ -177,13 +176,13 @@ void NuWro::makeevent(event* e, params &p)
      e->norm=nu.travelled;
    // else e->norm remains 1;
      
-	e->flag.cc  = dyn == 0 || dyn == 2 || dyn == 4 || dyn == 6;
-	e->flag.nc  = dyn == 1 || dyn == 3 || dyn == 5 || dyn == 7;
-  
-	e->flag.qel = dyn == 0 || dyn == 1;
-	e->flag.res = dyn == 2 || dyn == 3;
-	e->flag.dis = dyn == 4 || dyn == 5;
-	e->flag.coh = dyn == 6 || dyn == 7;
+	e->flag.cc  = dyn%2  == 0;
+	e->flag.nc  = dyn%2  == 1; 
+
+	e->flag.qel = dyn/2  == 0;
+	e->flag.res = dyn/2  == 1;
+	e->flag.dis = dyn/2  == 2;
+	e->flag.coh = dyn/2  == 3;
 	
     if(p.beam_test_only)
       { e->weight=1;

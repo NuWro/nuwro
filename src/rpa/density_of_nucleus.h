@@ -51,8 +51,9 @@ namespace rpa
    const int A_Fe=56;
    const int A_O =16;
    const int A_C =12;   
-   /// Rozklad gestos ladunkow  jadra:
-    /// W zaleznosci od promienia;
+
+///  Rozklad gestos ladunkow  jadra:
+///  W zaleznosci od promienia;
       
 double density_O(double r)
 {
@@ -69,54 +70,54 @@ double density_Fe(double r)
 	return rho0_Fe/(1.+exp((r-C_Fe)/C1_Fe));
 }
 
-double density(double r, int rodzaj_jadra)
+double density(double r, int kNucleus)
 {
-	switch(rodzaj_jadra)
+	switch(kNucleus)
 	{
 		case O  : return rho0_O*exp(-pow(r/R_O,2))*(1+C_O*pow(r/R_O,2)+C1_O*pow(r/R_O,4));
 		case Ar : return rho0_Ar/(1.+exp((r-C_Ar)/C1_Ar));
 		case Fe : return rho0_Fe/(1+exp((r-C_Fe)/C1_Fe));
-		default : return 0; 
+		default : return 1; 
 	} 
 }
   
-  /// Pedy Fermiego zadane gestoscia jadra ///
+/// Pedy Fermiego zadane gestoscia jadra ///
   
-double Fermi_momentum(double r,int nucleus)
+double Fermi_momentum(double r,int kNUcleus)
 {
-	return cbrt(3*Pi*Pi*density(r,nucleus)/2 );
+	return cbrt(3*Pi*Pi*density(r,kNUcleus)/2 );
 }
 
-double density_calka(double r, int nucleus)
+double density_calka(double r, int kNUcleus)
 {
-	return 4*Pi*r*r*density(r,nucleus); 	       
+	return 4*Pi*r*r*density(r,kNUcleus); 	       
 }
 
-double density_r(double r, int nucleus)
+double density_r(double r, int kNUcleus)
 {
-	return r*density(r,nucleus);
+	return r*density(r,kNUcleus);
 }
 
     
-double kf_density(double r, int nucleus)
+double kf_density(double r, int kNUcleus)
 {
-	return Fermi_momentum(r,nucleus)*density_calka(r,nucleus);     
+	return Fermi_momentum(r,kNUcleus)*density_calka(r,kNUcleus);     
 }      
       
-double Mf_density(double r, int nucleus)
+double Mf_density(double r, int kNUcleus)
 {
-	return Masa_Efektywna(Fermi_momentum(r,nucleus))*density_calka(r,nucleus);     
+	return Masa_Efektywna(Fermi_momentum(r,kNUcleus))*density_calka(r,kNUcleus);     
 }
 
-double sredni_ped_fermiego(int nucleus)
+double mean_kf(int kNUcleus)
 {
-   return calg5x_int(kf_density, nucleus, 0, 5*R_O,  0.01, 100)/calg5x_int(density_calka,nucleus, 0, 5*R_O, 0.01, 100);
+   return calg5x_int(kf_density, kNUcleus, 0, 5*R_O,  0.01, 100)/calg5x_int(density_calka,kNUcleus, 0, 5*R_O, 0.01, 100);
 }
 
-const char* nazwa_jadra(int rodzaj_jadra)
-//string nazwa_jadra(int rodzaj_jadra)
+const char* nazwa_jadra(int kNucleus)
+//string nazwa_jadra(int kNucleus)
 {
- 	switch(rodzaj_jadra)
+ 	switch(kNucleus)
 	{
 		case O : return "Tlen"  ; break;
 		case Ar: return "Argon" ; break;
@@ -126,14 +127,14 @@ const char* nazwa_jadra(int rodzaj_jadra)
 	}
 }
 
-double sredni_Mef(int nucleus)
+double mean_Mef(int kNUcleus)
 {
-	return calg5x_int(Mf_density, nucleus, 0, 7*R_Fe,  0.01, 20)/calg5x_int(density_calka,nucleus, 0, 7*R_Fe, 0.01, 20);
+	return calg5x_int(Mf_density, kNUcleus, 0, 7*R_Fe,  0.01, 20)/calg5x_int(density_calka,kNUcleus, 0, 7*R_Fe, 0.01, 20);
 }
 
-double sredni_Mef_st(int nucleus)
+double mean_Mef_st(int kNucleus)
 {
-	switch(nucleus)
+	switch(kNucleus)
 	{
 		case O : return 690.78*MeV  ; break;
 		case Ar: return 631.37*MeV ; break;
@@ -144,9 +145,9 @@ double sredni_Mef_st(int nucleus)
 }
 
 
-int liczba_atomowa(int rodzaj_jadra)
+int liczba_atomowa(int kNucleus)
 {
-	switch(rodzaj_jadra)
+	switch(kNucleus)
 	{
 		case O : return A_O  ; break;
 		case Ar: return A_Ar ; break;

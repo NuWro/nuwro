@@ -13,7 +13,7 @@ static inline double pow2(double x)
 }
 
 bool has_sf(nucleus &t)
-{  switch(1000*t.p+t.n)
+{  switch(1000*t.Z()+t.N())
    {
 	   case  6006:
 	   case  8008:
