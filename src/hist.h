@@ -31,19 +31,12 @@ public:
    inline  void insert_value (double val, double weight);
    // Wstawienie warto¶ci do histogramu 
    
-   inline  void wykres (ostream & out, 
-                        double jednostkax, 
-			double jednostkay, 
-			double pol=0.5, 
-			char separator='\t');
+   inline  void plot (ostream & out, double xunit, double yunit, double pol=0.5, char separator='\t');
    // zrzuca do strumienia out dane potrzebne do zrobienia 
    // wykresu zale¿no¶ci warto¶ci przekroju czynnego od parametru
 
    
-   inline  void wykres (const char* filename, 
-                        double jednostkax, 
-			double jednostkay, 
-			double pol=0.5);
+   inline  void plot (const char* filename, double xunit, double yunit, double pol=0.5, char separator='\t');
    // filename=nazwa pliku który zostanie utworzony.
    // parametr=1, 2 lub 3 numer parametru na osi x   
 
@@ -61,7 +54,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////////
 double hist::srodek (int i, double pol)   // ¶rodek itego kube³ka
-/////////////////////////////////////////////////////////////////////////////////////
+////////////////////////s/////////////////////////////////////////////////////////////
   {
     return (i + pol) * width + min;
   }
@@ -102,34 +95,35 @@ hist::hist (char *n, double minv, double maxv, int ile)
   {
     int i = ind (val);
     count++;
-    if (i >= 0)
+    if (i >= 0 && weight!=0)
       {sum[i] += weight;
        _total += weight;
       } 
   }
 
 /////////////////////////////////////////////////////////////////////////////////////
-  void hist::wykres (ostream & out, double jednostkax, double jednostkay, double pol, char separator)
+  void hist::plot (ostream & out, double xunit, double yunit, double pol, char separator)
 /////////////////////////////////////////////////////////////////////////////////////
 {
-    out << "#  Zale¿no¶æ od " << name << endl;
+    out << "#  " << name << " depandence "<<endl;
+    out << "#  mean = " << _total/count/(yunit*xunit)<<endl;
     
     for (int i = 0; i < nkub; i++)
       {
-	out << srodek (i, pol) / jednostkax << separator;
-	if (count > 0)
-	  out << (sum[i] / count) /width / jednostkay << endl;
-	else
-	  out << 0 << endl;
+		out << srodek (i, pol) / xunit << separator;
+		if (count > 0)
+		  out << (sum[i] / count) /width / yunit << endl;
+		else
+		  out << 0 << endl;
       }
   }
   
 /////////////////////////////////////////////////////////////////////////////////////
-  void hist::wykres (const char* filename, double jednostkax, double jednostkay, double pol)
+  void hist::plot (const char* filename, double xunit, double yunit, double pol, char separator)
 /////////////////////////////////////////////////////////////////////////////////////
   {
     std::ofstream wyk (filename);
-    wykres (wyk, jednostkax, jednostkay, pol);
+    plot (wyk, xunit, yunit, pol, separator);
   }
 
 /////////////////////////////////////////////////////////////////////////////////////

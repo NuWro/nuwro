@@ -10,6 +10,8 @@
 #include "calg.h"
 #include "density_of_nucleus.h"
 #include "rpa_lib.h"
+#include "../calg5.h"
+#include "../util2.h"
 
 #ifndef RPA_MAIN
 	#include "../ff.h"
@@ -308,7 +310,7 @@ namespace rpa
 			return 0; cerr<<"amplituda nie liczona"<<endl;
 		}
 		else   
-			return  calg5x(sigma_qv_q0,q0,qMin(q0),qMax(q0),1e-40,50);
+			return  calg5a(fix2(sigma_qv_q0,q0),qMin(q0),qMax(q0),100);
 	}    
 
 	struct config{
@@ -424,7 +426,7 @@ namespace rpa
 	}    
 
 
-
+/*
 	void plot_sigma_q2(double E,double dokl, int ilosc,const int kNucleus, int nu_pdg, int use_Mf, int kFF0=0,double kf0=0 )
 	//void plot_sigma_q2(double E,double dokl, config &ust )
 	{   
@@ -496,7 +498,7 @@ namespace rpa
 		// out<< q2/GeV/GeV <<' ' <<0.5*liczba_atomowa(kNucleus )*sigma_q2(q2,dokl)/(1e-38)<<endl;
 
 	} 
-		  
+*/		  
 		  
 	void plot_sigma_q0(double E,double dokl, double krok,const int kNucleus, int nu_pdg, int use_Mf, int kFF0,double kf0=0 )
 	{
@@ -506,30 +508,37 @@ namespace rpa
 		 
 		 stringstream s;
 
-		 s<<"rpa_q0_"<<nazwa_jadra(kNucleus)<<"_E="<<En/GeV
-		  <<"g="<<g_prim<<"kfsr="<<kf<<"Mef="<<Mef<<form(kFF)<<".rpa="<<use_rpa<<".dat"<<flush;
+		 s<<"rpa_q0_"<<nazwa_jadra(kNucleus)<<",E="<<En/GeV
+		  <<",g="<<g_prim<<",kfsr="<<kf<<",Mef="<<Mef<<form(kFF)<<",rpa="<<use_rpa<<",nu="<<nu_pdg<<".dat"<<flush;
 
 		ofstream out(s.str().c_str());
-
+		double frac=0;
+        switch(kNucleus)
+        {
+			case C:
+			case O: frac= 0.5;break;
+			case Ar:frac= 18./40.;break;
+			case Fe:frac= 26./56.;break;
+		}
+		if(nu_pdg>0)
+			frac=1-frac;
 		for(double q0=5*MeV; q0 < En-m; q0+=krok)
-			out<< q0/GeV <<' ' <</*0.5*liczba_atomowa(kNucleus)*/sigma_q0(q0)*GeV/(1e-38)<<endl;
+			out<< q0/GeV <<' ' <<frac*sigma_q0(q0)*GeV/(1e-38)<<endl;
 	}
 
 
 
-	double sigma(double E, double dokl)
+	double sigma()
 	{
-
-		En=E;
-		return calg5(sigma_q0,0 ,En - m, dokl, 20);	
+		return calg5a(sigma_q0,0 ,En - m);	
 	}
-		  
+/*		  
 	double sigma_Atom(double E,int kNucleus, int nu_pdg, double dokl, int use_Mf, int kFF0, double kf0)
 	{
 
 		configure(E, kNucleus, nu_pdg, use_Mf, kFF0,kf0);
 
-		return 0.5*liczba_atomowa(kNucleus)*sigma(En,dokl);      
+		return 0.5*liczba_atomowa(kNucleus)*sigma();      
 	}
 
 		  
@@ -547,24 +556,35 @@ namespace rpa
 		ofstream out(s.str().c_str());
 		
 		for(double En =  m+50*MeV; En<zakres ;En+=krok)
-			out<< En/GeV  <<' '<</*0.5*liczba_atomowa(kNucleus)*/sigma(En,dokl)/(1e-38)<<endl;
+			out<< En/GeV  <<' '<<0.5*liczba_atomowa(kNucleus)*sigma()/(1e-38)<<endl;
 	}
-
-	double ratio_rpa_fg(double E, double q0, double qv)//, double kf0, int kFF0=0,int nu_pdg=1,int kNucleus=0, bool use_Mf0=0)
+*/
+	double ratio_rpa_fg(int qel_rpa, double q0, double qv)//, double kf0, int kFF0=0,int nu_pdg=1,int kNucleus=0, bool use_Mf0=0)
 	{
 
 //		configure(E, kNucleus, nu_pdg, use_Mf0, kFF0, kf0);
-        ratio=true;
-        double res=sigma_qv_q0(qv,q0);
-        ratio=false;
-        return res;
-		use_rpa = true;  double sigma_rpa=sigma_qv_q0(qv,q0);
-		use_rpa = false; double sigma_fg=sigma_qv_q0(qv,q0);
-		//cout<< "a="<<sigma_rpa <<'\t'<<"b="<<sigma_fg<<endl;
-		return sigma_fg ? sigma_rpa/sigma_fg : 1;
+	    switch(qel_rpa)
+	    {	
+			case 0:return 1;
+			case 1:
+			{
+				ratio=true;
+				double res=sigma_qv_q0(qv,q0);
+				ratio=false;
+				return res;
+			}
+			case 2:
+			{
+				ratio=false;
+				use_rpa = true;
+				double sigma_rpa=sigma_qv_q0(qv,q0);
+				use_rpa = false; 
+				double sigma_fg=sigma_qv_q0(qv,q0);
+				return sigma_fg ? sigma_rpa/sigma_fg : 1;
+			}
+			default: return 1;
+		}
 	}
-
-
 }
 
 
@@ -574,39 +594,32 @@ using namespace rpa;
 
 int main()
 {
-	//cout<<" Tlen RPA "<<sigma_Atom(1*GeV, 1e-39, 14, 0, O,Dipol,0)<<endl;
-	//cout<<" Tlen MFRPA "<<sigma_Atom(1*GeV, 1e-39, 14, 1, O,Dipol,0)<<endl;
-	//cout<<" Argon RPA "<<sigma_Atom(1*GeV, 1e-39, 14, 0, Ar,Dipol,0)<<endl;
-	//cout<<" Argon MFRPA "<<sigma_Atom(1*GeV, 1e-39, 14, 1, Ar,Dipol,0)<<endl;
-	//cout<<" Iron RPA "<<sigma_Atom(1*GeV, 1e-39, 14, 0, Fe,Dipol,0)<<endl;
-	//cout<<" Iron MFRPA "<<sigma_Atom(1*GeV, 1e-39, 14, 1, Fe,Dipol,0)<<endl;
-
-	//cout << "Mef_sr Carbon =" << mean_Mef(C) <<endl;
-
-	//cout << Ar << "\t" << O << "\t" << endl;
-
-	//(double E,double dokl, double krok,int kNucleus, int rodzaj, int use_Mf, int kFF0,double kf0=0 )
-	// plot_sigma_q0(0.7*GeV,1e-3, 1*MeV,  Ar, 14, 0, BBA,225*MeV );
-
-
-//	rpa::plot_sigma_q2(0.5*GeV,1e-3, 500,rpa::Ar ,14, true,rpa::NNFF,225*MeV );
-//	rpa::plot_sigma_q2(0.5*GeV,1e-3, 500,rpa::Ar ,14, false,rpa::NNFF,225*MeV );
-
-	plot_sigma_q0(0.5*GeV,1e-3, 1*MeV,Ar ,14, true,NNFF,225*MeV );
-	//plot_sigma_q0(0.5*GeV,1e-3, 1*MeV,Ar ,14, false,NNFF,225*MeV );
-
-//	rpa::configure(500*MeV, rpa::Ar, 14, false, rpa::NNFF, 225*MeV);
-	use_rpa=true;
-	plot_sigma_q0(1*GeV,1e-3, 1*MeV,Ar ,14, true,NNFF,225*MeV );
+    double Enu=1*GeV;
+    int kNucleus=Ar;
+    double kf=mean_kf(kNucleus);
+    int nu=14;
+    
+    cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
+    cout<<"kf= "<<kf/MeV<<" MeV"<<endl;
+    cout<<"E= "<<Enu/MeV<<" MeV"<<endl;
+    cout<<"nupdg= "<<nu<<endl;
+    
 	use_rpa=false;
-	plot_sigma_q0(1*GeV,1e-3, 1*MeV,Ar ,14, true,NNFF,225*MeV );
+	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , false, BBA, kf );// qel_rpa=0
+	En=Enu;
+	cout<<sigma()<<endl;
+	use_rpa=true;                            
+	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , false, BBA, kf );//qel_rpa=1
+	En=Enu;
+	cout<<sigma()<<endl;
+	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , true , BBA, kf ); //qel_rpa=2
+	En=Enu;
+	cout<<sigma()<<endl;
 
-	//for(double E=0.2*GeV; E < 2*GeV; E+=20*MeV)
 	if(false)
 	{  
 		for(double q0=0*MeV;q0<rpa::En-rpa::m;q0+=10*MeV)
 		{
-//           cout<<q0<<'\t'<<rpa::qMin(q0)<<'\t'<<rpa::qMax(q0)<< ' '<<rpa::mm2<<endl;
 			for(double qv=rpa::qMin(q0);qv<rpa::qMax(q0);qv+=10*MeV)
 			{
 				double x=rpa::ratio_rpa_fg(rpa::En, q0, qv);
@@ -615,45 +628,8 @@ int main()
 			}
 		}
 		                                                          
-		//plot_sigma_q2alt(E, 1e-3, 500 , config(NNFF, 225*MeV, false, 14, Ar, true));
-		//plot_sigma_q2alt(E, 1e-3, 500 , config(NNFF, 225*MeV, true, 14, Ar, false));
-	//	rpa::plot_sigma_q2alt(E, 1e-3, 500 , rpa::config(rpa::NNFF2, 225*MeV, true, 14, rpa::Ar, false));
-
-		/*
-		plot_sigma_q2alt(E, 1e-3, 500 , ust1a);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust1b);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust2a);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust2b);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust10a);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust10b);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust20a);
-		plot_sigma_q2alt(E, 1e-3, 500 , ust20b);
-		*/
-	}
-
-	//plot_sigma_q0(1*GeV,1e-38, 1*MeV,C,14, 1,BBA,225*MeV );
-	//plot_sigma_q0(1*GeV,1e-38, 10*MeV,Ar,14, 1,0 );
-	//plot_sigma_q0(1*GeV,1e-38, 10*MeV,Fe,14, 1,0 );
-	//plot_sigma_q2(1*GeV,1e-39, C,14,0, 225*MeV ); 
-	//plot_sigma_q2(0.7*GeV,1e-39, C,14,1, 225*MeV );
-	//plot_sigma_q2(1*GeV,1e-39, C,14,0, 225*MeV ); 
-	//plot_sigma_q2(1*GeV,1e-39, C,14,1, 225*MeV );
-	//plot_sigma_q2(1.2*GeV,1e-39, C,14,0, 225*MeV );
-	//plot_sigma_q2(0.7*GeV,1e-3, C,14,1, 225*MeV );
-	//plot_sigma_q2(1.5*GeV,1e-39, C,14,0, 225*MeV );
-	//plot_sigma_q2(1.5*GeV,1e-39, C,14,1, 225*MeV );
-	//plot_sigma(10*GeV,50*MeV, C,14,1e-39,0,BBA,225*MeV);
-	//plot_sigma(10*GeV,50*MeV, O,14,1e-38,1,0);
-	//plot_sigma(10*GeV,50*MeV, Fe,14,1e-38,1,0);
-	//plot_sigma(10*GeV,50*MeV, C,14,1e-40,1,225);
-
-	//plot_sigma(5*GeV,100*MeV, 1e-4,ust1a);
-	//plot_sigma(5*GeV,100*MeV, 1e-4,ust1b);
-
-	//plot_sigma(5*GeV,100*MeV, 1e-4,ust2a);
-	//plot_sigma(5*GeV,100*MeV, 1e-4,ust2b);
 		 
+	}
 }
-
 
 #endif

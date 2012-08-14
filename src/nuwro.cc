@@ -362,6 +362,7 @@ void NuWro::test_events(params & p)
   
   if(p.number_of_test_events>0  && p.beam_test_only==0)
   {hist hq2((char*)"q2",0,2*GeV2,100);
+   hist hq0((char*)"q0",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
    hist hT((char*)"T",0,2*GeV,100);
      bool active[]={p.dyn_qel_cc,p.dyn_qel_nc,
                  p.dyn_res_cc,p.dyn_res_nc,
@@ -383,7 +384,13 @@ void NuWro::test_events(params & p)
        procesy.add (e->dyn, e->weight, bias);
        if(e->weight>0)
          {hq2.insert_value(-e->q2(),e->weight*cm2);
+          hq0.insert_value(e->q0(),e->weight*cm2);
           hT.insert_value(e->in[0].E(),e->weight*cm2);
+         }
+         else
+         {hq2.insert_value(0,0);
+          hq0.insert_value(0,0);
+          hT.insert_value(0,0);
          }
        delete e;
        raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));
@@ -396,10 +403,9 @@ void NuWro::test_events(params & p)
       totals << ' '<<procesy.avg(i);
     totals<<endl;
     procesy.set_weights_to_avg ();
-    ofstream fhq2 ("q2.txt");
-    hq2.wykres(fhq2,GeV2,1e-38*cm2/GeV2);
-    ofstream fhT ("T.txt");
-    hT.wykres(fhT,GeV,1e-38*cm2/GeV);
+    hq2.plot("q2.txt",GeV2,1e-38*cm2/GeV2);
+    hq0.plot("q0.txt",GeV,1e-38*cm2/GeV);
+    hT.plot("T.txt",GeV,1e-38*cm2/GeV);
   } 
 }
 

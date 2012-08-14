@@ -4,6 +4,7 @@
 #include <complex>
 #include <fstream>
 #include <sstream>
+#include <cassert>
 
 #include "jednostki.h"
 #include "rpa_lib.h"
@@ -37,25 +38,18 @@ namespace rpa
 	double fpi2= fpi*fpi;
 	double g_prim = 0.7;           
 	bool ratio=false;      // used by ratio_rpa_fg;
+	bool use_rpa = true;   
+	bool use_mf = true;
 	double En;             // changed by configure  
-	int kFF=0;             // changed by configure
-	double kf;             // changed by configure 
-	int znak = 1;   	   // changed by configure 
-						   // znak = 1 - particle 
-						   // znak =-1 - antiparticle
 	double m=m_mu;         // changed by configure
-	double mm2 = m*m;      // changed by configure
-	bool use_rpa = true;   // changed by configure
-	double Mef;            // changed by configure
-	double Mef2;           // changed by configure      
-	double Ef;             // changed by configure
-	double Ef2;            // changed by configure
+	int znak = 1;   	   // changed by configure: 1 - particle, -1 - antiparticle
+	double kf;             // changed by configure 
+	double mf=M;          // changed by configure
 	double sqrt_2=sqrt(2);
 
 	int lambda_l =1;     
 	 
 	int l(1), t(1);
-	
 	 
 	double max3(double a, double b, double c)
 	{  
@@ -79,6 +73,11 @@ namespace rpa
 		double qv3=qv2*qv;
 		double q2 = q02-qv2;
 		double q4 =q2*q2;
+		double Mef=use_mf? mf :M;
+		double Mef2=Mef*Mef;              		
+		double Ef= sqrt(kf*kf + Mef2);   
+		double Ef2=kf*kf + Mef2;
+		double mm2=m*m;
 
 		double alfa=log(fabs(q4 - 4*pow( q0*Ef - qv*kf, 2 ) )/fabs(q4 - 4*pow(q0*Ef + qv*kf,  2)) );
 		double beta=log(fabs((pow(q2 + 2*qv*kf, 2) - 4*q02*Ef2))/fabs(pow(q2 - 2*qv*kf, 2) - 4*q02*Ef2 ) ) ;
@@ -263,20 +262,14 @@ namespace rpa
 		  return amplituda[0] ? min(amplituda[1]/amplituda[0],10.0) :1;
 	}
 
-	void configure(double E, const int kNucleus, int nu_pdg, int use_Mf, int kFF0,double kf0, double mf0)
+	void configure(double E, int nu_pdg, double kf0, double mf0)
 	{
 		En = E;  
-		kFF=kFF0;
-
-		//kf = kf0>0 ? kf0 : mean_kf(kNucleus);       
 		kf=kf0;
+		mf=mf0;
 		
-		Mef = use_Mf ? (mf0>0? mf0 :638 * MeV) : M; 
-		Mef2=Mef*Mef;              		
-		Ef= sqrt(kf*kf + Mef2);   
-		Ef2=kf*kf + Mef2;
+		znak= nu_pdg>0 ? 1 :-1;
 		
-		znak=nu_pdg>0 ? 1 :-1;
 		switch(nu_pdg)
 		{ 
 			case 12:case -12: m=m_e;break;
@@ -284,21 +277,34 @@ namespace rpa
 		  	case 16:case -16: m=m_tau;break;
 		  	default: m=0;break;
 	    }
-		mm2=m*m;
-	}   
+	}
 
-	double ratio_rpa_fg(double E, double q0, double qv)//, double kf0, int kFF0=0,int nu_pdg=1,int kNucleus=0, bool use_Mf0=0)
+	double ratio_rpa_fg(int qel_rpa, double q0, double qv)
 	{
 
-//		configure(E, kNucleus, nu_pdg, use_Mf0, kFF0, kf0);
-        ratio=true;
-        double res=sigma_qv_q0(qv,q0);
-        return res;
-        ratio=false;
-		use_rpa = true;  double sigma_rpa=sigma_qv_q0(qv,q0);
-		use_rpa = false; double sigma_fg=sigma_qv_q0(qv,q0);
-		//cout<< "a="<<sigma_rpa <<'\t'<<"b="<<sigma_fg<<endl;
-		return sigma_fg ? sigma_rpa/sigma_fg : 1;
+	    switch(qel_rpa)
+	    {	
+			case 0:return 1;
+			case 1:
+			{
+				use_rpa = use_mf=false;
+				ratio=true;
+				double res=sigma_qv_q0(qv,q0);
+				ratio=false;
+				return res;
+			}
+			case 2:
+			{
+				ratio= use_rpa = use_mf=false;
+				double sigma_fg=sigma_qv_q0(qv,q0);
+				//assert(sigma_fg>=0);
+				use_rpa = use_mf=true ; 
+				double sigma_rpa=sigma_qv_q0(qv,q0);
+				//assert(sigma_rpa>=0);
+				return sigma_fg>0 && sigma_rpa>=0 ? min(max(sigma_rpa/sigma_fg,0.),10.) : 1;
+			}
+			default: return 1;
+		}
 	}
 
 
