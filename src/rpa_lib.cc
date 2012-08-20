@@ -38,13 +38,13 @@ namespace rpa
 	double fpi2= fpi*fpi;
 	double g_prim = 0.7;           
 	bool ratio=false;      // used by ratio_rpa_fg;
-	bool use_rpa = true;   
-	bool use_mf = true;
+	bool use_rpa = true;   // used by ratio_rpa_fg;
+	bool use_mf = true;    // used by ratio_rpa_fg;
 	double En;             // changed by configure  
 	double m=m_mu;         // changed by configure
 	int znak = 1;   	   // changed by configure: 1 - particle, -1 - antiparticle
 	double kf;             // changed by configure 
-	double mf=M;          // changed by configure
+	double mf=M;           // changed by configure
 	double sqrt_2=sqrt(2);
 
 	int lambda_l =1;     
@@ -74,10 +74,11 @@ namespace rpa
 		double q2 = q02-qv2;
 		double q4 =q2*q2;
 		double Mef=use_mf? mf :M;
+		//cout<<kf<<' '<<Mef<<endl;
 		double Mef2=Mef*Mef;              		
-		double Ef= sqrt(kf*kf + Mef2);   
 		double Ef2=kf*kf + Mef2;
-		double mm2=m*m;
+		double Ef= sqrt(Ef2);   
+		double mm=m*m;
 
 		double alfa=log(fabs(q4 - 4*pow( q0*Ef - qv*kf, 2 ) )/fabs(q4 - 4*pow(q0*Ef + qv*kf,  2)) );
 		double beta=log(fabs((pow(q2 + 2*qv*kf, 2) - 4*q02*Ef2))/fabs(pow(q2 - 2*qv*kf, 2) - 4*q02*Ef2 ) ) ;
@@ -236,28 +237,28 @@ namespace rpa
 		R_VA[1]=R_VA[0] +poprawka_va;
 
 
-		double L_L=-(16*En*(En-q0)-4*(mm2-q2))*q2/qv2 - 4*mm2*q0*(4*En - q0 + q0*mm2/q2 )/qv2;
+		double L_L=-(16*En*(En-q0)-4*(mm-q2))*q2/qv2 - 4*mm*q0*(4*En - q0 + q0*mm/q2 )/qv2;
 
-		double L_T=-(16*En*(En-q0)-4*(mm2-q2))*q2/qv2 
-					- 4*mm2*(4*En*q0- (q0*q0-qv*qv) + mm2)/qv2 - 8*(q2-mm2);
+		double L_T=-(16*En*(En-q0)-4*(mm-q2))*q2/qv2 
+					- 4*mm*(4*En*q0- (q0*q0-qv*qv) + mm)/qv2 - 8*(q2-mm);
 
-		double L_A=8*(q2-mm2);
+		double L_A=8*(q2-mm);
 
-		double L_VA=-16*(q2*(2*En-q0) + q0*mm2)/qv;
+		double L_VA=-16*(q2*(2*En-q0) + q0*mm)/qv;
 
 
 		double amplituda[2];
 		amplituda[0]=    L_L*R_L[0] +(L_A+L_T)*R_A[0] + L_T*(R_T[0] -R_A[0]) -znak*L_VA*R_VA[0];   
 		amplituda[1]=    L_L*R_L[1] +(L_A+L_T)*R_A[1] + L_T*(R_T[1] -R_A[1]) -znak*L_VA*R_VA[1];   
 	  
-	/*	  if(amplituda > 0)
+		  if(amplituda[0] > 0 || amplituda[1] > 0)
 		  cerr<<"amplituda zla( E="<< En/GeV 
 			  <<", q0 = "<< q0/GeV<<", Q2 = " 
 			  << (qv*qv-q0*q0)/GeV/GeV 
-			  << ", (En-q0)*(En-q0)-mm2 = " << 
-		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<")"<<endl;
-	*/	 if(!ratio)
-		  return -amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2;
+			  << ", (En-q0)*(En-q0)-mm = " << 
+		  ((En-q0)*(En-q0)-mm)/GeV/GeV<<") mm="<<mm<<endl;
+		 if(!ratio)
+		  return max(-amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2,0.);
 		 else
 		  return amplituda[0] ? min(amplituda[1]/amplituda[0],10.0) :1;
 	}
@@ -281,10 +282,12 @@ namespace rpa
 
 	double ratio_rpa_fg(int qel_rpa, double q0, double qv)
 	{
-
+		if(q0<0) 
+			return 0;
 	    switch(qel_rpa)
 	    {	
-			case 0:return 1;
+			case 0: 
+				return 1;
 			case 1:
 			{
 				use_rpa = use_mf=false;
@@ -303,7 +306,8 @@ namespace rpa
 				//assert(sigma_rpa>=0);
 				return sigma_fg>0 && sigma_rpa>=0 ? min(max(sigma_rpa/sigma_fg,0.),10.) : 1;
 			}
-			default: return 1;
+			default: 
+				return 1;
 		}
 	}
 

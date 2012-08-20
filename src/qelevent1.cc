@@ -72,16 +72,16 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	vec ped=N0.p();
 	switch(p.nucleus_target)
 	{
-	case 0: _E_bind=0; 				break;
-	case 1: _E_bind= p.nucleus_E_b;	break;
-	case 2: _E_bind=0;              break; //temporary
-	case 3: _E_bind=0;              break; //temporary
-	case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);	
- 		     //cout<<ped<<"  "<<_E_bind<<endl;//SF
-	         break;
-	case 5: _E_bind= deuter_binen (ped);break; //deuterium 
-	case 6: _E_bind= p.nucleus_E_b; 	break; //deuterium like Fermi gas
-	default: _E_bind=0;//in the future it is possible to add SF for other nuclei as well
+		case 0: _E_bind=0; 				break;
+		case 1: _E_bind= p.nucleus_E_b;	break;
+		case 2: _E_bind=0;              break; //temporary
+		case 3: _E_bind=0;              break; //temporary
+		case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);	
+				 //cout<<ped<<"  "<<_E_bind<<endl;//SF
+				 break;
+		case 5: _E_bind= deuter_binen (ped);break; //deuterium 
+		case 6: _E_bind= p.nucleus_E_b; 	break; //deuterium like Fermi gas
+		default: _E_bind=0;//in the future it is possible to add SF for other nuclei as well
 	}
 
 	vect aa;
@@ -154,16 +154,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
                  cerr<<"Kinematics code: '"<<qel_kinematics<<"' is invalid."<<endl;	  
 	             exit(1);
     }  
-//    cout<<"q2="<<q2<<endl;
-    /* TA CZESC BYLA OK , ZROBIAONA PRZEZ CZARKA
-    if (q2 != 0  		   // there was scattering
-        &&                         // and
-        N1.momentum () >= kF   // Pauli-blocking did not occur	        )
-       )
-    */
-    //!!!!!!!!ZMIANA JARKA PED FERMIEGO
-    //e.flag.q2=q2;
-    //e.flag.W=N1.mass();
     if (q2 != 0  		           // there was scattering
 //        &&                       // and
 //        !t.pauli_blocking(N1)    // Pauli-blocking did not occur	        
@@ -174,7 +164,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       
       
     vect nu4 = nu;
-    nu4.boost (-N0.v ());     // calculate in  nucleon rest frame
+    nu4.boost (-N0.v ());         // calculate in  nucleon rest frame
     qel.set_energy (nu4.t);       // neutrino energy in nucleon rest frame
     x=qel.sigma (q2,kind) *jakobian;
 	
@@ -195,6 +185,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
      e.out.push_back(lepton);
      e.out.push_back(N1);
      e.weight=x/cm2;
+
 	 if(p.qel_rpa && !nc)
 	 {
 		rpa::configure(e.in[0].t, e.in[0].pdg, t.kF(),t.Mf());

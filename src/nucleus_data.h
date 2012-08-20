@@ -53,12 +53,12 @@ class nucleus_data
 	{
 		return r*r*dens(r);
 	}
-	double mf_helper(double r)
+/*	double mf_helper(double r)
 	{
 		double den=dens(r);
 		return Meff(cbrt(3*Pi*Pi*den/2))*r*r*den;
 	}
-
+*/
 };
 
 extern nucleus_data dens_data[] ;

@@ -1,8 +1,8 @@
 #include "elements.h"
 
 
-const double BD=-1;      //brak danych
-const double NE=-1; 	 //nie istnieje
+const double BD=-1;      // no data
+const double NE=-1; 	 // does non existing
 const double SMALL=1e-4; // less that 0.001
 
 

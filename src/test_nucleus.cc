@@ -102,11 +102,14 @@ void stat (int p, int n,int k=0)
 {
   makenucleus(p,n,k);
   cout << "stat(" << p << ',' << n << ") " <<
-    " <r>=" << sqrt (mean (r2)) <<
+    " <r>=" << sqrt (mean (r2))/fermi <<
     " <kfp>=" << mean (kfp) <<
     " kfp(0)=" << kfp (0) <<
     " <kfn>=" << mean (kfn) <<
-    " kfn(0)=" << kfn (0) << " <1>=" << mean (one) << endl;
+    " kfn(0)=" << kfn (0) << " <1>=" << mean (one) <<
+    " Eb=" <<  t->Eb() <<" MeV "<< 
+    " Ef=" <<  t->Ef() <<" MeV ("<< 
+    t->i->Z<<','<<t->i->N<<')'<< endl;
   delete t;
 }
 
@@ -198,8 +201,6 @@ int znane (F funkcja,int kind)
   funkcja (42, 52,kind);
   funkcja (42, 54,kind);
   funkcja (42, 56,kind);
-
-
 }
 
 template <class F >

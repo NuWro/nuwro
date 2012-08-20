@@ -173,7 +173,7 @@ static double prfSOG(double sog[],double r)
 	static double _2pF_39_50[3]= {4.76   ,0.57129,0.172486};
 	static double _2pF_41_52[3]= {4.875  ,0.57329,0.168620};
 
-	static double _2pF_79_118[3]={6.386  ,0.53527, 1}; 
+	static double _2pF_79_118[3]={6.386  ,0.53527, 0.168879}; 
 	static double _2pF_Th232a[3]={6.7915 ,0.57115, 0.165272}; 
 	static double _2pF_Th232b[3]={6.851  ,0.518  , 0.163042}; 
 	static double _2pF_U238a[3]= {6.8054 ,0.60516, 0.167221}; 
@@ -181,9 +181,9 @@ static double prfSOG(double sog[],double r)
 
 	// Three-parameter Fermi model: c=a   , z=alfa,        w, rho0 (calculated)	
 	static double   _3pF_7_7[4]= {2.57000 ,0.5052 ,-0.18070 ,0.0127921 };
-	static double   _3pF_7_8[4]= {2.33430 ,0.4985 , 0.13930 ,0.011046 };
-	static double _3pF_12_12a[4]= {3.10833 ,0.6079 ,-0.16330,0.00707021};
-	static double _3pF_12_12b[4]= {3.19234 ,0.6046 ,-0.24920,0.00742766};
+	static double   _3pF_7_8[4]= {2.33430 ,0.4985 , 0.13930 ,0.011046  };
+	static double _3pF_12_12a[4]={3.10833 ,0.6079 ,-0.16330 ,0.00707021};
+	static double _3pF_12_12b[4]={3.19234 ,0.6046 ,-0.24920 ,0.00742766};
 	static double _3pF_12_13[4]= {3.22500 ,0.5840 ,-0.23634 ,0.00714492};
 	static double _3pF_14_14[4]= {3.34090 ,0.5803 ,-0.23390 ,0.00646414};
 	static double _3pF_14_15[4]= {3.33812 ,0.5472 ,-0.20312 ,0.00631729};
@@ -1214,8 +1214,9 @@ double nucleus_data::Mf()
 {
 	if(_Mf==0)
 	{
-		_Mf=calg5a(makefun(*this,&nucleus_data::mf_helper),0,r())/
-			calg5a(makefun(*this,&nucleus_data::dens_helper),0,r());
+//		_Mf=calg5a(makefun(*this,&nucleus_data::mf_helper),0,r())/
+//			calg5a(makefun(*this,&nucleus_data::dens_helper),0,r());
+		_Mf=Meff(kF());
 	}
 	return _Mf;
 }

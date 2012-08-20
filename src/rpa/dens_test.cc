@@ -1,5 +1,4 @@
 #include "../jednostki.h"
-#include "../jednostki.h"
 #include "../nucleus_data.h"
 #include "../calg5.h"
 #include "../util2.h"

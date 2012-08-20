@@ -6,6 +6,7 @@
 #include "params.h"
 #include "generatormt.h"
 #include "nucleus_data.h"
+#include "isotopes.h"
 #include <stack>
 
 using namespace std;
@@ -27,11 +28,15 @@ class nucleus
 	private:
 
 	nucleus_data *d;      ///< density profiles from experimental data
+	public:
+	isotope      *i;      ///< isotope data from: "The Ame2003 atomic mass evaluation (II)"  by G.Audi, A.H.Wapstra and C.Thibault
+					      ///< Nuclear Physics A729 p. 337-676, December 22, 2003.
+	
 	int pr;			      ///< real number of protons 
 	int nr;			      ///< real number of neutrons
 	vect _p4;             ///< minus total fourmomentum of lost nucleons  
 	double _r;			  ///< nucleus radius
-	double _Eb;			  ///< nucleon bounding energy (not used in fact)!!!!!!!
+	double _Eb;			  ///< binding energy per nucleon (from exp data)
 	double _kf;			  ///< global Fermi momentum
 	double _V;			  ///< nucleon potential (Fermi energy) 
 	int kMomDist;   	  ///< Type of nucleon momentum distribution:
@@ -66,6 +71,8 @@ class nucleus
 	double localkf (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center 
 	double kF(){return _kf;}	             ///< global Fermi momentum
 	double Mf();			                 ///< nucleon effective mass inside nucleus  
+	double Ef();                             ///< nucleon Fermi energy
+	double Eb(){return _Eb;}                 ///< nucleon binding energy (from experimantal data)
 	particle get_nucleon (vec r);            ///< random nucleon located at r (used in Interaction.cc)
 	particle get_nucleon ();                 ///< random nucleon (used in nuwro.cc)
 	bool pauli_blocking (particle & pa);     ///< true = the particle is blocked
@@ -78,6 +85,13 @@ class nucleus
 ////////////////////////////////////////////////////////////////////////
 ///                I m p l e m e n t a t i on
 ////////////////////////////////////////////////////////////////////////
+
+
+inline double nucleus::Ef()
+{
+	double const M=0.5*(PDG::mass_proton+PDG::mass_neutron);
+	return sqrt(_kf*_kf+M*M)-M+_Eb;
+}
 
 
 inline double kf_from_density (double dens)

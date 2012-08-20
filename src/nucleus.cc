@@ -14,14 +14,17 @@ nucleus::nucleus(params &par):
 	_kf  (par.nucleus_kf*MeV),
 	kMomDist(par.nucleus_target),
 	spectator(NULL),
-	d(NULL)
+	d(NULL),
+	i(NULL)
 {
 	using namespace PDG;
 	pr=p;
 	nr=n;	 
-
 	if(p+n==1) 
 		_Eb=_kf=_r=0; /// ?????? 	    
+    i=isotope_find(p,n);     
+    if(i->Z==p && i->N==n)
+		_Eb=i->binding_energy*keV;
 	///Potential -- 
 	using namespace PDG;
 	
