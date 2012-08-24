@@ -1147,7 +1147,7 @@ const char*  nucleus_data::name()
 	if(dens_fun==prf3pG) return "3pG";
 	if(dens_fun==prfHO) return " HO";
 	if(dens_fun==prfMHO) return "MHO";
-	if(dens_fun==prfMI) return "MI2";
+	if(dens_fun==prfMI) return " MI";
 	return "";
 }
 

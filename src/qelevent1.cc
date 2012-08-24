@@ -52,10 +52,19 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
        lepton.pdg=nu.pdg-(nu.pdg>0 ? 1 :-1);
        lepton.set_mass(PDG::mass(lepton.pdg));
        N1.pdg=(nu.pdg>0 ? PDG::pdg_proton : PDG::pdg_neutron);//zmiana JN
-       N1.set_mass(PDG::mass(N1.pdg));
+       switch(p.qel_rpa)
+       {
+			case 2:
+			case 3:
+				N0.set_mass(t.Mf());
+				N1.set_mass(t.Mf());
+				break;
+			default:	
+				N1.set_mass(PDG::mass(N1.pdg));
+				break;
+	   }
+	   
      } 
-	double qelmlep=lepton.mass();
-    //cout<<"masa leptonu= "<<lepton.mass()<<endl;
 
 	double _E_bind=0;	//binding energy
 
@@ -76,12 +85,13 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		case 1: _E_bind= p.nucleus_E_b;	break;
 		case 2: _E_bind=0;              break; //temporary
 		case 3: _E_bind=0;              break; //temporary
-		case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);	
+		case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);
+				 //in the future it is possible to add SF for other nuclei as well	
 				 //cout<<ped<<"  "<<_E_bind<<endl;//SF
 				 break;
 		case 5: _E_bind= deuter_binen (ped);break; //deuterium 
 		case 6: _E_bind= p.nucleus_E_b; 	break; //deuterium like Fermi gas
-		default: _E_bind=0;//in the future it is possible to add SF for other nuclei as well
+		default: _E_bind=0;
 	}
 
 	vect aa;
@@ -94,13 +104,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	 	return 0;
 	}
 
-
-    int qel_cc_japan=0;
-    QEL qel(lepton.mass(),
-            //N0.mass(),
-            (PDG::mass_proton+PDG::mass_neutron)/2, 
-            lepton.pdg<0,   //antyneutrino
-            qel_cc_japan);
     
     // cross section (is 0 until the reaction occurs)   
     double x = 0;		
@@ -129,7 +132,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
  	            break;
     case  2:    // effective mass trick kinematics the most doubtful    
                 // first lower the nucleon mass down the binging energy
-	            N0.set_mass(M12-27*MeV);  
+	            N0.set_mass((mass_proton+mass_neutron)/2-27*MeV);  
 		        // next do the usual kinematics 
 		        // preserving energy and momentum
 		        // (not taking into account the spactator nucleus)
@@ -164,9 +167,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       
       
     vect nu4 = nu;
-    nu4.boost (-N0.v ());         // calculate in  nucleon rest frame
-    qel.set_energy (nu4.t);       // neutrino energy in nucleon rest frame
-    x=qel.sigma (q2,kind) *jakobian;
+    nu4.boost (-N0.v ());         // calculate nu energy in nucleon rest frame
+    x=jakobian* qel_sigma (nu4.t, q2, kind, nu.pdg<0, lepton.mass(), N0.mass()); 
 	
      // now take into account the neutrino flux and nucleon proper time 
      // corrections to the cross section on the whole nucleus
@@ -178,23 +180,32 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		vv = N0.v().length ();
 		vz = N0.v() * nu.v().dir(); // this is general
 		x *= sqrt ( (1 - vz) * (1 - vz) );
-      }  
-
+     } 
+       
+     switch(p.qel_rpa)
+	 {
+		 case 2:
+		 case 3:
+			N1.set_mass(PDG::mass(N1.pdg));
+	 }
+		
      e.temp.push_back(lepton);
      e.temp.push_back(N1);
      e.out.push_back(lepton);
      e.out.push_back(N1);
      e.weight=x/cm2;
 
-	 if(p.qel_rpa && !nc)
-	 {
-		rpa::configure(e.in[0].t, e.in[0].pdg, t.kF(),t.Mf());
-		double rpa_frac=rpa::ratio_rpa_fg(p.qel_rpa, e.q0(), e.qv() );
-		e.weight*=rpa_frac;
-	 } 
+	 if(!nc)
+		switch(p.qel_rpa)
+		{
+			case 1:
+			case 3:
+			case 5:
+				rpa::configure(e.in[0].t, e.in[0].pdg, t.kF(),t.Mf());
+				e.weight*=rpa::ratio_rpa_fg(p.qel_rpa, e.q0(), e.qv());
+				break;
+		} 
 	//cout<<"kFP="<<kF_P<<endl;
-
-	//cout<<"CR="<<e.weight<<endl;
 	//cout<<(e.flag.nc ? "nc " : "cc " )<<x/cm2<<endl;
      return x;
   }

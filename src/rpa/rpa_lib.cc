@@ -958,20 +958,14 @@ int main()
     cout<<"E= "<<Enu/MeV<<" MeV"<<endl;
     cout<<"nupdg= "<<nu<<endl;
     
-	use_rpa=false;
-	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , false, BBA, kf );// qel_rpa=0
-	En=Enu;
-	cout<<sigma()<<endl;
-
-	use_rpa=true;                            
-	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , false, BBA, kf );//qel_rpa=1
-	En=Enu;
-	cout<<sigma()<<endl;
-
-	use_rpa=true;                            
-	plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , true , BBA, kf ); //qel_rpa=2
-	En=Enu;
-	cout<<sigma()<<endl;
+	for(int i=0;i<4;i++)
+	{
+		use_rpa=i&1;
+	    bool use_mf0=i&2;
+		plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , use_mf0, BBA, kf );// qel_rpa=0
+		En=Enu;
+		cout<<sigma()<<endl;
+	}
 
 	if(false)
 	{  

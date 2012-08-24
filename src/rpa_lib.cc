@@ -286,17 +286,17 @@ namespace rpa
 			return 0;
 	    switch(qel_rpa)
 	    {	
-			case 0: 
-				return 1;
 			case 1:
+			case 3:
 			{
-				use_rpa = use_mf=false;
-				ratio=true;
+				use_rpa = false;
+				ratio   = true;
+				use_mf  = (qel_rpa>=2);
 				double res=sigma_qv_q0(qv,q0);
-				ratio=false;
+				ratio   = false;
 				return res;
 			}
-			case 2:
+			case 5:
 			{
 				ratio= use_rpa = use_mf=false;
 				double sigma_fg=sigma_qv_q0(qv,q0);

@@ -47,8 +47,8 @@ PARAM(double,qel_cc_vector_mass,840)\
 PARAM(double,qel_cc_axial_mass,1200)\
 PARAM(double,qel_nc_axial_mass,1350)\
 PARAM(double,qel_s_axial_mass,1200)\
-PARAM(bool,flux_correction,0)\
-PARAM(int,sf_method,1)\
+PARAM(bool,flux_correction,1)\
+PARAM(int,sf_method,0)\
 PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
 PARAM(double,pion_axial_mass,0.94)\
