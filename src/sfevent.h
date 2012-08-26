@@ -7,7 +7,7 @@
 bool has_sf(nucleus &t);
 
 double sfevent(params &p,event &e,nucleus &t);
-double sfevent2(params &p,event &e,nucleus &t);
+double sfevent2cc(params &p,event &e,nucleus &t);
 double sfevent2nc(params &p,event &e,nucleus &t);
 
 #endif

@@ -949,7 +949,7 @@ int main()
     double Enu=1*GeV;
     int kNucleus=Ar;
     double kf=mean_kf(kNucleus);
-    int nu=14;
+    int nu=-14;
     
     cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
     cout<<"kf= "<<kf/MeV<<" MeV"<<endl;

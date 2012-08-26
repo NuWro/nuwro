@@ -355,7 +355,7 @@ pair<double,double> fap(double q2,int kind)
 	double ksi=3.706;
 
 	static const double M12=(PDG::mass_proton+PDG::mass_neutron)/2;
-	static double MM=M12*M12;
+	static const double MM=M12*M12;
 
 	double Ga, Fpa, Gas,Fpas;
 	double Fa=0,Fp=0;

@@ -163,7 +163,7 @@ void NuWro::makeevent(event* e, params &p)
 		nu=neutrino_beam->shoot(dyn>1 && dyn<6 && dismode);
 		nu.r=vec(nu.r)+p.beam_offset;
 	}
-	if(detector or mixer)
+	if(detector or mixer) // nucleuss not reusable
 	{
 		delete nucleuss;
 		nucleuss= make_nucleus(p);
@@ -218,39 +218,31 @@ void NuWro::makeevent(event* e, params &p)
 	switch (dyn)
 	{
 		case 0:
-			if (p.dyn_qel_cc)
+			if (p.dyn_qel_cc) // qel cc
 			{
 				if(p.sf_method>0 and has_sf(*nucleuss))
-					sfevent2 (p, *e, *nucleuss);
+					sfevent2cc (p, *e, *nucleuss);
 				else
-				{
 					qelevent1 (p, *e, *nucleuss, false);
-					if (p.pauli_blocking)
-						mypauli_qel (*e, *nucleuss);
-				}
 			}
-			break;				 // qel cc
+			break;				 
 		case 1:
-			if (p.dyn_qel_nc)
+			if (p.dyn_qel_nc) // qel nc
 				if(p.sf_method>0 and has_sf(*nucleuss))
 					sfevent2nc (p, *e, *nucleuss);
 			else
-			{
 				qelevent1 (p, *e, *nucleuss, true);
-				if (p.pauli_blocking)
-					mypauli_qel (*e, *nucleuss);
-			}
-			break;				 // qel nc
+			break;				 
 		case 2:
-			if (p.dyn_res_cc)
+			if (p.dyn_res_cc) // res cc
 			{
 				resevent2 (p, *e, true);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *nucleuss);
 			}
-			break;				 //true for dis cc
+			break;				
 		case 3:
-			if (p.dyn_res_nc)
+			if (p.dyn_res_nc) // res nc
 			{
 				resevent2 (p, *e, false);
 				if (p.pauli_blocking)
@@ -258,30 +250,30 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 4:
-			if (p.dyn_dis_cc)
+			if (p.dyn_dis_cc) // dis cc
 			{
 				disevent (p, *e, true);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *nucleuss);
 			}
-			break;				 //true for dis cc
+			break;				
 		case 5:
-			if (p.dyn_dis_nc)
+			if (p.dyn_dis_nc) //dis nc
 			{
 				disevent (p, *e, false);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *nucleuss);
 			}
 			break;
-		case 6:
-			if (p.dyn_coh_cc)
+		case 6:                  
+			if (p.dyn_coh_cc) // coh cc
 			{
 				if(p.coh_new) cohevent_cj (p, *e, *nucleuss, true);
 				else          cohevent2   (p, *e, *nucleuss, true);
 			}
 			break;
-		case 7:
-			if (p.dyn_coh_nc)
+		case 7:                  
+			if (p.dyn_coh_nc) // coh nc
 			{
 				if(p.coh_new) cohevent_cj (p, *e, *nucleuss, false);
 				else          cohevent2   (p, *e, *nucleuss, false);

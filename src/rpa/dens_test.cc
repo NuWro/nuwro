@@ -24,10 +24,14 @@ int main()
 			}
 		 
 		}
+	int lp=0,lup=1;
 	for(nucleus_data *i=dens_data;i->p();++i)
-	{
+	{   
 		int p=i->p();
 		int n=i->n();
+		if(lp)
+			if(i[-1].p()!=i->p() ||i[-1].n()!=i->n())
+				lup++;
 		double r=i->r();
 		stringstream s;
 
@@ -78,7 +82,8 @@ int main()
 			return x*x*ro*x*x*4*M_PI;
 		};
 		double rms=calg5a(rrrrdens,0.,r);
-		cout<<"<tr><td>"<<p<<','<<n
+		cout<<"<tr><td>"<< ++lp<<"<td>"<< lup
+			<<"<td>"<<p<<','<<n
 			<<"<td> "<<el[p].symbol<<p+n<<'\t'
 			<<"<td>"<<i->name()
 			<<"<td> rms="<<sqrt(rms/masa)/fermi	<<'\t'

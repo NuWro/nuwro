@@ -68,18 +68,16 @@ class nucleus
 	void remove_nucleon (particle P);	     ///< remove nucleon from the nucleous
 	void insert_nucleon (particle P);	     ///< insert nucleon back to the nucleous
 	double localkf (particle & pa);          ///< local Fermi momentum for particle (pdg and position dependent)
-	double localkf (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center 
+	double localkf_ (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center 
 	double kF(){return _kf;}	             ///< global Fermi momentum
 	double Mf();			                 ///< nucleon effective mass inside nucleus  
 	double Ef();                             ///< nucleon Fermi energy
 	double Eb(){return _Eb;}                 ///< nucleon binding energy (from experimantal data)
 	particle get_nucleon (vec r);            ///< random nucleon located at r (used in Interaction.cc)
 	particle get_nucleon ();                 ///< random nucleon (used in nuwro.cc)
-	bool pauli_blocking (particle & pa);     ///< true = the particle is blocked
-	bool pauli_blocking (int pdg, double p, double r);	                ///< true = particle is blocked
-	bool pauli_blocking (particle p[], int n);	                        ///< true = any of the particles is blocked
-	bool pauli_blocking_old (particle &pa, double ped);                 ///< TRUE = PARTICLE IS BLOCKED
-	bool pauli_blocking_old (int pdg, double p, double r, double ped);  ///< TRUE = PARTICLE IS BLOCKED
+	bool pauli_blocking (particle & pa);     ///< true if the particle is blocked
+	bool pauli_blocking (particle p[], int n); ///< true if any of p[0]..p[n-1] is blocked (used in cascade)
+	bool pauli_blocking_old (particle &pa, double p0); ///< TRUE = PARTICLE IS BLOCKED (p0 - momentum of initial nucleon)
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -107,12 +105,12 @@ inline double kf_from_density (double dens)
 ////////////////////////////////////////////////////////////////////////
 inline double nucleus::localkf (particle & pa)   ///< local Fermi momentum for particle (pdg and position dependent)
 {
-	return localkf (pa.pdg, pa.r.length ());
+	return localkf_ (pa.pdg, pa.r.length ());
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-inline  double nucleus::localkf (int pdg, double r)
+inline  double nucleus::localkf_ (int pdg, double r)
 {
 	if(pr+nr==1) 
 		return 0;
@@ -127,21 +125,15 @@ inline  double nucleus::localkf (int pdg, double r)
 }
 
 ///////////////////////////////////////////////////////////////////////
-inline bool nucleus::pauli_blocking_old (particle &pa, double ped)    // TRUE = PARTICLE IS BLOCKED
+inline bool nucleus::pauli_blocking_old (particle &pa, double p0)    // TRUE = PARTICLE IS BLOCKED
 {
-	return pauli_blocking_old(pa.pdg, pa.momentum(), pa.r.length(), ped);
-}
-
-///////////////////////////////////////////////////////////////////////
-inline bool nucleus::pauli_blocking_old (int pdg, double p, double r, double ped)    // TRUE = PARTICLE IS BLOCKED
-{
-	if(p+n==1 or not nucleon(pdg))
+	if(p+n==1 or not pa.nucleon())
 		return false;
 	switch(kMomDist)
 	{
-		case 2:	 return p<localkf(pdg,r); 
-		case 5:	 return p<ped;
-		default: return p<_kf;
+		case 2:	 return pa.momentum()<localkf(pa); // Local Fermi Gas
+		case 5:	 return pa.momentum()<p0;                            // deuteron
+		default: return pa.momentum()<_kf;                           // Global Fermi Gas
 	}
 }
 
@@ -157,13 +149,6 @@ inline double nucleus::frac_neutron () ///< percentage of neutrons
 	return double (nr) / (pr + nr); 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// check if particle is Pauli blocked - depends on localkf at particle position
-///////////////////////////////////////////////////////////////////////////////
-inline  bool nucleus::pauli_blocking (particle & pa) 
-{
-	return pauli_blocking (pa.pdg, pa.momentum (), pa.r.length ());
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // check if any of p[0]...p[n-1] is Pauli blocked 
@@ -177,17 +162,18 @@ inline  bool nucleus::pauli_blocking (particle p[], int n)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-inline bool nucleus::pauli_blocking (int pdg, double p, double r)    // TRUE = PARTICLE IS BLOCKED
+// check if particle is Pauli blocked - depends on localkf at particle position
+///////////////////////////////////////////////////////////////////////////////
+inline  bool nucleus::pauli_blocking (particle & pa) 
 {
-	if(pr+nr==1 or not nucleon(pdg))   
+	if(pr+nr==1 or not pa.nucleon())   
 		return false;
 	switch(kMomDist)
 	{
 		case 2:
-			return p<localkf(pdg,r);
+			return pa.momentum()<localkf(pa);// Local FG
 		default:
-			return p<_kf;
-		
+			return pa.momentum()<_kf;                           // Global FG	
 	}
 }
 

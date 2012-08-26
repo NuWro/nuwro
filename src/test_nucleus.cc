@@ -31,12 +31,12 @@ double one(double x)
 
 double kfp (double x)
 {
-	return t->localkf (pdg_proton, x);
+	return t->localkf_ (pdg_proton, x);
 }
 
 double kfn (double x)
 {
-	return t->localkf (pdg_neutron, x);
+	return t->localkf_ (pdg_neutron, x);
 }
 
 double density (double x)

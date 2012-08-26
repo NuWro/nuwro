@@ -251,13 +251,13 @@ namespace rpa
 		amplituda[0]=    L_L*R_L[0] +(L_A+L_T)*R_A[0] + L_T*(R_T[0] -R_A[0]) -znak*L_VA*R_VA[0];   
 		amplituda[1]=    L_L*R_L[1] +(L_A+L_T)*R_A[1] + L_T*(R_T[1] -R_A[1]) -znak*L_VA*R_VA[1];   
 	  
-		  if(amplituda[0] > 0 || amplituda[1] > 0)
+/*		  if(amplituda[0] > 0 || amplituda[1] > 0)
 		  cerr<<"amplituda zla( E="<< En/GeV 
 			  <<", q0 = "<< q0/GeV<<", Q2 = " 
 			  << (qv*qv-q0*q0)/GeV/GeV 
 			  << ", (En-q0)*(En-q0)-mm = " << 
 		  ((En-q0)*(En-q0)-mm)/GeV/GeV<<") mm="<<mm<<endl;
-		 if(!ratio)
+*/		 if(!ratio)
 		  return max(-amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2,0.);
 		 else
 		  return amplituda[0] ? min(amplituda[1]/amplituda[0],10.0) :1;

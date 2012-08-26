@@ -7,7 +7,6 @@
 template <class F>
 double calg5a(F f,double x1,double x2,int ile=20)
 {
-	//double static const sqrt2=sqrt(2);
 	if(ile==1)
 	{
 		static double const a=0.53846931010568309105; //sqrt(245-14*sqrt(70))/21
@@ -22,8 +21,6 @@ double calg5a(F f,double x1,double x2,int ile=20)
 		double   y2m=f(xs-h*b);
 		double   y2p=f(xs+h*b);
 		double   ys=f(xs);
-		//double r1=(y1m+y1p)/2-ys;
-		//double r2=(y2m+y2p)/2-ys;
 		return h*(f0*ys+fa*(y1m+y1p)+fb*(y2m+y2p));  
 	}
 	else

@@ -56,7 +56,7 @@ double nucleus::density (double r)
 double nucleus::get_random_r()
 {
 	if(d)
-		return d->random_r()/d->r()*_r;
+		return _r*(d->random_r()/d->r());
 	else
 		return _r*frandom_sqr();
 } 
@@ -118,7 +118,7 @@ particle nucleus::get_nucleon (vec r)
 	switch(kMomDist)
 	{
 		case  1: p0.set_momentum(rand_from_ball(_kf)); break; // fermi gas
-//		case  2: p0.set_momentum(rand_from_ball(localkf(p0.pdg, p0.r.length())));break; // local fermi gas		
+//		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
 		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek
 		case  4: if(p==n && (p==6 || p==8))
 				{
@@ -130,7 +130,7 @@ particle nucleus::get_nucleon (vec r)
 		case 5: // deuterium
 		case 6: // deuterium
 				// use local fermi gas if H1 or H2 options used for other nucleus
-		default: p0.set_momentum(rand_from_ball(localkf(p0.pdg, p0.r.length())));  //local Fermi Gas
+		default: p0.set_momentum(rand_from_ball(localkf(p0)));  //local Fermi Gas
 	}
 
 	// account for the fact that the nucleus is in motion
@@ -139,7 +139,7 @@ particle nucleus::get_nucleon (vec r)
 		cerr<<kMomDist
 			<<" p="<<this->p
 			<<" n="<<this->n
-			<<" lkf="<<localkf(p0.pdg, p0.r.length())
+			<<" lkf="<<localkf(p0)
 			<<" v2="<< p0.v2()
 			<<" "<<p0.v()<<endl;
 	// assert(p0.v2()<1);

@@ -26,7 +26,7 @@ bool has_sf(nucleus &t)
    }
 }
 
-double sfevent2(params&par, event & e, nucleus &t)
+double sfevent2cc(params&par, event & e, nucleus &t)
 {   
 
 

@@ -122,6 +122,18 @@ static double prfSOG(double sog[],double r)
 	return max(0.,suma);	
 }
 
+
+static double prfUG(double ug[],double r)
+{
+	double xi=1.5/ug[0]/ug[0];
+	return ug[1]*exp( -r*r*xi);
+}
+	
+	// Uniform Gaussian model 
+	static double ug_11_12 [2]= {2.946, 0.296785};
+	
+
+
 	// Harmonic-oscillator model (HO): a, alfa, rho0(calculated)
 	static double ho_3_4 [3]= {1.772  , 0.327, 0.151583};
 	static double ho_4_5 [3]= {1.776  , 0.631, 0.148229};
@@ -953,19 +965,6 @@ nucleus_data dens_data[]=
 		nucleus_data( 6,  6, prfFB,  fb_6_6a   ),
 		nucleus_data( 6,  6, prfFB,  fb_6_6b   ),
 		nucleus_data( 7,  8, prfFB,  fb_7_8    ),
-		nucleus_data(16, 18, prfFB,  fb_16_18  ),
-		nucleus_data(16, 20, prfFB,  fb_16_20  ),
-		nucleus_data(22, 28, prfFB,  fb_22_28  ),
-		nucleus_data(24, 30, prfFB,  fb_24_30  ),
-		nucleus_data(32, 42, prfFB,  fb_32_42  ),
-		nucleus_data(32, 44, prfFB,  fb_32_44  ),
-		nucleus_data(42, 52, prfFB,  fb_42_52  ),
-		nucleus_data(42, 54, prfFB,  fb_42_54  ),
-		nucleus_data(42, 56, prfFB,  fb_42_56  ),
-		nucleus_data(42, 58, prfFB,  fb_42_58  ),
-		nucleus_data(46, 58, prfFB,  fb_46_58  ),
-		nucleus_data(46, 60, prfFB,  fb_46_60  ),
-		nucleus_data(46, 62, prfFB,  fb_46_62  ),
 		nucleus_data( 8,  8, prfFB,  fb_8_8    ), 
 		nucleus_data(13, 14, prfFB,  fb_13_14  ),  
 		nucleus_data(14, 14, prfFB,  fb_14_14  ), 
@@ -973,12 +972,16 @@ nucleus_data dens_data[]=
 		nucleus_data(14, 16, prfFB,  fb_14_16  ), 
 		nucleus_data(15, 16, prfFB,  fb_15_16  ), 
 		nucleus_data(16, 16, prfFB,  fb_16_16  ), 
+		nucleus_data(16, 18, prfFB,  fb_16_18  ),
+		nucleus_data(16, 20, prfFB,  fb_16_20  ),
 		nucleus_data(18, 22, prfFB,  fb_18_22  ), 
 		nucleus_data(20, 20, prfFB,  fb_20_20  ), 
 		nucleus_data(20, 24, prfFB,  fb_20_24  ), 
 		nucleus_data(22, 26, prfFB,  fb_22_26  ), 
+		nucleus_data(22, 28, prfFB,  fb_22_28  ),
 		nucleus_data(24, 26, prfFB,  fb_24_26  ), 
 		nucleus_data(24, 28, prfFB,  fb_24_28  ), 
+		nucleus_data(24, 30, prfFB,  fb_24_30  ),
 		nucleus_data(26, 28, prfFB,  fb_26_28  ), 
 		nucleus_data(26, 30, prfFB,  fb_26_30  ), 
 		nucleus_data(26, 32, prfFB,  fb_26_32  ), 
@@ -998,11 +1001,20 @@ nucleus_data dens_data[]=
 		nucleus_data(30, 40, prfFB,  fb_30_40  ),
 		nucleus_data(32, 38, prfFB,  fb_32_38  ),
 		nucleus_data(32, 40, prfFB,  fb_32_40  ),
+		nucleus_data(32, 42, prfFB,  fb_32_42  ),
+		nucleus_data(32, 44, prfFB,  fb_32_44  ),
 		nucleus_data(38, 40, prfFB,  fb_38_40  ),
 		nucleus_data(40, 50, prfFB,  fb_40_50  ), 
 		nucleus_data(40, 52, prfFB,  fb_40_52  ),
 		nucleus_data(40, 54, prfFB,  fb_40_54  ),
 		nucleus_data(42, 50, prfFB,  fb_42_50  ),
+		nucleus_data(42, 52, prfFB,  fb_42_52  ),
+		nucleus_data(42, 54, prfFB,  fb_42_54  ),
+		nucleus_data(42, 56, prfFB,  fb_42_56  ),
+		nucleus_data(42, 58, prfFB,  fb_42_58  ),
+		nucleus_data(46, 58, prfFB,  fb_46_58  ),
+		nucleus_data(46, 60, prfFB,  fb_46_60  ),
+		nucleus_data(46, 62, prfFB,  fb_46_62  ),
 		nucleus_data(46, 64, prfFB,  fb_46_64  ),
 		nucleus_data(62, 82, prfFB,  fb_62_82  ),
 		nucleus_data(62, 86, prfFB,  fb_62_86a ),
@@ -1082,6 +1094,7 @@ nucleus_data dens_data[]=
 		nucleus_data(40, 54, prf3pG, _3pG_40_54),
 		nucleus_data(40, 56, prf3pG, _3pG_40_56),
 		nucleus_data(42, 50, prf3pG, _3pG_42_50),
+
 		nucleus_data( 9, 10, prf2pF, _2pF_9_10 ),
 		nucleus_data(10, 10, prf2pF, _2pF_10_10),
 		nucleus_data(10, 12, prf2pF, _2pF_10_12),
@@ -1118,11 +1131,16 @@ nucleus_data dens_data[]=
 		nucleus_data(92, 146, prf2pF, _2pF_U238a),
 		nucleus_data(92, 146, prf2pF, _2pF_U238b),
 
-		nucleus_data( 1,  0,  prfMI, mi_1_0    ),
-		nucleus_data( 1,  1,  prfMI, mi_1_1    ),
+//		nucleus_data( 1,  0,  prfMI, mi_1_0    ),
+//		nucleus_data( 1,  1,  prfMI, mi_1_1    ),
 //		nucleus_data( 2,  1,  prfMI, mi_2_1    ),
 //		nucleus_data( 2,  2,  prfMI, mi_2_2    ),
+
+		nucleus_data( 11,  12, prfUG, ug_11_12    ),
+
 		nucleus_data( 0,  0,      0,          0)
+		
+		
 	};
 	
 double nucleus_data::dens(double r)
@@ -1148,6 +1166,7 @@ const char*  nucleus_data::name()
 	if(dens_fun==prfHO) return " HO";
 	if(dens_fun==prfMHO) return "MHO";
 	if(dens_fun==prfMI) return " MI";
+	if(dens_fun==prfUG) return " UG";
 	return "";
 }
 

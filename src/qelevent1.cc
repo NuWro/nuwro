@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////
 double qelevent1(params&p, event & e, nucleus &t,bool nc)
 ////////////////////////////////////////////////////////////////////////
-  { //cout<<"jestem w qelevent"<<endl;
+{
     e.flag.qel=true;
     e.flag.nc=nc;
     e.flag.cc=!nc;
@@ -106,11 +106,12 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
     
     // cross section (is 0 until the reaction occurs)   
-    double x = 0;		
+    double xsec = 0;		
     double q2,jakobian;  
     
     int qel_kinematics=0;  // force standard behaviour
     
+//    q2=qel_kin_gen(qel_kinematics,_E_bind, nu, N0,lepton, N1, jakobian);
     switch(qel_kinematics)
     { 
     case  0:    // Subtract the binding energy from the nucleon energy
@@ -136,7 +137,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		        // next do the usual kinematics 
 		        // preserving energy and momentum
 		        // (not taking into account the spactator nucleus)
-                q2 = czarek_kinematics(_E_bind  //chyba powinno by�0 bo ju odj�e
+                q2 = czarek_kinematics(_E_bind  // should be 0 here??? 
 		                      , nu, N0, lepton, N1, jakobian);		
 	         
 		        // use this mass also for dynamics????
@@ -151,51 +152,50 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
                 // V(p) is on both sides of the equation but with different p
 	            // then adjust the kinetic energy 
                  q2=momentum_dependent_potential_kinematics(nu,N0,lepton,N1,jakobian);
-	             N1.set_energy(N1.energy()+V(N1.momentum(),t.localkf(N1.pdg,N1.r.length())));
+	             N1.set_energy(N1.energy()+V(N1.momentum(),t.localkf(N1)));
                  break;	       	  
     default: 
                  cerr<<"Kinematics code: '"<<qel_kinematics<<"' is invalid."<<endl;	  
 	             exit(1);
     }  
-    if (q2 != 0  		           // there was scattering
-//        &&                       // and
-//        !t.pauli_blocking(N1)    // Pauli-blocking did not occur	        
-       )
-
-    if(qel_kinematics==3)
-      N1.set_energy(N1.energy()+V(N1.momentum(),t.localkf(N1.pdg,N1.r.length())));
+    if (q2 != 0)  		           // there was scattering
+		if(qel_kinematics==3)
+			N1.set_energy(N1.energy()+V(N1.momentum(), t.localkf(N1)));
       
       
-    vect nu4 = nu;
-    nu4.boost (-N0.v ());         // calculate nu energy in nucleon rest frame
-    x=jakobian* qel_sigma (nu4.t, q2, kind, nu.pdg<0, lepton.mass(), N0.mass()); 
+	vect nu4 = nu;
+	nu4.boost (-N0.v ());  // go to nucleon rest frame 
+	double Enu0=nu4.t;     // neutrino energy in target frame   
+	xsec=jakobian* qel_sigma (Enu0, q2, kind, nu.pdg<0, lepton.mass(), N0.mass()); 
 	
-     // now take into account the neutrino flux and nucleon proper time 
-     // corrections to the cross section on the whole nucleus
-     // int qel_relat=0;
+	// now take into account the neutrino flux and nucleon proper time 
+	// corrections to the cross section on the whole nucleus
+	// int qel_relat=0;
      
-     if(p.flux_correction)
-     {
+	if(p.flux_correction)
+	{
 		double vv,vz;
 		vv = N0.v().length ();
 		vz = N0.v() * nu.v().dir(); // this is general
-		x *= sqrt ( (1 - vz) * (1 - vz) );
-     } 
-       
-     switch(p.qel_rpa)
-	 {
+		xsec *= sqrt ( (1 - vz) * (1 - vz) );
+	} 
+
+
+    switch(p.qel_rpa) 
+	{
 		 case 2:
 		 case 3:
-			N1.set_mass(PDG::mass(N1.pdg));
-	 }
+			N1.set_mass(PDG::mass(N1.pdg));// go back to real mass 
+			//N1.set_energy(e.in[1].t+max(nu.t-lepton.t,0.)); // recover the energy conservation 
+	}
 		
-     e.temp.push_back(lepton);
-     e.temp.push_back(N1);
-     e.out.push_back(lepton);
-     e.out.push_back(N1);
-     e.weight=x/cm2;
+	e.temp.push_back(lepton);
+	e.temp.push_back(N1);
+	e.out.push_back(lepton);
+	e.out.push_back(N1);
+	e.weight=xsec/cm2;
 
-	 if(!nc)
+	if(!nc)
 		switch(p.qel_rpa)
 		{
 			case 1:
@@ -205,8 +205,11 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 				e.weight*=rpa::ratio_rpa_fg(p.qel_rpa, e.q0(), e.qv());
 				break;
 		} 
-	//cout<<"kFP="<<kF_P<<endl;
-	//cout<<(e.flag.nc ? "nc " : "cc " )<<x/cm2<<endl;
-     return x;
-  }
 
+	if( p.pauli_blocking) 	/// inlined mypauli_qel
+		if(t.pauli_blocking_old (N1, N0.length() ) ) 
+			e.weight = 0;
+		
+		
+    return e.weight*cm2;
+}
