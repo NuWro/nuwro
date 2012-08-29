@@ -14,6 +14,7 @@
 #include "rpa_lib.h"
 #include "../calg5.h"
 #include "../util2.h"
+#include "../ff.h"
 
 #ifndef RPA_MAIN
 	#include "../ff.h"
@@ -470,8 +471,6 @@ namespace rpa
 
 		double LAMBDA =(log(czynnik1 ) + log(czynnik2)  )/2/stal; 
 
-
-
 		double nawias_ReHs = kf*Ef - (3*Mef2 - q2/2)*log((kf+Ef)/Mef) - q0*(4*Mef2-q2)*alfa/8/qv + 
 									Ef*(4*Mef2-q2)*beta/4/qv +(4*Mef2-q2)*(4*Mef2-q2)*LAMBDA/4; 
 		double ReHs= lambda_l*nawias_ReHs /2/Pi/Pi;
@@ -529,15 +528,17 @@ namespace rpa
 		zesp H_pp_t=2.*fpi2*H_vv_t/m_pi2;
 		zesp H_pp_a=2.*fpi2*H_a/m_pi2;
 
-		//double MA= 1.03*GeV;
-		//double MV2=0.71*GeV*GeV;
-		//double G_E= 1/( pow((1-q2/MV2),2) ); 
-		//double G_M=G_E*magneton ;       
+		double MA= 1.03*GeV;
+		double MV2=0.71*GeV*GeV;
+//		double G_E= 1/( pow((1-q2/MV2),2) ); 
+//		double G_M=G_E*magneton ;       
 #ifdef RPA_MAIN		
 		double F_1_= F_1(-q2,kFF);//(q2*G_M - 4*M12_2*G_E )/(q2 - 4*M12_2) ;
 		double F_2_= F_2(-q2,kFF);//4*M12_2*( G_M - G_E )/(4*M12_2 - q2);    
 		double G_A_= G_A(-q2,kFF); //-1.26/(pow(1-q2/(MA*MA),2));                 
 #else
+		params p;
+		ff_configure(p);
 		double F_1_,F_2_,G_A_,F_P_;
 		list(F_1_,F_2_)=f12(q2,0); // 0-cc, 1-nc proton, 2-nc neutron  
 		list(G_A_,F_P_)=fap(q2,0);
@@ -763,6 +764,7 @@ namespace rpa
 	    }
 		mm2=m*m;
 	}   
+	
 
 	double sigma_q0_q2(double q0,double q2)
 	{
@@ -770,99 +772,56 @@ namespace rpa
 		return (sigma_qv_q0(qv,q0)/2/qv);
 	}
 
-	double sigma_q2(double q2, double dokl)
+	double sigma_q2(double q2)
 	{   
 		double q01 =0;
 		double q02 = En - (q2+mm2)/4/En - En*mm2/(q2+mm2);
-		return calg5x(sigma_q0_q2,q2,min(q01,q02),max(q01,q02),dokl,30);
+		return calg5a(fix2(sigma_q0_q2,q2),min(q01,q02),max(q01,q02),100);
 	}    
 
 
-/*
-	void plot_sigma_q2(double E,double dokl, int ilosc,const int kNucleus, int nu_pdg, int use_Mf, int kFF0=0,double kf0=0 )
-	//void plot_sigma_q2(double E,double dokl, config &ust )
+
+	void plot_sigma_q2(double E, int ilosc,const int kNucleus, int nu_pdg, int use_Mf, int kFF0=0,double kf0=0 )
 	{   
-	 
-		configure(E, kNucleus, nu_pdg, use_Mf, kFF0,kf0,0);    
-		  
-		string s2= znak>0?"_n":"_an";
-		
+		configure(E, kNucleus, nu_pdg, use_Mf, kFF0,kf0);
+
 		stringstream s;
 		
-		s<<"rpa_Q2_"<<nazwa_jadra(kNucleus)<<"E="<<En/GeV<<"_g="<<g_prim
-		 <<"kfsr="<<kf<<"Mef="<<Mef<<s2<<form(kFF)<<".dat"<<flush;
+		s<<"rpa_Q2_"<<nazwa_jadra(kNucleus)<<",nu="<<nu_pdg<<",E="<<En/GeV<<",rpa="<<use_rpa+2*use_Mf<<",g="<<g_prim
+		 <<",kfsr="<<kf<<",Mef="<<Mef<<','<<form(kFF)<<".dat"<<flush;
 		
 		ofstream out(s.str().c_str());
 
-		out << "# Q2[GeV2]     cross rpa    crosss mf  cratio rpa/mf " <<endl;
-
-		double crossrpa1, crossmf1, ratio1;
-		double crossrpa2, crossmf2, ratio2;
-		double ratiorpa_ff, ratiomf_ff;
-		
 		double krok= 2*M*(En-m)/ilosc;
+		
+		double frac=0;
+        switch(kNucleus)
+        {
+			case C:
+			case O: frac= 0.5;break;
+			case Ar:frac= 18./40.;break;
+			case Fe:frac= 26./56.;break;
+			case n: frac= 0;break;
+		}
+		if(nu_pdg>0)
+			frac=1-frac;
 		
 		for(double q2 =0.01; q2<2*M*(En-m); q2+=krok)
 		{
-			kFF = NNFF;	use_rpa  = true;	crossrpa1   = sigma_q2(q2,dokl)/(1e-38);
-						use_rpa = false;   crossmf1  = sigma_q2(q2,dokl)/(1e-38);
-
-			kFF = NNFF2; use_rpa  = true;	crossrpa2   = sigma_q2(q2,dokl)/(1e-38);
-						use_rpa = false;   crossmf2  = sigma_q2(q2,dokl)/(1e-38);
-		
-			ratio1      = crossmf1 ? crossrpa1/crossmf1 : 0;
-			ratio2      = crossmf2 ? crossrpa2/crossmf2 : 0;
-			ratiorpa_ff = crossrpa2? crossrpa1/crossrpa2: 0;
-			ratiomf_ff  = crossmf2 ? crossmf1 /crossmf2 : 0;
-
-
-			out<< q2/GeV/GeV 
-			   <<"\t"<<crossrpa1 << "\t" << crossmf1<< "\t"// << ratio1 
-			   //<<"\t"<<crossrpa2 << "\t" << crossmf2<< "\t" << ratio2 
-			   //<<"\t"<<ratiorpa_ff<< "\t" << ratiomf_ff
-			   <<endl;
-
+			out<< q2/GeV/GeV   <<"\t"<<frac*GeV2*sigma_q2(q2)/1e-38 << endl;
 		}
 	}   
-		  
-	void plot_sigma_q2alt(double E,double dokl, int ilosc, const config &ust )
-	{   
-		En=E;  
-		configure(ust);
 
-		string s1 = use_rpa? "rpa" : "FG";
-		string s2= znak>0 ? "_n":"_an";
-		 
-		stringstream s;
-		  s<< "rpa_Q2_"<< nazwa_jadra(ust.kNucleus)
-		   << "E="	   << En/GeV
-		   << "_g="	   << g_prim
-		   << "kfsr="  << kf
-		   << "Mef="   << Mef
-		   << s2	   << form(kFF)  
-		   <<"_"	   <<s1<<"_"
-		   << ".dat"<<flush;
-		 
-		ofstream out(s.str().c_str());
-		double krok= 2*M*(En-m)/ilosc;
-		for(double q2 =0.01; q2<2*M*(En-m); q2+=krok)
-	   out<< q2/GeV/GeV <<' ' <<GeV*GeV*0.5*liczba_atomowa(ust.kNucleus)*sigma_q2(q2,dokl)/(1e-38)<<endl;
-		// out<< q2/GeV/GeV <<' ' <<0.5*liczba_atomowa(kNucleus )*sigma_q2(q2,dokl)/(1e-38)<<endl;
-
-	} 
-*/		  
-		  
-	void plot_sigma_q0(double E,double dokl, double krok,const int kNucleus, int nu_pdg, int use_Mf, int kFF0,double kf0=0 )
+	void plot_sigma_q0(double E, int ilosc,const int kNucleus, int nu_pdg, int use_Mf, int kFF0,double kf0=0 )
 	{
 		 configure(E, kNucleus, nu_pdg, use_Mf, kFF0,kf0);
 
-		 string s1=znak==1?"n":"an";
-		 
 		 stringstream s;
 
-		 s<<"rpa_q0_"<<nazwa_jadra(kNucleus)<<",E="<<En/GeV
-		  <<",g="<<g_prim<<",kfsr="<<kf<<",Mef="<<Mef<<form(kFF)<<",rpa="<<use_rpa<<",nu="<<nu_pdg<<".dat"<<flush;
-
+//		 s<<"rpa_q0_"<<nazwa_jadra(kNucleus)<<",E="<<En/GeV
+//		  <<",g="<<g_prim<<",kfsr="<<kf<<",Mef="<<Mef<<form(kFF)<<",rpa="<<use_rpa<<",nu="<<nu_pdg<<".dat"<<flush;
+		 s<<"rpa_q0_"<<nazwa_jadra(kNucleus)<<",nu="<<nu_pdg<<",E="<<En/GeV<<",rpa="<<use_rpa+2*use_Mf<<",g="<<g_prim
+		 <<",kfsr="<<kf<<",Mef="<<Mef<<','<<form(kFF)<<".dat"<<flush;
 		ofstream out(s.str().c_str());
 		double frac=0;
         switch(kNucleus)
@@ -871,10 +830,11 @@ namespace rpa
 			case O: frac= 0.5;break;
 			case Ar:frac= 18./40.;break;
 			case Fe:frac= 26./56.;break;
+			case n: frac= 0;break;
 		}
 		if(nu_pdg>0)
 			frac=1-frac;
-		for(double q0=5*MeV; q0 < En-m; q0+=krok)
+		for(double q0=5*MeV; q0 < En-m; q0+=(En-m)/ilosc)
 			out<< q0/GeV <<' ' <<frac*sigma_q0(q0)*GeV/(1e-38)<<endl;
 	}
 
@@ -945,28 +905,37 @@ namespace rpa
 using namespace rpa;
 
 int main()
-{
-    double Enu=1*GeV;
-    int kNucleus=Ar;
-    double kf=mean_kf(kNucleus);
-    int nu=-14;
-    
-    cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
-    cout<<"kf= "<<kf/MeV<<" MeV"<<endl;
-    cout<<"Mf= "<<Masa_Efektywna(kf)/MeV<<" MeV"<<endl;
-    cout<<"Meff= "<<Meff(kf)/MeV<<" MeV"<<endl;
-    cout<<"E= "<<Enu/MeV<<" MeV"<<endl;
-    cout<<"nupdg= "<<nu<<endl;
-    
-	for(int i=0;i<4;i++)
-	{
-		use_rpa=i&1;
-	    bool use_mf0=i&2;
-		plot_sigma_q0(Enu,1e-3, 1*MeV,kNucleus , nu , use_mf0, BBA, kf );// qel_rpa=0
-		En=Enu;
-		cout<<sigma()<<endl;
-	}
+{   int Atoms[]={0,6,8,18,26};
+	
+    for(int i=3;i<4;i++)
+	{    
+		for(double Enu=5*GeV;Enu<=5*GeV;Enu+=1*GeV)
+		{
+			int kNucleus=Atoms[i];
+			double kf=mean_kf(kNucleus);
+			int nu=16;
+			
+			cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
+			cout<<"kf= "<<kf/MeV<<" MeV"<<endl;
+			cout<<"Mf= "<<Masa_Efektywna(kf)/MeV<<" MeV"<<endl;
+			cout<<"Meff= "<<Meff(kf)/MeV<<" MeV"<<endl;
+			cout<<"E= "<<Enu/MeV<<" MeV"<<endl;
+			cout<<"nupdg= "<<nu<<endl;
+			
+			for(int i=0;i<4;i++)
+			{
+				use_rpa=i&1;
+				bool use_mf0=i&2;
 
+				plot_sigma_q0(Enu,100,kNucleus , nu , use_mf0, BBA, kf );
+				plot_sigma_q0(Enu,100,kNucleus , -nu , use_mf0, BBA, kf );
+				plot_sigma_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
+				plot_sigma_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
+//				En=Enu;
+//				cout<<sigma()<<endl;
+			}
+		}
+	}
 	if(false)
 	{  
 		for(double q0=0*MeV;q0<rpa::En-rpa::m;q0+=10*MeV)

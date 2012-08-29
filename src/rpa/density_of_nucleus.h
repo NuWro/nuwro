@@ -45,12 +45,14 @@ namespace rpa
    const int Fe =26;
    const int O =8;
    const int C = 6;
+   const int n = 0;
    
    //----------//Liczby atomowe pierwiastkow    //--------------//
    const int A_Ar=40;
    const int A_Fe=56;
    const int A_O =16;
    const int A_C =12;   
+   const int A_n = 1;
 
 ///  Rozklad gestos ladunkow  jadra:
 ///  W zaleznosci od promienia;
@@ -109,9 +111,13 @@ double Mf_density(double r, int kNUcleus)
 	return Masa_Efektywna(Fermi_momentum(r,kNUcleus))*density_calka(r,kNUcleus);     
 }
 
-double mean_kf(int kNUcleus)
-{
-   return calg5x_int(kf_density, kNUcleus, 0, 5*R_O,  0.01, 100)/calg5x_int(density_calka,kNUcleus, 0, 5*R_O, 0.01, 100);
+double mean_kf(int kNucleus)
+{	
+	switch(kNucleus)
+	{
+		case n: return 1*MeV;
+		default: return calg5x_int(kf_density, kNucleus, 0, 5*R_O,  0.01, 100)/calg5x_int(density_calka,kNucleus, 0, 5*R_O, 0.01, 100);
+	}
 }
 
 const char* nazwa_jadra(int kNucleus)
@@ -123,6 +129,7 @@ const char* nazwa_jadra(int kNucleus)
 		case Ar: return "Argon" ; break;
 		case Fe: return "Ferryt"; break;
 		case C : return "Carbon"; break;
+		case n: return "neutron";break;
 		default : return "_" ;    break;
 	}
 }
@@ -139,7 +146,8 @@ double mean_Mef_st(int kNucleus)
 		case O : return 690.78*MeV  ; break;
 		case Ar: return 631.37*MeV ; break;
 		case Fe: return 634.84*MeV; break;
-		//case C : return "Carbon"; break;
+//		case C : return 1; break;
+		case n: return 1 *MeV;
 		default : return 1000 ;    break;
 	}
 }

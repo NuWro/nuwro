@@ -10,7 +10,7 @@ namespace rpa
 {
 const double   MV2 = 0.71*GeV*GeV;
 const double   gA_BBA_2003 = -1.267;
-const double   MA_BBA_2003 = 1.0*GeV;
+const double   MA_BBA_2003 = 1.2*GeV;
 
 const double a2_p_E = 3.253/GeV/GeV; 
 const double a2_p_M = 3.104/GeV/GeV;

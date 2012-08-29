@@ -376,6 +376,7 @@ void NuWro::test_events(params & p)
 	{
 		hist hq2((char*)"q2",0,2*GeV2,100);
 		hist hq0((char*)"q0",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
+		hist hqv((char*)"qv",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
 		hist hT((char*)"T",0,2*GeV,100);
 		bool active[]=
 		{
@@ -403,12 +404,14 @@ void NuWro::test_events(params & p)
 			{
 				hq2.insert_value(-e->q2(),e->weight*cm2);
 				hq0.insert_value(e->q0(),e->weight*cm2);
+				hqv.insert_value(e->qv(),e->weight*cm2);
 				hT.insert_value(e->in[0].E(),e->weight*cm2);
 			}
 			else
 			{
 				hq2.insert_value(0,0);
 				hq0.insert_value(0,0);
+				hqv.insert_value(0,0);
 				hT.insert_value(0,0);
 			}
 			delete e;
@@ -424,6 +427,7 @@ void NuWro::test_events(params & p)
 		procesy.set_weights_to_avg ();
 		hq2.plot("q2.txt",GeV2,1e-38*cm2/GeV2);
 		hq0.plot("q0.txt",GeV,1e-38*cm2/GeV);
+		hqv.plot("qv.txt",GeV,1e-38*cm2/GeV);
 		hT.plot("T.txt",GeV,1e-38*cm2/GeV);
 	}
 }
