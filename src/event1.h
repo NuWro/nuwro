@@ -13,10 +13,11 @@ class flags
 {
 public:
 /// primary vertex flags
-  bool coh;
   bool qel;
-  bool dis;
   bool res;
+  bool dis;
+  bool coh;
+  bool mec;
   bool nc;
   bool cc;
   bool anty;			///< true if antineutrino 

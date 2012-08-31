@@ -44,11 +44,12 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
      	N1=N0;
      	kind=(N0.pdg==pdg_proton?1:2);
     }
-    else 
-     if((nu.pdg>0 && N0.pdg==PDG::pdg_proton) ||( nu.pdg<0 && N0.pdg==PDG::pdg_neutron))
+    else if((nu.pdg>0 && N0.pdg==PDG::pdg_proton) ||( nu.pdg<0 && N0.pdg==PDG::pdg_neutron))
+	{
        return 0;
-     else  
-     { 
+	}
+    else  
+    { 
        lepton.pdg=nu.pdg-(nu.pdg>0 ? 1 :-1);
        lepton.set_mass(PDG::mass(lepton.pdg));
        N1.pdg=(nu.pdg>0 ? PDG::pdg_proton : PDG::pdg_neutron);//zmiana JN
@@ -64,7 +65,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 				break;
 	   }
 	   
-     } 
+    } 
 
 	double _E_bind=0;	//binding energy
 

@@ -18,6 +18,7 @@
 #include "dis/resevent2.h"
 #include "cohevent2.h"
 #include "coh.h"
+#include "mecevent.h"
 #include "args.h"
 #include "kaskada7.h"
 #include "sfevent.h"
@@ -115,7 +116,8 @@ int NuWro::init (int argc, char **argv)
 		p.dyn_qel_cc,p.dyn_qel_nc,
 		p.dyn_res_cc,p.dyn_res_nc,
 		p.dyn_dis_cc,p.dyn_dis_nc,
-		p.dyn_coh_cc,p.dyn_coh_nc
+		p.dyn_coh_cc,p.dyn_coh_nc,
+		p.dyn_mec_cc,p.dyn_mec_nc
 	};
 	//const int NPROC = sizeof(active)/sizeof(bool);
 	procesy.reset(active);
@@ -279,6 +281,18 @@ void NuWro::makeevent(event* e, params &p)
 				else          cohevent2   (p, *e, *nucleuss, false);
 			}
 			break;
+		case 8:
+			if (p.dyn_mec_cc) // mec cc
+			{
+				mecevent (p, *e, *nucleuss, true);
+			}
+			break;
+		case 9:
+			if (p.dyn_mec_nc) // mec nc
+			{
+				mecevent (p, *e, *nucleuss, false);
+			}
+			break;
 	}
 	e->weight*=factor;
 
@@ -383,7 +397,8 @@ void NuWro::test_events(params & p)
 			p.dyn_qel_cc,p.dyn_qel_nc,
 			p.dyn_res_cc,p.dyn_res_nc,
 			p.dyn_dis_cc,p.dyn_dis_nc,
-			p.dyn_coh_cc,p.dyn_coh_nc
+			p.dyn_coh_cc,p.dyn_coh_nc,
+			p.dyn_mec_cc,p.dyn_mec_nc
 		};
 
 		procesy.reset(active);
@@ -421,7 +436,7 @@ void NuWro::test_events(params & p)
 		procesy.report();
 		ofstream totals ("totals.txt",ios::app);
 		totals<<p.beam_energy;
-		for(int i=0;i<8;i++)
+		for(int i=0;i<procesy.size();i++)
 			totals << ' '<<procesy.avg(i);
 		totals<<endl;
 		procesy.set_weights_to_avg ();
@@ -440,7 +455,8 @@ void NuWro::analizer_events(params &p)
 		p.dyn_qel_cc,p.dyn_qel_nc,
 		p.dyn_res_cc,p.dyn_res_nc,
 		p.dyn_dis_cc,p.dyn_dis_nc,
-		p.dyn_coh_cc,p.dyn_coh_nc
+		p.dyn_coh_cc,p.dyn_coh_nc,
+		p.dyn_mec_cc,p.dyn_mec_nc
 	};
 
 	params p1=p;
@@ -504,7 +520,7 @@ void NuWro::real_events(params& p)
 	tf->Branch ("e", "event", &e);
 	delete e;
 	TH1 * xsections= new TH1D("xsections","xsections",8,0,7);
-	for(int i=0;i<8;i++)
+	for(int i=0;i<procesy.size();i++)
 	{
 		xsections->SetBinContent(i+1,procesy.avg(i));
 		xsections->SetBinError(i+1,procesy.sigma(i));
@@ -579,9 +595,9 @@ void NuWro::real_events(params& p)
 	//////////////////////////////////////////////////////////////////////////////////////
 	if(p.mixed_order)
 	{
-		TFile *f[8];
-		TTree *t[8];
-		int n[8],u[8];
+		TFile *f[procesy.size()];
+		TTree *t[procesy.size()];
+		int n[procesy.size()],u[procesy.size()];
 		int ile=0;
 		e=new event();
 		for (int k = 0; k < procesy.size(); k++)

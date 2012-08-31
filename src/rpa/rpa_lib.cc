@@ -532,7 +532,7 @@ namespace rpa
 		double MV2=0.71*GeV*GeV;
 //		double G_E= 1/( pow((1-q2/MV2),2) ); 
 //		double G_M=G_E*magneton ;       
-#ifdef RPA_MAIN		
+#ifndef RPA_MAIN		
 		double F_1_= F_1(-q2,kFF);//(q2*G_M - 4*M12_2*G_E )/(q2 - 4*M12_2) ;
 		double F_2_= F_2(-q2,kFF);//4*M12_2*( G_M - G_E )/(4*M12_2 - q2);    
 		double G_A_= G_A(-q2,kFF); //-1.26/(pow(1-q2/(MA*MA),2));                 
@@ -644,12 +644,12 @@ namespace rpa
 		amplituda[0]=    L_L*R_L[0] +(L_A+L_T)*R_A[0] + L_T*(R_T[0] -R_A[0]) -znak*L_VA*R_VA[0];   
 		amplituda[1]=    L_L*R_L[1] +(L_A+L_T)*R_A[1] + L_T*(R_T[1] -R_A[1]) -znak*L_VA*R_VA[1];   
 	  
-	  if(amplituda[0] > 0 || amplituda[1] > 0)
+/*	  if(amplituda[0] > 0 || amplituda[1] > 0)
 		  cerr<<"amplituda zla( E="<< En/GeV 
 			  <<", q0 = "<< q0/GeV<<", Q2 = " 
 			  << (qv*qv-q0*q0)/GeV/GeV 
 			  << ", (En-q0)*(En-q0)-mm2 = " << 
-		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<") mm="<<mm2<<endl;
+		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<") mm="<<mm2<<endl; */
 		 if(!ratio)
 		  return -amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2;
 		 else
@@ -839,6 +839,32 @@ namespace rpa
 	}
 
 
+	void plot_ratio_q2(double E, int ilosc,const int kNucleus, int nu_pdg, int use_Mf, int kFF0=0,double kf0=0 )
+	{   
+		configure(E, kNucleus, nu_pdg, use_Mf, kFF0,kf0);
+
+		stringstream s;
+		
+		s<<"ratio_Q2_"<<nazwa_jadra(kNucleus)<<",nu="<<nu_pdg<<",E="<<En/GeV<<",g="<<g_prim
+		 <<",kfsr="<<kf<<",Mef="<<Mef<<','<<form(kFF)<<".dat"<<flush;
+		
+		ofstream out(s.str().c_str());
+
+		double krok= 2*M*(En-m)/ilosc;
+        bool prev_rpa=use_rpa;				
+		for(double q2 =0.01; q2<2*M*(En-m); q2+=krok)
+		{	
+
+			use_rpa=false;
+			double sig0=sigma_q2(q2);
+			use_rpa=true;
+			double sig1=sigma_q2(q2);
+			out<< q2/GeV/GeV   <<"\t"<< min(10.,(sig0>0 && sig1>=0 ? sig1/sig0 : 1)) << endl;
+		}
+		use_rpa=prev_rpa;
+	}   
+
+
 
 	double sigma()
 	{
@@ -909,11 +935,11 @@ int main()
 	
     for(int i=3;i<4;i++)
 	{    
-		for(double Enu=5*GeV;Enu<=5*GeV;Enu+=1*GeV)
+		for(double Enu=1*GeV;Enu<=5*GeV;Enu+=1*GeV)
 		{
 			int kNucleus=Atoms[i];
 			double kf=mean_kf(kNucleus);
-			int nu=16;
+			int nu=14;
 			
 			cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
 			cout<<"kf= "<<kf/MeV<<" MeV"<<endl;
@@ -927,10 +953,15 @@ int main()
 				use_rpa=i&1;
 				bool use_mf0=i&2;
 
-				plot_sigma_q0(Enu,100,kNucleus , nu , use_mf0, BBA, kf );
-				plot_sigma_q0(Enu,100,kNucleus , -nu , use_mf0, BBA, kf );
-				plot_sigma_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
-				plot_sigma_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
+//				plot_sigma_q0(Enu,100,kNucleus , nu , use_mf0, BBA, kf );
+//				plot_sigma_q0(Enu,100,kNucleus , -nu , use_mf0, BBA, kf );
+//				plot_sigma_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
+//				plot_sigma_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
+				if(use_rpa)
+				{
+					plot_ratio_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
+					plot_ratio_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
+				}
 //				En=Enu;
 //				cout<<sigma()<<endl;
 			}

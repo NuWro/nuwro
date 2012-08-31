@@ -176,6 +176,12 @@
   <param name="dyn_coh_nc" type="checkbox" ctype="bool" default="1">
     <description>Coherent neutral current</description>
   </param>
+  <param name="dyn_mec_cc" type="checkbox" ctype="bool" default="0">
+    <description>Meson exchange charged current</description>
+  </param>
+  <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
+    <description>Meson exchange charged current</description>
+  </param>
   <param name="qel_vector_ff_set" type="select" ctype="int" default="2">
     <description>electromagnetic Form factors</description>
     <options>

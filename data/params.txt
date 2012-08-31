@@ -62,6 +62,8 @@ dyn_dis_cc =1      // Deep inelastic charged current
 dyn_dis_nc =1      // Deep inelastic neutral current 
 dyn_coh_cc =1      // Coherent charged current  
 dyn_coh_nc =1      // Coherent neutral current  
+dyn_mec_cc =0      // Meson exchange charged current  
+dyn_mec_nc =0      // Meson exchange neutral current  
 
 
 ################################################################
