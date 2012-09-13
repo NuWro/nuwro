@@ -47,7 +47,8 @@ const double J = kg * metr * metr / (sek * sek);
 ///
 
 const double G = 1.16639 * 1E-5 / (GeV * GeV);
-const double cos2thetac = 0.97418 * 0.97418;	//kwadrat cosinusa k�ta Cabbibo
+//const double cos2thetac = 0.97418 * 0.97418;	//kwadrat cosinusa k�ta Cabbibo
+const double cos2thetac = 0.974213 * 0.974313;	//kwadrat cosinusa k�ta Cabbibo
 const double sin2thetaW = 0.2312215;  // weak mixing angle
 //----------------------------------------------------------------------
 

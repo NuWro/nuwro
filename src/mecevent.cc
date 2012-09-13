@@ -101,5 +101,4 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 			e.out.push_back (mecnucleon2);
 
 	}
-
 }

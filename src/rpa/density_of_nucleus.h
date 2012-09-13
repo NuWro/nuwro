@@ -116,6 +116,7 @@ double mean_kf(int kNucleus)
 	switch(kNucleus)
 	{
 		case n: return 1*MeV;
+		case C: return 200*MeV;
 		default: return calg5x_int(kf_density, kNucleus, 0, 5*R_O,  0.01, 100)/calg5x_int(density_calka,kNucleus, 0, 5*R_O, 0.01, 100);
 	}
 }
@@ -146,7 +147,7 @@ double mean_Mef_st(int kNucleus)
 		case O : return 690.78*MeV  ; break;
 		case Ar: return 631.37*MeV ; break;
 		case Fe: return 634.84*MeV; break;
-//		case C : return 1; break;
+		case C : return 724*MeV; break;
 		case n: return 1 *MeV;
 		default : return 1000 ;    break;
 	}
