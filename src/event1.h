@@ -43,30 +43,13 @@ public:
     int dyn;                   ///< dynamics code (from proctable.h)
 	
 	int nod[12]; ///number of dynamics: 0 - nucleon elastic, 1 - nucleon ce, 2 - nucleon spp, 3 - nucleon dpp, 4 - pion elastic, 5 - pion ce, 6 - pion spp, 7 - pion dpp, 8 - pion abs, 9 - jailed, 10 - escape
-	
-	int place[11][20];
-	
-	double pabsen; //kinetic energy of absorped pion
-	bool nopp; //true if there was no pion production
-	bool abs; //true if there was absorption
-	int nofi; //number of pion interactions before cascade
-	double pen[10]; //pion energy after ith scattering
-	double absr; //place where pion was absorbed
-	double odl; //distance between primary vertex and piN interaction
-	double density_hist[50]; //density after cascade
-	double radius_hist; //radius after cascade
-	int protons_hist; //#protons after cascade
-	int neutrons_hist; //#neutrons after cascade
 	int pr,nr;
+  
   void clear_fsi()
   {
 	  post=vector<particle>();
 	  all=vector<particle>();
-	  for(int i=0;i<11;i++)
-  	    for(int j=0;j<20;j++)
-		  place[i][j]=0;
-	  for(int i=0;i<12;i++)
-         pen[i%10]=nod[i]=0;
+	  //for(int i=0;i<12;i++) nod[i]=0; //it is already done on the begining of the cascade
   }
   /// initial neutrino
   particle nu ()

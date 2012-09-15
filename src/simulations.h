@@ -112,4 +112,5 @@ void xsec_sim3();
 void xsec_sim4();
 void towork_sim();
 void ccpip_js_sim();
+void hayato_sim0812();
 #endif

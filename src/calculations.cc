@@ -2404,7 +2404,7 @@ int calcPiTle (int fz, int xs)
 	nqfile.close();
 	nifile.close();
 }*/
-
+/*
 int viviNomad3(int fz, int xs)
 {
 	string help = "root_files/Nomad_100k_";
@@ -2570,8 +2570,9 @@ int viviNomad3(int fz, int xs)
 	
 	return viviNomad4(fz, xs);
 }
+*/
 
-int viviNomad2(int fz, int xs)
+/*int viviNomad2(int fz, int xs)
 {
 	string help = "root_files/Nomad_100k_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
@@ -2653,8 +2654,9 @@ int viviNomad2(int fz, int xs)
 	
 	return 1;
 }	
+*/
 
-int viviNomad_new(int fz, int xs)
+/*int viviNomad_new(int fz, int xs)
 {
 	string help = "root_files/Nomad_100k_";
 	help += fzwork[fz] + sep + xsec[xs] + string("*.root");
@@ -2674,7 +2676,7 @@ int viviNomad_new(int fz, int xs)
 	 * 4 - in nucleon pion production
 	 * 5 - in nucleon double pp
 	 * 6 - other there was more than one pion production in FSI
-	 */
+	 
 	
 	TFile *tf1 = new TFile(file.c_str());
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
@@ -2730,7 +2732,7 @@ int viviNomad_new(int fz, int xs)
 	plik.close();
 	return 1;
 }
-
+*/
 int viviNomad4(int fz, int xs)
 {
 	string help = "root_files/Nomad_100k_";
@@ -4086,7 +4088,7 @@ int roman_extra ()
 	return 1;	
 }
 
-void oset_count (string filename, double *n, double *en, double *en2, int events)
+/*void oset_count (string filename, double *n, double *en, double *en2, int events)
 {
 	TFile *tf1 = new TFile(filename.c_str());
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
@@ -4155,8 +4157,9 @@ void oset_count (string filename, double *n, double *en, double *en2, int events
 	for (int i = 0; i < 4; i++) n[i] /= norm1;
 	for (int k = 4; k < 9; k++) n[k] /= norm2;
 }
+*/
 
-void oset_impac(string filename, double *qel, double *abs, int events)
+/*void oset_impac(string filename, double *qel, double *abs, int events)
 {
 	double bin[28];
 	for (int i = 0; i < 28; i++) bin[i] = (i+1)*0.25;
@@ -4194,8 +4197,9 @@ void oset_impac(string filename, double *qel, double *abs, int events)
 		abs[i] /= norm[i];
 	}
 }
+*/
 
-int oset_calc ()
+/*int oset_calc ()
 {		
 	const int events     = 1000000;
 
@@ -4311,7 +4315,7 @@ int oset_calc ()
 
 	return 1;	
 }
-
+*/
 void kt()
 {
 	TFile *tf1 = new TFile("root_files/kaskada_new.root");
@@ -4781,7 +4785,7 @@ void hayato_calc()
 	
 }
 
-void dens_test_calc()
+/*void dens_test_calc()
 {
 	TFile *tf1 = new TFile("root_files//E40k_carbon.root");
 	TTree *tt1 = (TTree*)tf1->Get("treeout");
@@ -4840,8 +4844,8 @@ void dens_test_calc()
 	}
 	p1.close();	
 }
-
-void ptcalc()
+*/
+/*void ptcalc()
 {
 	const int events = 100000;
 	const int bins = 20;
@@ -4971,8 +4975,8 @@ void ptcalc()
 		plik.close();
 	}
 }
-
-void ang_calc()
+*/
+/*void ang_calc()
 {
 	const int events = 100000;
 	const int bins = 18;
@@ -5040,7 +5044,7 @@ void ang_calc()
 		plik.close();
 	}
 }
-
+*/
 void make_dist(string filename, double res[100][20])
 {	
 	TFile *tf1 = new TFile(filename.c_str());
@@ -5718,4 +5722,29 @@ void ccpip_js_calc()
 	file2.close();
 }	
 
+void hayato_calc0812()
+{	
+	ofstream file("results/numu_oxygen_total.txt");
+	file << "#neutrino energy [MeV] | total xsec per nucleon with dipole FF | total xsec per nucleon with BBBA05, hep-ex/0602017 BBBA05 for Q2<18 GeV" << endl;
+	
+	for (int en = 50; en <= 1250; en += 50)
+	{
+		
+		stringstream temp;
+		string energy;
 
+		temp << en;
+		temp >> energy;
+		
+		string dip = "root_files/hayato/E" + energy + "_oxygen_dip.root.txt";
+		string bbb = "root_files/hayato/E" + energy + "_oxygen_bbb.root.txt";
+		
+		double cross_dip = crosssection(dip);
+		double cross_bbb = crosssection(bbb);
+		
+		file << energy << " " << cross_dip << " " << cross_bbb << endl;
+	}
+	
+	file.close();
+	
+}

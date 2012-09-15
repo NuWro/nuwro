@@ -27,20 +27,6 @@ public:
 	int id;          ///< index in the vector 'all'
 	int mother;      ///< index of mother in the vector 'all'
 	int endproc;     ///< id of process that destroyed the particle
-	double fz;
-	double pt;  
-	int mother_pdg;
-	int mother_proc;
-	vec mother_momentum;
-	double mother_ek;
-	int his_nqel;
-	int his_nspp;
-	int his_ndpp;
-	int his_pqel;
-	int his_pcex;
-	int his_pspp;
-	int his_pdpp;
-	int his_ptpp;
 	double his_fermi;
   
 public:
@@ -64,6 +50,7 @@ public:
 	inline void set_pi (){set_pdg_and_mass(pdg_pi,mass_pi);}                ///< set particle pdg and mass
 	inline void set_piP (){set_pdg_and_mass(pdg_piP,mass_piP);}             ///< set particle pdg and mass
 	inline void set_piM (){set_pdg_and_mass(-pdg_piP,mass_piP);}            ///< set particle pdg and mass
+	inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy 
 
 	inline void set_momentum (vec p);            ///< set particle momentum and adjust energy
 	inline void set_energy (double E);           ///< set particle energy and adjust momentum
@@ -106,14 +93,8 @@ public:
 	}
 
 	inline double mcos(){return p().dir()*mom().p().dir();}
-
-	inline void wfz(double val);
-	inline void wpt(double val);
-	inline void set_mother (particle &p1);
-	inline void set_new ();
 	inline double Ek_in_frame(vec v);	///<
-	inline double fozo();
-	inline double set_fermi(double V);
+
 
 	friend ostream & operator<<(ostream & out,particle p)
 	{
@@ -146,18 +127,18 @@ double get_cos(double A, double B, double C, double D, double E, double F, doubl
 
 particle::particle (int code, double mass):vect(mass,0,0,0),_mass (mass),pdg(code)
   {
-    id=-1;mother=0;endproc=-1;travelled=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
   }
 
 
 particle::particle (double mass):vect(mass,0,0,0),_mass (mass)
   {
-    id=-1;mother=0;endproc=-1;travelled=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
   }
 particle::particle (vect fourmomentum):vect (fourmomentum)
   { 
     _mass = sqrt (fourmomentum * fourmomentum);
-    id=-1;mother=0;endproc=-1;travelled=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
   }
 inline bool particle::operator==(particle& p2)
 {
@@ -313,73 +294,6 @@ bool particle::nucleon()
 	return pdg==pdg_proton || pdg== pdg_neutron;
 }
 
-
-void particle::wfz(double val)
-{
-	fz = val/fermi;
-}
-
-void particle::wpt(double val)
-{
-	pt = val;
-}
-
-void particle::set_mother (particle &p1)
-{
-	mother_pdg = p1.pdg;
-	mother_proc = p1.endproc;
-	mother_momentum = p1.p();
-	mother_ek = p1.Ek();
-	
-	his_nqel = p1.his_nqel;
-	his_nspp = p1.his_nspp;
-	his_ndpp = p1.his_ndpp;
-	his_pqel = p1.his_pqel;
-	his_pcex = p1.his_pcex;
-	his_pspp = p1.his_pspp;
-	his_pdpp = p1.his_pdpp;
-	his_ptpp = p1.his_ptpp;
-	
-	switch(mother_proc)
-	{
-		case 10: his_nqel++; break;
-		case 12: his_nspp++; break;
-		case 13: his_ndpp++; break;
-		case 20: his_pqel++; break;
-		case 21: his_pcex++; break;
-		case 22: his_pspp++; break;
-		case 23: his_pdpp++; break;
-		case 24: his_ptpp++; break;
-		default: break;
-	}
-}
-
-void particle::set_new ()
-{
-	mother_pdg = 0;
-	mother_proc = 0;
-	mother_momentum = vec(0,0,0);
-	mother_ek = 0;
-	
-	his_nqel = 0;
-	his_nspp = 0;
-	his_ndpp = 0;
-	his_pqel = 0;
-	his_pcex = 0;
-	his_pspp = 0;
-	his_pdpp = 0;
-	his_ptpp = 0;
-}
-
-double particle::fozo()
-{
-	return fz;
-}
-
-double particle::set_fermi(double V)
-{
-	his_fermi = V;
-}
 double particle::Ek_in_frame (vec v)
 {
   vect plab = p4 ();

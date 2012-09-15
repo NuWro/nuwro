@@ -9,7 +9,7 @@
 #CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 -I src 
 CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed $(QTINCLUDEDIRS)
 #LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6 -lEG -lEGPythia6 -lCore  -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lGeom -lpthread -lm -ldl -rdynamic -lHist $(QTLIBS)
-LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 -lGeom  $(QTLIBS)
+LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 -lGeom -lMinuit $(QTLIBS)
 LD	      = g++
 CXX	      = g++
 CC 	      = g++
@@ -17,7 +17,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies test mb_nce\
+                fsi niwg ladek_topologies test mb_nce_run\
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -85,8 +85,7 @@ $(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/ev
        src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/dirs.o src/fsi_main.o 
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/mb_nce:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
-       src/mb_nce.o src/pitab.o
+$(BIN)/mb_nce_run:   src/mb_nce.o src/mb_nce_run.o src/event1.o src/event1dict.o src/mb_nce_fit.o src/pdg.o src/scatter.o src/generatormt.o src/dirs.o src/particle.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
