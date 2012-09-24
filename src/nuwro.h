@@ -24,6 +24,9 @@ class NuWro
 		void real_events(params &p);
 		void kaskada_redo(string input, string output);
 		int main (int argc, char **argv);
+		inline int proces() {return procesy.choose();}
+		NuWro ();
+		NuWro (params &p);
 		~NuWro();
 
 	private:

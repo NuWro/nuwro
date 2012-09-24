@@ -1006,3 +1006,10 @@ void hayato_sim0812()
 		run(com2);
 	}
 }
+
+void test_sim()
+{
+	string com1 = get_bin_dir() + "nuwro -o 'test.root' " + "-p 'beam_type = 0' -p 'beam_energy = 1000' " + events100k + carbon + numu + onlyres;
+	cout << endl << endl <<com1 << endl << endl;	
+	run(com1);
+}

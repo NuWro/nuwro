@@ -17,7 +17,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies test mb_nce_run\
+                fsi niwg ladek_topologies test mb_nce_run ganalysis\
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -97,6 +97,13 @@ $(BIN)/ladek_topologies: src/event1.o src/event1dict.o src/pdg.o src/particle.o 
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generatormt.o src/test.o src/dirs.o
+		$(LINK.cc) $^ -o $@
+		
+$(BIN)/ganalysis: $(addprefix src/, \
+		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_lib.o nucleus_data.o isotopes.o elements.o \
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o ganalysis.o) \
+        $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
 
 #$(BIN)/plots:           src/event1.o src/event1dict.o src/pdg.o src/particle.o src/generatormt.o src/dirs.o

@@ -5748,3 +5748,55 @@ void hayato_calc0812()
 	file.close();
 	
 }
+
+void test_calc()
+{
+	int events = 100000;
+	double res[20] = {0};
+	
+	TFile *tf1 = new TFile("test.root");
+	TTree *tt1 = (TTree*)tf1->Get("treeout");
+	event *e1   = new event();
+		
+	tt1->SetBranchAddress("e",&e1);
+	
+	for (int i = 0; i < events; i++)
+	{
+		tt1->GetEntry(i);
+		
+		int pion = 100*e1->fof(211) + 10*e1->fof(-211) + e1->fof(111);
+		
+		if (pion == 100)
+		{
+			double Tk = 0;
+			
+			for (int k = 0; k < e1->f(); k++)
+			{
+				if (e1->post[k].pdg == 211)
+				{
+					Tk = e1->post[k].Ek();
+					break;
+				}
+			}
+			
+			int a = Tk / 50;
+			if (a < 20) res[a]++;
+			
+		}
+		cout<<"test: "<<100*i/events<<"%\r"<<flush;
+	}
+	
+	cout<<"test: done"<<endl<<endl;
+
+	delete e1;
+	delete tt1;
+	delete tf1;
+	
+	double xsec = crosssection("test.root.txt");
+	
+	cout << "Total: " << xsec << endl << endl;
+	
+	for (int i = 0; i < 20; i++)
+		cout << 50 * (i + 0.5) << " " << res[i] * xsec / events / 50.0 << endl;
+
+}

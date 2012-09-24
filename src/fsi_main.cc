@@ -474,8 +474,11 @@ int main(int argc, char** argv)
 	//ccpip_js_sim();
 	//ccpip_js_calc();
 	
-	hayato_sim0812();
-	hayato_calc0812();
+	//hayato_sim0812();
+	//hayato_calc0812();
+	
+	//test_sim();
+	//test_calc();
 	
 	run("rm -r tmp/");
 	logfile.close();

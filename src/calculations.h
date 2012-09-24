@@ -72,4 +72,5 @@ void ccpip_js_calc();
 void ccpip_js_calcH(string filename, double *res);
 void ccpip_js_calcC(string filename, double *res);
 void hayato_calc0812();
+void test_calc();
 #endif
