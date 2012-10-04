@@ -36,13 +36,51 @@ string data_dir;
 #include "nuwro.h"
 
 NuWro::~NuWro()
-{
+{		
 	delete mixer;
 	delete detector;
 	delete neutrino_beam;
 	delete nucleuss;
 }
 
+NuWro::NuWro()
+{
+
+}
+
+NuWro::NuWro (params &par)
+{
+	dismode = false;
+	
+	neutrino_beam = create_beam (par);
+	nucleuss = make_nucleus (par);
+	
+	if(par.target_type == 1)
+		mixer = new target_mixer (par);
+	else
+		mixer = NULL;
+		
+	detector = make_detector (par);
+
+	if(par.geo_file != "" and detector == NULL)
+	{
+		cerr << "Detector geometry not created." << endl;
+		exit(1);
+	}
+	
+	ff_configure (par);
+
+	bool active[] =
+	{
+		par.dyn_qel_cc,par.dyn_qel_nc,
+		par.dyn_res_cc,par.dyn_res_nc,
+		par.dyn_dis_cc,par.dyn_dis_nc,
+		par.dyn_coh_cc,par.dyn_coh_nc,
+		par.dyn_mec_cc,par.dyn_mec_nc
+	};
+
+	procesy.reset(active);
+}
 
 geomy* NuWro::make_detector(params &p)
 {
@@ -65,7 +103,6 @@ geomy* NuWro::make_detector(params &p)
 		return NULL;
 
 }
-
 
 int NuWro::init (int argc, char **argv)
 {
@@ -104,6 +141,9 @@ int NuWro::init (int argc, char **argv)
 			nucleuss = make_nucleus(p);
 		if(p.target_type==1)
 			mixer=new target_mixer(p);
+		else
+			mixer = NULL;
+			
 		detector=make_detector(p);
 
 		if(p.geo_file!="" and detector==NULL)
@@ -123,7 +163,6 @@ int NuWro::init (int argc, char **argv)
 	procesy.reset(active);
 
 }
-
 
 void NuWro::makeevent(event* e, params &p)
 {
@@ -217,6 +256,7 @@ void NuWro::makeevent(event* e, params &p)
 		}
 	}
 	e->par =p;
+
 	switch (dyn)
 	{
 		case 0:
@@ -727,6 +767,3 @@ int NuWro::main (int argc, char **argv)
 		cout<<"Nuwro failed"<<endl;
 	}
 }
-
-
-NuWro nuwro;

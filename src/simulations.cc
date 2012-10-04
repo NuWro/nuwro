@@ -984,3 +984,32 @@ void ccpip_js_sim()
 	string command2 = "./bin/nuwro -o 'ccpip/H.root' " + par + hydrogen;
 	run(command2);
 }
+
+void hayato_sim0812()
+{
+	run("mkdir -p root_files/hayato");
+	
+	for (int en = 50; en <= 1250; en += 50)
+	{
+//		double en = i*25.0 + 250;
+		
+		stringstream temp;
+		string energy;
+
+		temp << en;
+		temp >> energy;
+	
+		string com1 = get_bin_dir() + "nuwro -o root_files/hayato/E" + energy + "_oxygen_dip.root -p 'beam_type = 0' -p 'beam_energy = " + energy + "' -p 'qel_vector_ff_set = 1' " + events0k + oxygen + numu + fsioff + CCQEL;
+		string com2 = get_bin_dir() + "nuwro -o root_files/hayato/E" + energy + "_oxygen_bbb.root -p 'beam_type = 0' -p 'beam_energy = " + energy + "' -p 'qel_vector_ff_set = 2' " + events0k + oxygen + numu + fsioff + CCQEL;
+		
+		run(com1);
+		run(com2);
+	}
+}
+
+void test_sim()
+{
+	string com1 = get_bin_dir() + "nuwro -o 'test.root' " + "-p 'beam_type = 0' -p 'beam_energy = 1000' " + events100k + carbon + numu + onlyres;
+	cout << endl << endl <<com1 << endl << endl;	
+	run(com1);
+}

@@ -37,15 +37,15 @@ class kaskada
 		particle *p;
 		Interaction *I;
 		interaction_parameters X;
+		double max_step;
+		double radius;
 
 		void prepare_particles(); 						///take all nucleons and pions from input vector, others copy directly to the output vector
 		interaction_parameters prepare_interaction();	///set density and cross sections
 		bool make_interaction(); 					    ///generate a kinematic
-		void finalize_interaction(); 					///copy new particle to a queue, apply formation zone if it is on 
-		void leave_nucleus(); 							///move particle to the output particles vector and reduce momentum for nucleons
-
-		void reset_stats(); 							///set initial value for some testing variables (only in debug mode)
-		void run_test(); 								///write extra information to event tree (only in debug mode)
+		int finalize_interaction(); 					///copy new particle to a queue, apply formation zone if it is on 
+		bool leave_nucleus(); 							///move particle to the output particles vector and reduce momentum for nucleons
+		bool move_particle();				///propagate particle and change nucleons energy according to nuclear potential
 
 		bool check (particle & p1, particle & p2, particle *spect, int n, particle p[],int k);  ///check if charge is conserved
 		bool check2 (particle & p1, particle & p2, particle *spect, int n, particle p[],int k); ///check if fourmomentum is conserved

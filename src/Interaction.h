@@ -207,6 +207,7 @@ bool NData::nucleon_scattering (particle & p1, particle & p2,
     set_particles(p1,p2);
     vec v = p2.v();
     assert ( v*v<1 && " nucleon  ");
+    
     double Ek1 = p1.Ek_in_frame (v);
     double Ek2 = p1.Ek_in_frame (-v);
     double s2=sigma(Ek2); 
@@ -220,6 +221,7 @@ bool NData::nucleon_scattering (particle & p1, particle & p2,
 		p2.z *= -1;
 		set_Ek(Ek2);
 	  }
+	  
 	if (frandom()>finel())
 	    return nucleon_elastic(p1, p2, n, p);
 	if (frandom() <  fp() ) 
@@ -238,6 +240,7 @@ bool NData::nucleon_elastic(particle& p1,particle& p2, int &n, particle p[])
 	p[0] = p1;
 	p[1] = p2;
 	int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, a(), b(), 0, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b8x^3 + 0*x^2 + 0*x + 1
+		
 	if(res==0) cerr<<"AB=0"<<endl;
 	return res;
  }
@@ -535,7 +538,7 @@ bool PiData::pion_scattering (particle & p1, particle & p2, nucleus &t,
     
     vec  v = p2.v();
     assert ( v*v<1 && " pion  ");
-   /* double Ekm = p1.Ek_in_frame (-v);
+    double Ekm = p1.Ek_in_frame (-v);
     set_Ek(Ekm);
     double sm = sigma ();
     double Ekp = p1.Ek_in_frame ( v);
@@ -547,7 +550,7 @@ bool PiData::pion_scattering (particle & p1, particle & p2, nucleus &t,
 		p2.y *= -1;
 		p2.z *= -1;
 		set_Ek(Ekm);
-      }*/
+      }
     if(frandom()<fabs_inel() and canal != 0 and canal != 5)
        return pion_abs (p1, p2, t, n, p);
     if(frandom()>=finel())
@@ -764,8 +767,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
   {
 	t.spectator=NULL;
     X.p2 = t.get_nucleon (p1.r);
-    
-	//p2.set_momentum(vec(0,0,0));
+	//X.p2.set_momentum(vec(0,0,0));
 
     if(X.p2.v().length()>=1) 
          cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
