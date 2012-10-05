@@ -16,6 +16,8 @@ enum {
      dis_nc=5,
      coh_cc=6, 
      coh_nc=7,
+     mec_cc=8,
+     mec_nc=9,
 
      nucleon_el=10, 
      nucleon_ce=11, 
