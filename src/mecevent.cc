@@ -36,6 +36,12 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 
 	nucleus jadro (p);
 	int mecA = jadro.p + jadro.n;// number of nucleons
+	if(mecA<4)
+	{
+		e.weight=0;
+		return;
+	}
+			
 
 	//      Initial neutrino
 	particle mecnu = e.in[0];
@@ -101,5 +107,4 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 			e.out.push_back (mecnucleon2);
 
 	}
-
 }

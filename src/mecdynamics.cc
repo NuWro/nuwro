@@ -11,11 +11,6 @@
 //double Pi2 = Pi * Pi;
 double Pi3 = Pi2 * Pi;
 
-//double przelcm = 197.326968e-13;	// MeV*cm
-//double przelcm2 = przelcm * przelcm;
-//double przelfermi = 197.326968;	//MeV fm
-//double przelfermi2 = przelfermi * przelfermi;
-
 double mecM = ( 938.272013 + 939.565346 )/2.0;
 double mecM2 = mecM * mecM;
 
@@ -30,17 +25,7 @@ double mecMA = 1014;			 //genie value
 double mecMA2 = mecMA*mecMA;
 double mecGA = -1.267;			 // negative!!!
 
-double stala=5.07*1e-6;
-
-
-double mecmax2(double a, double b)
-{
-	if (a<b)
-		return b;
-	else
-		return a;
-}
-
+double stala=5.07*1e-6;   // G*G*cos2thetac/(1e-38*cm2)
 
 double mecGe(double Q2, int opcja)
 {
@@ -157,9 +142,10 @@ double mecAA (double Q2, int opcja)
 
 
 double Pauli (double Q2)
-{
-	if ( (Q2<0.2*1e6) && (Q2>0) )
-		return ( 1.07011 - 0.880763 * exp (-20.5688*Q2/1e6 - 38.7221 * Q2*Q2/1e12 ) );
+{	
+	Q2/=GeV2;
+	if ( (Q2<0.2) && (Q2>0) )
+		return ( 1.07011 - 0.880763 * exp (-20.5688*Q2 - 38.7221 * Q2*Q2 ) );
 	else
 		return 1.0;
 }
@@ -169,24 +155,10 @@ double Pauli (double Q2)
 double mecccqe_cross (double E, double Q2, int opcja, bool PB, bool nu)
 {
 	double sminusu = 4.0*mecM*E - Q2 - mecm2;
-	if (nu)
-	{
-		//cout<<"cc"<<endl;
-		if (PB == false)
-			return stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) - sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 );
-		else
-			return stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) - sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 )
-				* Pauli(Q2);
-	}
-	if (!nu)
-	{
-		//cout<<"!cc"<<endl;
-		if (PB == false)
-			return stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) + sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 );
-		else
-			return stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) + sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 )
-				* Pauli(Q2);
-	}
+	double res=stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) +(nu?-1:1)*sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 );
+	if(PB)
+		res*=Pauli(Q2);
+	return res;
 }
 
 
@@ -323,7 +295,7 @@ double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &me
 
 	if (pierw > 0)				 //determines a lower bound of the neutrino energy
 	{
-		double Q2mintrue = mecmax2(Q2min(E), 4*2*mecM);
+		double Q2mintrue = max(Q2min(E), 4*2*mecM);
 		double Q2 = Q2mintrue + ( Q2max(E)-Q2mintrue ) * frandom();
 		double w = Q2/2.0/mecM;
 		double q = sqrt( Q2 + w*w );
@@ -348,7 +320,7 @@ double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &me
 		model_2body (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, fsi, poten);
 		//cout<<mecnucleon1.pdg<<"  "<<mecnucleon1.t<<endl;
 		//cout<<"sleep"<<endl;
-		weight = (Q2max(E)-Q2min(E))*mec_cross (E, Q2, nu)/2.0/1e38/cm2;
+		weight = (Q2max(E)-Q2min(E))*mec_cross (E, Q2, nu)/2.0/1e38;
 		//cout<<E<<"  "<<Q2max(E)<<"  "<<Q2min(E)<<"  "<<weight<<endl;
 		//cout<<"sleep2"<<endl;
 		if (weight<0)
@@ -364,6 +336,6 @@ double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &me
 	}
 
 	//cout<<"spia"<<endl;
-	return weight*cm2;
+	return weight;
 
 }

@@ -425,7 +425,7 @@ namespace rpa
 				
 	double qMin(double q0)
 	{      
-		if( ((En-q0)*(En-q0)-mm2) < 0 ) 
+		if( ((En-q0)*(En-q0)-mm2) <= 0 ) 
 			return 0;  
 		else
 			return sqrt(2*En*En-2*En*q0+q0*q0-mm2-2*En*sqrt((En-q0)*(En-q0)-mm2 ));
@@ -434,7 +434,7 @@ namespace rpa
 
 	double qMax(double q0)
 	{
-		if((En-q0)*(En-q0)-mm2 < 0 ) 
+		if((En-q0)*(En-q0)-mm2 <= 0 ) 
 			return 0;	  
 		else
 			return sqrt(2*En*En - 2*En*q0 + q0*q0 - mm2 + 2*En*sqrt((En-q0)*(En-q0)-mm2 ));
@@ -649,11 +649,11 @@ namespace rpa
 			  <<", q0 = "<< q0/GeV<<", Q2 = " 
 			  << (qv*qv-q0*q0)/GeV/GeV 
 			  << ", (En-q0)*(En-q0)-mm2 = " << 
-		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<") mm="<<mm2<<endl; */
-		 if(!ratio)
-		  return -amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2;
+		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<") mm="<<mm2<<endl; 
+*/		 if(!ratio)
+		  return max(-amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2,0.);
 		 else
-		  return amplituda[0] ? min(amplituda[1]/amplituda[0],10.0) :1;
+		  return amplituda[0]>0 ? min(amplituda[1]/amplituda[0],10.0) :1;
 	}
 
 	double sigma_q0( double q0)
@@ -667,81 +667,6 @@ namespace rpa
 			return  calg5a(fix2(sigma_qv_q0,q0),qMin(q0),qMax(q0),100);
 	}    
 
-	struct config{
-		int kFF;
-		double kf;
-		int use_Mf;
-		int nu_pdg;
-		int kNucleus;
-		bool use_rpa;
-		
-		config(
-			int	   FF0,
-			double kf0,
-			bool   use_Mf0,
-			int    nu_pdg0,
-			int    kNucleus0,
-			bool   use_rpa0):
-				kFF (FF0),
-				kf(kf0),
-				use_Mf(use_Mf0),
-				nu_pdg(nu_pdg0),
-				kNucleus (kNucleus0),
-				use_rpa(use_rpa0)
-		{
-		}
-
-	};
-
-
-	config ust1a  (NNFF, 225*MeV, true,  14, Ar, true);
-	config ust10a (NNFF, 225*MeV, true, -14, Ar, true);
-	config ust1b  (NNFF, 225*MeV, false, 14, Ar, true);
-	config ust10b (NNFF, 225*MeV, false,-14, Ar, true);
-	config ust1c  (NNFF, 225*MeV, true,  14, Ar, false);
-
-	config ust2a  (NNFF2, 225*MeV, true,  14, Ar, true);
-	config ust20a (NNFF2, 225*MeV, true, -14, Ar, true);
-	config ust2b  (NNFF2, 225*MeV, false, 14, Ar, true);
-	config ust20b (NNFF2, 225*MeV, false,-14, Ar, true);
-	config ust2c  (NNFF2, 225*MeV, true,  14, Ar, false);
-
-
-
-/*
-	void configure(const config &ust)
-	{
-		kFF=ust.kFF;
-		
-		kf=ust.kf>0?ust.kf : mean_kf(ust.kNucleus);       
-
-		if(ust.use_Mf)
-		{
-			Mef= ust.kf==225*MeV
-			 		? 638 * MeV 
-					: mean_Mef(ust.kNucleus);
-
-		}  
-		else 
-			Mef=M;
-			
-		use_rpa =ust.use_rpa;
-		   
-		Mef2=Mef*Mef;              
-		Ef= sqrt(kf*kf + Mef2);   
-		Ef2=kf*kf + Mef2;
-
-		znak=ust.nu_pdg>0 ?1 : -1;
-		switch(ust.nu_pdg)
-		{ 
-			case 12:case -12: m=m_e;break;
-		  	case 14:case -14: m=m_mu;break;
-		  	case 16:case -16: m=m_tau;break;
-		  	default: m=0;break;
-	    }
-		mm2=m*m;
-	}
-*/
 
 	void configure(double E, const int kNucleus, int nu_pdg, int use_Mf, int kFF0,double kf0, double mf0)
 	{
@@ -933,9 +858,9 @@ using namespace rpa;
 int main()
 {   int Atoms[]={0,6,8,18,26};
 	
-    for(int i=3;i<4;i++)
+    for(int i=1;i<2;i++)
 	{    
-		for(double Enu=1*GeV;Enu<=5*GeV;Enu+=1*GeV)
+		for(double Enu=0.2*GeV;Enu<=5*GeV;Enu+=0.2*GeV)
 		{
 			int kNucleus=Atoms[i];
 			double kf=mean_kf(kNucleus);

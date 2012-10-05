@@ -41,6 +41,8 @@ cohevent_cj (params & par, event & e, nucleus & jadro, bool cc, bool fast)
   particle lepton(nu);
   particle pion;
  
+	if(jadro.A()<4)
+		return; // no coherent scattering if A<4
   if (not cc)  pion.pdg = 111;//pi0
   else if (nu.pdg > 0)
     { //CC pi+ production by neutrino
