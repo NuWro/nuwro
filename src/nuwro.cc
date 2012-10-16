@@ -323,14 +323,26 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
-			{
-				mecevent (p, *e, *nucleuss, true);
+			{	
+				switch(p.mec_kind)
+				{
+					case 1:mecevent1 (p, *e, *nucleuss, true);break;
+					case 2:mecevent2 (p, *e, *nucleuss, true);break;
+					case 3:mecevent3 (p, *e, *nucleuss, true);break;
+					default: mecevent (p, *e, *nucleuss, true);break;
+				}
 			}
 			break;
 		case 9:
 			if (p.dyn_mec_nc) // mec nc
 			{
-				mecevent (p, *e, *nucleuss, false);
+				switch(p.mec_kind)
+				{
+					case 1:mecevent1 (p, *e, *nucleuss, false);break;
+					case 2:mecevent2 (p, *e, *nucleuss, false);break;
+					case 3:mecevent3 (p, *e, *nucleuss, false);break;
+					default:mecevent (p, *e, *nucleuss, false);break; 
+				}
 			}
 			break;
 	}

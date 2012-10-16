@@ -9,25 +9,25 @@
 
 //double pi = M_PI;;
 //double Pi2 = Pi * Pi;
-double Pi3 = Pi2 * Pi;
+const double Pi3 = Pi2 * Pi;
 
-double mecM = ( 938.272013 + 939.565346 )/2.0;
-double mecM2 = mecM * mecM;
+const double mecM = ( 938.272013 + 939.565346 )/2.0;
+const double mecM2 = mecM * mecM;
 
-double mecm = 105.6583668;
-double mecm2 = mecm*mecm;
+const double mecm = 105.6583668;
+const double mecm2 = mecm*mecm;
 
-double meckf = 220.0;
-double mecEf = sqrt(meckf*meckf + mecM2);
+const double meckf = 220.0;
+const double mecEf = sqrt(meckf*meckf + mecM2);
 
-double mecMv2=710000;
-double mecMA = 1014;			 //genie value
-double mecMA2 = mecMA*mecMA;
-double mecGA = -1.267;			 // negative!!!
+const double mecMv2=710000;
+const double mecMA = 1014;			 //genie value
+const double mecMA2 = mecMA*mecMA;
+const double mecGA = -1.267;			 // negative!!!
 
 double stala=5.07*1e-6;   // G*G*cos2thetac/(1e-38*cm2)
 
-double mecGe(double Q2, int opcja)
+static double mecGe(double Q2, int opcja)
 {
 	if (opcja == 1)
 		return 1/(1+Q2/mecMv2)/(1+Q2/mecMv2);
@@ -41,7 +41,7 @@ double mecGe(double Q2, int opcja)
 }
 
 
-double mecGm(double Q2, int opcja)
+static double mecGm(double Q2, int opcja)
 {
 	if (  opcja == 1  )
 		return 4.706*mecGe(Q2,opcja);
@@ -62,7 +62,7 @@ double mecGm(double Q2, int opcja)
 }
 
 
-double mecGa(double Q2, int opcja)
+static double mecGa(double Q2, int opcja)
 {
 	if ( opcja < 4 )
 		return mecGA/(1+Q2/mecMA2)/(1+Q2/mecMA2);
@@ -76,17 +76,17 @@ double mecGa(double Q2, int opcja)
 }
 
 
-double mecGp(double Q2, int opcja)
+static double mecGp(double Q2, int opcja)
 {return 2.0*939*939*mecGa(Q2,opcja)/(140*140 + Q2);}
 
-double mecF2(double Q2, int opcja)
+static double mecF2(double Q2, int opcja)
 {return (mecGm(Q2,opcja)-mecGe(Q2,opcja))/(1+Q2/4/mecM2);}
 
-double mecF1(double Q2, int opcja)
+static double mecF1(double Q2, int opcja)
 {return ( mecGe(Q2,opcja) + mecGm(Q2,opcja)*Q2/4/mecM2 )/(1+Q2/4/mecM2);}
 
 /////////////////////////////////////////////////////
-double Q2min (double E)
+static double Q2min (double E)
 {
 	double W2 = 2.0*mecM*E + mecM2;
 	double W = sqrt(W2);
@@ -101,7 +101,7 @@ double Q2min (double E)
 /////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////
-double Q2max (double E)
+static double Q2max (double E)
 {
 	double W2 = 2.0*mecM*E +mecM2;
 	double W = sqrt(W2);
@@ -115,14 +115,14 @@ double Q2max (double E)
 
 ///////////////////////////////////////////////////////
 
-double mecCC (double Q2, int opcja)
+static double mecCC (double Q2, int opcja)
 {
 	double tau = Q2/4.0/mecM2;
 	return 0.25* ( mecGa(Q2,opcja)*mecGa(Q2,opcja) + mecF1(Q2,opcja)*mecF1(Q2,opcja) + tau*mecF2(Q2,opcja)*mecF2(Q2,opcja) );
 }
 
 
-double mecBB (double Q2, int opcja)
+static double mecBB (double Q2, int opcja)
 {
 	double tau = Q2/4.0/mecM2;
 								 // minus for antineutrinos
@@ -130,7 +130,7 @@ double mecBB (double Q2, int opcja)
 }
 
 
-double mecAA (double Q2, int opcja)
+static double mecAA (double Q2, int opcja)
 {
 	double tau = Q2/4.0/mecM2;
 	return (mecm2 + Q2)/mecM2* ( (1+tau)*mecGa(Q2,opcja)*mecGa(Q2,opcja) - (1-tau)*mecF1(Q2,opcja)*mecF1(Q2,opcja) +
@@ -141,7 +141,7 @@ double mecAA (double Q2, int opcja)
 }
 
 
-double Pauli (double Q2)
+static double Pauli (double Q2)
 {	
 	Q2/=GeV2;
 	if ( (Q2<0.2) && (Q2>0) )
@@ -152,7 +152,7 @@ double Pauli (double Q2)
 
 
 								 //SIGN
-double mecccqe_cross (double E, double Q2, int opcja, bool PB, bool nu)
+static double mecccqe_cross (double E, double Q2, int opcja, bool PB, bool nu)
 {
 	double sminusu = 4.0*mecM*E - Q2 - mecm2;
 	double res=stala*mecM2/8.0/Pi/E/E* ( mecAA(Q2,opcja) +(nu?-1:1)*sminusu*mecBB(Q2,opcja)/mecM2 + sminusu*sminusu*mecCC(Q2,opcja)/mecM2/mecM2 );
@@ -163,7 +163,7 @@ double mecccqe_cross (double E, double Q2, int opcja, bool PB, bool nu)
 
 
 //////////////////////////////////////////////
-double mec_cross (double E, double Q2, bool nu)
+static double mec_cross (double E, double Q2, bool nu)
 {
 	return mecccqe_cross (E, Q2, 3, true, nu) - mecccqe_cross (E, Q2, 2, true, nu);
 }
@@ -173,7 +173,7 @@ double mec_cross (double E, double Q2, bool nu)
 
 ///////////////////////////////////////////////////////////////////////////
 								 //subtract energy by pot and adjusts momentum
-void spowalniacz (double pot, vect &pp)
+static void spowalniacz (double pot, vect &pp)
 {
 	if ( pp.t-pot < sqrt(pp*pp) )
 	{
