@@ -60,8 +60,8 @@ const double mecMDeff2 = mecMDeff * mecMDeff;
 const double mecmpjon = 139;
 const double mecmpjon2 = mecmpjon*mecmpjon;
 
-const double mecm = 105.6583668;
-const double mecm2 = mecm*mecm;
+static double mecm = 105.6583668;
+static double mecm2 = mecm*mecm;
 
 const double meckf = 220.0;
 const double meckf2 = meckf*meckf;
@@ -1869,6 +1869,8 @@ double qplus(double w, double E)
 void model_2body2 (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, bool fsi, double poten)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
+	mecm=meclep.mass();
+	mecm2=mecm*mecm;
 
 	double muonmom = sqrt ((E-w)*(E-w) - mecm2);
 	double cosmuon = (2.0*E*(E-w) - mecm2 - q*q + w*w)/2.0/E/muonmom;
@@ -2061,6 +2063,8 @@ bool fsi, double poten)
 double mecweight2 (double E, bool cc, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
 bool fsi, double poten)
 {
+	mecm=meclepton.mass();
+	mecm2=mecm*mecm;
 	double cut =3;
 	double w = cut + (E-mecm-cut)*los();
 	double q = qminus(w,E) + (qplus(w,E)-qminus(w,E))*los();

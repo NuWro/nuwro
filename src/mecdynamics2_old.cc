@@ -125,6 +125,8 @@ static void spowalniacz (double pot, vect &pp)
 void model_2body2_old (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
+	mecm=meclep.mass();
+	mecm2=mecm*mecm;
 
 	double muonmom = sqrt ((E-w)*(E-w) - mecm2);
 	double cosmuon = (2.0*E*(E-w) - mecm2 - q*q + w*w)/2.0/E/muonmom;
@@ -208,6 +210,8 @@ void model_2body2_old (double E, double w, double q, double Bin, particle &mecle
 double mecweight2_old (double E, bool cc, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3)
 {
 
+	mecm=meclepton.mass();
+	mecm2=mecm*mecm;
 	double w = (E-mecm)*frandom();
 	double q = qmin + (qmax-qmin)*frandom();
 	vect nuc1, nuc2, nuc3;

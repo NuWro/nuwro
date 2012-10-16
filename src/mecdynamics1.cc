@@ -19,8 +19,8 @@ double Pi3 = Pi2 * Pi;
 double mecM = ( 938.272013 + 939.565346 )/2.0;
 double mecM2 = mecM * mecM;
 
-const double mecm = 105.6583668;
-const double mecm2 = mecm*mecm;
+static double mecm = 105.6583668;
+static double mecm2 = mecm*mecm;
 
 const double meckf = 220.0;
 const double mecEf = sqrt(meckf*meckf + mecM2);
@@ -224,6 +224,8 @@ void spowalniacz (double pot, vect &pp)
 void model_2body1 (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
+	mecm=meclep.mass();
+	mecm2=mecm*mecm;
 
 	double muonmom = sqrt ((E-w)*(E-w) - mecm2);
 	double cosmuon = (2.0*E*(E-w) - mecm2 - q*q + w*w)/2.0/E/muonmom;
@@ -306,6 +308,8 @@ void model_2body1 (double E, double w, double q, double Bin, particle &meclep, p
 
 double mecweight1 (double E, bool nu, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2)
 {
+	mecm=meclepton.mass();
+	mecm2=mecm*mecm;
 	//cout<<"waga cc"<<cc<<endl;
 	double W2 = 2.0*mecM*E + mecM2;
 	double pierw = (W2-mecm2-mecM2)*(W2-mecm2-mecM2) - 4.0*mecm2*mecM2;
