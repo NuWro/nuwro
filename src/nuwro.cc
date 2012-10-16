@@ -334,8 +334,8 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 9:
-			if (p.dyn_mec_nc) // mec nc
-			{
+			if (p.dyn_mec_nc) // mec nc not implemented yet
+			{   break; // NC NOT implemented 
 				switch(p.mec_kind)
 				{
 					case 1:mecevent1 (p, *e, *nucleuss, false);break;

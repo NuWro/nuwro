@@ -179,6 +179,14 @@ coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion pro
 
 
 ################################################################
+#   MEC
+################################################################
+
+mec_kind = 1   // older wersion
+#mec_kind = 2  // two scenarios but slow
+#mec_kind = 3  // ... 
+
+################################################################
 #
 # Final state interaction parameters
 #
