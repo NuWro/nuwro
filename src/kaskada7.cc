@@ -54,12 +54,14 @@ void kaskada::prepare_particles()
 		if (nucleon_or_pion (p1.pdg))
 		{		  
 			double fz = formation_zone(p1, par, *e); //calculate formation zone
-			p1.krok(fz); //move particle by a distance defined by its formation zone
+			p1.krok(fz); //move particle by a distance defined bsy its formation zone
 			
 			if (nucleon (p1.pdg))
 			{	
 				p1.set_energy(p1.E() + par.nucleus_E_b);
-				p1.set_fermi(e->in[1].Ek());
+				
+				if (!e->flag.mec)				
+					p1.set_fermi(e->in[1].Ek());
 											
 				if (p1.Ek() <= par.kaskada_w + p1.his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
 				{
