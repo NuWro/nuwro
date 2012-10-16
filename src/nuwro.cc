@@ -331,6 +331,8 @@ void NuWro::makeevent(event* e, params &p)
 					case 3:mecevent3 (p, *e, *nucleuss, true);break;
 					default: mecevent (p, *e, *nucleuss, true);break;
 				}
+				for(int i=0;i<e->out.size();i++)
+					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 			}
 			break;
 		case 9:
