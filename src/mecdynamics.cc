@@ -21,11 +21,11 @@ const double meckf = 220.0;
 const double mecEf = sqrt(meckf*meckf + mecM2);
 
 const double mecMv2=710000;
-const double mecMA = 1014;			 //genie value
+const double mecMA = 1014;		 //genie value
 const double mecMA2 = mecMA*mecMA;
-const double mecGA = -1.267;			 // negative!!!
+const double mecGA = -1.267;	 // negative!!!
 
-double stala=5.07*1e-6;   // G*G*cos2thetac/(1e-38*cm2)
+double stala=5.07*1e-6;			 // G*G*cos2thetac/(1e-38*cm2)
 
 static double mecGe(double Q2, int opcja)
 {
@@ -142,7 +142,7 @@ static double mecAA (double Q2, int opcja)
 
 
 static double Pauli (double Q2)
-{	
+{
 	Q2/=GeV2;
 	if ( (Q2<0.2) && (Q2>0) )
 		return ( 1.07011 - 0.880763 * exp (-20.5688*Q2 - 38.7221 * Q2*Q2 ) );

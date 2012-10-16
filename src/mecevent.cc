@@ -14,7 +14,7 @@
 //      MEC
 //      Implementation of the TEM
 // only muon neutrino
-	//  flux direction is (0,0,1)
+//  flux direction is (0,0,1)
 
 ////////////////////////////////////////////////////////////////////////
 void
@@ -41,7 +41,6 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 		e.weight=0;
 		return;
 	}
-			
 
 	//      Initial neutrino
 	particle mecnu = e.in[0];

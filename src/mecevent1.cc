@@ -11,8 +11,7 @@
 #include "mecdynamics1.h"
 #include "event1.h"
 
-
-//      MEC 
+//      MEC
 //      Implementation of the TEM
 // only muon neutrino
 //  flux direction is (0,0,1)
@@ -22,66 +21,67 @@ void
 mecevent1 (params & p, event & e, nucleus & t, bool cc)
 ////////////////////////////////////////////////////////////////////////
 {
-  bool nu; //neutrino or antineutrino
-  e.par = p;
-  e.flag.mec = true;
-  e.flag.cc = cc;
-  e.flag.nc = !cc;
-  e.flag.dis = false;
-  e.flag.qel = false;
-  e.flag.coh = false;
+	bool nu;					 //neutrino or antineutrino
+	e.par = p;
+	e.flag.mec = true;
+	e.flag.cc = cc;
+	e.flag.nc = !cc;
+	e.flag.dis = false;
+	e.flag.qel = false;
+	e.flag.coh = false;
 
-nucleus jadro (p);
-int mecA = jadro.p + jadro.n;// number of nucleons
+	nucleus jadro (p);
+	int mecA = jadro.p + jadro.n;// number of nucleons
 
-//      Initial neutrino
-particle mecnu = e.in[0];
+	//      Initial neutrino
+	particle mecnu = e.in[0];
 
-//      Final lepton; neutrino for nc and charged lepton for cc
-particle meclepton;
+	//      Final lepton; neutrino for nc and charged lepton for cc
+	particle meclepton;
 
-//      Final nucleons
-particle mecnucleon1, mecnucleon2;
+	//      Final nucleons
+	particle mecnucleon1, mecnucleon2;
 
-//      Identification of final states
-//      In NC reaction always pi0 is produced
-//      In CC neutrino reaction pi+ is produced and in antineutrino reaction pi- is produced
+	//      Identification of final states
+	//      In NC reaction always pi0 is produced
+	//      In CC neutrino reaction pi+ is produced and in antineutrino reaction pi- is produced
 
-  if (!cc)//not really necessary as will have CC reaction only 
-    {
-      meclepton = mecnu;
-    }
-  else if (mecnu.pdg > 0)
-    {
-      meclepton.pdg = mecnu.pdg - 1;
-    }
-  else
-    {
-      meclepton.pdg = mecnu.pdg + 1;
-    }
-    
-if (meclepton.pdg >0)
-  nu=true;
-else
-  nu=false;
+	if (!cc)					 //not really necessary as will have CC reaction only
+	{
+		meclepton = mecnu;
+	}
+	else if (mecnu.pdg > 0)
+	{
+		meclepton.pdg = mecnu.pdg - 1;
+	}
+	else
+	{
+		meclepton.pdg = mecnu.pdg + 1;
+	}
 
-//      Setting final lepton masses
-meclepton.set_mass (PDG::mass (meclepton.pdg));
+	if (meclepton.pdg >0)
+		nu=true;
+	else
+		nu=false;
 
-double mecm = meclepton.mass ();
+	//      Setting final lepton masses
+	meclepton.set_mass (PDG::mass (meclepton.pdg));
 
-//cout<<mecnu.t<<endl;
+	double mecm = meclepton.mass ();
 
-double wynik = mecweight1 (mecnu.t, nu, mecA, meclepton, mecnucleon1, mecnucleon2);	//weight
-//cout<<"sleep4"<<endl;
-e.weight = wynik;
+	//cout<<mecnu.t<<endl;
 
-e.out.push_back (meclepton);
-//cout<<"sleep5"<<"  "<<meclepton<<endl;
-if (mecnucleon1.momentum() >0.1)
-e.out.push_back (mecnucleon1);
-//cout<<"sleep6"<<"  "<<mecnucleon1<<endl;
-if (mecnucleon2.momentum() >0.1)
-e.out.push_back (mecnucleon2);
-//cout<<"sleep7"<<"  "<<mecnucleon2<<endl;
+								 //weight
+	double wynik = mecweight1 (mecnu.t, nu, mecA, meclepton, mecnucleon1, mecnucleon2);
+	//cout<<"sleep4"<<endl;
+	e.weight = wynik;
+
+	e.out.push_back (meclepton);
+	//cout<<"sleep5"<<"  "<<meclepton<<endl;
+	if (mecnucleon1.momentum() >0.1)
+		e.out.push_back (mecnucleon1);
+	//cout<<"sleep6"<<"  "<<mecnucleon1<<endl;
+	if (mecnucleon2.momentum() >0.1)
+		e.out.push_back (mecnucleon2);
+	//cout<<"sleep7"<<"  "<<mecnucleon2<<endl;
 }
