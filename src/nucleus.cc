@@ -45,7 +45,7 @@ double nucleus::density (double r)
 	static double const Vol0=4.0/3*Pi*pow(1.2*fermi,3);		
 
 	if(d)
-		return d->dens(r/_r*d->r())*Ar()/A();
+		return max(d->dens(r/_r*d->r())*Ar()/A(),0.);
 	else
 		return r < _r ? 1/Vol0*Ar()/A() : 0;
 }

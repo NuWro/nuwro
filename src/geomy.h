@@ -17,7 +17,6 @@
 #include <TGeometry.h>		//geo
 #include <TGeoManager.h>	
 #include <TGeoBBox.h>		//detector bounding box
-//#include <TRandom3.h>		//mersenne generator
 #include <TGeoMedium.h>
 #include <TGeoMaterial.h>
 #include <TGeoElement.h>
@@ -113,9 +112,10 @@ public:
 		}
 
 		std::cout << "\nBOX:"<<" O: " << orig << " D: " << dxyz << "\n";
-		std::cout << "Obj = " << Obj(top) << "\n";
-		max_density = MaxDensity(top);
-		std::cout << "MaxDensity = " << max_density << "\n";
+//		std::cout << "Obj = " << Obj(top,0) << "\n";
+//		max_density = MaxDensity(top);
+//		max_density = 0;
+//		std::cout << "MaxDensity = " << max_density << "\n";
 
 
 //for Set_Ew_pF
@@ -202,7 +202,8 @@ public:
 			tam.Z = mat1->GetZ();
 			tam.N = d_round(tam.A) - tam.Z;
 		}
-		tam.w_density = mat1->GetDensity()/max_density;
+//		tam.w_density = mat1->GetDensity()/max_density;
+		tam.w_density = mat1->GetDensity();
 		tam.r = r;
 		SetPfew(tam);
 		return tam;	
@@ -271,7 +272,7 @@ private:
 		return;
 	}
 
-	double Obj(TGeoVolume* t)
+	double Obj(TGeoVolume* t, int d=0)
 	{   
 		double capsum = 0;
 		int n = t->GetNdaughters();
@@ -279,9 +280,9 @@ private:
 		else
 		{
 			for(int i = 0; i < n; i++)
-			{ 
+			{   
 				TGeoVolume* t1 = t->GetNode(i)->GetVolume();
-				double cap = Obj(t1);
+				double cap = Obj(t1,d+1);
 				capsum += cap;
 			}
 		}

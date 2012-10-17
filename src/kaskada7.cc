@@ -96,7 +96,9 @@ interaction_parameters kaskada::prepare_interaction()
 	res.pdg = p->pdg;
 	res.Ek = p->Ek();
 	res.r = p->r.length ();
-    res.dens = nucl->density (res.r); assert(res.dens>=0);
+    res.dens = nucl->density (res.r); 
+//    cout<<res.dens<<' '<<nucl->Z()<<' '<<nucl->N()<<nucl->pr<<' '<<nucl->	nr<<endl;
+    assert(res.dens>=0);
 	res.dens_n = res.dens * nucl->frac_neutron ();
 	res.dens_p = res.dens * nucl->frac_proton ();
 	res.n = 2;

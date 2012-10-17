@@ -188,8 +188,10 @@ void NuWro::makeevent(event* e, params &p)
 				mat=detector->getpoint();
 			else
 				mat=detector->getpoint(nu.p(),nu.r);
+//			cout<<mat.Z<<' '<<mat.N<<' '<<mat.e_bin<<' '<<mat.p_fermi<<endl;
 			if(mat.w_density>max_dens)
 				max_dens=mat.w_density;
+//		    cout<< mat.w_density<< ' '<<max_dens<<"<-max dens"<<endl;
 		} while(not (mat.w_density>=frandom()*max_dens) && (mat.Z+mat.N>0));
 		///change nucleus
 		p.nucleus_p=mat.Z;

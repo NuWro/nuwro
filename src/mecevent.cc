@@ -84,7 +84,7 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	double wynik = mecweight (mecnu.t, nu, mecA, meclepton, mecnucleon1, mecnucleon2, fsi, potwell);
 	//cout<<"sleep4"<<endl;
 	e.weight = wynik;
-
+    
 	e.out.push_back (meclepton);
 	//cout<<"sleep5"<<"  "<<meclepton<<endl;
 
