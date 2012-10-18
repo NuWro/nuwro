@@ -66,7 +66,7 @@ mecevent3 (params & p, event & e, nucleus & t, bool cc)
 	//cout<<mecnu.t<<endl;
 
 								 //weight
-	double wynik = mecweight3 (mecnu.t, cc, mecA, meclepton, mecnucleon1, mecnucleon2);
+	double wynik = mecweight3 (mecnu.t, mecnu.pdg > 0, cc, mecA, meclepton, mecnucleon1, mecnucleon2);
 	//cout<<"sleep4"<<endl;
 	e.weight = wynik;
 

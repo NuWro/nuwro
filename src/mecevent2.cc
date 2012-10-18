@@ -73,7 +73,7 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 	{							 //150 loop
 
 								 //weight
-		double wynik = mecweight2 (mecnu.t, cc, mecA, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg > 0, cc, mecA, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
 		//cout<<"sleep4"<<endl;
 		e.weight = wynik;
 

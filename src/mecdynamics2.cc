@@ -2060,9 +2060,12 @@ bool fsi, double poten)
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight2 (double E, bool cc, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
+double mecweight2 (double E, bool nu, bool cc, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
 bool fsi, double poten)
 {
+	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
+	int pdg2=nu ? PDG::pdg_neutron:PDG::pdg_proton;
+
 	mecm=meclepton.mass();
 	mecm2=mecm*mecm;
 	double cut =3;
@@ -2070,25 +2073,25 @@ bool fsi, double poten)
 	double q = qminus(w,E) + (qplus(w,E)-qminus(w,E))*los();
 	vect nuc1, nuc2, nuc3;
 	// here is the isospin model; I assume that 3/5 times a pair is p-p and 2/5 times it is p-n
-	mecnucleon1.pdg = 2212;		 //there must be at least one proton
+	mecnucleon1.pdg = pdg1;		 //there must be at least one proton
 
 	double losso = los();
 	if (losso<0.6)
 	{
-		mecnucleon2.pdg = 2212;
+		mecnucleon2.pdg = pdg1;
 	}
 	else
 	{
-		mecnucleon2.pdg = 2112;
+		mecnucleon2.pdg = pdg2;
 	}
 	losso = los();
 	if (losso<0.8)
 	{
-		mecnucleon3.pdg = 2212;
+		mecnucleon3.pdg = pdg1;
 	}
 	else
 	{
-		mecnucleon3.pdg = 2112;
+		mecnucleon3.pdg = pdg2;
 	}
 
 	mecnucleon1.set_mass (PDG::mass (mecnucleon1.pdg));

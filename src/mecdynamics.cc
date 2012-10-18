@@ -289,6 +289,9 @@ void model_2body (double E, double w, double q, double Bin, particle &meclep, pa
 
 double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, bool fsi, double poten)
 {
+	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
+	int pdg2=nu ? PDG::pdg_neutron:PDG::pdg_proton;
+
 	mecm=meclepton.mass();
 	mecm2=mecm*mecm;
 	//cout<<"waga cc"<<cc<<endl;
@@ -308,13 +311,13 @@ double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &me
 		double losso = frandom();
 		if (losso<0.6)
 		{
-			mecnucleon1.pdg = 2212;
-			mecnucleon2.pdg = 2212;
+			mecnucleon1.pdg = pdg1;
+			mecnucleon2.pdg = pdg1;
 		}
 		else
 		{
-			mecnucleon1.pdg = 2212;
-			mecnucleon2.pdg = 2112;
+			mecnucleon1.pdg = pdg1;
+			mecnucleon2.pdg = pdg2;
 		}
 
 		mecnucleon1.set_mass (PDG::mass (mecnucleon1.pdg));
