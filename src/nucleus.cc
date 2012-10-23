@@ -35,7 +35,9 @@ nucleus::nucleus(params &par):
 		_kf=d->kF();
 	}
 	else
+	{
 		_r=cbrt(p+n)*1.2*fermi;
+	}
 		
 	_V = sqrt(mass_proton*mass_proton + _kf*_kf) - mass_proton + 7*MeV;
 }
@@ -118,14 +120,13 @@ particle nucleus::get_nucleon (vec r)
 	switch(kMomDist)
 	{
 		case  1: p0.set_momentum(rand_from_ball(_kf)); break; // fermi gas
-//		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
+		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
 		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek
 		case  4: if(p==n && (p==6 || p==8))
 				{
 					p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
 					break;
 				}
-		case 2: // local Fermi Gas
 		case 0: // proton
 		case 5: // deuterium
 		case 6: // deuterium

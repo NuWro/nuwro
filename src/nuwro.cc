@@ -328,23 +328,21 @@ void NuWro::makeevent(event* e, params &p)
 			{	
 				switch(p.mec_kind)
 				{
-					case 1:mecevent1 (p, *e, *nucleuss, true);break;
+					case 1:mecevent (p, *e, *nucleuss, true);break;
 					case 2:mecevent2 (p, *e, *nucleuss, true);break;
-					case 3:mecevent3 (p, *e, *nucleuss, true);break;
 					default: mecevent (p, *e, *nucleuss, true);break;
 				}
 				for(int i=0;i<e->out.size();i++)
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 			}
 			break;
-		case 9:
+		case 9: break; // NC NOT implemented 
 			if (p.dyn_mec_nc) // mec nc not implemented yet
-			{   break; // NC NOT implemented 
+			{   
 				switch(p.mec_kind)
 				{
-					case 1:mecevent1 (p, *e, *nucleuss, false);break;
+					case 1:mecevent(p, *e, *nucleuss, false);break;
 					case 2:mecevent2 (p, *e, *nucleuss, false);break;
-					case 3:mecevent3 (p, *e, *nucleuss, false);break;
 					default:mecevent (p, *e, *nucleuss, false);break; 
 				}
 			}

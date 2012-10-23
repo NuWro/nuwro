@@ -60,6 +60,8 @@ PARAM(double,res_dis_cut,1600)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(int,mec_kind,1)\
+PARAM(double,mec_ratio_pp,0.6)\
+PARAM(double,mec_ratio_ppp,0.8)\
 PARAM(bool,kaskada_on,1)\
 PARAM(bool,kaskada_newangle,1)\
 PARAM(bool,kaskada_redo,0)\

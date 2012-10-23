@@ -2101,11 +2101,12 @@ bool fsi, double poten)
 	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true)/12.0/1e38;
 	if (weight2<0)
 		{weight2 = 0;}
-		double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true)/12.0/1e38;
+		
+	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true)/12.0/1e38;
 	if (weight3<0)
 		{weight3 = 0;}
 		//cout<<E<<"  "<<w<<"  "<<q<<endl;
-		if ( weight2>(weight2+weight3)*los() )
+	if ( weight2>(weight2+weight3)*los() )
 	{							 //cout<<"dwa"<<endl;
 		model_2body2 (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, fsi, poten);
 		vec ped3 = vec (0,0,0);

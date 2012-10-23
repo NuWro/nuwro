@@ -119,9 +119,7 @@ inline  double nucleus::localkf_ (int pdg, double r)
 	assert(p+n>0);
 	if(dens==0) 
 		return 0;	
-	return kf_from_density (dens*(pdg==pdg_proton?pr:nr)/(p+n));
-//	return kf_from_density (2*dens*(pdg==pdg_proton?pr:nr)/(p+n));
-//	return FermiMomentum (2*dens*(pdg==pdg_proton?pr:nr)/(p+n));
+	return kf_from_density (dens*(pdg==pdg_proton?pr:nr)/(pr+nr));
 }
 
 ///////////////////////////////////////////////////////////////////////
