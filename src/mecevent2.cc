@@ -29,12 +29,17 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 	e.flag.qel = false;
 	e.flag.coh = false;
 	bool fsi = p.kaskada_on;
-	double fermimom = p.nucleus_kf;
-								 //Fermi energy
-	double potwell = sqrt(fermimom*fermimom + 939*939) - 939;
+//	double fermimom = p.nucleus_kf;								
+//	double potwell = sqrt(fermimom*fermimom + 939*939) - 939; //Fermi energy
+//  double ebinding = 8*MeV;
+	double potwell = t.Ef();	//Fermi energy
+	double ebinding= t.Eb();	//Binding energy
 
-	nucleus jadro (p);
-	int mecA = jadro.p + jadro.n;// number of nucleons
+	if(t.A()<4)
+	{
+		e.weight=0;
+		return;
+	}
 
 	//      Initial neutrino
 	particle mecnu = e.in[0];
@@ -73,7 +78,7 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 	{							 //150 loop
 
 								 //weight
-		double wynik = mecweight2 (mecnu.t, mecnu.pdg > 0, cc, mecA, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg > 0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
 		//cout<<"sleep4"<<endl;
 		e.weight = wynik;
 
@@ -95,13 +100,13 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 		}
 		else
 		{
-			if (mecnucleon1.Ek() >potwell+8)
+			if (mecnucleon1.Ek() >potwell+ebinding)
 				e.out.push_back (mecnucleon1);
 
-			if (mecnucleon2.Ek() >potwell+8)
+			if (mecnucleon2.Ek() >potwell+ebinding)
 				e.out.push_back (mecnucleon2);
 
-			if (mecnucleon3.Ek() >potwell+8)
+			if (mecnucleon3.Ek() >potwell+ebinding)
 				e.out.push_back (mecnucleon3);
 		}
 	}							 //end 150 loop

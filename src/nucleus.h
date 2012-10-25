@@ -38,7 +38,6 @@ class nucleus
 	double _r;			  ///< nucleus radius
 	double _Eb;			  ///< binding energy per nucleon (from exp data)
 	double _kf;			  ///< global Fermi momentum
-	double _V;			  ///< nucleon potential (Fermi energy) 
 	int kMomDist;   	  ///< Type of nucleon momentum distribution:
 						  /// 0 - free nucleon (forced for H1); 
 						  /// 1 - Fermi gas (mean Fermi momentum); 
@@ -59,7 +58,6 @@ class nucleus
 	int  Ar(){return pr+nr;}                 ///< N real
 	double radius(){return _r;}	             ///< radius of nucleus
 	double r(){return _r;}	                 ///< radius of nucleus
-	double V(){return _V;};	                 ///< potential of nucleons
 	double V(particle &p);         			 ///< potential of nucleon p
 	double frac_proton ();                   ///< percentage of protons 
 	double frac_neutron ();                  ///< percentage of neutrons
@@ -88,7 +86,7 @@ class nucleus
 inline double nucleus::Ef()
 {
 	double const M=0.5*(PDG::mass_proton+PDG::mass_neutron);
-	return sqrt(_kf*_kf+M*M)-M+_Eb;
+	return sqrt(_kf*_kf+M*M)-M;
 }
 
 

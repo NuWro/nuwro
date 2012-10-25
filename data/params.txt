@@ -182,9 +182,8 @@ coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion pro
 #   MEC
 ################################################################
 
-mec_kind = 1   // older wersion
-#mec_kind = 2  // two scenarios but slow
-#mec_kind = 3  // ... 
+#mec_kind = 1   // TEM model
+mec_kind = 2  // Marteau model (default)
 
 ################################################################
 #
@@ -193,12 +192,11 @@ mec_kind = 1   // older wersion
 ################################################################
 
 # Models for the description of nucleus in the cascade
-#nucleus_model       = 0  //"flatnucleus" i.e. nucleus is a ball
+#nucleus_model       = 0  //"flatnucleus" ball with constant density
 nucleus_model       = 1  //"anynucleus" i.e. realistic density profile
 
 
 # options below are kept only for historical reasons
-# nucleus_density     = 1
 nucleus_E_b         =  34   // [MeV] binding energy 
 # used in qelevent.cc, target.h as Eb
 nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking

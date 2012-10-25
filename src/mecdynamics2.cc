@@ -2060,7 +2060,7 @@ bool fsi, double poten)
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight2 (double E, bool nu, bool cc, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
+double mecweight2 (double E, bool nu, bool cc, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
 bool fsi, double poten)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
@@ -2076,7 +2076,7 @@ bool fsi, double poten)
 	mecnucleon1.pdg = pdg1;		 //there must be at least one proton
 
 	double losso = los();
-	if (losso<0.6)
+	if (losso<p.mec_ratio_pp) // was 0.6
 	{
 		mecnucleon2.pdg = pdg1;
 	}
@@ -2085,7 +2085,7 @@ bool fsi, double poten)
 		mecnucleon2.pdg = pdg2;
 	}
 	losso = los();
-	if (losso<0.8)
+	if (losso<0.5)  // was losso<0.8
 	{
 		mecnucleon3.pdg = pdg1;
 	}
@@ -2100,11 +2100,15 @@ bool fsi, double poten)
 
 	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true)/12.0/1e38;
 	if (weight2<0)
-		{weight2 = 0;}
+	{
+		weight2 = 0;
+	}
 		
 	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true)/12.0/1e38;
 	if (weight3<0)
-		{weight3 = 0;}
+	{
+		weight3 = 0;
+	}
 		//cout<<E<<"  "<<w<<"  "<<q<<endl;
 	if ( weight2>(weight2+weight3)*los() )
 	{							 //cout<<"dwa"<<endl;

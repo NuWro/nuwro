@@ -30,13 +30,13 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	e.flag.coh = false;
 	e.flag.mec = true;
 	bool fsi = p.kaskada_on;
-	double fermimom = p.nucleus_kf;
-								 //Fermi energy
-	double potwell = sqrt(fermimom*fermimom + 939*939) - 939;
+//	double fermimom = p.nucleus_kf;							 
+//	double potwell = sqrt(fermimom*fermimom + 939*939) - 939;//Fermi energy
+//  double ebinding = 8*MeV;
+	double potwell = t.Ef();	//Fermi energy
+	double ebinding= t.Eb();	//Binding energy
 
-	nucleus jadro (p);
-	int mecA = jadro.p + jadro.n;// number of nucleons
-	if(mecA<4)
+	if(t.A()<4)
 	{
 		e.weight=0;
 		return;
@@ -81,7 +81,7 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	//cout<<mecnu.t<<endl;
 
 								 //weight
-	double wynik = mecweight (mecnu.t, nu, mecA, meclepton, mecnucleon1, mecnucleon2, fsi, potwell);
+	double wynik = mecweight (mecnu.t, nu, t, p, meclepton, mecnucleon1, mecnucleon2, fsi, potwell);
 	//cout<<"sleep4"<<endl;
 	e.weight = wynik;
     
@@ -99,11 +99,11 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	}
 	else
 	{
-		if (mecnucleon1.Ek() >potwell+8)
+		if (mecnucleon1.Ek() >potwell+ebinding)
 			e.out.push_back (mecnucleon1);
-
-		if (mecnucleon2.Ek() >potwell+8)
+	
+		if (mecnucleon2.Ek() >potwell+ebinding)
 			e.out.push_back (mecnucleon2);
-
+	
 	}
 }

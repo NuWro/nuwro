@@ -287,7 +287,7 @@ void model_2body (double E, double w, double q, double Bin, particle &meclep, pa
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, bool fsi, double poten)
+double mecweight (double E, bool nu, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, bool fsi, double poten)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
 	int pdg2=nu ? PDG::pdg_neutron:PDG::pdg_proton;
@@ -309,7 +309,7 @@ double mecweight (double E, bool nu, int mecA, particle &meclepton, particle &me
 
 		// here is the isospin model; I assume that 3/5 times a pair is p-p and 2/5 times it is p-n
 		double losso = frandom();
-		if (losso<0.6)
+		if (losso<p.mec_ratio_pp) //was (losso<0.6)
 		{
 			mecnucleon1.pdg = pdg1;
 			mecnucleon2.pdg = pdg1;

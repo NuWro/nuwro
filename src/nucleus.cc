@@ -39,7 +39,6 @@ nucleus::nucleus(params &par):
 		_r=cbrt(p+n)*1.2*fermi;
 	}
 		
-	_V = sqrt(mass_proton*mass_proton + _kf*_kf) - mass_proton + 7*MeV;
 }
 
 double nucleus::density (double r)
