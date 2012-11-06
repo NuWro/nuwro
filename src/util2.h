@@ -124,7 +124,7 @@ class Fix23
   public:
   Fix23(F  f, Y y, Z z) :_f(f),_y(y),_z(z){}
   template <class X>
-  double operator()(double x)
+  double operator()(X x)
   { return _f(x,_y,_z);
   }
 

@@ -188,8 +188,10 @@ void NuWro::makeevent(event* e, params &p)
 				mat=detector->getpoint();
 			else
 				mat=detector->getpoint(nu.p(),nu.r);
+//			cout<<mat.Z<<' '<<mat.N<<' '<<mat.e_bin<<' '<<mat.p_fermi<<endl;
 			if(mat.w_density>max_dens)
 				max_dens=mat.w_density;
+//		    cout<< mat.w_density<< ' '<<max_dens<<"<-max dens"<<endl;
 		} while(not (mat.w_density>=frandom()*max_dens) && (mat.Z+mat.N>0));
 		///change nucleus
 		p.nucleus_p=mat.Z;
@@ -323,14 +325,26 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
-			{
-				mecevent (p, *e, *nucleuss, true);
+			{	
+				switch(p.mec_kind)
+				{
+					case 1:mecevent (p, *e, *nucleuss, true);break;
+					case 2:mecevent2 (p, *e, *nucleuss, true);break;
+					default: mecevent (p, *e, *nucleuss, true);break;
+				}
+				for(int i=0;i<e->out.size();i++)
+					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 			}
 			break;
-		case 9:
-			if (p.dyn_mec_nc) // mec nc
-			{
-				mecevent (p, *e, *nucleuss, false);
+		case 9: break; // NC NOT implemented 
+			if (p.dyn_mec_nc) // mec nc not implemented yet
+			{   
+				switch(p.mec_kind)
+				{
+					case 1:mecevent(p, *e, *nucleuss, false);break;
+					case 2:mecevent2 (p, *e, *nucleuss, false);break;
+					default:mecevent (p, *e, *nucleuss, false);break; 
+				}
 			}
 			break;
 	}

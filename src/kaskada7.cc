@@ -54,7 +54,7 @@ void kaskada::prepare_particles()
 		if (nucleon_or_pion (p1.pdg))
 		{		  
 			double fz = formation_zone(p1, par, *e); //calculate formation zone
-			p1.krok(fz); //move particle by a distance defined by its formation zone
+			p1.krok(fz); //move particle by a distance defined bsy its formation zone
 			
 			if (nucleon (p1.pdg))
 			{	
@@ -96,7 +96,9 @@ interaction_parameters kaskada::prepare_interaction()
 	res.pdg = p->pdg;
 	res.Ek = p->Ek();
 	res.r = p->r.length ();
-    res.dens = nucl->density (res.r); assert(res.dens>=0);
+    res.dens = nucl->density (res.r); 
+//    cout<<res.dens<<' '<<nucl->Z()<<' '<<nucl->N()<<nucl->pr<<' '<<nucl->	nr<<endl;
+    assert(res.dens>=0);
 	res.dens_n = res.dens * nucl->frac_neutron ();
 	res.dens_p = res.dens * nucl->frac_proton ();
 	res.n = 2;

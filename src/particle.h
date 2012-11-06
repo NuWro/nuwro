@@ -211,7 +211,13 @@ void particle::set_momentum (vec p)
   // on the mass shell
 void particle::set_energy (double E)
   {
+	if(E<_mass)
+	{
+		cerr<<"E="<<E<<" mass="<<_mass<<endl;
+//		exit(1);
+	}
 	assert(E>=_mass);  
+		
     t=E; 
     double k=sqrt((E*E-_mass*_mass)
                  /(x*x+y*y+z*z)

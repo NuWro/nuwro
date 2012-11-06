@@ -81,11 +81,6 @@
           <param name="nucleus_n" type="text" ctype="int" default="0">
             <description></description>
           </param>
-<!--
-          <param name="nucleus_density" type="text" ctype="string" default="0">
-              <description></description>
-          </param>
--->
           <param name="nucleus_E_b" type="text" ctype="double" default="34">
               <description></description>
           </param>
@@ -273,6 +268,17 @@
     <description><![CDATA[Rein Sehgal correction to CC coherent single pion production]]></description>
   </param>
   <param name="coh_new" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="mec_kind" type="select" ctype="int" default="1">
+    <description><![CDATA[]]></description>
+      <option key="1"><![CDATA[TEM model]]></option>
+      <option key="2"><![CDATA[Marteau model]]></option>
+  </param>
+  <param name="mec_ratio_pp" type="text" ctype="double" default="0.6">
+    <description><![CDATA[]]></description>
+  </param>
+  <param name="mec_ratio_ppp" type="text" ctype="double" default="0.8">
     <description><![CDATA[]]></description>
   </param>
 <!--  

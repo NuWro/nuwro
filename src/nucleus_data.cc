@@ -1273,7 +1273,7 @@ double density(double r_,int p, int n)
 	
 	nucleus_data *d=best_data(p,n);
 	r*=cbrt(A/d->A());  // and scale its size if needed
-    return d->dens(r);
+    return max(d->dens(r),0.);
 }
 
 

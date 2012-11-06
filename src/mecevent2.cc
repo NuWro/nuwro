@@ -8,30 +8,29 @@
 #include "beam.h"
 #include "pdg.h"
 #include "nucleus.h"
-#include "mecdynamics.h"
+#include "mecdynamics2.h"
 #include "event1.h"
 
 //      MEC
-//      Implementation of the TEM
+//      Implementation of the np-nh
 // only muon neutrino
 //  flux direction is (0,0,1)
 
 ////////////////////////////////////////////////////////////////////////
 void
-mecevent (params & p, event & e, nucleus & t, bool cc)
+mecevent2 (params & p, event & e, nucleus & t, bool cc)
 ////////////////////////////////////////////////////////////////////////
 {
-	bool nu;					 //neutrino or antineutrino
 	e.par = p;
+	e.flag.mec = true;
 	e.flag.cc = cc;
 	e.flag.nc = !cc;
 	e.flag.dis = false;
 	e.flag.qel = false;
 	e.flag.coh = false;
-	e.flag.mec = true;
 	bool fsi = p.kaskada_on;
-//	double fermimom = p.nucleus_kf;							 
-//	double potwell = sqrt(fermimom*fermimom + 939*939) - 939;//Fermi energy
+//	double fermimom = p.nucleus_kf;								
+//	double potwell = sqrt(fermimom*fermimom + 939*939) - 939; //Fermi energy
 //  double ebinding = 8*MeV;
 	double potwell = t.Ef();	//Fermi energy
 	double ebinding= t.Eb();	//Binding energy
@@ -49,7 +48,7 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	particle meclepton;
 
 	//      Final nucleons
-	particle mecnucleon1, mecnucleon2;
+	particle mecnucleon1, mecnucleon2, mecnucleon3;
 
 	//      Identification of final states
 	//      In NC reaction always pi0 is produced
@@ -68,11 +67,6 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 		meclepton.pdg = mecnu.pdg + 1;
 	}
 
-	if (meclepton.pdg >0)
-		nu=true;
-	else
-		nu=false;
-
 	//      Setting final lepton masses
 	meclepton.set_mass (PDG::mass (meclepton.pdg));
 
@@ -80,30 +74,44 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 
 	//cout<<mecnu.t<<endl;
 
-								 //weight
-	double wynik = mecweight (mecnu.t, nu, t, p, meclepton, mecnucleon1, mecnucleon2, fsi, potwell);
-	//cout<<"sleep4"<<endl;
-	e.weight = wynik;
-    
-	e.out.push_back (meclepton);
-	//cout<<"sleep5"<<"  "<<meclepton<<endl;
+	if (mecnu.t>150)			 // for lower energies MM does not work
+	{							 //150 loop
 
-	if (!fsi)
-	{
-		if (mecnucleon1.Ek() >0.1)
-			e.out.push_back (mecnucleon1);
-		//cout<<"sleep6"<<"  "<<mecnucleon1<<endl;
-		if (mecnucleon2.Ek() >0.1)
-			e.out.push_back (mecnucleon2);
-		//cout<<"sleep7"<<"  "<<mecnucleon2<<endl;
-	}
+								 //weight
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg > 0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
+		//cout<<"sleep4"<<endl;
+		e.weight = wynik;
+
+		//cout<<mecnucleon1<<"  "<<mecnucleon2<<"  "<<mecnucleon3<<endl;
+
+		e.out.push_back (meclepton);
+		//cout<<"sleep5"<<"  "<<meclepton<<endl;
+
+		if (!fsi)
+		{
+			if (mecnucleon1.Ek() >0.1)
+				e.out.push_back (mecnucleon1);
+
+			if (mecnucleon2.Ek() >0.1)
+				e.out.push_back (mecnucleon2);
+
+			if (mecnucleon3.Ek() >0.1)
+				e.out.push_back (mecnucleon3);
+		}
+		else
+		{
+			if (mecnucleon1.Ek() >potwell+ebinding)
+				e.out.push_back (mecnucleon1);
+
+			if (mecnucleon2.Ek() >potwell+ebinding)
+				e.out.push_back (mecnucleon2);
+
+			if (mecnucleon3.Ek() >potwell+ebinding)
+				e.out.push_back (mecnucleon3);
+		}
+	}							 //end 150 loop
+
 	else
-	{
-		if (mecnucleon1.Ek() >potwell+ebinding)
-			e.out.push_back (mecnucleon1);
-	
-		if (mecnucleon2.Ek() >potwell+ebinding)
-			e.out.push_back (mecnucleon2);
-	
-	}
+		e.weight = 0.0;
+
 }
