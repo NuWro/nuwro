@@ -59,7 +59,9 @@ void kaskada::prepare_particles()
 			if (nucleon (p1.pdg))
 			{	
 				p1.set_energy(p1.E() + par.nucleus_E_b);
-				p1.set_fermi(e->in[1].Ek());
+				
+				if (!e->flag.mec)				
+					p1.set_fermi(e->in[1].Ek());
 											
 				if (p1.Ek() <= par.kaskada_w + p1.his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
 				{
@@ -165,6 +167,9 @@ int kaskada::finalize_interaction()
 	nucl->remove_nucleon (X.p2); // remove from the nuclear matter
 	if(nucl->spectator!=NULL)
 		nucl->remove_nucleon (*nucl->spectator);
+
+	double E = -1.0;
+	int a = -1;
 		
 	for (int i = 0; i < X.n; i++)
 	{
@@ -173,9 +178,6 @@ int kaskada::finalize_interaction()
 		
 		double fz = formation_zone(X.p[i], par);
 		X.p[i].krok(fz);
-		
-		double E = -1.0;
-		int a = -1;
 		
 		if (nucleon (X.p[i].pdg))
 		{
