@@ -14,12 +14,17 @@ int kaskada::kaskadaevent()
 {	
 	int result = 0;
 	
-	if(not par.kaskada_on) //skip cascade if it is turn off in params
+	if(not par.kaskada_on or e->weight <= 0) //skip cascade if it is turn off in params
 		return result;
 			
 	if (e->in[0].lepton()) //remove nucleon from primary vertex 
+	{
 		nucl->remove_nucleon(e->in[1]);
 		
+		if (e -> flag.mec and par.mec_kind == 0)
+			nucl->remove_nucleon(e->in[2]);
+	}
+			
 	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
 			
 	while (parts.size () > 0 and nucl->Ar() > 0) ///main loop in cascade
@@ -46,10 +51,12 @@ int kaskada::kaskadaevent()
 }
 
 void kaskada::prepare_particles()
-{
+{	
 	for (int i = 0; i < e->out.size(); i++)
 	{
 		particle p1 = e->out[i];
+		
+		int ncount = 0;
 						
 		if (nucleon_or_pion (p1.pdg))
 		{		  
@@ -58,11 +65,12 @@ void kaskada::prepare_particles()
 			
 			if (nucleon (p1.pdg))
 			{	
+				ncount++;
 				p1.set_energy(p1.E() + par.nucleus_E_b);
 				
-				if (!e->flag.mec)				
-					p1.set_fermi(e->in[1].Ek());
-											
+				if (nucleon(e->in[ncount].pdg))				
+					p1.set_fermi(e->in[ncount].Ek());
+			
 				if (p1.Ek() <= par.kaskada_w + p1.his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
 				{
 					p1.endproc=jailed;

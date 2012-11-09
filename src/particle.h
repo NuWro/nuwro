@@ -94,8 +94,7 @@ public:
 
 	inline double mcos(){return p().dir()*mom().p().dir();}
 	inline double Ek_in_frame(vec v);	///<
-
-
+	
 	friend ostream & operator<<(ostream & out,particle p)
 	{
 	   return out<<"["<<p.pdg<<"/"<<p._mass<<"]"<<vect(p)<<"@"<<p.r/fermi;

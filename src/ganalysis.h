@@ -4,7 +4,7 @@
 #include <string>
 
 const int nof_dyn = 10; //number of dynamics in NuWro
-const int nof_class = 28;
+const int nof_class = 33;
 
 double norm [nof_dyn];
 double xsec [nof_dyn];
@@ -22,7 +22,7 @@ const bool active_class[nof_class] =
 	0,	//NUINT12 antiC1
 	0,	//NUINT12 C2
 	0,	//NUINT12 antiC2
-	1,	//NUINT12 D
+	0,	//NUINT12 D
 	0,	//NUINT12 E
 	0,	//NUINT12 F
 	0,	//NUINT12 G1
@@ -38,7 +38,12 @@ const bool active_class[nof_class] =
 	0,	//NUINT12 H
 	0,	//NUINT12 antiH
 	0,  //NUINT12 B2
-	0   //NUINT12 antiB2
+	0,  //NUINT12 antiB2
+	0,	//MEC OLD CC
+	0,	//MEC NEW CC
+	0,	//MEC 2 OLD CC
+	0,	//MEC 2 NEW CC
+	1	//MEC NC
 };
 
 void run_command (string com)
@@ -137,6 +142,7 @@ class mhist1D : public histogram
 		void finalize ();
 		void save ();
 		void plot ();
+		void put (double x, int dyn, double weight, int cas);
 };	
 
 class pattern
@@ -989,6 +995,128 @@ class antiH : public H
 		}
 		
 		~antiH () {}
+};
+
+class test_mec_old_cc : public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		hist1D *h2;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		test_mec_old_cc () : pattern ("MEC", 5000000)
+		{
+			h1 = new hist1D ("mec_old_cc", "", "{/Symbol n}_{/Symbol m}, E = 0 - 2 GeV, on C", "neutrino energy [MeV]", "xsec [cm^2]", 40, 0, 2000, 6);
+			h2 = new hist1D ("mec_old_cc_anti", "", "anti {/Symbol n}_{/Symbol m}, E = 0 - 2 GeV, on C", "anti neutrino energy [MeV]", "xsec [cm^2]", 40, 0, 2000, 6);
+		}
+		
+		~test_mec_old_cc ()
+		{
+			delete h1;
+			delete h2;
+		}
+};
+
+class test_mec_new_cc : public test_mec_old_cc
+{
+	protected:
+	
+		void set_params ();
+		
+	public:
+	
+		test_mec_new_cc ()
+		{
+			h1 -> name = "mec_new_cc";
+			h2 -> name = "mec_new_cc_anti";
+		}
+		
+		~test_mec_new_cc () {}
+};
+
+class test2_mec_old_cc : public pattern
+{
+	protected:
+	
+		mhist1D *h1;
+		mhist1D *h2;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		test2_mec_old_cc () : pattern ("MEC2", 1000000)
+		{
+			h1 = new mhist1D ("mec_old_momentum", "", "{/Symbol n}_{/Symbol m}, E = 1 GeV, on C", "most energetic nucleon momentum [MeV]", "No. of events", 20, 0, 1000, 3, 3, 100);
+			h1 -> cnames[0] = "p+p";
+			h1 -> cnames[1] = "n+n";
+			h1 -> cnames[2] = "p+n";
+
+			h2 = new mhist1D ("mec_old_cos", "", "{/Symbol n}_{/Symbol m}, E = 1 GeV, on C", "most energetic nucleon cosine", "No. of events", 20, -1, 1, 3, 3, 100);
+			h2 -> cnames[0] = "p+p";
+			h2 -> cnames[1] = "n+n";
+			h2 -> cnames[2] = "p+n";
+		}
+		
+		~test2_mec_old_cc ()
+		{
+			delete h1;
+			delete h2;
+		}
+};
+
+class test2_mec_new_cc : public test2_mec_old_cc
+{
+	protected:
+	
+		void set_params ();
+		
+	public:
+	
+		test2_mec_new_cc ()
+		{
+			h1 -> name = "mec_new_momentum";
+			h2 -> name = "mec_new_cos";
+		}
+		
+		~test2_mec_new_cc () {}
+};
+
+class test_mec_nc : public pattern
+{
+	protected:
+	
+		mhist1D *h1;
+		mhist1D *h2;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		test_mec_nc () : pattern ("MEC", 5000000)
+		{
+			h1 = new mhist1D ("mec_nc", "", "{/Symbol n}_{/Symbol m}, E = 0 - 10 GeV, on C", "neutrino energy [GeV]", "xsec [cm^2]", 100, 0, 10, 3, 6);
+			h1 -> cnames[0] = "QE + MEC";
+			h1 -> cnames[1] = "only QE";
+			h1 -> cnames[2] = "only MEC";
+			h2 = new mhist1D ("mec_nc_anti", "", "anti {/Symbol n}_{/Symbol m}, E = 0 - 10 GeV, on C", "anti neutrino energy [GeV]", "xsec [cm^2]", 100, 0, 10, 3, 6);
+			h2 -> cnames[0] = "QE + MEC";
+			h2 -> cnames[1] = "only QE";
+			h2 -> cnames[2] = "only MEC";
+		}
+		
+		~test_mec_nc ()
+		{
+			delete h1;
+			delete h2;
+		}
 };
 
 pattern * choose (int x);

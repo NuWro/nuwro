@@ -59,7 +59,7 @@ void hist1D :: finalize ()
 {
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < bins_x; j++)
-			if (norm_type == 6)
+			if (norm_type == 6 and tnorm[i][j] != 0)
 				result[j] += part_result[i][j] / tnorm[i][j];
 			else if (norm_type == 5)
 				result[j] += part_result[i][j] / xsec[i];
@@ -179,7 +179,7 @@ void hist2D :: finalize ()
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < bins_x; j++)
 			for (int k = 0; k < bins_y; k++)
-				if (norm_type == 5)
+				if (norm_type == 5 and xsec[i] != 0)
 					result[j][k] += part_result[i][j][k] / xsec[i];
 				else if (norm[i] != 0)
 					result[j][k] += part_result[i][j][k] / norm[i] / width_x / width_y;
@@ -370,7 +370,7 @@ void mhist1D :: finalize ()
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < cases; j++)
 			for (int k = 0; k < bins_x; k++)
-				if (norm_type == 6)
+				if (norm_type == 6 and tnorm[i][k] != 0)
 						result [j][k] += part_result [i][j][k] / tnorm[i][k];
 				else if (norm_type == 5 and xsec[i] != 0)
 						result [j][k] += part_result [i][j][k] / xsec[i];
@@ -470,6 +470,13 @@ void mhist1D :: plot ()
 	run_command ("gnuplot " + gs);
 }
 
+void mhist1D :: put (double x, int dyn, double weight, int cas)
+{
+	int a = (x - begin_x) / width_x;
+	
+	if (a >= 0 and a < bins_x)
+		part_result [dyn][cas][a] += weight;
+}
 void pattern :: start ()
 {	
 	P.read("data/params.txt");
@@ -908,7 +915,7 @@ void C1 :: calculate (event *e)
 	
 	double energy = e -> in[0].E() / 1000.0;
 	
-	h1 -> put (energy, e->dyn);
+	h1 -> histogram :: put (energy, e->dyn);
 		
 	int pion = 100 * e -> fof (pdg_piP) + 10 * e -> fof (-pdg_piP) + e -> fof (pdg_pi);
 	
@@ -1153,7 +1160,7 @@ void F :: calculate (event *e)
 	
 	if (e -> in[0].pdg == PDG::pdg_nu_mu)
 	{
-		h1 -> put (energy, e -> dyn);
+		h1 -> histogram :: put (energy, e -> dyn);
 		
 		if (a < h1 -> bins_x)
 		{
@@ -1175,7 +1182,7 @@ void F :: calculate (event *e)
 	}
 	else
 	{
-		h2 -> put (energy, e -> dyn);
+		h2 -> histogram :: put (energy, e -> dyn);
 		
 		if (a < h2 -> bins_x)
 		{
@@ -1627,6 +1634,184 @@ void H :: calculate (event *e)
 	}	
 }
 
+void test_mec_old_cc :: set_params ()
+{
+	P.read("data/beam/test_mec.txt");
+	P.read("data/target/C.txt");
+	
+	P.mec_kind = 1;
+	
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void test_mec_new_cc :: set_params ()
+{
+	P.read("data/beam/test_mec.txt");
+	P.read("data/target/C.txt");
+	
+	P.mec_kind = 0;
+	
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void test_mec_old_cc :: calculate (event *e)
+{
+	double energy = e -> in[0].E();
+
+	
+	if (e -> in[0].pdg == PDG::pdg_nu_mu)
+	{
+		h1 -> histogram :: put (energy, e -> dyn);
+		h1 -> put (energy, e -> dyn, e->weight);
+	}
+	else
+	{
+		h2 -> histogram :: put (energy, e -> dyn);
+		h2 -> put (energy, e -> dyn, e->weight);
+	}
+}
+
+void test2_mec_old_cc :: set_params ()
+{
+	P.read("data/target/C.txt");
+	
+	P.beam_type = 0;
+	P.beam_particle = 14;
+	P.beam_energy = "1000";
+	
+	P.kaskada_on = 0;
+	
+	P.mec_kind = 1;
+	
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void test2_mec_new_cc :: set_params ()
+{
+	P.read("data/target/C.txt");
+	
+	P.beam_type = 0;
+	P.beam_particle = 14;
+	P.beam_energy = "1000";
+	
+	P.kaskada_on = 0;
+	
+	P.mec_kind = 0;
+	
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void test2_mec_old_cc :: calculate (event *e)
+{
+	using namespace PDG;
+	
+	int proton  = e -> nof (pdg_proton);
+	int which = 2;
+	
+	if (proton == 2)
+		which = 0;
+	else if (proton == 0)
+		which = 1;
+		
+	double mom = 0, cos;
+	
+	for (int i = 0; i < e -> out.size(); i++)
+		if (e -> out[i].pdg == pdg_proton or e -> out[i].pdg == pdg_neutron)
+			if (e -> out[i].momentum () > mom)
+			{
+				mom = e -> out[i].momentum ();
+				cos = e -> out[i].p().z / mom;
+			}
+			
+	h1 -> put (mom, e -> dyn, e -> weight, which);
+	h2 -> put (cos, e -> dyn, e -> weight, which);
+}
+
+void test_mec_nc :: set_params ()
+{
+	P.read("data/target/C.txt");
+	P.read("data/beam/nuintF.txt");
+	
+	P.kaskada_on = 0;
+	
+	P.mec_kind = 0;
+	
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 1;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 1;	
+}
+
+void test_mec_nc :: calculate (event *e)
+{
+	double energy = e -> in[0].E() / 1000.0;
+
+	int x = 2;
+	
+	if (e -> flag.qel)
+		x = 1;
+	
+	if (e -> in[0].pdg == PDG::pdg_nu_mu)
+	{
+		h1 -> histogram :: put (energy, e -> dyn);
+		h1 -> put (energy, e -> dyn, e->weight, 0);
+		h1 -> put (energy, e -> dyn, e->weight, x);
+	}
+	else
+	{
+		h2 -> histogram :: put (energy, e -> dyn);
+		h2 -> put (energy, e -> dyn, e->weight, 0);
+		h2 -> put (energy, e -> dyn, e->weight, x);
+	}
+}
+
 pattern * choose (int x)
 {
 	pattern *wsk;
@@ -1661,6 +1846,11 @@ pattern * choose (int x)
 		case 25: wsk = new antiH; break;
 		case 26: wsk = new B2; break;
 		case 27: wsk = new antiB2; break;
+		case 28: wsk = new test_mec_old_cc; break;
+		case 29: wsk = new test_mec_new_cc; break;
+		case 30: wsk = new test2_mec_old_cc; break;
+		case 31: wsk = new test2_mec_new_cc; break;
+		case 32: wsk = new test_mec_nc; break;
 		default: wsk = NULL;
 	}
 	

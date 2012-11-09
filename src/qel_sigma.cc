@@ -69,7 +69,7 @@ double qel_sigma ( double Enu, ///< neutrino energy in the target frame
     
     switch(kind)
 	{
-		case 0 : return  w2*cos2thetac; // cc
+		case 0: case 3: case 6: return  w2*cos2thetac; // cc
         default: return  w2;            // nc
 	}
 }

@@ -20,6 +20,8 @@ static const double M2=pow2(0.5*(PDG::mass_proton+PDG::mass_neutron));
 static double MV2=0.71*GeV2;
 static double MA_cc=1030*MeV;
 static double MA_nc=1030*MeV;
+const double MA_cc_mec=1014*MeV; //axial mass for MEC is fixed in TEM model
+const double MA_nc_mec=1014*MeV;
 static double MA_s=1030*MeV;
 static double delta_s=0;
 static double mu_p=2.793;  // moment dipolowy protonu
@@ -106,26 +108,39 @@ FF npar_FF(const double q2);   // 6. nowa (1990:) parametryzacja JS z qelcc
 pair<double,double> FF::f12(int kind)
 {
   double Ge,Gm,f1,f2,F1s=0,F2s=0;
-  switch(kind)
-  { case 0: //cc
-	  Ge=GEp-GEn;
-	  Gm=GMp-GMn;
-	  break;
-	 case 1: // nc proton
-	  Ge=0.5*(GEp-GEn)-2*sin2thetaW*GEp;//-0.5*GEs;
-	  Gm=0.5*(GMp-GMn)-2*sin2thetaW*GMp;//-0.5*GMs;
-	  break;
-	 case 2: //nc neutron
-	  Ge=0.5*(GEn-GEp)-2*sin2thetaW*GEn;//-0.5*GEs;
-	  Gm=0.5*(GMn-GMp)-2*sin2thetaW*GMn;//-0.5*GMs;
-	  break; 
+	switch(kind)
+	{
+		case 0: case 6: //cc and mec qel part
+			Ge=GEp-GEn;
+			Gm=GMp-GMn;
+			break;
+		case 1: case 7: // nc proton and mec qel part
+			Ge=0.5*(GEp-GEn)-2*sin2thetaW*GEp;//-0.5*GEs;
+			Gm=0.5*(GMp-GMn)-2*sin2thetaW*GMp;//-0.5*GMs;
+			break;
+		case 2: case 8: //nc neutron and mec qel part
+			Ge=0.5*(GEn-GEp)-2*sin2thetaW*GEn;//-0.5*GEs;
+			Gm=0.5*(GMn-GMp)-2*sin2thetaW*GMn;//-0.5*GMs;
+			break; 
+		case 3: //cc mec 
+			Ge = GEp - GEn;
+			Gm = sqrt(1 + 6.0*Q2/1e6*exp(-Q2/0.35/1e6)) * (GMp - GMn);
+			break;
+		case 4: // nc proton mec
+			Ge = 0.5 * (GEp - GEn) - 2 * sin2thetaW * GEp;//-0.5*GEs;
+			Gm = sqrt(1 + 6.0*Q2/1e6*exp(-Q2/0.35/1e6)) * 0.5 * (GMp - GMn) - 2 * sin2thetaW * GMp;//-0.5*GMs;
+			break;
+		case 5: //nc neutron mec
+			Ge = 0.5 * (GEn - GEp) - 2 * sin2thetaW * GEn;//-0.5*GEs;
+			Gm = sqrt(1 + 6.0*Q2/1e6*exp(-Q2/0.35/1e6)) * (0.5 * (GMn - GMp) - 2 * sin2thetaW * GMn);//-0.5*GMs;
+			break; 
 	}
 	
     const double tau = Q2/(4*M2);
     
 	f1= (Ge + tau*Gm)/(1 + tau);
 	f2= (Gm - Ge)/(1 + tau) ;
-    if(kind and strangeEM)// strangeness in F1, F2 (only for kind!=0 i.e. nc)
+    if((kind % 3) and strangeEM)// strangeness in F1, F2 (only for kind!=0 i.e. nc)
     switch(strangeEM)
     {
     case 1:{ 
@@ -360,22 +375,35 @@ pair<double,double> fap(double q2,int kind)
 	double Ga, Fpa, Gas,Fpas;
 	double Fa=0,Fp=0;
 	switch(kind)
-	{case 0: // cc
-       Fa = -1.267 / pow2 (1 - q2 / MA_cc / MA_cc);
-	   Fa *= axialcorr(axialFFset,q2);
-       Fp = 2*MM*Fa/(piMass2-q2);
-       break;
-	 case 1: //nc proton
-       Fa=0.5* -1.267/pow2(1-q2/MA_nc/MA_nc);
-       //Fp=2.0*M2*Fa/(piMass2 - q2) ;
-
-      break;
-	 case 2: //nc neutron
-      Fa=0.5* 1.267/pow2(1-q2/MA_nc/MA_nc);
-      //Fp=2.0*M2*Fa/(piMass2 - q2) ;
-      break;
+	{
+		case 0: // cc
+			Fa = -1.267 / pow2 (1 - q2 / MA_cc / MA_cc);
+			Fa *= axialcorr(axialFFset,q2);
+			Fp = 2*MM*Fa/(piMass2-q2);
+			break;
+		case 1: //nc proton
+			Fa=0.5* -1.267/pow2(1-q2/MA_nc/MA_nc);
+			//Fp=2.0*M2*Fa/(piMass2 - q2) ;
+			break;
+		case 2: //nc neutron
+			Fa=0.5* 1.267/pow2(1-q2/MA_nc/MA_nc);
+			//Fp=2.0*M2*Fa/(piMass2 - q2) ;
+			break;
+		case 3: case 6: //mec cc
+			Fa = -1.267 / pow2 (1 - q2 / MA_cc_mec / MA_cc_mec);
+			Fa *= axialcorr(axialFFset,q2);
+			Fp = 2*MM*Fa/(piMass2-q2);
+			break;
+		case 4: case 7: //mec nc proton
+			Fa=0.5* -1.267/pow2(1-q2/MA_nc_mec/MA_nc_mec);
+			//Fp=2.0*M2*Fa/(piMass2 - q2) ;
+			break;
+		case 5: case 8: //mec nc neutron
+			Fa=0.5* 1.267/pow2(1-q2/MA_nc_mec/MA_nc_mec);
+			//Fp=2.0*M2*Fa/(piMass2 - q2) ;
+			break;
     } 
-    if(kind and strange)
+    if((kind % 3) and strange)
     {
     	switch(strange)
     	{case 1:
