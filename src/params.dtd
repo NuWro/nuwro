@@ -1,0 +1,26 @@
+<!ELEMENT condition ( param*, paramclone* ) >
+<!ATTLIST condition description CDATA #REQUIRED >
+<!ATTLIST condition exclude NMTOKEN #IMPLIED >
+<!ATTLIST condition value NMTOKEN #REQUIRED >
+
+<!ELEMENT conditions ( condition+ ) >
+
+<!ELEMENT description ( #PCDATA ) >
+
+<!ELEMENT option ( #PCDATA ) >
+<!ATTLIST option key NMTOKENS #REQUIRED >
+
+<!ELEMENT options ( option+ ) >
+
+<!ELEMENT param ( description, ( conditions | options )? ) >
+<!ATTLIST param ctype ( bool | double | int | line | string | vec ) #IMPLIED >
+<!ATTLIST param default CDATA #REQUIRED >
+<!ATTLIST param name ID #REQUIRED >
+<!ATTLIST param path CDATA #IMPLIED >
+<!ATTLIST param type ( checkbox | hidden | radio | select | text ) #REQUIRED >
+
+<!ELEMENT paramclone EMPTY >
+<!ATTLIST paramclone name NMTOKEN #REQUIRED >
+
+<!ELEMENT params ( param+ ) >
+

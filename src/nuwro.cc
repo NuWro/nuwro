@@ -136,6 +136,7 @@ int NuWro::init (int argc, char **argv)
 	a.read (argc, argv);
 	p.read (a.input);
 	p.read (a.params, "command line");
+	
 	p.list ();
 	p1=&p;
 	progress.open(a.progress);
@@ -185,6 +186,7 @@ int NuWro::init (int argc, char **argv)
 	};
 	//const int NPROC = sizeof(active)/sizeof(bool);
 	procesy.reset(active);
+	
 
 }
 

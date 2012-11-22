@@ -144,8 +144,8 @@ src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h 
 
 src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
 		@echo "Building params_all.h"
+		@xmllint --dtdvalid src/params.dtd src/params.xml --noout
 		@echo "#define PARAMS_ALL()\\">src/params_all.h
-#		@sed '/<!--.*-->/d;/<!--/,/-->/d;s/.*<param .*name="\([^"]*\)".*ctype="\([^"]*\)".*default="\([^"]*\)".*/PARAM(\2,\1,\3)\\/;tx;d;:x s/\(PARAM(\(vec\|line\|string\),[^,]*,\)\(.*\))\\/\1"\3")\\/'  src/params.xml >> src/params_all.h 
 		@sed -f src/params.sed src/params.xml >> src/params_all.h 
 		@echo "" >> src/params_all.h
 
