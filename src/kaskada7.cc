@@ -10,6 +10,12 @@ kaskada::kaskada(params &p, event &e1)
 	I = new Interaction(par.xsec);
 }
 
+kaskada::~kaskada()
+{		
+	delete nucl;
+	delete I;
+}
+
 int kaskada::kaskadaevent()
 {	
 	int result = 0;
@@ -45,8 +51,8 @@ int kaskada::kaskadaevent()
 			result = finalize_interaction();	
 	}
 	
-	clean(); // if nucleus has evaporated the part queue may not be empty   
-
+	clean(); // if nucleus has evaporated the part queue may not be empty
+	
 	return result;
 }
 
@@ -65,9 +71,10 @@ void kaskada::prepare_particles()
 			
 			if (nucleon (p1.pdg))
 			{	
+				p1.primary = true;
+				
 				ncount++;
 				p1.set_energy(p1.E() + par.nucleus_E_b);
-				
 				if (nucleon(e->in[ncount].pdg))				
 					p1.set_fermi(e->in[ncount].Ek());
 			
@@ -178,8 +185,9 @@ int kaskada::finalize_interaction()
 	if(nucl->spectator!=NULL)
 		nucl->remove_nucleon (*nucl->spectator);
 
-	double E = -1.0;
-	int a = -1;
+	double rem_en = -1.0;
+	int first_nucl;
+	bool abs_first = true;
 		
 	for (int i = 0; i < X.n; i++)
 	{
@@ -190,38 +198,38 @@ int kaskada::finalize_interaction()
 		X.p[i].krok(fz);
 		
 		if (nucleon (X.p[i].pdg))
-		{
+		{			
 			if (!p->nucleon())
 			{
 				if (I->process_id() != 25)
 					X.p[i].set_fermi(X.p2.Ek());
-				else if (a != 0)
+				else if (abs_first)
 				{
-					a = 0;
+					abs_first = false;
 					X.p[i].set_fermi(X.p2.Ek());
 				}
 				else
 					X.p[i].set_fermi(nucl->spectator->Ek());
 			}
-			else if (E < 0)
+			else if (rem_en < 0)
 			{
-				a = i;
-				double E = X.p[i].Ek();
+				first_nucl = i;
+				rem_en = X.p[i].Ek();
 			}
 			else //for more energetic nucleon set fermi from primary nucleon and from secondary for the other one
 			{
-				if (E > X.p[i].Ek())
+				if (rem_en > X.p[i].Ek())
 				{
-					X.p[a].set_fermi(p->his_fermi);
-					X.p[i].set_fermi(X.p2.Ek());
+					X.p[first_nucl].set_fermi (p->his_fermi);
+					X.p[i].set_fermi (X.p2.Ek());
 				}
 				else
 				{
-					X.p[a].set_fermi(X.p2.Ek());
-					X.p[i].set_fermi(p->his_fermi);
+					X.p[first_nucl].set_fermi (X.p2.Ek());
+					X.p[i].set_fermi (p->his_fermi);
 				}
 			}
-			
+						
 			if (X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi) //jailed nucleon if its kinetic energy is lower than work function
 			{
 				X.p[i].endproc=jailed;
@@ -304,11 +312,7 @@ void kaskada::clean()
 	
 	e->pr=nucl->Zr();
 	e->nr=nucl->Nr();
-		
-	delete nucl;
-	delete I;
 }
-
 
 bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, particle p[],int k)
 {

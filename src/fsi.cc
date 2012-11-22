@@ -125,12 +125,21 @@ double formation_zone (particle &p, params &par, event &e)
 		}
 
 		bool qel = e.flag.qel;
+		bool mec = e.flag.mec;
 
 		if (strcmp(fz.c_str(), "fz") == 0)
 		{
 			double W = e.W();
 			
 			if (qel) flength = p.momentum()/(p.mass2() - p.p4()*p0);
+			else if (mec)
+			{
+				//vec mom = e.in[1].p() + e.in[2].p();
+				//vect mom4 = e.in[1].p4() + e.in[2].p4();
+				
+				//flength = mom.length() / (mom4 * q);
+				flength = 0;
+			}
 			else if (W < 1400)
 			{
 				double e = q.t + p0.t;

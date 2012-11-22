@@ -3,6 +3,10 @@
 histogram :: histogram (string name_of_hist, string data_file, string plot_title, string x_name, string y_name, int nof_bins, double begin, double end, int typnormy, double norma)
 				: name (name_of_hist), data (data_file), title (plot_title), xlabel (x_name), ylabel (y_name), bins_x (nof_bins), norm_type (typnormy), normalization (norma), begin_x(begin)
 {
+	finalized = false;
+	saved = false;
+	ploted = false;
+	
 	width_x = (end - begin) / bins_x;
 
 	for (int i = 0; i < nof_dyn; i++)
@@ -57,6 +61,9 @@ hist1D :: ~hist1D ()
 
 void hist1D :: finalize ()
 {
+	if (finalized)
+		return;
+	
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < bins_x; j++)
 			if (norm_type == 6 and tnorm[i][j] != 0)
@@ -76,10 +83,15 @@ void hist1D :: finalize ()
 		for (int i = 0; i < bins_x; i++)
 			result[i] *= normalization / sum;
 	}
+	
+	finalized = true;
 }
 
 void hist1D :: save ()
 {
+	if (saved)
+		return;
+	
 	string out = "analysis/" + name + ".txt";
 	
 	ofstream file(out.c_str());
@@ -88,10 +100,15 @@ void hist1D :: save ()
 		file << begin_x + width_x * i << " " << result[i] << endl << begin_x + width_x * (i + 1) << " " << result[i] << endl;
 	
 	file.close();
+	
+	saved = true;
 }
 
 void hist1D :: plot ()
 {
+	if (ploted)
+		return;
+	
 	string in = "analysis/" + name + ".txt";
 	string out = "analysis/" + name + ".eps";
 	string gs = "analysis/" + name + ".gnu";
@@ -113,6 +130,8 @@ void hist1D :: plot ()
 	gnu.close();
 	
 	run_command ("gnuplot " + gs);
+	
+	ploted = true;
 }
 
 void hist1D :: put (double x, int dyn, double weight)
@@ -120,6 +139,17 @@ void hist1D :: put (double x, int dyn, double weight)
 	int a = (x - begin_x) / width_x;
 	
 	if (a >= 0 and a < bins_x)
+		part_result [dyn][a] += weight;
+}
+
+void hist1D :: put_over (double x, int dyn, double weight)
+{
+	int a = (x - begin_x) / width_x;
+	
+	if (a >= bins_x)
+		a = bins_x - 1;
+	
+	if (a >= 0)
 		part_result [dyn][a] += weight;
 }
 
@@ -176,6 +206,9 @@ hist2D :: ~hist2D ()
 
 void hist2D :: finalize ()
 {
+	if (finalized)
+		return;
+	
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < bins_x; j++)
 			for (int k = 0; k < bins_y; k++)
@@ -196,10 +229,15 @@ void hist2D :: finalize ()
 			for (int j = 0; j < bins_y; j++)
 				result[i][j] *= normalization / sum;
 	}
+	
+	finalized = true;
 }
 
 void hist2D :: save ()
 {
+	if (saved)
+		return;
+	
 	string out1 = "analysis/" + name + ".txt";
 	string out2 = "analysis/" + name + "_box.txt";
 	
@@ -259,10 +297,15 @@ void hist2D :: save ()
 		
 	file1.close();
 	file2.close();
+
+	saved = true;
 }
 
 void hist2D :: plot ()
 {
+	if (ploted)
+		return;
+	
 	string in1 = "analysis/" + name + ".txt";
 	string in2 = "analysis/" + name + "_box.txt";
 	
@@ -303,6 +346,8 @@ void hist2D :: plot ()
 	gnu.close();
 	
 	run_command ("gnuplot " + gs);	
+	
+	ploted = true;
 }
 
 void hist2D :: put (double x, double y, int dyn, double weight)
@@ -367,6 +412,9 @@ mhist1D :: ~mhist1D ()
 
 void mhist1D :: finalize ()
 {
+	if (finalized)
+		return;
+	
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < cases; j++)
 			for (int k = 0; k < bins_x; k++)
@@ -411,10 +459,15 @@ void mhist1D :: finalize ()
 			for (int j = 0; j < bins_x; j++)
 				result [i][j] *= normalization / sum;
 	}
+	
+	finalized = true;
 }
 
 void mhist1D :: save ()
 {
+	if (saved)
+		return;
+	
 	string out = "analysis/" + name + ".txt";
 	
 	ofstream file(out.c_str());
@@ -435,10 +488,15 @@ void mhist1D :: save ()
 	}
 		
 	file.close();
+	
+	saved = true;
 }
 
 void mhist1D :: plot ()
 {
+	if (ploted)
+		return;
+	
 	string in = "analysis/" + name + ".txt";
 	string out = "analysis/" + name + ".eps";
 	string gs = "analysis/" + name + ".gnu";
@@ -468,6 +526,8 @@ void mhist1D :: plot ()
 	gnu.close();
 	
 	run_command ("gnuplot " + gs);
+	
+	ploted = true;
 }
 
 void mhist1D :: put (double x, int dyn, double weight, int cas)
@@ -483,7 +543,12 @@ void pattern :: start ()
 	
 	set_params ();
 			
-	N = new NuWro (P);
+	N = new NuWro ();
+	
+	N -> set (P);
+	
+	if(P.dyn_dis_nc or P.dyn_res_nc  or P.dyn_dis_cc or P.dyn_res_cc)
+		singlepion(P);
 		
 	run ();
 	
@@ -492,14 +557,11 @@ void pattern :: start ()
 
 void pattern :: run ()
 {	
-	if(P.dyn_dis_nc or P.dyn_res_nc  or P.dyn_dis_cc or P.dyn_res_cc)
-		singlepion(P);
-		
 	for (int i = 0; i < events; i++)
 	{
 		event *e = new event();
 		e->dyn = N->proces();
-		
+				
 		N -> makeevent(e,P);
 		N -> finishevent(e,P);
 						
@@ -1208,20 +1270,13 @@ F :: ~F ()
 {
 	h1 -> finalize();
 	h2 -> finalize();
-	
-	for (int i = 0; i < nof_dyn; i++)
-		for (int j = 0; j < h1 -> cases; j++)
-			for (int k = 0; k < h1 -> bins_x; k++)
-			{
-				h1 -> tnorm [i][k] = 1;
-				h2 -> tnorm [i][k] = 1;
-				h3 -> tnorm [i][k] = 1;
-			}
-			
+				
 	for (int j = 0; j < h1 -> cases; j++)
 		for (int k = 0; k < h1 -> bins_x; k++)
 			if (h2 -> result[j][k] != 0)
 				h3 -> result [j][k] = h1 -> result[j][k] / h2 -> result[j][k];
+	
+	h3 -> finalized = true;
 				
 	delete h1;
 	delete h2;
@@ -1812,6 +1867,433 @@ void test_mec_nc :: calculate (event *e)
 	}
 }
 
+mb_nce :: mb_nce () : pattern ("MB NCE", 10000000)
+{	
+	run_command ("mkdir -p analysis/mb_nce/");
+
+	nof_Ma = 91;
+	nof_ds = 1;
+			
+	Ma = new int [nof_Ma];
+	ds = new double [nof_ds];
+	
+	for (int i = 0; i < nof_Ma; i++)
+		Ma [i] = 700 + i*10;
+		
+	for (int i  = 0; i < nof_ds; i++)
+		ds [i] = 0;//-0.5 + i*0.1;
+	
+	chi_2d = new hist2D ("mb_nce/chi2_2d", "", "", "Axial Mass [MeV]", "{/Symbol D}s", "{/Symbol x}^{2}", nof_Ma, Ma[0], Ma[nof_Ma - 1], nof_ds, ds[0], ds[nof_ds - 1], 0);
+	chi_2d -> finalized = true;
+
+	chi_2d_mec = new hist2D ("mb_nce/chi2_2d_mec", "", "", "Axial Mass [MeV]", "{/Symbol D}s", "{/Symbol x}^{2}", nof_Ma, Ma[0], Ma[nof_Ma - 1], nof_ds, ds[0], ds[nof_ds - 1], 0);
+	chi_2d_mec -> finalized = true;
+	
+	chi = new mhist1D * [nof_ds];
+	
+	for (int i = 0; i < nof_ds; i++)
+	{
+		stringstream temp1;
+		string des;
+	
+		temp1 << ds[i];
+		temp1 >> des;
+			
+		string name = "mb_nce/chi2_" + des;
+
+		chi[i] = new mhist1D (name, "", "", "Axial Mass [MeV]", "{/Symbol x}^{2}", nof_Ma, Ma[0], Ma[nof_Ma - 1], 2, 0);
+		chi[i] -> finalized = true;
+		chi[i] -> cnames[0] = "without MEC";
+		chi[i] -> cnames[1] = "with MEC";
+	}
+	
+	for (int i = 0; i < 51; i++)
+	{
+		not_qel [i] = 0;
+		mec     [i] = 0;
+	}
+}
+
+mb_nce :: ~mb_nce ()
+{	
+	delete [] Ma;
+	delete [] ds;
+				
+	for (int i = 0; i < nof_ds; i++)
+		delete chi[i];
+		
+	delete [] chi;
+	
+	delete chi_2d;
+	delete chi_2d_mec;
+}
+
+void mb_nce :: start ()
+{	
+	P.read("data/params.txt");
+	
+	set_params ();
+	
+	N = new NuWro ();
+
+	N -> set(P);
+
+	singlepion(P);
+
+	cout << "QEL on Hydrogen" << endl;
+	
+	run ();
+
+	cout << "RES on Carbon" << endl;
+
+	P.read("data/target/C.txt");
+	
+	N -> refresh_target (P);
+	
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 1;
+			
+	N -> refresh_dyn (P);
+
+	run ();
+
+	cout << "DIS on Carbon" << endl;
+	
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 1;
+	
+	N -> refresh_dyn (P);
+	
+	run ();
+			
+	cout << "MEC on Carbon" << endl;
+		
+	P.dyn_dis_nc = 0;
+	P.dyn_mec_nc = 1;	
+
+	N -> refresh_dyn (P);
+
+	run ();
+	
+	//QEL on Carbon
+
+	P.dyn_qel_nc = 1;
+	P.dyn_mec_nc = 0;
+	
+	N -> refresh_dyn (P);	
+
+	for (int i = 0; i < nof_Ma; i++)
+		for (int j = 0; j < nof_ds; j++)
+		{
+			P.qel_nc_axial_mass = Ma[i];
+			P.delta_s = ds[j];
+
+			ff_configure (P);
+			
+			stringstream temp1, temp2;
+			string mas, des;
+	
+			temp1 << ds[j];
+			temp1 >> des;
+			
+			temp2 << Ma[i];
+			temp2 >> mas;
+			
+			string name = "mb_nce/" + mas + "_" + des;
+			string title = "Axial mass = " + mas + " MeV, {/Symbol D}s = " + des;
+
+			qel = new mhist1D (name, "data/data/mb_ncel.txt", title, "Reconstructed kinetic energy", "No. of events", 51, 40, 650, 2, 0);
+			qel -> cnames[0] = "without MEC";
+			qel -> cnames[1] = "with MEC";
+			qel -> finalized = true;
+			
+			cout << "QEL on Carbon, Axial mass = " << mas << " MeV, Delta s = " << des << endl;
+			
+			run ();
+			
+			for (int z = 0; z < 51; z++)
+			{
+				qel -> result [0][z] += not_qel [z] + mb_nce_bg [z];
+				qel -> result [1][z] += not_qel [z] + mec [z] + mb_nce_bg [z];
+			}
+			
+			chi2 (i, j);
+			
+			delete qel;
+		}
+				
+	delete N;
+}
+
+void mb_nce :: set_params ()
+{
+	P.read("data/beam/newMB.txt");
+	P.read("data/target/H.txt");
+	
+	P.qel_nc_axial_mass = 1030;
+	
+	P.mec_kind = 0;
+		
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 1;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void mb_nce :: calculate (event *e)
+{		
+	using namespace PDG;
+	
+	const double factor = 2.95e45 / 14.0 / events / 18.0;
+
+	if (e -> flag.mec)
+	{		
+		double total_sn = 0;
+		double total_sp1 = 0;
+		double total_sp2 = 0;
+		double total_m = 0;
+		
+		for (int i = 0; i < e -> post.size(); i++)
+		{
+			if (e -> post[i].pdg == pdg_proton)
+			{
+				if (e -> post[i].primary)
+				{
+					if (total_sp1 == 0)
+						total_sp1 += e -> post[i].Ek();
+					else
+						total_sp2 += e -> post[i].Ek();
+				}
+				else
+					total_m += e -> post[i].Ek();
+			}
+			else if (e -> post[i].pdg == pdg_neutron)
+			{
+				if (e -> post[i].primary)
+					total_sn += e -> post[i].Ek();
+				else
+					total_m += e -> post[i].Ek();
+			}
+		}
+		
+		int scenario;		
+		
+		if (e -> in[1].pdg == pdg_neutron and e -> in[2].pdg == pdg_neutron)
+			scenario = 0;
+		else if (e -> in[1].pdg == pdg_proton and e -> in[2].pdg == pdg_proton)
+		{
+			if (total_sp1 != 0)
+			{
+				if (total_sp2 != 0)
+					scenario = 4;
+				else 
+					scenario = 5;
+			}
+			else
+				scenario = 6;
+		}
+		else
+		{
+			if (total_sp1 != 0)
+				scenario = 1;
+			else if (total_sn != 0)
+				scenario = 2;
+			else
+				scenario = 3;
+		}
+		
+		int bin = 0;
+		int w;
+		double waga = 1;
+		
+		switch (scenario)
+		{
+			case 0:
+				bin = t2r (total_sn + total_m, 3, w);
+				if (bin >= 0) waga = wagi [3][w];
+				break;
+			case 1:
+				bin = t2r_mec (total_sp1, 1, total_m + total_sn, 3);
+				break;
+			case 2:
+				bin = t2r_mec (total_m, 2, total_sn, 3);
+				break;
+			case 3:
+				bin = t2r_mec (total_m / 2.0, 2, total_m / 2.0, 3);
+				break;
+			case 4:
+				bin = t2r_mec (total_sp1, 1, total_sp2, 1);
+				break;
+			case 5:
+				bin = t2r_mec (total_sp1, 1, total_m, 2);
+				break;
+			case 6:
+				bin = t2r (total_m, 2, w);
+				if (bin >= 0) waga = wagi [2][w];
+				break;
+			default: break;
+		}
+		
+		if (bin > 50) bin = 50;
+		
+		if (bin >= 0)
+			mec [bin] += e -> weight * factor * 12.0 * waga;
+	}
+	else
+	{
+		double total = 0;
+			
+		for (int i = 0; i < e -> post.size(); i++)
+			if (e -> post[i].pdg == pdg_proton or e -> post[i].pdg == pdg_neutron)
+				total += e -> post[i].Ek();
+				
+		if (P.nucleus_p == 1)
+		{
+			int w;
+			int bin = t2r (total, 0, w);
+			if (bin >= 0)
+				not_qel [bin] += e -> weight * factor * 2.0 * wagi [0][w];
+		}
+		else if ( (e -> flag.res or e -> flag.dis) and (e -> fof (pdg_pi) + e -> fof (pdg_piP) + e -> fof (-pdg_piP) == 0))
+		{
+			int w;
+			int bin = t2r (total, 4, w);
+			if (bin >= 0)
+				not_qel [bin] += e -> weight * factor * 12.0 * wagi [4][w];
+		}
+		else if (e -> flag.qel)
+		{
+			int scenario = 1;
+			
+			if (e -> in[1].pdg == pdg_neutron)
+				scenario = 3;
+			else if (e -> number_of_interactions ())
+				scenario = 2;
+			
+			int w;
+			int bin = t2r (total, scenario, w);
+			if (bin >= 0)
+			{
+				qel -> result [0][bin] += e -> weight * factor * 12.0 * wagi [scenario][w];			
+				qel -> result [1][bin] += e -> weight * factor * 12.0 * wagi [scenario][w];			
+			}
+		}	
+	}
+}
+
+int mb_nce :: t2r_mec (double x1, int s1, double x2, int s2)
+{
+	int w1, w2;
+	
+	int bin1 = t2r (x1, s1, w1);
+	int bin2 = t2r (x2, s2, w2);
+	
+	double waga1 = 0;
+	double waga2 = 0;
+	
+	if (bin1 >= 0)
+		waga1 = wagi [s1][w1];
+	
+	if (bin2 >= 0)
+		waga2 = wagi [s2][w2];
+		
+	bool a1 = false;
+	bool a2 = false;
+	
+	double los1 = frandom();
+	double los2 = frandom();
+	
+	if (los1 < waga1)
+		a1 = true;
+	
+	if (los2 < waga2)
+		a2 = true;
+		
+	if (a1 and a2)
+		return bin1 + bin2;
+	else if (a1)
+		return bin1;
+	else if (a2)
+		return bin2;
+	else
+		return -1;	
+}
+
+int mb_nce :: t2r (double x, int s, int &w)
+{
+	if (x <= 0)
+		return -1;
+	
+	w = x / 18;
+	
+	if (w > 50)	w = 50;
+	
+	double los = frandom00 ();
+		
+	return find_bin (s, w, los);
+}
+
+int mb_nce :: find_bin (int s, int col, double x)
+{
+	int a = 0;
+	int b = 50;
+	int c = (b - a) / 2 + a;
+			
+	if (dystrR [s][0][col] == 1)
+		return -1;
+	
+	if (x <= dystrR [s][0][col])
+		return 0;
+	
+	do
+	{
+		if (x > dystrR [s][a][col] and x <= dystrR [s][c][col])
+			b = c;
+		else
+			a = c;
+			
+		c = (b - a) / 2 + a;
+	}
+	while (b - a > 1);
+
+	return b;
+}		
+
+void mb_nce :: chi2 (int a, int b)
+{
+	double c0 = calc_chi (qel -> result [0]);
+	double c1 = calc_chi (qel -> result [1]);
+
+	chi [b] -> result [0][a] = c0;
+	chi [b] -> result [1][a] = c1;
+				
+	chi_2d -> result [a][b] = c0;
+	chi_2d_mec -> result [a][b] = c1;
+}
+
+double mb_nce :: calc_chi (double *x)
+{
+	double res = 0;
+	
+	double dif [51];
+		
+	for (int i = 0; i < 51; i++)
+		dif[i] = mb_nce_data[i] - x[i];
+				
+	for (int i = 0; i < 51; i++)
+		for (int j = 0; j < 51; j++)
+			res += dif[i] * Mrev [i][j] * dif[j];
+	
+	return res;	
+}
+
 pattern * choose (int x)
 {
 	pattern *wsk;
@@ -1851,6 +2333,7 @@ pattern * choose (int x)
 		case 30: wsk = new test2_mec_old_cc; break;
 		case 31: wsk = new test2_mec_new_cc; break;
 		case 32: wsk = new test_mec_nc; break;
+		case 33: wsk = new mb_nce; break;
 		default: wsk = NULL;
 	}
 	

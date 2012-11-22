@@ -46,11 +46,16 @@ NuWro::~NuWro()
 
 NuWro::NuWro()
 {
-
+	mixer = NULL;
+	detector = NULL;
+	neutrino_beam = NULL;
+	nucleuss = NULL;
 }
 
-NuWro::NuWro (params &par)
-{
+void NuWro :: set (params &par)
+{	
+	frandom_init(par.random_seed);
+
 	dismode = false;
 	
 	neutrino_beam = create_beam (par);
@@ -58,8 +63,6 @@ NuWro::NuWro (params &par)
 	
 	if(par.target_type == 1)
 		mixer = new target_mixer (par);
-	else
-		mixer = NULL;
 		
 	detector = make_detector (par);
 
@@ -71,6 +74,26 @@ NuWro::NuWro (params &par)
 	
 	ff_configure (par);
 
+	bool active[] =
+	{
+		par.dyn_qel_cc,par.dyn_qel_nc,
+		par.dyn_res_cc,par.dyn_res_nc,
+		par.dyn_dis_cc,par.dyn_dis_nc,
+		par.dyn_coh_cc,par.dyn_coh_nc,
+		par.dyn_mec_cc,par.dyn_mec_nc
+	};
+
+	procesy.reset(active);
+}
+
+void NuWro :: refresh_target (params &par)
+{
+	delete nucleuss;
+	nucleuss = make_nucleus (par);
+}
+
+void NuWro :: refresh_dyn (params &par)
+{
 	bool active[] =
 	{
 		par.dyn_qel_cc,par.dyn_qel_nc,
@@ -236,6 +259,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.res = dyn/2  == 1;
 	e->flag.dis = dyn/2  == 2;
 	e->flag.coh = dyn/2  == 3;
+	e->flag.mec = dyn/2  == 4;
 
 	if(p.beam_test_only)
 	{

@@ -25,8 +25,10 @@ class NuWro
 		void kaskada_redo(string input, string output);
 		int main (int argc, char **argv);
 		inline int proces() {return procesy.choose();}
+		void set (params &p);
+		void refresh_target (params &p);
+		void refresh_dyn (params &p);
 		NuWro ();
-		NuWro (params &p);
 		~NuWro();
 
 	private:
