@@ -19,7 +19,7 @@ class NuWro
 		void raport(double i, double n, const char* text, int precision=1000, int k=-1, bool toFile=false);
 		int init  (int argc, char **argv);
 		void test_events(params &p);
-		void analizer_events(params &p);
+		void user_events(params &p);
 		void UserAction(params& p);
 		void real_events(params &p);
 		void kaskada_redo(string input, string output);

@@ -3,6 +3,7 @@ PARAM(int,random_seed,0)\
 PARAM(int,number_of_events,100000)\
 PARAM(int,number_of_test_events,1000000)\
 PARAM(int,user_events,0)\
+PARAM(line,user_params,"")\
 PARAM(int,beam_type,0)\
 PARAM(line,beam_energy,"1000")\
 PARAM(int,beam_particle,14)\

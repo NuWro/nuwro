@@ -13,7 +13,14 @@
     <description>The number of events used to calculate the cross sections</description>
   </param>
   <param name="user_events" type="text" ctype="int" default="0">
-    <description></description>
+    <description>Enable axial mass analysis</description>
+		<options>
+		  <option key="0"><![CDATA[Normal nuwro run]]></option>
+		  <option key="1"><![CDATA[Fit axial mass to MiniBoone data]]></option>
+		</options>
+  </param>
+  <param name="user_params" type="text" ctype="line" default="">
+    <description>Parameters  for the user defined analyser</description>
   </param>
   
   <param name="beam_type" type="radio" ctype="int" default="0">

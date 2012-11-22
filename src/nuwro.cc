@@ -5,6 +5,7 @@
 #include "TROOT.h"
 #include "TTree.h"
 #include "TFile.h"
+#include "TH1.h"
 #include "qelevent.h"
 #include "pdg.h"
 #include "chooser.h"
@@ -22,7 +23,7 @@
 #include "args.h"
 #include "kaskada7.h"
 #include "sfevent.h"
-#include "Analyser.h"
+#include "Analyser1.h"
 #include "geomy.h"
 #include "ff.h"
 #include "hist.h"
@@ -504,8 +505,10 @@ void NuWro::test_events(params & p)
 }
 
 
-void NuWro::analizer_events(params &p)
+void NuWro::user_events(params &p)
 {
+	if(p.number_of_test_events<1 or p.user_events==0)
+		return;
 	bool active[]=
 	{
 		p.dyn_qel_cc,p.dyn_qel_nc,
@@ -516,25 +519,25 @@ void NuWro::analizer_events(params &p)
 	};
 
 	params p1=p;
-	Analyser analyser;
-	//   UserAction analyser;
-	// Useraction(procesy,mixer.e.p,neutrino_beam,detector)
-	while(analyser.loop(1000,2000,50))
+	Analyser * A=make_analyser(p);
+	if(!A) 
+		return;
+	for(A->start(); !A->end(); A->step())
 	{
 		procesy.reset(active);
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			event *e = new event ();
-			int k=0;
-								 // choose dynamics
-			e->dyn = procesy.choose ();
-			/////////////
-			analyser.prepare_event(*e,p);
+								 
+			e->dyn = procesy.choose ();///< choose dynamics
+			
+			A->prepare_event(*e);
 			if(mixer)
 				mixer->prepare(p);
+
 			makeevent(e,p);
 
-			analyser.process_event(*e,p);
+			A->process_event(*e);
 
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
@@ -543,14 +546,16 @@ void NuWro::analizer_events(params &p)
 			procesy.add (e->dyn, e->weight, bias);
 
 			delete e;
+			
 			raport(i+1,p.number_of_test_events," % of analyser events ready...",1000,-1,bool(a.progress));
-		}						 // end of nuwro loop
+		}	// end of nuwro loop
 
-		analyser.partial_raport();
+		A->partial_report();
 		procesy.report();
 
-	}							 // end of analyser loop
-	analyser.final_report();
+	}	// end of analyser loop
+	A->final_report();
+	delete A;
 	p=p1;
 }
 
@@ -762,11 +767,13 @@ int NuWro::main (int argc, char **argv)
 			if(not p.beam_test_only)
 			{
 				if(p.user_events>0)
-					analizer_events(p);
+					user_events(p);
 				else
+				{
 					test_events(p);
+					real_events(p);
+				}
 			}
-			real_events(p);
 		}
 		genrand_write_state();
 	}
