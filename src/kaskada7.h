@@ -50,11 +50,12 @@ class kaskada
 		bool check (particle & p1, particle & p2, particle *spect, int n, particle p[],int k);  ///check if charge is conserved
 		bool check2 (particle & p1, particle & p2, particle *spect, int n, particle p[],int k); ///check if fourmomentum is conserved
 		
-		void clean();									///move remain particles after nucleus evaporate from queue to output, delete some object
-
+		void clean ();
+		
 		//void procinfo(particle p1, particle p2, int n, particle p[]); /// (empty function?)
 
 	public:
 		kaskada(params &p, event &e1);
+		~kaskada();
 		int kaskadaevent();
 };

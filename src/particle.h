@@ -28,6 +28,7 @@ public:
 	int mother;      ///< index of mother in the vector 'all'
 	int endproc;     ///< id of process that destroyed the particle
 	double his_fermi;
+	bool primary;
   
 public:
 	inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;}
@@ -126,18 +127,18 @@ double get_cos(double A, double B, double C, double D, double E, double F, doubl
 
 particle::particle (int code, double mass):vect(mass,0,0,0),_mass (mass),pdg(code)
   {
-    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;primary=false;
   }
 
 
 particle::particle (double mass):vect(mass,0,0,0),_mass (mass)
   {
-    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;primary=false;
   }
 particle::particle (vect fourmomentum):vect (fourmomentum)
   { 
     _mass = sqrt (fourmomentum * fourmomentum);
-    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;
+    id=-1;mother=0;endproc=-1;travelled=0;his_fermi=0;primary=false;
   }
 inline bool particle::operator==(particle& p2)
 {
