@@ -354,6 +354,7 @@ void NuWro::makeevent(event* e, params &p)
 				{
 					case 1:mecevent (p, *e, *nucleuss, true);break;
 					case 2:mecevent2 (p, *e, *nucleuss, true);break;
+					case 3:mecevent_Nieves (p, *e, *nucleuss, true);break;
 					default: mecevent_tem (p, *e, *nucleuss, true);break;
 				}
 				for(int i=0;i<e->out.size();i++)
