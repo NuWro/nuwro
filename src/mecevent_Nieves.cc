@@ -2,7 +2,7 @@
 //int noev=0;
 void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 {
-	e.par = p;					//save params in the event
+	e.par = p;				//save params in the event
 	e.flag.cc = cc;				//set flags for the event
 	e.flag.nc = !cc;
 	e.flag.dis = false;
@@ -161,116 +161,51 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 							   pos_E+1600+pos_cos+pos_T2     ,pos_E+1600+pos_cos+40+pos_T2  ,
 							   pos_E+1600+pos_cos+pos_T2+1  ,pos_E+1600+pos_cos+40+pos_T2+1};
 	
-			//Two harmonic trianagles on the equal energy planes+ linear interpolation
-			//inside data grid case
+			//inside data grid_ case
 			if((border_T1==0)&&(border_T2==0))
 			{
-				double maxdist=0;
-				unsigned int furthest=0;
-				double sumw=0;
-				double lower_bound=0;
-				bool inpoint=false;
-				//triangle #1
-				for(int i=0; i<4; i++)
-				{
-					double x=List_cos_[pos_cos0+i%2]-cosmuon;
-					double y=List_T_[pos_E0*40+pos_T1+(i>1)]-Tmu;
-					double dist=sqrt(x*x+y*y);
-					if (dist>maxdist)
-					{
-						maxdist=dist;
-						furthest=i;
-					}
-					if(dist<eps_inpoint)
-					{
-						inpoint=true;
-						lower_bound=Nieves_XS_grid_[p[i]];
-						break;
-					}
-					sumw+=1.0/dist;
-					lower_bound+=Nieves_XS_grid_[p[i]]/dist;
-				}
-				if(!inpoint)
-				{
-					lower_bound-=Nieves_XS_grid_[p[furthest]]/maxdist;
-					sumw-=1.0/maxdist;
-					lower_bound/=sumw;
-				}
+				double downcosmin=Nieves_XS_grid_[p[0]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[1]]-Nieves_XS_grid_[p[0]]);
+				double downcosmax=Nieves_XS_grid_[p[2]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[3]]-Nieves_XS_grid_[p[2]]);
+				double downT=downcosmin+(Tmu-List_T_[pos_E0*40+pos_T1])/(List_T_[pos_E0*40+pos_T1+1]-List_T_[pos_E0*40+pos_T1])*(downcosmax-downcosmin);
 				double lower_E=List_E_[pos_E0];
-				
-				maxdist=0;
-				sumw=0;
-				inpoint=false;
-				double upper_bound=0;
-				//triangle #2
-				for(int i=4; i<8; i++)
-				{
-					double x=List_cos_[pos_cos0+i%2]-cosmuon;
-					double y=List_T_[(pos_E0+1)*40+pos_T2+((i>5))]-Tmu;
-					double dist=sqrt(x*x+y*y);
-					if (dist>maxdist) {maxdist=dist; furthest=i;}
-					if(dist<eps_inpoint)
-					{
-						inpoint=true;
-						upper_bound=Nieves_XS_grid_[p[i]];
-						break;
-					}
-					sumw+=1.0/dist;
-					upper_bound+=Nieves_XS_grid_[p[i]]/dist;
-				}
-				
-				if(!inpoint)
-				{
-					upper_bound-=Nieves_XS_grid_[p[furthest]]/maxdist;
-					sumw-=1.0/maxdist;
-					upper_bound/=sumw;
-				}
-				
+	
+	
+				double upcosmin=Nieves_XS_grid_[p[4]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[5]]-Nieves_XS_grid_[p[4]]);
+				double upcosmax=Nieves_XS_grid_[p[6]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[7]]-Nieves_XS_grid_[p[6]]);
+				double upT=upcosmin+(Tmu-List_T_[(pos_E0+1)*40+pos_T2])/(List_T_[(pos_E0+1)*40+pos_T2+1]-List_T_[(pos_E0+1)*40+pos_T2])*(upcosmax-upcosmin);
 				double upper_E=List_E_[pos_E0+1];
 				//linear interpolation in energy
-				result=lower_bound+(E-lower_E)/(upper_E-lower_E)*(upper_bound-lower_bound);
+				result=downT+(E-lower_E)/(upper_E-lower_E)*(upT-downT);
 					
 				
 			}
 			//above Tmu in lower energy, but inside for higher
 			if((border_T1>0)&&(border_T2==0))
 			{
-				double maxdist=0;
-				unsigned int furthest=0;
-				double sumw=0;
-				double upper_bound=0;
-				double lower_E=List_E_[pos_E0];
-				bool inpoint=false;
-				//triangle #2
-				for(int i=4; i<8; i++)
-				{
-					double x=List_cos_[pos_cos0+i%2]-cosmuon;
-					double y=List_T_[(pos_E0+1)*40+pos_T2+(i>5)]-Tmu;
-					double dist=sqrt(x*x+y*y);
-					if (dist>maxdist) {maxdist=dist; furthest=i;}
-					if(dist<eps_inpoint)
-					{
-						inpoint=true;
-						upper_bound=Nieves_XS_grid_[p[i]];
-						break;
-					}
-					sumw+=1.0/dist;
-					upper_bound+=Nieves_XS_grid_[p[i]]/dist;
-				}
 				
-				if(!inpoint)
-				{
-					upper_bound-=Nieves_XS_grid_[p[furthest]]/maxdist;
-					sumw-=1.0/maxdist;
-					upper_bound/=sumw;
-				}
-					double upper_E=List_E_[pos_E0+1];
-					
+				
+				double lower_E=List_E_[pos_E0];
+	
+	
+				double upcosmin=Nieves_XS_grid_[p[4]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[5]]-Nieves_XS_grid_[p[4]]);
+				double upcosmax=Nieves_XS_grid_[p[6]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[7]]-Nieves_XS_grid_[p[6]]);
+				double upT=upcosmin+(Tmu-List_T_[(pos_E0+1)*40+pos_T2])/(List_T_[(pos_E0+1)*40+pos_T2+1]-List_T_[(pos_E0+1)*40+pos_T2])*(upcosmax-upcosmin);
+				double upper_E=List_E_[pos_E0+1];
 				//linear interpolation in energy
-				result=(E-lower_E)/(upper_E-lower_E)*upper_bound;
+				result=(E-lower_E)/(upper_E-lower_E)*upT;
 			}
-			//other cases not worthy our effort (e.g. below limit in T2
-			//and inside limit for t1, just couple of events with T_\mu<1MeV
+			if((border_T1==0)&&(border_T2<0))
+			{
+				
+				
+				double downcosmin=Nieves_XS_grid_[p[0]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[1]]-Nieves_XS_grid_[p[0]]);
+				double downcosmax=Nieves_XS_grid_[p[2]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[3]]-Nieves_XS_grid_[p[2]]);
+				double downT=downcosmin+(Tmu-List_T_[pos_E0*40+pos_T1])/(List_T_[pos_E0*40+pos_T1+1]-List_T_[pos_E0*40+pos_T1])*(downcosmax-downcosmin);
+				double lower_E=List_E_[pos_E0];
+				double upper_E=List_E_[pos_E0+1];
+				//linear interpolation in energy
+				result=(upper_E-E)/(upper_E-lower_E)*downT;
+			}
 			if(result<0) result=0;
 				
 		}
