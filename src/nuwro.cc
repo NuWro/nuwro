@@ -576,15 +576,15 @@ void NuWro::user_events(params &p)
 			delete e;
 			
 			raport(i+1,p.number_of_test_events," % of analyser events ready...",1000,-1,bool(a.progress));
-		}	// end of nuwro loop
+			p=p1;
+	}	// end of nuwro loop
 
 		A->partial_report();
 		procesy.report();
-
+	
 	}	// end of analyser loop
 	A->final_report();
 	delete A;
-	p=p1;
 }
 
 

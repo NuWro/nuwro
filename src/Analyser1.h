@@ -152,6 +152,7 @@ class Analyser1: public Analyser
 		stringstream s15;
 		s15<<"ma="<<ma<<".root\0"<<flush;
 		boon->save(s15.str().c_str());  
+		boon->reset();
 	}
 	
 	// runs after the loop in ma is finished
