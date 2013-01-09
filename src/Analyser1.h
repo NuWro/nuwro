@@ -17,6 +17,7 @@ class Analyser1: public Analyser
     ofstream plots[4][3];     
     double mult[4][3];
     int scales[3];
+    int ndyn;
 	ofstream mafit,matables;
 	
 	boone *boon;
@@ -29,6 +30,11 @@ class Analyser1: public Analyser
 		matables("ma_tables.txt"),
 		boon(new boone)
 	{
+		ndyn=p0.dyn_qel_cc+p0.dyn_qel_nc
+			+p0.dyn_res_cc+p0.dyn_res_nc
+			+p0.dyn_dis_cc+p0.dyn_dis_nc
+			+p0.dyn_coh_cc+p0.dyn_coh_nc
+			+p0.dyn_mec_cc+p0.dyn_mec_nc;
 		stringstream in(p.user_params.c_str());
 		in>>ma_lo>>ma_hi>>ma_step;
 		
@@ -80,7 +86,7 @@ class Analyser1: public Analyser
 	void process_event(event&e)
 	{
 	   if(boon)
-	    	boon->add(e,e.weight*12/6);
+	    	boon->add(e,e.weight*ndyn*12/6);
 	}
 	
 	///runs before ma is changed
