@@ -485,14 +485,25 @@ void NuWro::test_events(params & p)
 			p.dyn_coh_cc,p.dyn_coh_nc,
 			p.dyn_mec_cc,p.dyn_mec_nc
 		};
+		TFile *te;
+		TTree *t1;
+		event *e;
+		if(p.save_test_events)
+		{	
+			dismode=false;
+			te=new TFile((string("weighted.")+a.output).c_str(),"recreate");						
+			t1 = new TTree ("treeout", "Tree of events");
+			e = new event ();
+			t1->Branch ("e", "event", &e);
+			delete e;
+		}
 
 		procesy.reset(active);
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
-			event *e = new event ();
+			e = new event ();
 
-								 // choose dynamics
-			e->dyn = procesy.choose ();
+			e->dyn = procesy.choose (); // choose dynamics
 			if(mixer)
 				mixer->prepare(p);
 			makeevent(e,p);
@@ -500,6 +511,7 @@ void NuWro::test_events(params & p)
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
 			procesy.add (e->dyn, e->weight, bias);
+			e->weight/=procesy.ratio(e->dyn); // make avg(weight)= total cross section
 			if(e->weight>0)
 			{
 				hq2.insert_value(-e->q2(),e->weight*cm2);
@@ -514,9 +526,20 @@ void NuWro::test_events(params & p)
 				hqv.insert_value(0,0);
 				hT.insert_value(0,0);
 			}
+			if(p.save_test_events)
+			{
+				finishevent(e, p);
+				t1->Fill ();
+			}
 			delete e;
 			raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));
 		}						 // end of nuwro loop
+		if(p.save_test_events)
+		{
+			te->Write ();
+			te->Close ();
+		}
+
 		cout<<endl;
 		procesy.report();
 		ofstream totals ("totals.txt",ios::app);
@@ -590,9 +613,10 @@ void NuWro::user_events(params &p)
 
 void NuWro::real_events(params& p)
 {
+	dismode=true;
 	if(p.number_of_events<1)
 		return;
-
+	
 	/// calculate desired number of events for each dynamics
 	procesy.calculate_counts(p.number_of_events);
 	{							 /// Write cross sections and counts to screen and file
@@ -646,6 +670,7 @@ void NuWro::real_events(params& p)
 					if (procesy.accept(e->dyn,e->weight,bias))
 					{
 						finishevent(e, p);
+						e->weight=procesy.total();
 						t1->Fill ();
 					}
 					delete e;

@@ -43,6 +43,7 @@ class chooser
 	void calculate_counts(int ilosc);
 	int desired(int i);
 	int ready(int i);
+	double total(){return Wacc[N-1];}
 };
 
 ////////////////////////////////////////////////////////////////////////

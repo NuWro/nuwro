@@ -12,7 +12,14 @@
   <param name="number_of_test_events" type="text" ctype="int" default="1000000">
     <description>The number of events used to calculate the cross sections</description>
   </param>
-  <param name="user_events" type="text" ctype="int" default="0">
+  <param name="save_test_events" type="checkbox" ctype="bool" default="0">
+    <description>
+		0 - test events are not stored (default)
+		1 - test events are finalized and stored in weighted.eventsout.root
+			avg(weight)=total cross section
+	</description>
+  </param>
+  <param name="user_events" type="select" ctype="int" default="0">
     <description>Enable axial mass analysis</description>
 		<options>
 		  <option key="0"><![CDATA[Normal nuwro run]]></option>
