@@ -12,7 +12,7 @@
 #include "dirs.h"
 
 //#include "params_all_orig.h" // original params (hand written)
-#include "params_all.h"  // auto_generated (from params.xml)
+#include "params_all.h"			 // auto_generated (from params.xml)
 
 using namespace std;
 
@@ -24,7 +24,7 @@ struct line :public string
 	};
 	line& operator=(const string&s)
 	{
-		*(string*)this=s;		
+		*(string*)this=s;
 		return *this;
 	}
 };
@@ -32,147 +32,181 @@ struct line :public string
 template <class T>
 inline bool read(T &x, istream & s,char z)
 {
-  s >>x;
-  return true;
+	s >>x;
+	return z=='=' && s;  // '+=' allowed only for lines
 }
+
 
 template <class T>
 inline void write(T x, ostream & s)
 {
-  s <<x;
+	s <<x;
 }
+
 
 inline bool read(vec &a, istream & s,char z)
 {
-  s >>a.x>>a.y>>a.z;   
-  return true;
+	s >>a.x>>a.y>>a.z;
+	return z=='=' && s;  // '+=' allowed only for lines
 }
+
 
 inline void write(vec a, ostream & s)
 {
-  s <<a.x<<' '<<a.y<<' '<<a.z;   
+	s <<a.x<<' '<<a.y<<' '<<a.z;
 }
 
+
 inline bool read( line &x , istream & s,char z)
-{ 
-  if(z=='=')
-    getline(s,x) ;
-  else
-    {string y;
-     getline(s,y) ;
-     x+="\n"+y;
+{
+	switch(z)
+	{
+		case '=':
+			getline(s,x); 
+			return true;
+		case '+':
+			string y;
+			getline(s,y) ;
+			x+="\n"+y;
+			return true;
 	}
-  return true;
+	return false;
 }
 
 
 /// the params class is used to input the run time parameters
-/// to the generator from a file and to provide them to the  
+/// to the generator from a file and to provide them to the
 /// interested objects in the generator
 /// it also helps to store them in the output file for the record
-/// the type of the paremeter must be string, vector or  
-/// any type with friend operator>>(istream&,type&) operator defined 
+/// the type of the paremeter must be string, vector or
+/// any type with friend operator>>(istream&,type&) operator defined
 /// all the parameters (type, name  are defined here
 class params
-{//public fields
+{								 //public fields
 	public:
 
-	/// parameter definitions
+		/// parameter definitions
 	#define PARAM(type,name,default_value) type name;
-	PARAMS_ALL() 
-	#undef PARAM
+		PARAMS_ALL()
+		#undef PARAM
 
-	public:
-	string path_to_data;
+		public:
+		string path_to_data;
 
-	/// constructor
-	params():path_to_data("")
-	#define PARAM(type,name,default_value) ,name(default_value)
-	PARAMS_ALL() 
-	#undef PARAM
-	{
-	}
+		/// constructor
+		params():path_to_data("")
+		#define PARAM(type,name,default_value) ,name(default_value)
+			PARAMS_ALL()
+		#undef PARAM
+		{
+		}
 
-	/// read all parameter values from config file filename
-	inline bool read (const char *filename)
-	{
-		ifstream dane;
-		open_data_file(dane,filename);
-		if (!dane)
-		  cerr << "Could not open: '" << filename << "' using defaults " << endl;
-		return  read(dane,filename);
-	}
+		/// read all parameter values from config file filename
+		inline bool read (const char *filename)
+		{
+			ifstream dane;
+			open_data_file(dane,filename);
+			if (!dane)
+				cerr << "Could not open: '" << filename << "' using defaults " << endl;
+			return  read(dane,filename);
+		}
 
-	inline bool read (istream& dane,const char *filename)
-	{
-		int line_number = 0;
-		string varname, line;
-		char eq;
-		double value;
-		while (dane.good ()) // while not end of file
-		  {	line_number++;   // increase line number 
-		getline (dane, line);  //read next line to buffer "line" 
-		stringstream ins (line); // create istream for reading from "line" 
-		if (line[0] == '#')      // skip to next line if this line is commented
-		  continue;
-		if(line[0] == '@')
-		  { char malpa;
-			string incfname;
-			ins>>malpa>>incfname;
-			ifstream incfile;
-			if(open_data_file(incfile,incfname))
-			  read(incfile,incfname.c_str());  
-			else
-			  {
-			   cerr << filename << ':' << line_number <<". Could not open file '"<<
-			   incfname <<"' for reading."<<endl;
-			  throw("error");
-			  }
-			continue;
-		  }
-		ins >> ws;
-		if (ins.peek () == '#')  // comments must start at the beginning of the line  
-		  {
-			cerr << filename << ':' << line_number <<
-			  ": '#' in the middle of the line " << endl;
-			continue;
-		  }
-		if (ins.eof ()) // the line was empty
-		  continue;
-		varname = "";  // erase the name of the variable from the previous line
-		eq = ' ';
-		while (!ins.eof () && ins.peek () != '=' && ins.peek () != ' '
-			   && ins.peek () != '\t')
-		  varname += ins.get (); // read up to the next ' ', '\t', '=' or end of line
-		ins >> eq;  // read the '=' sign
-		if(eq!='=')
-			if(eq=='+' && ins.peek()=='=')
-			{
-				char z=ins.get();
+		inline bool read (istream& dane,const char *filename)
+		{
+			int line_number = 0;
+			double value;
+			while (dane.good ()) // while not end of file
+			{					 // increase line number
+				line_number++;
+								 //read next line to buffer "line"
+				string line;
+				getline (dane, line);
+								 // create istream for reading from "line"
+				stringstream ins (line);
+								 // skip to next line if this line is commented
+				if (line[0] == '#')
+					continue;
+				if(line[0] == '@')
+				{
+					char malpa;
+					string incfname;
+					ins>>malpa>>incfname;
+					ifstream incfile;
+					if(open_data_file(incfile,incfname))
+						read(incfile,incfname.c_str());
+					else
+					{
+						cerr << filename << ':' << line_number <<". Could not open file '"<<
+							incfname <<"' for reading."<<endl;
+						throw("error");
+					}
+					continue;
+				}
+				ins >> ws;
+								 // comments must start at the beginning of the line
+				if (ins.peek () == '#')
+				{
+					cerr << filename << ':' << line_number <<
+						": '#' in the middle of the line " << endl;
+					continue;
+				}
+				if (ins.eof ())	 // the line was empty
+					continue;
+				string varname = "";	 
+				while (!ins.eof ()) 
+                {					
+					char b=ins.peek();
+					if(b=='=' || b=='+' || b==' ' || b=='\t')
+						break;
+					else
+						varname += ins.get ();
+				}
+				char eq = ' ';
+				ins >> eq;		 // read the '=' sign (or '+' sign)
+				switch(eq)
+				{
+					case '=':
+						break;
+					case '+':
+						if (ins.peek()=='=')
+						{
+							ins.get();
+							break;
+						}
+					default:
+						cerr << filename << ':' << line_number <<
+							": '=' expected after  \"" <<varname<<"\""<< endl;
+						exit(-1);
+				}
+				// check if the varname is in the fieldlist and call appiopriate read function
+				int kod=0;
+				#define PARAM(type,name,default_value) \
+					if(kod==0) \
+						if(varname == #name)\
+							kod=1+::read(name,ins,eq);
+				PARAMS_ALL()
+				#undef PARAM
+				switch(kod)	
+				{
+					case 0:
+						cerr << filename << ':' << line_number <<": unknown parameter \""<<varname<<"\""<<endl;
+						exit(-1);
+					case 1:
+						cerr << filename << ':' << line_number <<": bad value for parameter \""<<varname<<"\""<<endl;
+						exit(-2);
+				}
 			}
-			else   
-			{cerr << filename << ':' << line_number <<
-			  ": '=' expected after  \"" <<varname<<"\""<< endl;
-			continue;
-			}
-	// check if the varname is in the fieldlist and call appiopriate read function
-	#define PARAM(type,name,default_value) ( varname == #name ? ::read(name,ins,eq) : false) ||
-		PARAMS_ALL() 
-		(cerr << filename << ':' << line_number <<": unknown parameter \""<<varname<<"\""<<endl
-		, exit(-1),1)
-		; 
-	#undef PARAM
-		  }
-	  }
+		}
 
-	void list()
-	{
-	#define PARAM(type,name,default_value) cout<< #name" = "; write(name,cout); cout<<endl; 
-		PARAMS_ALL();
-	#undef PARAM
-	}
+		void list()
+		{
+			#define PARAM(type,name,default_value) \
+				cout<< #name" = "; \
+				write(name,cout); \
+				cout<<endl;
+			PARAMS_ALL();
+			#undef PARAM
+		}
 
 };
-
-
 #endif
