@@ -499,6 +499,7 @@ void NuWro::test_events(params & p)
 		}
 
 		procesy.reset(active);
+		int saved=0;
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			e = new event ();
@@ -526,10 +527,27 @@ void NuWro::test_events(params & p)
 				hqv.insert_value(0,0);
 				hT.insert_value(0,0);
 			}
-			if(p.save_test_events)
+			switch(p.save_test_events)
 			{
-				finishevent(e, p);
-				t1->Fill ();
+				case 0: 
+					break;
+				case 1: 
+					finishevent(e, p);
+					t1->Fill ();
+					break;
+				case 2:
+					if(e->weight>0)
+					{
+						saved++;
+						e->weight=e->weight*saved/(i+1);
+						finishevent(e, p);
+						t1->Fill ();						
+					}
+					break;
+				default:
+					cerr<<"Parameter save_test_events="<<p.save_test_events;
+					cerr <<" out of range. Should be ,1, or 2)"<<endl;
+					exit(-1);
 			}
 			delete e;
 			raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));

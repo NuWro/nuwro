@@ -12,10 +12,12 @@
   <param name="number_of_test_events" type="text" ctype="int" default="1000000">
     <description>The number of events used to calculate the cross sections</description>
   </param>
-  <param name="save_test_events" type="checkbox" ctype="bool" default="0">
+  <param name="save_test_events" type="checkbox" ctype="int" default="0">
     <description>
 		0 - test events are not stored (default)
 		1 - test events are finalized and stored in weighted.eventsout.root
+			avg(weight)=total cross section
+		2 - test events of nonzero weight are finalized and stored in weighted.eventsout.root
 			avg(weight)=total cross section
 	</description>
   </param>

@@ -2,7 +2,7 @@
 PARAM(int,random_seed,0)\
 PARAM(int,number_of_events,100000)\
 PARAM(int,number_of_test_events,1000000)\
-PARAM(bool,save_test_events,0)\
+PARAM(int,save_test_events,0)\
 PARAM(int,user_events,0)\
 PARAM(line,user_params,"")\
 PARAM(int,beam_type,0)\
