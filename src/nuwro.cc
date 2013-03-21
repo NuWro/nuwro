@@ -218,12 +218,13 @@ void NuWro::makeevent(event* e, params &p)
 			if(mat.w_density>max_dens)
 				max_dens=mat.w_density;
 //		    cout<< mat.w_density<< ' '<<max_dens<<"<-max dens"<<endl;
-		} while(not (mat.w_density>=frandom()*max_dens) && (mat.Z+mat.N>0));
+		} while(not (mat.Z+mat.N>0 && mat.w_density>=frandom()*max_dens));
 		///change nucleus
 		p.nucleus_p=mat.Z;
 		p.nucleus_n=mat.N;
 		p.nucleus_E_b=mat.e_bin;
 		p.nucleus_kf=mat.p_fermi;
+//		cout<<mat.Z<<' '<<mat.N<<' '<<mat.e_bin<<' '<<mat.p_fermi<<endl;
 		if(mat.Z==0&&mat.N==0)
 			throw "Empty isotope 00";
 	}
@@ -353,6 +354,8 @@ void NuWro::makeevent(event* e, params &p)
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
 			{	
+				if(nucleuss->A()<=1)
+					break;
 				switch(p.mec_kind)
 				{
 					case 1:mecevent_tem (p, *e, *nucleuss, true);break;
@@ -368,6 +371,8 @@ void NuWro::makeevent(event* e, params &p)
 		case 9: 
 			if (p.dyn_mec_nc) //mec nc
 			{   
+				if(nucleuss->A()<=1)
+					break;
 				switch(p.mec_kind)
 				{
 					//case 1: mecevent(p, *e, *nucleuss, false);break;
