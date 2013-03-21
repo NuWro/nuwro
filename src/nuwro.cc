@@ -73,17 +73,7 @@ void NuWro :: set (params &par)
 	}
 	
 	ff_configure (par);
-
-	bool active[] =
-	{
-		par.dyn_qel_cc,par.dyn_qel_nc,
-		par.dyn_res_cc,par.dyn_res_nc,
-		par.dyn_dis_cc,par.dyn_dis_nc,
-		par.dyn_coh_cc,par.dyn_coh_nc,
-		par.dyn_mec_cc,par.dyn_mec_nc
-	};
-
-	procesy.reset(active);
+	refresh_dyn (par);
 }
 
 void NuWro :: refresh_target (params &par)
@@ -175,19 +165,7 @@ int NuWro::init (int argc, char **argv)
 			{cerr<<"Detector geometry not created."<<endl;exit(1);}
 	}
 	ff_configure(p);
-
-	bool active[]=
-	{
-		p.dyn_qel_cc,p.dyn_qel_nc,
-		p.dyn_res_cc,p.dyn_res_nc,
-		p.dyn_dis_cc,p.dyn_dis_nc,
-		p.dyn_coh_cc,p.dyn_coh_nc,
-		p.dyn_mec_cc,p.dyn_mec_nc
-	};
-	//const int NPROC = sizeof(active)/sizeof(bool);
-	procesy.reset(active);
-	
-
+	refresh_dyn(p);	
 }
 
 void NuWro::makeevent(event* e, params &p)
@@ -214,7 +192,7 @@ void NuWro::makeevent(event* e, params &p)
 				mat=detector->getpoint();
 			else
 				mat=detector->getpoint(nu.p(),nu.r);
-//			cout<<mat.Z<<' '<<mat.N<<' '<<mat.e_bin<<' '<<mat.p_fermi<<endl;
+//			cout<<mat.Z<<' '<<mat.N<<' '<<endl;
 			if(mat.w_density>max_dens)
 				max_dens=mat.w_density;
 //		    cout<< mat.w_density<< ' '<<max_dens<<"<-max dens"<<endl;
@@ -222,9 +200,11 @@ void NuWro::makeevent(event* e, params &p)
 		///change nucleus
 		p.nucleus_p=mat.Z;
 		p.nucleus_n=mat.N;
-		p.nucleus_E_b=mat.e_bin;
-		p.nucleus_kf=mat.p_fermi;
-//		cout<<mat.Z<<' '<<mat.N<<' '<<mat.e_bin<<' '<<mat.p_fermi<<endl;
+//		p.nucleus_E_b=mat.e_bin;
+//		p.nucleus_kf=mat.p_fermi;
+		p.nucleus_E_b=0;  // Use library value for E_b
+		p.nucleus_kf=0;   // Use library value for E_b
+//		cout<<mat.Z<<' '<<mat.N<<' '<<endl;
 		if(mat.Z==0&&mat.N==0)
 			throw "Empty isotope 00";
 	}
@@ -482,14 +462,6 @@ void NuWro::test_events(params & p)
 		hist hq0((char*)"q0",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
 		hist hqv((char*)"qv",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
 		hist hT((char*)"T",0,2*GeV,100);
-		bool active[]=
-		{
-			p.dyn_qel_cc,p.dyn_qel_nc,
-			p.dyn_res_cc,p.dyn_res_nc,
-			p.dyn_dis_cc,p.dyn_dis_nc,
-			p.dyn_coh_cc,p.dyn_coh_nc,
-			p.dyn_mec_cc,p.dyn_mec_nc
-		};
 		TFile *te;
 		TTree *t1;
 		event *e;
@@ -503,7 +475,8 @@ void NuWro::test_events(params & p)
 			delete e;
 		}
 
-		procesy.reset(active);
+		refresh_dyn(p);
+		
 		int saved=0;
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
@@ -583,22 +556,13 @@ void NuWro::user_events(params &p)
 {
 	if(p.number_of_test_events<1 or p.user_events==0)
 		return;
-	bool active[]=
-	{
-		p.dyn_qel_cc,p.dyn_qel_nc,
-		p.dyn_res_cc,p.dyn_res_nc,
-		p.dyn_dis_cc,p.dyn_dis_nc,
-		p.dyn_coh_cc,p.dyn_coh_nc,
-		p.dyn_mec_cc,p.dyn_mec_nc
-	};
-
 	params p1=p;
 	Analyser * A=make_analyser(p);
 	if(!A) 
 		return;
 	for(A->start(); !A->end(); A->step())
 	{
-		procesy.reset(active);
+		refresh_dyn(p);
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			event *e = new event ();

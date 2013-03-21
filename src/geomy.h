@@ -27,7 +27,7 @@ struct material
 {
 	double A, Z, N, w_density;
 	vec r;
-	double e_bin, p_fermi;
+//	double e_bin, p_fermi;
 	material(double=0, double=0, double=0);
 };
 
@@ -37,80 +37,6 @@ inline material::material(double _a, double _z, double _d)
 {}
 
 
-class pfew
-{
-
-	map< int, std::pair<double,double> > pfew;
-	
-public:
-	void init()
-	{
-		std::ifstream file;
-		std::string line;
-		std::stringstream ss;	
-			std::cout << "Opening and parsing pfew.txt..........";
-
-			open_data_file(file,"pfew.txt");
-			if(!file.is_open())
-			  throw("File 'pfew.txt' not found");
-			double a;
-			char b;
-			int Z, N;
-			std::pair< double, double> tmp;
-			while( std::getline( file, line ) )
-			{
-				if( line.empty() || line.at(0) == '#') continue;
-
-				ss.clear();
-				ss << line;
-				//std::cout << line << "\n";
-				ss >> a;
-				Z = 1000*a;
-		
-				ss >> a;
-				N = a;
-				ss >> b;
-				if( b != ';' )
-				{
-					std::cout << "\nError.." << b;
-					continue;
-				}
-				ss >> a;
-				tmp.first = a;
-				ss >> a;
-				tmp.second = a;
-				Z += N;
-				pfew[Z] = tmp;
-				std::cout << "\nParse.. " << Z << " " << pfew[Z].first << "," << pfew[Z].second << " OK";
-			}
-
-			std::cout << "..OK\n\n";
-			file.close();
-
-	}
-	
-	void SetPfew(material& mat)
-	{
-		int c = 1000*mat.Z;
-		c += mat.N;
-		map< int, std::pair<double,double> >::iterator it;
-		it = pfew.find(c);
-		if( it != pfew.end() )
-		{
-			std::pair<double, double> tmp = pfew[c];
-			mat.e_bin = tmp.first;
-			mat.p_fermi = tmp.second;
-		}
-		else
-		{
-			mat.e_bin = 34;
-			mat.p_fermi = 220;
-		}
-
-		return;
-	}
-
-};
 
 inline int d_round(double x) 
 {
@@ -238,7 +164,6 @@ public:
 		}
 		tam.w_density = mat1->GetDensity();
 		tam.r = r;
-		//pfew.SetPfew(tam);
 		return tam;	
 	}
 
