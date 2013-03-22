@@ -25,10 +25,8 @@ int kaskada::kaskadaevent()
 			
 	if (e->in[0].lepton()) //remove nucleon from primary vertex 
 	{
-		nucl->remove_nucleon(e->in[1]);
-		
-		if (e -> flag.mec and par.mec_kind == 0)
-			nucl->remove_nucleon(e->in[2]);
+		for(int i=1;i< e->in.size();i++)
+			nucl->remove_nucleon(e->in[i]);// ignores nonnucleons
 	}
 			
 	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
