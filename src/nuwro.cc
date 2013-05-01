@@ -272,7 +272,7 @@ void NuWro::makeevent(event* e, params &p)
 		case 0:
 			if (p.dyn_qel_cc) // qel cc
 			{
-				if(p.sf_method>0 and has_sf(*nucleuss))
+				if(p.sf_method>0 and has_sf(*nucleuss, p.sf_method))
 					sfevent2cc (p, *e, *nucleuss);
 				else
 					qelevent1 (p, *e, *nucleuss, false);
@@ -280,7 +280,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;				 
 		case 1:
 			if (p.dyn_qel_nc) // qel nc
-				if(p.sf_method>0 and has_sf(*nucleuss))
+				if(p.sf_method>0 and has_sf(*nucleuss, p.sf_method))
 					sfevent2nc (p, *e, *nucleuss);
 			else
 				qelevent1 (p, *e, *nucleuss, true);

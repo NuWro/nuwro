@@ -12,17 +12,18 @@ static inline double pow2(double x)
 {return x*x;
 }
 
-bool has_sf(nucleus &t)
-{  switch(1000*t.Z()+t.N())
+//method=1 - grid (from Benhar)
+//method=2 - sum of gaussians 
+bool has_sf(nucleus &t, int method)
+{  
+   switch(1000*t.Z()+t.N())
    {
-	   case  6006:
-	   case  8008:
-	   case 18022:
-	   case 20020:
-	   case 26030:
-	     return true;
-	   default: 
-	     return false;
+	   case  6006: return method==1;
+	   case  8008: return method==1 || method==2;
+	   case 20020: return method==2;
+	   case 18022: return method==1 || method==2;
+	   case 26030: return method==1;
+	   default:    return false;
    }
 }
 
