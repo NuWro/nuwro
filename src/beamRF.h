@@ -22,7 +22,6 @@ class BeamRF : public beam
 	RootFReader< ND5Event >	* _file;
 	int	_nextFile;
 	int _nextElem;
-//	vector <ND5Event> events;
 	ND5Event *events[100000];
 	int N;
 	double * acum;
@@ -31,7 +30,40 @@ class BeamRF : public beam
 	int file_first;
 	int file_limit;
 	
-
+	int nu_pdg_from_mode(int mode)
+	{
+//~ #define MODE_NUMU_PI      11  /* numu from pi+  */
+//~ #define MODE_NUMU_K       12  /* numu from K+(2)*/
+//~ #define MODE_NUMU_MU      13  /* numu from mu-  */
+//~ #define MODE_NUMU_KPLUS   14  /* numu from K+(3)*/
+//~ #define MODE_NUMU_K0      15  /* numu from K0(3)*/
+//~ 
+//~ #define MODE_NUMUB_PI     21  /* numu_bar from pi-  */
+//~ #define MODE_NUMUB_K      22  /* numu_bar from K-(2)*/
+//~ #define MODE_NUMUB_MU     23  /* numu_bar from mu+  */
+//~ #define MODE_NUMUB_KMINUS 24  /* numu_bar from K-(3)*/
+//~ #define MODE_NUMUB_K0     25  /* numu_bar from K0(3)*/
+//~ 
+//~ #define MODE_NUE_KPLUS    31  /* nue from K+ (Ke3) */
+//~ #define MODE_NUE_K0       32  /* nue from K0L(Ke3) */
+//~ #define MODE_NUE_MU       33  /* nue from Mu+      */
+//~ #define MODE_NUE_PI       34  /* nue from pi+      */
+//~ 
+//~ #define MODE_NUEB_KMINUS  41  /* nue_bar from K- (Ke3) */
+//~ #define MODE_NUEB_K0      42  /* nue_bar from K0L(Ke3) */
+//~ #define MODE_NUEB_MU      43  /* nue_bar from Mu-      */
+//~ #define MODE_NUEB_PI      44  /* nue_bar from pi-      */		
+		switch(mode/10)
+		{
+			case 1: return 14; //nu_mu
+			case 2: return -14; //nu_mu_bar
+			case 3: return 12; //nu_e
+			case 4: return -12;	//nu_e
+			default: cerr<<"Unknown reaction mode "<<mode<<" reading flux files"<<endl;
+					 exit(-1);
+		}
+		
+	}
 
 	/// checks if current element is the last one
 	bool LastElem()
@@ -150,7 +182,8 @@ public:
 				_cb->Done();
 
 		/// translate root file event to nuwro particle
-		particle p( e.gipart, 0.0 );
+		int pdg=nu_pdg_from_mode(e.mode);
+		particle p( pdg, 0.0 );
 		double E=e.Enu*1000;
         	p.r.x = e.xnu*10;
         	p.r.y = e.ynu*10;
@@ -190,7 +223,8 @@ public:
 		  }
 		  e=events[i/100000][i%100000];
 		}
-		particle p( e.gipart, 0.0 );
+		int pdg=nu_pdg_from_mode(e.mode);
+		particle p( pdg, 0.0 );
 		double E=e.Enu*1000;
         	p.r.x = e.xnu*10;
         	p.r.y = e.ynu*10;

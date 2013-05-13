@@ -17,11 +17,12 @@ struct ND5Event
 	Float_t Enu; 		/// energia
 	Float_t nnu[3]; 	/// x, y, z kierunek pedu
 	Float_t xnu, ynu; 	/// wsp. gdzie neutrino przecina plaszczyzne Z=0
-	UChar_t gipart; 	/// pdg neutrino mionowa 14
+	Int_t mode;	        /// reaction mode
+//	UChar_t gipart; 	/// pdg neutrino mionowa 14
 //	Int_t idfd; 		/// sprawdzic czy jest to wartosc 5, identyfikacje detektora
 	Float_t norm; 	    /// norma neutrina
 	
-	ND5Event(  ) : Enu(0), xnu(0), ynu(0), gipart(0), /*idfd(0),*/ norm(1)
+	ND5Event(  ) : Enu(0), xnu(0), ynu(0), mode(0), /*idfd(0),*/ norm(1)
 	{
 		nnu[0] = 0;
 		nnu[1] = 0;
@@ -34,7 +35,8 @@ struct ND5Event
 		tree->Branch( "nnu", &nnu, "nnu[3]/F" );
 		tree->Branch( "xnu", &xnu, "xnu/F" );
 		tree->Branch( "ynu", &ynu, "ynu/F" );
-		tree->Branch( "gipart", &gipart, "gipart/I" );
+		tree->Branch( "mode", &mode, "mode/I" );
+//		tree->Branch( "gipart", &gipart, "gipart/I" );
 //		tree->Branch( "idfd", &idfd, "idfd/I" );
 		tree->Branch( "norm", &ynu, "norm/F" );
 	}
@@ -49,7 +51,8 @@ struct ND5Event
 		tree->SetBranchAddress( "nnu", &nnu );
 		tree->SetBranchAddress( "xnu", &xnu );
 		tree->SetBranchAddress( "ynu", &ynu );
-		tree->SetBranchAddress( "gipart", &gipart );
+		tree->SetBranchAddress( "mode", &mode );
+//		tree->SetBranchAddress( "gipart", &gipart );
 //		tree->SetBranchAddress( "idfd", &idfd );
 		tree->SetBranchAddress( "norm", &norm );
 	}
