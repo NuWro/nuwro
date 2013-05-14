@@ -23,7 +23,9 @@ int kaskada::kaskadaevent()
 	if(not par.kaskada_on or e->weight <= 0) //skip cascade if it is turn off in params
 		return result;
 			
-	if (e->in[0].lepton()) //remove nucleon from primary vertex 
+	if (e->in[0].lepton()) //if lepton scattering remove nucleon from primary vertex 
+		                   // (in pion or nucleon scattering there is no primary vertex
+		                   // just the cascade)
 	{
 		for(int i=1;i< e->in.size();i++)
 			nucl->remove_nucleon(e->in[i]);// ignores nonnucleons
@@ -39,14 +41,16 @@ int kaskada::kaskadaevent()
 		
 		X = prepare_interaction();
 						
-		if (!move_particle()) continue;			 //propagate particle
+		if (!move_particle()) continue;	          //particle was jailed
 				
-		if (X.xsec == 0 or X.r >= radius) 								   //leaving nucleus
+		if (X.xsec == 0 or X.r >= radius)         //leaving nucleus
 			leave_nucleus();
-		else if ((max_step < X.freepath) or !make_interaction()) 		   //no interaction during max_step or unable to generate kinematics or Pauli blocking
-			parts.push (*p); 			 								   //put to end of queue for further processing
-		else 															   //scattering happened
-			result = finalize_interaction();	
+		else if(  max_step < X.freepath           //no interaction during max_step 
+		          or !make_interaction()          //or unable to generate kinematics or Pauli blocking
+		          or !finalize_interaction()      //or there was problem with finalizing interaction
+		       ) 		   
+			parts.push (*p);                      //interaction did not happend, 
+			                                      //p should be further propagated   
 	}
 	
 	clean(); // if nucleus has evaporated the part queue may not be empty
@@ -65,7 +69,7 @@ void kaskada::prepare_particles()
 		if (nucleon_or_pion (p1.pdg))
 		{		  
 			double fz = formation_zone(p1, par, *e); //calculate formation zone
-			p1.krok(fz); //move particle by a distance defined bsy its formation zone
+			p1.krok(fz); //move particle by a distance defined by its formation zone
 			
 			if (nucleon (p1.pdg))
 			{	
@@ -118,7 +122,8 @@ interaction_parameters kaskada::prepare_interaction()
 
     I->total_cross_sections (res); //calculate cross sections xsec_p and xsec_n
 
-    res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; assert(res.xsec>=0);    
+    res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; 
+    assert(res.xsec>=0);    
         
     if (res.xsec != 0)
     {
@@ -175,14 +180,19 @@ bool kaskada::make_interaction()
 	return true;
 }
 
-int kaskada::finalize_interaction()
+bool kaskada::finalize_interaction()
 {
-	p->endproc=I->process_id();
 	
-	nucl->remove_nucleon (X.p2); // remove from the nuclear matter
+	if(!nucl->remove_nucleon (X.p2))
+		return false;    // remove from the nuclear matter
 	if(nucl->spectator!=NULL)
-		nucl->remove_nucleon (*nucl->spectator);
-
+		if(!nucl->remove_nucleon (*nucl->spectator))
+		{	
+			nucl->insert_nucleon (X.p2);
+			return false;
+		}
+	
+	p->endproc=I->process_id();
 	double rem_en = -1.0;
 	int first_nucl;
 	bool abs_first = true;
@@ -248,14 +258,14 @@ int kaskada::finalize_interaction()
 	int k = kod(I->process_id());
 	e->nod[k]++;
 	
-	return 1;
+	return true;
 }
 
 bool kaskada::move_particle()
 {	
 	p->krok (min (max_step, X.freepath)); // propagate by no more than max_step
 	
-	if (!p->nucleon()) return true;
+	if (!p->nucleon()) return true;  // pion can not be jailed
 
 	if (p->Ek() <= par.kaskada_w + p->his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
 	{
@@ -263,10 +273,10 @@ bool kaskada::move_particle()
 		nucl->insert_nucleon (*p);
 		if(par.kaskada_writeall) 
 			e->all.push_back(*p);
-		return false;
+		return false;                // nucleon was jailed  
 	}
-	
-	return true;
+	else
+		return true;                 // nucleon was not jailed
 }
 
 bool kaskada::leave_nucleus()

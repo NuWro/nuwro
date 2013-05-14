@@ -43,7 +43,7 @@ class kaskada
 		void prepare_particles(); 						///take all nucleons and pions from input vector, others copy directly to the output vector
 		interaction_parameters prepare_interaction();	///set density and cross sections
 		bool make_interaction(); 					    ///generate a kinematic
-		int finalize_interaction(); 					///copy new particle to a queue, apply formation zone if it is on 
+		bool finalize_interaction(); 					///copy new particle to a queue, apply formation zone if it is on 
 		bool leave_nucleus(); 							///move particle to the output particles vector and reduce momentum for nucleons
 		bool move_particle();				///propagate particle and change nucleons energy according to nuclear potential
 

@@ -63,8 +63,8 @@ class nucleus
 	double frac_neutron ();                  ///< percentage of neutrons
 	double density (double r);               ///< nucleon density at dist r from center
 	double get_random_r ();                  ///< random distance from the center 
-	void remove_nucleon (particle P);	     ///< remove nucleon from the nucleous
-	void insert_nucleon (particle P);	     ///< insert nucleon back to the nucleous
+	bool remove_nucleon (particle P);	     ///< remove nucleon from the nucleus
+	void insert_nucleon (particle P);	     ///< insert nucleon back to the nucleus
 	double localkf (particle & pa);          ///< local Fermi momentum for particle (pdg and position dependent)
 	double localkf_ (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center 
 	double kF(){return _kf;}	             ///< global Fermi momentum
@@ -185,17 +185,23 @@ inline double nucleus::Mf ()
 ///////////////////////////////////////////////////////////////////////////////
 /// remove nucleon P from the nucleus 
 ///////////////////////////////////////////////////////////////////////////////
-inline void nucleus::remove_nucleon(particle P)
+inline bool nucleus::remove_nucleon(particle P)
 {
 	switch(P.pdg)
     {
 		case pdg_proton:  //if(pr==0) cout<<proc<<endl; 
-			assert(pr>0); pr--;break;
+			if(pr<=0) 
+				return false;
+			pr--;
+			break;
 		case pdg_neutron: //if(nr==0) cout<<proc<<endl; 
-			assert(nr>0);  nr--;break;
-		default: return;
+			if(nr<=0)
+				return false;
+			nr--;break;
+		default: return false;
     }
     _p4=_p4-P.p4();
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

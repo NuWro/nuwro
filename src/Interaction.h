@@ -683,7 +683,8 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
     //{ case 0: case 5: return 0; // no absorbtion for (pi- n) and (pi+ p) 
     //}
     
-	t.remove_nucleon(p2);       // pretend that p2 is already removed
+	if(!t.remove_nucleon(p2))
+		return false;       // pretend that p2 is already removed
     p2a = t.get_nucleon (p1.r);	// get nucleon from this place in Nucleus
     t.spectator=&p2a;            // remember to remove p2a later (if PB permits)
     t.insert_nucleon(p2);       // stop pretending :)
