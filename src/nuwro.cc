@@ -65,12 +65,6 @@ void NuWro :: set (params &par)
 		mixer = new target_mixer (par);
 		
 	detector = make_detector (par);
-
-	if(par.geo_file != "" and detector == NULL)
-	{
-		cerr << "Detector geometry not created." << endl;
-		exit(1);
-	}
 	
 	ff_configure (par);
 	refresh_dyn (par);
@@ -98,6 +92,9 @@ void NuWro :: refresh_dyn (params &par)
 
 geomy* NuWro::make_detector(params &p)
 {
+	if(p.beam_type!=2)
+		return NULL;
+		
 	if(p.geo_file.length())
 	{
 		try
@@ -110,11 +107,15 @@ geomy* NuWro::make_detector(params &p)
 		catch(...)
 		{
 			cerr<<"Failed to make detector."<<endl;
-			exit(0);
+			exit(1);
 		}
 	}
 	else
+	{	
+		cerr<<"Failed to make detector. Parameter geo_file must not be empty if target_type=2."<<endl;
+		exit(1);
 		return NULL;
+	}
 
 }
 
@@ -162,8 +163,6 @@ int NuWro::init (int argc, char **argv)
 			
 		detector=make_detector(p);
 
-		if(p.geo_file!="" and detector==NULL)
-			{cerr<<"Detector geometry not created."<<endl;exit(1);}
 	}
 	ff_configure(p);
 	refresh_dyn(p);	

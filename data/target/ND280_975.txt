@@ -1,4 +1,5 @@
 #ND280 geometry
+target_type=2
 geo_file=target/ND280_v9r7p5.root
 geo_name=ND280Geometry_v9r7p5
 geo_o = 0 0 0 // coordinates of the center of the box: ox oy oz

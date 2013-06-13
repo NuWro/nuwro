@@ -40,7 +40,7 @@ inline bool read(T &x, istream & s,char z)
 template <class T>
 inline void write(T x, ostream & s)
 {
-	s <<x;
+	s <<' '<<x; // space looks nice ofter in "a = 1"
 }
 
 
@@ -53,9 +53,16 @@ inline bool read(vec &a, istream & s,char z)
 
 inline void write(vec a, ostream & s)
 {
-	s <<a.x<<' '<<a.y<<' '<<a.z;
+	s <<' '<<a.x<<' '<<a.y<<' '<<a.z;
 }
 
+inline bool read(string &a, istream & s,char z)
+{
+	s >>a;
+	if(!s) 
+		a="";
+	return true;
+}
 
 inline bool read( line &x , istream & s,char z)
 {
@@ -71,6 +78,11 @@ inline bool read( line &x , istream & s,char z)
 			return true;
 	}
 	return false;
+}
+
+inline void write(line a, ostream & s)
+{
+	s <<a;
 }
 
 
@@ -201,7 +213,7 @@ class params
 		void list(ostream &out=cout)
 		{
 			#define PARAM(type,name,default_value) \
-				out<< #name" = "; \
+				out<< #name" ="; \
 				write(name,out); \
 				out<<endl;
 			PARAMS_ALL();
