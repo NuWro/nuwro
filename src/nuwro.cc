@@ -127,7 +127,8 @@ int NuWro::init (int argc, char **argv)
 	p.read (a.input);
 	p.read (a.params, "command line");
 	
-	p.list ();
+	p.list (cout);
+	p.list (string(a.output)+".par");
 	p1=&p;
 	progress.open(a.progress);
 	frandom_init(p.random_seed);
@@ -615,6 +616,9 @@ void NuWro::real_events(params& p)
 	event *e = new event;
 
 	string output=a.output;
+	int l=output.length();
+	if(l<5 || string(".root")!=output.c_str()+l-5)
+		output=output+".root";
 	TFile *ff = new TFile (output.c_str(), "recreate");
 	TTree *tf = new TTree ("treeout", "Tree of events");
 	tf->Branch ("e", "event", &e);

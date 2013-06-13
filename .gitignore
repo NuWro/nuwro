@@ -1,4 +1,5 @@
 *.root
 *.txt
+*.par
 random_seed
 nuwro.geany

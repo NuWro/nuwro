@@ -198,14 +198,20 @@ class params
 			}
 		}
 
-		void list()
+		void list(ostream &out=cout)
 		{
 			#define PARAM(type,name,default_value) \
-				cout<< #name" = "; \
-				write(name,cout); \
-				cout<<endl;
+				out<< #name" = "; \
+				write(name,out); \
+				out<<endl;
 			PARAMS_ALL();
 			#undef PARAM
+		}
+		
+		void list(string filename)
+		{
+			std::ofstream out(filename.c_str());
+			list(out);
 		}
 
 };
