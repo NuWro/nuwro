@@ -333,6 +333,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
+			if(nu.pdg>0)      // only neutrinos allowed
 			{	
 				if(nucleuss->A()<=1)
 					break;
@@ -350,6 +351,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 9: 
 			if (p.dyn_mec_nc) //mec nc
+			if(nu.pdg>0)      // only neutrinos allowed
 			{   
 				if(nucleuss->A()<=1)
 					break;
