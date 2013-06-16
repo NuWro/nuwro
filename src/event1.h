@@ -348,12 +348,12 @@ public:
      {particle p=out[i];
       if(!(p.x==p.x && p.y==p.y && p.z==p.z and p.t==p.t) )
         {cerr<<p<<endl;
-         exit(-1);
+         exit(20);
 	    }
      }
      if(!(weight==weight))
         {cerr<<"dyn="<<dyn<<endl;
-         exit(-1);
+         exit(21);
 	    }
       
   }

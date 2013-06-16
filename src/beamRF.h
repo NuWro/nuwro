@@ -60,7 +60,7 @@ class BeamRF : public beam
 			case 3: return 12; //nu_e
 			case 4: return -12;	//nu_e
 			default: cerr<<"Unknown reaction mode "<<mode<<" reading flux files"<<endl;
-					 exit(-1);
+					 exit(16);
 		}
 		
 	}

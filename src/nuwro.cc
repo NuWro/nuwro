@@ -107,13 +107,13 @@ geomy* NuWro::make_detector(params &p)
 		catch(...)
 		{
 			cerr<<"Failed to make detector."<<endl;
-			exit(1);
+			exit(3);
 		}
 	}
 	else
 	{	
 		cerr<<"Failed to make detector. Parameter geo_file must not be empty if target_type=2."<<endl;
-		exit(1);
+		exit(4);
 		return NULL;
 	}
 
@@ -153,7 +153,7 @@ int NuWro::init (int argc, char **argv)
 		cout<<"Creating the beam ..."<<endl;
 		neutrino_beam=create_beam(p);
 		if(neutrino_beam==NULL)
-			{cerr<<"No beam defined."<<endl;exit(1);}
+			{cerr<<"No beam defined."<<endl;exit(5);}
 
 			nucleuss = make_nucleus(p);
 		if(p.target_type==1)
@@ -527,7 +527,7 @@ void NuWro::test_events(params & p)
 				default:
 					cerr<<"Parameter save_test_events="<<p.save_test_events;
 					cerr <<" out of range. Should be ,1, or 2)"<<endl;
-					exit(-1);
+					exit(12);
 			}
 			delete e;
 			raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));
@@ -720,7 +720,7 @@ void NuWro::real_events(params& p)
 			if(t[k]==NULL)
 			{
 				cerr<< "tree \"treeout\" not found in file \""<<filename<<"\""<<endl;
-				exit(1);
+				exit(6);
 			}
 
 			t[k]->SetBranchAddress("e", &e);
@@ -770,7 +770,7 @@ void NuWro::kaskada_redo(string input,string output)
 	if(ti==NULL)
 	{
 		cerr<< "tree \"treeout\" not found in file \""<<input<<"\""<<endl;
-		exit(1);
+		exit(7);
 	}
 	ti->SetBranchAddress("e", &e);
 

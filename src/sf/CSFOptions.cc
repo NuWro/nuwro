@@ -81,7 +81,7 @@ CSFOptions::CSFOptions(params &p, bool cc,bool is_proton,bool anty)
  	  case 2603011: te= targFe_Ben; md= md_Fe56_Ben; break;	
 	  default: 
 	    cerr <<"Illegal SF configuration: "<<fun(p.nucleus_p,p.nucleus_n,method,mdkind)<<endl;
-		exit(-1);
+		exit(24);
 	}
 	
 	f=createSF(te,md,(is_proton? proton : neutron));

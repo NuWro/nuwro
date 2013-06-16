@@ -150,7 +150,9 @@ class params
 					{
 						cerr << filename << ':' << line_number <<". Could not open file '"<<
 							incfname <<"' for reading."<<endl;
-						throw("error");
+						exit(11);
+						//throw("error");
+						
 					}
 					continue;
 				}
@@ -188,7 +190,7 @@ class params
 					default:
 						cerr << filename << ':' << line_number <<
 							": '=' expected after  \"" <<varname<<"\""<< endl;
-						exit(-1);
+						exit(13);
 				}
 				// check if the varname is in the fieldlist and call appiopriate read function
 				int kod=0;
@@ -202,10 +204,10 @@ class params
 				{
 					case 0:
 						cerr << filename << ':' << line_number <<": unknown parameter \""<<varname<<"\""<<endl;
-						exit(-1);
+						exit(14);
 					case 1:
 						cerr << filename << ':' << line_number <<": bad value for parameter \""<<varname<<"\""<<endl;
-						exit(-2);
+						exit(15);
 				}
 			}
 		}

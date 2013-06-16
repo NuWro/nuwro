@@ -107,7 +107,7 @@ public:
 		     else
 		      {
 		       cerr<<"Box of interest outside detector. No events will be generated"<<endl;
-		       exit(0);
+		       exit(23);
 		      }
 		}
 

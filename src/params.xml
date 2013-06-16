@@ -150,7 +150,7 @@
 		</options>
 	  </param>
 		  <param name="nucleus_model" type="select" ctype="int" default="0">
-			<description><![CDATA[Models for the description of nucleus in the cascade]]></description>
+			<description><![CDATA[Models for the description of nucleus]]></description>
 			<options>
 			  <option key="0"><![CDATA[constant density]]></option>
 			  <option key="1"><![CDATA[realistic density profile]]></option>
@@ -281,7 +281,7 @@
     <description><![CDATA[Use new, faster implementation of coherent events by CJ]]></description>
   </param>
   <param name="mec_kind" type="select" ctype="int" default="1">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[MEC model]]></description>
 	<options>
       <option key="1"><![CDATA[TEM model]]></option>
       <option key="2"><![CDATA[Marteau model]]></option>
@@ -344,14 +344,7 @@
   </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
-  </param>
-  <param name="rmin" type="text" ctype="double" default="0">
-    <description><![CDATA[]]></description>
-  </param>
-  <param name="rmax" type="text" ctype="double" default="0">
-    <description><![CDATA[]]></description>
-  </param>
-  
+  </param>  
 </params>
 
 <!--

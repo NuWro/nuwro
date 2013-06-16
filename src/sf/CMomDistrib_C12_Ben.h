@@ -29,7 +29,7 @@ public:
 		if (inputFile.fail())
 		{
 			std::cerr<<"Indispensable file 'C12_Ben.dat' not found"<<std::endl;
-			exit(0);
+			exit(25);
 		}
 
 		double p(0), val(0.0);

@@ -75,7 +75,7 @@ inline void chooser<N>::reset(bool active[N])
 	     } 
 	  if(Wacc[N-1]==0)
 	    {cerr<<"No active dynamics - chooser invalid"<<endl;
-	     exit(-1);
+	     exit(17);
 	    }
 	   else
 	    std::cout<<"chooser created"<<std::endl;

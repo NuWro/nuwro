@@ -49,7 +49,7 @@ double kinsolver::findmomentum()
 	  if(f<0)
            {cout<<p<<'\t'<<f<<endl;
 	   
-            exit(1);
+            exit(28);
 	    }
 	  } 
 */	    
@@ -57,7 +57,7 @@ double kinsolver::findmomentum()
       } 
    if(fb<0) 
       {cerr<< "Upper limit incorrect:("<<fa<<","<<fb<<")"<<endl;
-       exit(1);
+       exit(2);
        return -1;
       }
 //   cout<<"Solution exists"<<endl;      

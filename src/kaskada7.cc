@@ -167,7 +167,7 @@ bool kaskada::make_interaction()
 			cerr << I->process_name()<< "Interaction: error" << X.p[i] << endl;
 			delete nucl;
 			delete I;
-            exit(0);
+			exit(18);
 		    return false;
 		}
 

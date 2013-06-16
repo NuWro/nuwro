@@ -55,7 +55,7 @@ PiData::PiData(int xs):xsec(xs),Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0)
 	  case 2: set(pdataB,pdataHE);break;
 	  case 3: set(pdataC,pdataHE);break;
 	  default:{ cerr<<"PidData::Pidata(int): unknown xsec code "<<xs<<"."<<endl;
-	             exit(0);
+	             exit(29);
 			 }
 	}	  
 }

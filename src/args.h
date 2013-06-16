@@ -45,7 +45,7 @@ int read(int argc, char** argv)
 void usage()
 {
   cout <<"usage: "<< program <<" [-i input_paramaters_file] [-o output_root_file] [-p \"param1=value1\"] [-p \"param2=value2\"]...\n";
-  exit(1);  
+  exit(22);  
 }
 
 };

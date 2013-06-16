@@ -111,7 +111,7 @@ inline void doit(int& n,const channel a[],particle p[])
 	  case 'n':p[i]=Neutron;break;
 	  case 'p':p[i]=Proton;break;
 	  case'\0':n=i;return;
-	  default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(0);
+	  default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(27);
 	 }
 } 
 

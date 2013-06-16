@@ -112,7 +112,7 @@ int scatter_n (int n, particle p1, particle p2,
      if(!p[i].is_valid())
 	{
 	  cerr <<"Scatter: invalid particle:"<< p[i]<<endl;
-      exit(0);
+	  exit(26);
 	}
       }
     return 1;

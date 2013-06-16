@@ -128,7 +128,7 @@ public:
 		tree = static_cast<TTree*>(  fH->Get(treename.c_str())  );
 		if(tree==NULL) 
 		  {cerr<< "tree \""<<treename<<"\" not found in file \""<<fname<<"\""<<endl;
-		   exit(1);
+		   exit(10);
 	      }
 
 		event.OpenBranches( tree );
@@ -182,7 +182,7 @@ public:
 		_dp = opendir( directory.c_str() );
 		if(_dp==NULL)
 			{cerr << "Directory \""<<directory<<"\" not found."<<endl;
-			 exit (1);
+			 exit(3);
 		    }
 		while( true )
 		{
@@ -197,7 +197,7 @@ public:
 			cout << _fnames.size()<<" root files ready to open.\n";
 		else
 			{cerr << "No root files fount in directory \""<<directory<<"\""<<endl;
-			 exit (1);
+			 exit(34);
 		    }
 //		for( int i = 0; i < _fnames.size(); ++i )
 //			cout<< _fnames[i] << endl;

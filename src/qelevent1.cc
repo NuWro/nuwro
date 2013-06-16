@@ -157,7 +157,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
                  break;	       	  
     default: 
                  cerr<<"Kinematics code: '"<<qel_kinematics<<"' is invalid."<<endl;	  
-	             exit(1);
+	             exit(9);
     }  
     if (q2 != 0)  		           // there was scattering
 		if(qel_kinematics==3)

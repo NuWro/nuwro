@@ -34,7 +34,7 @@ public:
 //       cout<< setw(4) << code <<' '<<ratio<<' '<<perc<<endl;
        if(perc!='%') 
          {cerr<< "beam_content= "<<code<<' '<<perc<< " % sign expected"<<endl;
-         exit(-1);}
+         exit(30);}
        w1[n]=ratio;
        double m=mass(code);
        string rest;

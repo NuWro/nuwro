@@ -33,7 +33,7 @@ public:
        if(!s1) return;
        if(perc!='x') 
          {cerr<< "target_content= "<<p1<<' '<<n1<<' '<<ratio<<" 'x' sign expected"<<endl;
-         exit(-1);
+         exit(32);
          }
         Eb[N]=kf[N]=model[N]=0;
         s1>> Eb[N]>>kf[N]>>model[N];

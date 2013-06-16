@@ -76,6 +76,4 @@ PARAM(double,step,0.2)\
 PARAM(int,xsec,0)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
-PARAM(double,rmin,0)\
-PARAM(double,rmax,0)\
 
