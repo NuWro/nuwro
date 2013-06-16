@@ -146,6 +146,13 @@ user_params= 900 1600 100 // Ma_min Ma_max Ma_step
 #       3 - momentum dependent potential
 #       4 - Fermi gas with 
 
+
+  qel_rpa = 0    // Don't use rpa
+# qel_rpa = 1    // Use rpa without effective mass of nucleon
+# qel_rpa = 2    // Use effectove mass without rpa (test only)
+# qel_rpa = 3    // Use rpa with effective mass of nucleon (test only) 
+
+
 ################################################################
 #   RES
 ################################################################
@@ -219,14 +226,26 @@ nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and
 # nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
 
 
-kaskada_on 	 = 1 // use (1) or not (0) the cascade 
-# kaskada_debug 	 = 0  // print debug info for cascade 
-pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
+kaskada_on 	 = 1      // use (1) or not (0) the cascade 
 
-formation_zone = fz
-tau = 8.0
-first_step = 1
-step = 0.2 //length of one step in cascade
+kaskada_writeall = 0 // store all intermedate cascade particles in the event.all vector
+tau = 8.0            // 
+first_step = 1       // length of the ferst step in cascade 
+step = 0.2           // length of one step in cascade
 
 xsec = 1 //model of cross sections in cascade: 0 - metropolis, 1 - oset
 kaskada_w = 7
+
+  formation_zone = fz
+# formation_zone = nofz   //
+# formation_zone = fz     //
+# formation_zone = trans  //
+# formation_zone = skat8  //
+# formation_zone = cohl   //
+# formation_zone = cosyn  //
+# formation_zone = ranft  //
+# formation_zone = rl     //
+# formation_zone = delta  //
+
+pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
+

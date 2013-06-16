@@ -22,7 +22,6 @@ PARAM(int, beam_placement, 0)\
 PARAM(int, beam_test_only, 0)\
 PARAM(int, nucleus_p, 0)\
 PARAM(int, nucleus_n, 0)\
-PARAM(string,nucleus_density,"0") \
 PARAM(double,nucleus_E_b,0)\
 PARAM(double,nucleus_kf,0)\
 PARAM(int, nucleus_target,0)\

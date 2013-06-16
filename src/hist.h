@@ -36,7 +36,7 @@ public:
    // wykresu zale¿no¶ci warto¶ci przekroju czynnego od parametru
 
    
-   inline  void plot (const char* filename, double xunit, double yunit, double pol=0.5, char separator='\t');
+   inline  void plot (string filename, double xunit, double yunit, double pol=0.5, char separator='\t');
    // filename=nazwa pliku który zostanie utworzony.
    // parametr=1, 2 lub 3 numer parametru na osi x   
 
@@ -119,10 +119,10 @@ hist::hist (char *n, double minv, double maxv, int ile)
   }
   
 /////////////////////////////////////////////////////////////////////////////////////
-  void hist::plot (const char* filename, double xunit, double yunit, double pol, char separator)
+  void hist::plot (string filename, double xunit, double yunit, double pol, char separator)
 /////////////////////////////////////////////////////////////////////////////////////
   {
-    std::ofstream wyk (filename);
+    std::ofstream wyk (filename.c_str());
     plot (wyk, xunit, yunit, pol, separator);
   }
 

@@ -92,7 +92,7 @@ void NuWro :: refresh_dyn (params &par)
 
 geomy* NuWro::make_detector(params &p)
 {
-	if(p.beam_type!=2)
+	if(p.target_type!=2)
 		return NULL;
 		
 	if(p.geo_file.length())
@@ -540,16 +540,21 @@ void NuWro::test_events(params & p)
 
 		cout<<endl;
 		procesy.report();
-		ofstream totals ("totals.txt",ios::app);
+		procesy.set_weights_to_avg ();
+		string prefix;
+//		if(strlen(a.output)>5 && string(".root")==a.output[strlen(a.output)-5])
+			prefix="";
+//		else 
+//			prefix=a.output;
+		hq2.plot(prefix+"q2.txt",GeV2,1e-38*cm2/GeV2);
+		hq0.plot(prefix+"q0.txt",GeV,1e-38*cm2/GeV);
+		hqv.plot(prefix+"qv.txt",GeV,1e-38*cm2/GeV);
+		hT.plot(prefix+"T.txt",GeV,1e-38*cm2/GeV);
+		ofstream totals ((prefix+"totals.txt").c_str(),ios::app);
 		totals<<p.beam_energy;
 		for(int i=0;i<procesy.size();i++)
 			totals << ' '<<procesy.avg(i);
 		totals<<endl;
-		procesy.set_weights_to_avg ();
-		hq2.plot("q2.txt",GeV2,1e-38*cm2/GeV2);
-		hq0.plot("q0.txt",GeV,1e-38*cm2/GeV);
-		hqv.plot("qv.txt",GeV,1e-38*cm2/GeV);
-		hT.plot("T.txt",GeV,1e-38*cm2/GeV);
 	}
 }
 

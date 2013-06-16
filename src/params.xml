@@ -12,48 +12,52 @@
   <param name="number_of_test_events" type="text" ctype="int" default="1000000">
     <description>The number of events used to calculate the cross sections</description>
   </param>
-  <param name="save_test_events" type="checkbox" ctype="int" default="0">
+  <param name="save_test_events" type="select" ctype="int" default="0">
     <description>
-		0 - test events are not stored (default)
-		1 - test events are finalized and stored in weighted.eventsout.root
-			avg(weight)=total cross section
-		2 - test events of nonzero weight are finalized and stored in weighted.eventsout.root
-			avg(weight)=total cross section
-	</description>
+	0 - test events are not stored (default)
+	1 - test events are finalized and stored in weighted.eventsout.root
+		avg(weight)=total cross section
+	2 - test events of nonzero weight are finalized and stored in weighted.eventsout.root
+		avg(weight)=total cross section
+    </description>
+  <options>
+        <option key="0">0 - Make unweighted events - default</option>
+        <option key="1">1 - Make weighted events from all test events</option>
+        <option key="2">2 - Make weighted events from non-zero test events</option>
+  </options>
   </param>
-  <param name="user_events" type="select" ctype="int" default="0">
+  <param name="user_events" type="radio" ctype="int" default="0">
     <description>Enable axial mass analysis</description>
-		<options>
-		  <option key="0"><![CDATA[Normal nuwro run]]></option>
-		  <option key="1"><![CDATA[Fit axial mass to MiniBoone data]]></option>
-		</options>
+	<conditions>
+	  <condition value="0" description="Normal nuwro run"></condition>
+	  <condition value="1" description="Fit axial mass to MiniBoone data">
+          <param name="user_params" type="text" ctype="line" default="">
+		<description>Parameters  for the user defined analyser</description>
+	   </param>
+	  </condition>
+        </conditions>
   </param>
-  <param name="user_params" type="text" ctype="line" default="">
-    <description>Parameters  for the user defined analyser</description>
-  </param>
-  
   <param name="beam_type" type="radio" ctype="int" default="0">
     <description></description>
     <conditions>
-        <condition value="0" description="0"></condition>
-        <condition value="1" description="1">
+        <condition value="0" description="0">
           <param name="beam_energy" type="text" ctype="line" default="1000">
-            <description></description>
+            <description>beam particle energy in [MeV], (Monochromatics beam)</description>
           </param>
           <param name="beam_particle" type="text" ctype="int" default="14">
-            <description></description>
+            <description>PDG code of the beam particles</description>
           </param>
           <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
-            <description></description>
+            <description> x y z cordinates of the beam direction</description>
           </param>
         </condition>
-        <condition value="2" description="2">
+        <condition value="1" description="1">
           <param name="beam_content" type="text" ctype="line" default="">
             <description></description>
           </param>
           <paramclone name="beam_direction" />
         </condition>
-        <condition value="3" description="3">
+        <condition value="2" description="2">
           <param name="beam_folder" type="text" ctype="string" default="flux">
             <description></description>
           </param>
@@ -91,27 +95,17 @@
     <description></description>
     <conditions>
         <condition value="0" description="0">
-          <param name="nucleus_p" type="text" ctype="int" default="0">
-            <description></description>
+          <param name="nucleus_p" type="text" ctype="int" default="6">
+            <description><![CDATA[Number of protons]]></description>
           </param>
-          <param name="nucleus_n" type="text" ctype="int" default="0">
-            <description></description>
+          <param name="nucleus_n" type="text" ctype="int" default="6">
+            <description><![CDATA[Number of neutrons]]></description>
           </param>
-          <param name="nucleus_E_b" type="text" ctype="double" default="34">
-              <description></description>
-          </param>
-          <param name="nucleus_kf" type="text" ctype="double" default="220">
-              <description></description>
-          </param>
-          <param name="nucleus_target" type="text" ctype="int" default="2">
-              <description></description>
-          </param>
-		  <param name="nucleus_model" type="select" ctype="int" default="0">
-			<description><![CDATA[Models for the description of nucleus in the cascade]]></description>
-			<options>
-			  <option key="0"><![CDATA[constant density]]></option>
-			  <option key="1"><![CDATA[realistic density profile]]></option>
-			</options>
+		  <param name="nucleus_E_b" type="text" ctype="double" default="34">
+			<description><![CDATA[[MeV] binding energy]]></description>
+		  </param>
+		  <param name="nucleus_kf" type="text" ctype="double" default="220">
+			<description><![CDATA[[MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking]]></description>
 		  </param>
         </condition>
         <condition value="1" description="1">
@@ -120,7 +114,7 @@
           </param>
         </condition>
         <condition value="2" description="2">
-          <param name="geo_file" type="text" ctype="string" default="">
+          <param name="geo_file" type="text" ctype="string" default="target/ND280_v9r7p5.root">
               <description></description>
           </param>
           <param name="geo_name" type="text" ctype="string" default="ND280Geometry_v9r7p5">
@@ -143,26 +137,25 @@
         </condition>
     </conditions>
   </param>
-<!--  <param name="beam" type="select" default="ND280.txt">
-    <description>It is convenient to include one of the predefined beam specifications</description>
-    <options>
-      <option key="beam/ANL.txt">beam/ANL.txt</option>
-      <option key="beam/ND280.txt">beam/ND280.txt</option>
-      <option key="beam/nomad.txt">beam/nomad.txt</option>
-      <option key="beam/newMB.txt">beam/newMB.txt</option>
-    </options>
-  </param>
-  <param name="target" type="select" default="proton.txt">
-    <description>Target specification</description>
-    <options>
-      <option key="target/proton.txt">target/proton.txt</option>
-      <option key="target/C.txt">target/C.txt</option>
-      <option key="target/ND280_975.txt">target/ND280_975.txt</option>
-      <option key="target/neutron.txt">target/neutron.txt</option>
-      <option key="target/CH2.txt">target/CH2.txt</option>
-    </options>
-  </param>
--->
+	  <param name="nucleus_target" type="select" ctype="int" default="2">
+		<description><![CDATA[Models for the description of nucleus as a target]]></description>
+		<options>
+		  <option key="0"><![CDATA[free target]]></option>
+		  <option key="1"><![CDATA[Fermi gas]]></option>
+		  <option key="2"><![CDATA[local Fermi gas]]></option>
+		  <option key="3"><![CDATA[Bodek-Ritchie]]></option>
+		  <option key="4"><![CDATA["effective" spectral function (carbon or oxygen)]]></option>
+		  <option key="5"><![CDATA[deuterium]]></option>
+		  <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
+		</options>
+	  </param>
+		  <param name="nucleus_model" type="select" ctype="int" default="0">
+			<description><![CDATA[Models for the description of nucleus in the cascade]]></description>
+			<options>
+			  <option key="0"><![CDATA[constant density]]></option>
+			  <option key="1"><![CDATA[realistic density profile]]></option>
+			</options>
+		  </param>
   <param name="dyn_qel_cc" type="checkbox" ctype="bool" default="1">
     <description>Quasi elastic charged current</description>
   </param>
@@ -207,7 +200,7 @@
   <param name="qel_axial_ff_set" type="select" ctype="int" default="1">
     <description></description>
     <options>
-      <option key="1"><![CDATA[dipole]]></option>
+      <option key="1"><![CDATA[dipole]]>Axial forma factors</option>
       <option key="2"><![CDATA[2-fold parabolic modification of axial FF]]></option>
       <option key="3"><![CDATA[3-fold parabolic modification of axial FF]]></option>
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
@@ -218,20 +211,21 @@
     <options>
       <option key="0"><![CDATA[disabled]]></option>
       <option key="1"><![CDATA[enabled RPA only]]></option>
-      <option key="2"><![CDATA[enabled RPA and effective mass]]></option>
+      <option key="2"><![CDATA[enabled effective mass only]]></option>
+      <option key="3"><![CDATA[enabled RPA and effective mass]]></option>
     </options>
   </param>
   <param name="qel_strange" type="text" ctype="int" default="0">
     <description>use the strangenes in the axial ff</description>
   </param>
   <param name="qel_strangeEM" type="text" ctype="int" default="0">
-    <description>dont use the strangenes in the vector ff</description>
+    <description><![CDATA[[MeV]dont use the strangenes in the vector ff</description>
   </param>
   <param name="delta_s" type="text" ctype="double" default="-0.15">
-    <description></description>
+    <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
   </param>
   <param name="qel_cc_vector_mass" type="text" ctype="double" default="840">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[[MeV] vector mass]]></description>
   </param>
   <param name="qel_cc_axial_mass" type="text" ctype="double" default="1200">
     <description><![CDATA[[MeV] axial mass]]></description>
@@ -284,7 +278,7 @@
     <description><![CDATA[Rein Sehgal correction to CC coherent single pion production]]></description>
   </param>
   <param name="coh_new" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[Use new, faster implementation of coherent events by CJ]]></description>
   </param>
   <param name="mec_kind" type="select" ctype="int" default="1">
     <description><![CDATA[]]></description>
@@ -300,82 +294,62 @@
   <param name="mec_ratio_ppp" type="text" ctype="double" default="0.8">
     <description><![CDATA[]]></description>
   </param>
-<!--  
-  
-  <param name="nucleus_density" type="text" default="1">
-    <description><![CDATA[options below are kept only for historical reasons]]></description>
-  </param>
-  <param name="nucleus_E_b" type="text" default="34">
-    <description><![CDATA[[MeV] binding energy]]></description>
-  </param>
-  <param name="nucleus_kf" type="text" default="220">
-    <description><![CDATA[[MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking]]></description>
-  </param>
-  -->
-  <!--
-  <param name="nucleus_target" type="select" ctype="int" default="0">
-    <description><![CDATA[Models for the description of nucleus as a target]]></description>
-    <options>
-      <option key="0"><![CDATA[free target]]></option>
-      <option key="1"><![CDATA[Fermi gas]]></option>
-      <option key="2"><![CDATA[local Fermi gas]]></option>
-      <option key="3"><![CDATA[Bodek-Ritchie]]></option>
-      <option key="4"><![CDATA["effective" spectral function (carbon or oxygen)]]></option>
-      <option key="5"><![CDATA[deuterium]]></option>
-      <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
-    </options>
-  </param>
-  -->
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
   <param name="kaskada_newangle" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[new implementation in cascade]]></description>
+  </param>
+  <param name="kaskada_w" type="text" ctype="double" default="7">
+    <description><![CDATA[[MeV] work function]]></description>
   </param>
   <param name="kaskada_redo" type="checkbox" ctype="bool" default="0">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[Only recalculate FSI for an existing eventsout.root]]></description>
   </param>
-<!--  
-  <param name="kaskada_debug" type="bool" ctype="bool" default="0">
-    <description><![CDATA[print debug info for cascade]]></description>
-  </param>
-  -->
   <param name="kaskada_writeall" type="checkbox" ctype="bool" default="0">
-    <description><![CDATA[print debug info for cascade]]></description>
+    <description><![CDATA[Store all intermediate FSI particles int the event::all vector]]></description>
   </param> 
-  <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
-  </param>
-  <param name="formation_zone" type="text" ctype="string" default="cosyn">
-    <description><![CDATA[]]></description>
+  <param name="formation_zone" type="select" ctype="string" default="fz">
+    <description><![CDATA[Name of formation zone model]]></description>
+    <options>
+      <option key="fz"><![CDATA[fz - ]]></option>
+      <option key="trans"><![CDATA[trans - ]]></option>		
+      <option key="skat8"><![CDATA[skat8 - ]]></option>		
+      <option key="cohl"><![CDATA[cohl - ]]></option>		
+      <option key="cosyn"><![CDATA[cosyn - ]]></option>		
+      <option key="ranft"><![CDATA[tranft - ]]></option>		
+      <option key="rl"><![CDATA[rl - ]]></option>		
+      <option key="delta"><![CDATA[delta - ]]></option>		
+      <option key="nofz"><![CDATA[nofz - ]]></option>		
+    </options>
   </param>
   <param name="tau" type="text" ctype="double" default="0">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[parametr in the ranft fz model]]></description>
   </param>
   <param name="first_step" type="text" ctype="bool" default="1">
-    <description><![CDATA[]]></description>
+    <description><![CDATA[[fm] length of the first step in cascade standalone run]]></description>
   </param>
   <param name="step" type="text" ctype="double" default="0.2">
-    <description><![CDATA[length of one step in cascade]]></description>
+    <description><![CDATA[[fm] length of one step in cascade]]></description>
   </param>
-  <param name="xsec" type="text" ctype="int" default="0" >
+  <param name="xsec" type="select" ctype="int" default="0" >
     <description><![CDATA[model of cross sections in cascade]]></description>
     <options>
       <option key="0"><![CDATA[metropolis]]></option>
       <option key="1"><![CDATA[oset]]></option>
     </options>
   </param>
-  <param name="kaskada_w" type="text" ctype="double" default="7">
-    <description><![CDATA[work function [MeV]]]></description>
+  <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
   </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
-    <description></description>
+    <description><![CDATA[random order of events in uotut file]]></description>
   </param>
   <param name="rmin" type="text" ctype="double" default="0">
-    <description></description>
+    <description><![CDATA[]]></description>
   </param>
   <param name="rmax" type="text" ctype="double" default="0">
-    <description></description>
+    <description><![CDATA[]]></description>
   </param>
   
 </params>
