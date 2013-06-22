@@ -216,10 +216,10 @@
     </options>
   </param>
   <param name="qel_strange" type="text" ctype="int" default="0">
-    <description>use the strangenes in the axial ff</description>
+    <description><![CDATA[use the strangenes in the axial ff]]></description>
   </param>
   <param name="qel_strangeEM" type="text" ctype="int" default="0">
-    <description><![CDATA[[MeV]dont use the strangenes in the vector ff</description>
+    <description><![CDATA[[MeV]dont use the strangenes in the vector ff]]></description>
   </param>
   <param name="delta_s" type="text" ctype="double" default="-0.15">
     <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
@@ -237,7 +237,7 @@
     <description><![CDATA[[MeV] axial mass used in the strange dipole ff]]></description>
   </param>
   <param name="flux_correction" type="checkbox" ctype="bool" default="1">
-    <description>no flux correction</description>
+    <description><![CDATA[no flux correction]]></description>
   </param>
   <param name="sf_method" type="select" ctype="int" default="0">
     <description><![CDATA[For certain nuclei (C12, O16, Ar40, Ca40, Fe56) it is possible to use the spectral function model instead of the Fermi gas model in the quasi ellastic events. For other nuclei the parameter is ignored.]]></description>
