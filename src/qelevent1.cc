@@ -202,8 +202,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 			case 1:
 			case 3:
 			case 5:
-				rpa::configure(e.in[0].t, e.in[0].pdg, t.kF(),t.Mf());
-				e.weight*=rpa::ratio_rpa_fg(p.qel_rpa, e.q0(), e.qv());
+				rpa::configure(e.in[0].t-_E_bind, e.in[0].pdg, t.kF(),t.Mf());
+				e.weight*=rpa::ratio_rpa_fg(p.qel_rpa, e.q0()-_E_bind, e.qv());
 				break;
 		} 
 
