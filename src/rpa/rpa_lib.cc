@@ -398,7 +398,7 @@ namespace rpa
 						   // znak = 1 - particle 
 						   // znak =-1 - antiparticle
 	double m=m_mu;         // changed by configure
-	double mm2 = m*m;      // changed by configure
+	double mm = m*m;       // changed by configure
 	bool use_rpa = true;   // changed by configure
 	double Mef;            // changed by configure
 	double Mef2;           // changed by configure      
@@ -411,38 +411,32 @@ namespace rpa
 	int l(1), t(1);
 	
 	 
-	double Ming(double a,double b)
-	{ 
-		return (a<b ? a : b); 
-	}
-
-	double Maxg(double a, double b, double c)
+	double max3(double a, double b, double c)
 	{  
-		double x = (a>b ? a : b); 
-		return (x > c ? x : c) ;
+		return max(a,max(b,c));
 	}
 
 				
 	double qMin(double q0)
 	{      
-		if( ((En-q0)*(En-q0)-mm2) <= 0 ) 
+		if( ((En-q0)*(En-q0)-mm) <= 0 ) 
 			return 0;  
 		else
-			return sqrt(2*En*En-2*En*q0+q0*q0-mm2-2*En*sqrt((En-q0)*(En-q0)-mm2 ));
+			return sqrt(2*En*En-2*En*q0+q0*q0-mm-2*En*sqrt((En-q0)*(En-q0)-mm ));
 			
 	}
 
 	double qMax(double q0)
 	{
-		if((En-q0)*(En-q0)-mm2 <= 0 ) 
+		if((En-q0)*(En-q0)-mm <= 0 ) 
 			return 0;	  
 		else
-			return sqrt(2*En*En - 2*En*q0 + q0*q0 - mm2 + 2*En*sqrt((En-q0)*(En-q0)-mm2 ));
+			return sqrt(2*En*En - 2*En*q0 + q0*q0 - mm + 2*En*sqrt((En-q0)*(En-q0)-mm ));
 	}
 
 	double qMin2(double q0)
 	{
-		return 2*En*En - 2*En*q0 + q0*q0 - mm2 - 2*En*sqrt((En-q0)*(En-q0)-mm2 );
+		return 2*En*En - 2*En*q0 + q0*q0 - mm - 2*En*sqrt((En-q0)*(En-q0)-mm );
 	}
 
 
@@ -471,6 +465,8 @@ namespace rpa
 
 		double LAMBDA =(log(czynnik1 ) + log(czynnik2)  )/2/stal; 
 
+
+
 		double nawias_ReHs = kf*Ef - (3*Mef2 - q2/2)*log((kf+Ef)/Mef) - q0*(4*Mef2-q2)*alfa/8/qv + 
 									Ef*(4*Mef2-q2)*beta/4/qv +(4*Mef2-q2)*(4*Mef2-q2)*LAMBDA/4; 
 		double ReHs= lambda_l*nawias_ReHs /2/Pi/Pi;
@@ -486,7 +482,7 @@ namespace rpa
 		double ReH0=(qv*kf + q0*Ef*alfa/2 -(q2/8 + Ef2/2 + qv2*Mef2/(2*q2))*beta)* lambda_l*Mef/(2*Pi*Pi*qv);
 
 
-		double E_=Ming(Ef, Maxg( Mef , Ef - q0, 0.5*(- q0+qv * sqrt(1-4*Mef2/q2 ))));                     
+		double E_=min(Ef, max3( Mef , Ef - q0, 0.5*(- q0+qv * sqrt(1-4*Mef2/q2 ))));                     
 		double E1= Ef - E_; 
 		double E2=(Ef*Ef -E_*E_)/2;
 		double E3=(Ef*Ef*Ef -E_*E_*E_)/3; 
@@ -532,12 +528,12 @@ namespace rpa
 		double MV2=0.71*GeV*GeV;
 //		double G_E= 1/( pow((1-q2/MV2),2) ); 
 //		double G_M=G_E*magneton ;       
-#ifndef RPA_MAIN		
+#ifdef RPA_MAIN		
 		double F_1_= F_1(-q2,kFF);//(q2*G_M - 4*M12_2*G_E )/(q2 - 4*M12_2) ;
 		double F_2_= F_2(-q2,kFF);//4*M12_2*( G_M - G_E )/(4*M12_2 - q2);    
 		double G_A_= G_A(-q2,kFF); //-1.26/(pow(1-q2/(MA*MA),2));                 
 #else
-		params p;
+//		params p;
 		ff_configure(p);
 		double F_1_,F_2_,G_A_,F_P_;
 		list(F_1_,F_2_)=f12(q2,0); // 0-cc, 1-nc proton, 2-nc neutron  
@@ -627,17 +623,17 @@ namespace rpa
 
 		R_VA[0]=(F_1_+Mef/M*F_2_)*G_A_*Im_H_va;
 		
-		R_VA[1]=R_VA[0] +poprawka_va;
+		R_VA[1]=R_VA[0] +poprawka_va/2.0;   /// UWAGA TUTAJ BYL BLAD, TRZEBA PODZIELIC PRZEZ 2!
 
+		
+		double L_L=-(16*En*(En-q0)-4*(mm-q2))*q2/qv2 - 4*mm*q0*(4*En - q0 + q0*mm/q2 )/qv2;
 
-		double L_L=-(16*En*(En-q0)-4*(mm2-q2))*q2/qv2 - 4*mm2*q0*(4*En - q0 + q0*mm2/q2 )/qv2;
+		double L_T=-(16*En*(En-q0)-4*(mm-q2))*q2/qv2 
+					- 4*mm*(4*En*q0- (q0*q0-qv*qv) + mm)/qv2 - 8*(q2-mm);
 
-		double L_T=-(16*En*(En-q0)-4*(mm2-q2))*q2/qv2 
-					- 4*mm2*(4*En*q0- (q0*q0-qv*qv) + mm2)/qv2 - 8*(q2-mm2);
+		double L_A=8*(q2-mm);
 
-		double L_A=8*(q2-mm2);
-
-		double L_VA=-16*(q2*(2*En-q0) + q0*mm2)/qv;
+		double L_VA=-16*(q2*(2*En-q0) + q0*mm)/qv;
 
 
 		double amplituda[2];
@@ -648,10 +644,10 @@ namespace rpa
 		  cerr<<"amplituda zla( E="<< En/GeV 
 			  <<", q0 = "<< q0/GeV<<", Q2 = " 
 			  << (qv*qv-q0*q0)/GeV/GeV 
-			  << ", (En-q0)*(En-q0)-mm2 = " << 
-		  ((En-q0)*(En-q0)-mm2)/GeV/GeV<<") mm="<<mm2<<endl; 
+			  << ", (En-q0)*(En-q0)-mm = " << 
+		  ((En-q0)*(En-q0)-mm)/GeV/GeV<<") mm="<<mm<<endl;
 */		 if(!ratio)
-		  return max(-amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2,0.);
+		  return 2*max(-amplituda[use_rpa]*stala*stala * qv /(16 * Pi * Pi * (kf*kf*kf/3/Pi/Pi)  * En * En)/cm2,0.);
 		 else
 		  return amplituda[0]>0 ? min(amplituda[1]/amplituda[0],10.0) :1;
 	}
@@ -659,7 +655,7 @@ namespace rpa
 	double sigma_q0( double q0)
 	{ 
 
-		if( (En-q0)*(En-q0)-mm2 < 0 )
+		if( (En-q0)*(En-q0)-mm < 0 )
 		{ 
 			return 0; cerr<<"amplituda nie liczona"<<endl;
 		}
@@ -687,7 +683,7 @@ namespace rpa
 		  	case 16:case -16: m=m_tau;break;
 		  	default: m=0;break;
 	    }
-		mm2=m*m;
+		mm=m*m;
 	}   
 	
 
@@ -700,7 +696,7 @@ namespace rpa
 	double sigma_q2(double q2)
 	{   
 		double q01 =0;
-		double q02 = En - (q2+mm2)/4/En - En*mm2/(q2+mm2);
+		double q02 = En - (q2+mm)/4/En - En*mm/(q2+mm);
 		return calg5a(fix2(sigma_q0_q2,q2),min(q01,q02),max(q01,q02),100);
 	}    
 
@@ -860,10 +856,11 @@ int main()
 	
     for(int i=1;i<2;i++)
 	{    
-		for(double Enu=0.2*GeV;Enu<=5*GeV;Enu+=0.2*GeV)
+//		for(double Enu=0.2*GeV;Enu<=5*GeV;Enu+=0.2*GeV)
+		for(double Enu=1*GeV;Enu<=1*GeV;Enu+=0.2*GeV)
 		{
 			int kNucleus=Atoms[i];
-			double kf=mean_kf(kNucleus);
+			double kf=225;//mean_kf(kNucleus);
 			int nu=14;
 			
 			cout<<"Nucleus= "<<nazwa_jadra(kNucleus)<<endl;
@@ -878,17 +875,15 @@ int main()
 				use_rpa=i&1;
 				bool use_mf0=i&2;
 
-//				plot_sigma_q0(Enu,100,kNucleus , nu , use_mf0, BBA, kf );
-//				plot_sigma_q0(Enu,100,kNucleus , -nu , use_mf0, BBA, kf );
-//				plot_sigma_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
-//				plot_sigma_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
+				plot_sigma_q0(Enu,100,kNucleus , nu , use_mf0, BBA, kf );
+				plot_sigma_q0(Enu,100,kNucleus , -nu , use_mf0, BBA, kf );
+				plot_sigma_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
+				plot_sigma_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
 				if(use_rpa)
 				{
 					plot_ratio_q2(Enu,100,kNucleus, nu, use_mf0, BBA,kf);
 					plot_ratio_q2(Enu,100,kNucleus, -nu, use_mf0, BBA,kf);
 				}
-//				En=Enu;
-//				cout<<sigma()<<endl;
 			}
 		}
 	}

@@ -234,7 +234,7 @@ namespace rpa
 
 		R_VA[0]=(F_1_+Mef/M*F_2_)*G_A_*Im_H_va;
 		
-		R_VA[1]=R_VA[0] +poprawka_va;
+		R_VA[1]=R_VA[0] +poprawka_va/2.0;   /// UWAGA TUTAJ BYL BLAD, TRZEBA PODZIELIC PRZEZ 2!
 
 
 		double L_L=-(16*En*(En-q0)-4*(mm-q2))*q2/qv2 - 4*mm*q0*(4*En - q0 + q0*mm/q2 )/qv2;
