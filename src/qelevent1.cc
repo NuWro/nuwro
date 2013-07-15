@@ -37,6 +37,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     particle N0=e.in[1];		           // initial nucleon
     particle lepton;  
     particle N1;
+    N1.r=N0.r;
+    lepton.r=N0.r;
     int kind=0; // 0 - cc //  1 - nc proton // 2 - nc neutron
     if(nc)
     {
@@ -182,7 +184,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	} 
 
 
-    switch(p.qel_rpa) 
+	switch(p.qel_rpa) 
 	{
 		 case 2:
 		 case 3:
@@ -211,6 +213,5 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		if(t.pauli_blocking_old (N1, N0.length() ) ) 
 			e.weight = 0;
 		
-		
-    return e.weight*cm2;
+	return e.weight*cm2;
 }

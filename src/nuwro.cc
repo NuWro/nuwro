@@ -407,7 +407,14 @@ void NuWro::finishevent(event* e, params &p)
 	//e->nr=nucleuss->Nr(); 	// 2. powoduje break, segmentation fault
 
 								 // copy particle from out to post if coherent interaction
-	if (e->flag.coh && p.kaskada_on)
+	
+	if ( p.kaskada_on and !e->flag.coh )
+	{
+		kaskada k(p, *e);
+		k.kaskadaevent();		 // runs only if p.kaskada_on is true
+	}
+	
+	if(e->post.size()==0)   // copy out to post if no fsi
 	{
 		for (int j = 0; j<e->out.size(); j++)
 		{
@@ -416,11 +423,6 @@ void NuWro::finishevent(event* e, params &p)
 			registration(e->all,p);
 			e->post.push_back(p);
 		}
-	}
-	else
-	{
-		kaskada k(p, *e);
-		k.kaskadaevent();		 // runs only if p.kaskada_on is true
 	}
 }								 //end of finishevent
 
