@@ -559,18 +559,11 @@ double Meff2=Meff*Meff;
 	
 }//end of W>1210 &&  !fromdis==0
 
-
-      /*if (p.pauli_blocking)
-	{
-	  for (int i = 1; i < e.out.size (); i++)
-	    if (((e.out[i].pdg == 2112) || (e.out[i].pdg == 2212))
-		&& jadro.pauli_blocking (e.out[i]))
-	      {
-		e.weight = 0;
-	      }
-	}*/
-    }
+ }
 // E above threshold
+	for(int j=0;j<e.out.size();j++)
+		e.out[j].r=e.in[1].r;
+
 }
 
 //the end of main

@@ -14,17 +14,6 @@
 ////////////////////////////////////////////////////////////////////////////////////
 //      Pauli blocking
 /////////////////////////////////////////////////////////////////////////////////
-void
-mypauli_qel (event & e, nucleus & t)
-{
-  for (int i = 1; i < e.out.size (); i++)
-    {
-       if( t.pauli_blocking_old (e.out[i], e.in[1].length() ) )
-  	 { e.weight = 0;
-	   return;
-	 }
-    }
-}
 
 void
 mypauli_spp (event & e, nucleus & t)
@@ -41,8 +30,6 @@ mypauli_spp (event & e, nucleus & t)
 	}
     }
 }
-
-
 
 //      End Pauli blocking
 /////////////////////////////////////////////////////////////////////////////////////

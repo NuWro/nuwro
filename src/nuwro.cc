@@ -346,7 +346,10 @@ void NuWro::makeevent(event* e, params &p)
 					default:mecevent_tem (p, *e, *nucleuss, true);break; 
 				}
 				for(int i=0;i<e->out.size();i++)
+				{	
+					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
+				}
 			}
 			break;
 		case 9: 
@@ -362,7 +365,10 @@ void NuWro::makeevent(event* e, params &p)
 					default: mecevent_tem (p, *e, *nucleuss, false);break; 
 				}
 				for(int i=0;i<e->out.size();i++)
+				{      
+					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
+				}
 			}
 			break;
 	}
@@ -371,12 +377,12 @@ void NuWro::makeevent(event* e, params &p)
 	if (e->weight == 0)
 	{
 		e->out.clear ();
-								 //po co to wpisywanie ???
-		e->out.push_back (e->in[0]);
+								
+		e->out.push_back (e->in[0]);    
 		e->out.push_back (e->in[1]);
 	}
 	//      e->check();
-}								 // end of makeevent
+}	// end of makeevent
 
 
 void NuWro::finishevent(event* e, params &p)
@@ -393,8 +399,6 @@ void NuWro::finishevent(event* e, params &p)
 	}
 	if(p.beam_test_only)
 		return;
-	for(int j=0;j<e->out.size();j++)
-		e->out[j].r=e->in[1].r;
 
 	for(int j=0;j<e->in.size();j++)
 	{

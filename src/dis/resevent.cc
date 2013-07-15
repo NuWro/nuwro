@@ -449,16 +449,9 @@ resevent (params & p, event & e, bool cc)
 //cout<<"delta  "<<W<<"  "<<sqrt((finpion+finnuk)*(finpion+finnuk))<<endl;
 	}
 
-     /* if (p.pauli_blocking)
-	{
-	  for (int i = 0; i < e.out.size (); i++)
-	    if (((e.out[i].pdg == 2112) || (e.out[i].pdg == 2212))
-		&& jadro.pauli_blocking (e.out[i]))
-	      {
-		e.weight = 0;
-	      }
-	}*/
 
     }
+	for(int j=0;j<e.out.size();j++)
+		e.out[j].r=e.in[1].r;
 
 }
