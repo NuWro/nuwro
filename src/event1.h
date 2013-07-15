@@ -31,6 +31,7 @@ public:
   flags flag;
   params par;
     vector < particle > in;    ///< incoming particles
+    vector < particle >&in_;   ///< incoming particles alias (for compatibility with python)
     vector < particle > temp;  ///< temporary particles (daughters of primary vertex)
     vector < particle > out;   ///< outgoing particles
     vector < particle > post;  ///< results of the kaskadaevent
@@ -339,7 +340,7 @@ int f ()
   }
 	
 public:
-  event ():weight(0),norm(1)
+  event ():weight(0),norm(1),in_(in)
   {
   }
   
