@@ -1,6 +1,3 @@
-#ifndef _mecdynamics2_h_
-#define _mecdynamics2_h_
-
 #include <math.h>
 #include <iostream>
 #include <fstream>
@@ -1534,9 +1531,12 @@ double H03ND(double w, double q)
 }
 
 
-double L12(double E, double w, double q)
+double L12(double E, double w, double q, bool nu)
 {
+  if (nu)
 	return 16/q*(-mecm2*E+2*E*(E-w)*(2*E-w)*SSS2(E,w,q));
+  else
+    return -16/q*(-mecm2*E+2*E*(E-w)*(2*E-w)*SSS2(E,w,q));
 }
 
 
@@ -1583,7 +1583,7 @@ double H11ND(double w, double q)
 }
 
 
-double trejsy_NN_qel_c (double E, double w, double q, bool RPA)
+double trejsy_NN_qel_c (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nc(w,q)+
 		L33(E,w,q)*H33Nc(w,q)+
@@ -1591,7 +1591,7 @@ double trejsy_NN_qel_c (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_qel_l (double E, double w, double q, bool RPA)
+double trejsy_NN_qel_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
@@ -1599,7 +1599,7 @@ double trejsy_NN_qel_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_D_l (double E, double w, double q, bool RPA)
+double trejsy_NN_D_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
@@ -1607,7 +1607,7 @@ double trejsy_NN_D_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_pion_l (double E, double w, double q, bool RPA)
+double trejsy_NN_pion_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
@@ -1615,7 +1615,7 @@ double trejsy_NN_pion_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_NN_l (double E, double w, double q, bool RPA)
+double trejsy_NN_NN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
@@ -1623,7 +1623,7 @@ double trejsy_NN_NN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_NNN_l (double E, double w, double q, bool RPA)
+double trejsy_NN_NNN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
@@ -1631,7 +1631,7 @@ double trejsy_NN_NNN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_DD_qel_l (double E, double w, double q, bool RPA)
+double trejsy_DD_qel_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
@@ -1639,7 +1639,7 @@ double trejsy_DD_qel_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_DD_D_l (double E, double w, double q, bool RPA)
+double trejsy_DD_D_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
@@ -1647,7 +1647,7 @@ double trejsy_DD_D_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_DD_pion_l (double E, double w, double q, bool RPA)
+double trejsy_DD_pion_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
@@ -1655,7 +1655,7 @@ double trejsy_DD_pion_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_DD_NN_l (double E, double w, double q, bool RPA)
+double trejsy_DD_NN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
@@ -1663,7 +1663,7 @@ double trejsy_DD_NN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_DD_NNN_l (double E, double w, double q, bool RPA)
+double trejsy_DD_NNN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
@@ -1671,7 +1671,7 @@ double trejsy_DD_NNN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_ND_qel_l (double E, double w, double q, bool RPA)
+double trejsy_ND_qel_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1680,7 +1680,7 @@ double trejsy_ND_qel_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_ND_D_l (double E, double w, double q, bool RPA)
+double trejsy_ND_D_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1689,7 +1689,7 @@ double trejsy_ND_D_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_ND_pion_l (double E, double w, double q, bool RPA)
+double trejsy_ND_pion_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1698,7 +1698,7 @@ double trejsy_ND_pion_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_ND_NN_l (double E, double w, double q, bool RPA)
+double trejsy_ND_NN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1707,7 +1707,7 @@ double trejsy_ND_NN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_ND_NNN_l (double E, double w, double q, bool RPA)
+double trejsy_ND_NNN_l (double E, double w, double q, bool RPA, bool nu)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1716,132 +1716,132 @@ double trejsy_ND_NNN_l (double E, double w, double q, bool RPA)
 }
 
 
-double trejsy_NN_qel_t (double E, double w, double q, bool RPA)
+double trejsy_NN_qel_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12Nt(w,q)+
+	return (L12(E,w,q,nu)*H12Nt(w,q)+
 		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_qel_t(w,q,RPA);
 }
 
 
-double trejsy_NN_D_t (double E, double w, double q, bool RPA)
+double trejsy_NN_D_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12Nt(w,q)+
+	return (L12(E,w,q,nu)*H12Nt(w,q)+
 		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_D_t(w,q,RPA);
 }
 
 
-double trejsy_NN_pion_t (double E, double w, double q, bool RPA)
+double trejsy_NN_pion_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12Nt(w,q)+
+	return (L12(E,w,q, nu)*H12Nt(w,q)+
 		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_pion_t(w,q,RPA);
 }
 
 
-double trejsy_NN_NN_t (double E, double w, double q, bool RPA)
+double trejsy_NN_NN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12Nt(w,q)+
+	return (L12(E,w,q, nu)*H12Nt(w,q)+
 		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NN_t(w,q,RPA);
 }
 
 
-double trejsy_NN_NNN_t (double E, double w, double q, bool RPA)
+double trejsy_NN_NNN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12Nt(w,q)+
+	return (L12(E,w,q, nu)*H12Nt(w,q)+
 		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NNN_t(w,q,RPA);
 }
 
 
-double trejsy_DD_qel_t (double E, double w, double q, bool RPA)
+double trejsy_DD_qel_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12D(w,q)+
+	return (L12(E,w,q, nu)*H12D(w,q)+
 		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_qel_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_D_t (double E, double w, double q, bool RPA)
+double trejsy_DD_D_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12D(w,q)+
+	return (L12(E,w,q, nu)*H12D(w,q)+
 		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_D_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_pion_t (double E, double w, double q, bool RPA)
+double trejsy_DD_pion_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12D(w,q)+
+	return (L12(E,w,q, nu)*H12D(w,q)+
 		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_pion_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NN_t (double E, double w, double q, bool RPA)
+double trejsy_DD_NN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12D(w,q)+
+	return (L12(E,w,q, nu)*H12D(w,q)+
 		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NNN_t (double E, double w, double q, bool RPA)
+double trejsy_DD_NNN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12D(w,q)+
+	return (L12(E,w,q, nu)*H12D(w,q)+
 		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NNN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_ND_qel_t (double E, double w, double q, bool RPA)
+double trejsy_ND_qel_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12ND(w,q)+
+	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
 		Pi_ND_qel_t(w,q,RPA);
 }
 
 
-double trejsy_ND_D_t (double E, double w, double q, bool RPA)
+double trejsy_ND_D_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12ND(w,q)+
+	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
 		Pi_ND_D_t(w,q,RPA);
 }
 
 
-double trejsy_ND_pion_t (double E, double w, double q, bool RPA)
+double trejsy_ND_pion_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12ND(w,q)+
+	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
 		Pi_ND_pion_t(w,q,RPA);
 }
 
 
-double trejsy_ND_NN_t (double E, double w, double q, bool RPA)
+double trejsy_ND_NN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12ND(w,q)+
+	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
 		Pi_ND_NN_t(w,q,RPA);
 }
 
 
-double trejsy_ND_NNN_t (double E, double w, double q, bool RPA)
+double trejsy_ND_NNN_t (double E, double w, double q, bool RPA, bool nu)
 {
-	return (L12(E,w,q)*H12ND(w,q)+
+	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
 		Pi_ND_NNN_t(w,q,RPA);
 }
 
 
-double rozn_NN (double q, double w, double E, bool RPA)
+double rozn_NN (double q, double w, double E, bool RPA, bool nu)
 {
 	return mecstala*(-mecVol/Pi)*q/Pi/32/E/E*
-		(trejsy_NN_NN_l(E,w,q,RPA)+trejsy_NN_NN_t(E,w,q,RPA)+
-		trejsy_DD_NN_l(E,w,q,RPA)+trejsy_DD_NN_t(E,w,q,RPA)+
-		2*trejsy_ND_NN_l(E,w,q,RPA)+2*trejsy_ND_NN_t(E,w,q,RPA)
+		(trejsy_NN_NN_l(E,w,q,RPA,nu)+trejsy_NN_NN_t(E,w,q,RPA,nu)+
+		trejsy_DD_NN_l(E,w,q,RPA,nu)+trejsy_DD_NN_t(E,w,q,RPA,nu)+
+		2*trejsy_ND_NN_l(E,w,q,RPA,nu)+2*trejsy_ND_NN_t(E,w,q,RPA,nu)
 		);
 }
 
 
-double rozn_NNN (double q, double w, double E, bool RPA)
+double rozn_NNN (double q, double w, double E, bool RPA, bool nu)
 {
 	return mecstala*(-mecVol/Pi)*q/Pi/32/E/E*
-		(trejsy_NN_NNN_l(E,w,q,RPA)+trejsy_NN_NNN_t(E,w,q,RPA)+
-		trejsy_DD_NNN_l(E,w,q,RPA)+trejsy_DD_NNN_t(E,w,q,RPA)+
-		2*trejsy_ND_NNN_l(E,w,q,RPA)+2*trejsy_ND_NNN_t(E,w,q,RPA)
+		(trejsy_NN_NNN_l(E,w,q,RPA,nu)+trejsy_NN_NNN_t(E,w,q,RPA,nu)+
+		trejsy_DD_NNN_l(E,w,q,RPA,nu)+trejsy_DD_NNN_t(E,w,q,RPA,nu)+
+		2*trejsy_ND_NNN_l(E,w,q,RPA,nu)+2*trejsy_ND_NNN_t(E,w,q,RPA,nu)
 		);
 }
 
@@ -1904,9 +1904,9 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 		length1= sqrt(mecM2 + N1.norm2());
 		length2= sqrt(mecM2 + N2.norm2());
 
-		N11=vect(N1, length1-mecEf+mecM);
-								 //Fermi energy is subtracted
-		N22=vect(N2, length2-mecEf+mecM);
+		N11=vect(N1, length1+mecM);
+								 //Fermi energy is not subtracted
+		N22=vect(N2, length2+mecM);
 
 		vect sum=N11+N22;
 
@@ -1932,7 +1932,7 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 
 	nuc11.boost2(-trans);
 	nuc22.boost2(-trans);		 //nucleons in the LAB frame
-
+/*
 	if (!fsi)
 	{
 		spowalniacz(Bin,nuc11);
@@ -1944,7 +1944,7 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 		spowalniacz(-poten,nuc11);
 		spowalniacz(-poten,nuc22);
 	}
-
+*/
 	vec nucmom1 = vec (nuc11);
 	vec nucmom2 = vec (nuc22);
 	//cout<<"ped_x="<<cohleptonmom_x<<"   wynik="<<endl;
@@ -1999,10 +1999,10 @@ bool fsi, double poten)
 		length2= sqrt(mecM2 + N2.norm2());
 		length3= sqrt(mecM2 + N3.norm2());
 
-		N11=vect(N1, length1-mecEf+mecM);
-								 //Fermi energy is subtracted
-		N22=vect(N2, length2-mecEf+mecM);
-		N33=vect(N3, length3-mecEf+mecM);
+		N11=vect(N1, length1+mecM);
+								 //Fermi energy is NOT subtracted
+		N22=vect(N2, length2+mecM);
+		N33=vect(N3, length3+mecM);
 
 		vect sum=N11+N22+N33;
 
@@ -2024,7 +2024,7 @@ bool fsi, double poten)
 	nuc11.boost2(-trans);
 	nuc22.boost2(-trans);		 //nucleons in the LAB frame
 	nuc33.boost2(-trans);
-
+/*
 	if (!fsi)
 	{
 		spowalniacz(Bin,nuc11);
@@ -2038,7 +2038,7 @@ bool fsi, double poten)
 		spowalniacz(-poten,nuc22);
 		spowalniacz(-poten,nuc33);
 	}
-
+*/
 	vec nucmom1 = vec (nuc11);
 	vec nucmom2 = vec (nuc22);
 	vec nucmom3 = vec (nuc33);
@@ -2060,7 +2060,8 @@ bool fsi, double poten)
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight2 (double E, bool nu, bool cc, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, particle &mecnucleon3,
+double mecweight2 (double E, bool nu, bool cc, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, 
+		   particle &mecnucleon2, particle &mecnucleon3,
 bool fsi, double poten)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
@@ -2068,7 +2069,7 @@ bool fsi, double poten)
 
 	mecm=meclepton.mass();
 	mecm2=mecm*mecm;
-	double cut =3;
+	double cut =0.0;
 	double w = cut + (E-mecm-cut)*los();
 	double q = qminus(w,E) + (qplus(w,E)-qminus(w,E))*los();
 	vect nuc1, nuc2, nuc3;
@@ -2098,30 +2099,33 @@ bool fsi, double poten)
 	mecnucleon2.set_mass (PDG::mass (mecnucleon2.pdg));
 	mecnucleon3.set_mass (PDG::mass (mecnucleon3.pdg));
 
-	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true)/12.0/1e38;
+	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true, nu)/12.0/1e38;
 	if (weight2<0)
 	{
 		weight2 = 0;
 	}
 		
-	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true)/12.0/1e38;
+	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true, nu)/12.0/1e38;
 	if (weight3<0)
 	{
 		weight3 = 0;
 	}
 		//cout<<E<<"  "<<w<<"  "<<q<<endl;
+
 	if ( weight2>(weight2+weight3)*los() )
 	{							 //cout<<"dwa"<<endl;
 		model_2body2 (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, fsi, poten);
+		//cout<<"2body"<<endl;
 		vec ped3 = vec (0,0,0);
 		mecnucleon3.set_momentum(ped3);
 	}
 	else
 	{							 //cout<<"trzy"<<endl;
 		model_3body (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, poten);
+		//cout<<"3body"<<endl;
 	}
+
 
 	return weight2+weight3;
 
 }
-#endif

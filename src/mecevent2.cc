@@ -73,20 +73,30 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 	double mecm = meclepton.mass ();
 
 	//cout<<mecnu.t<<endl;
-
+//cout<<mecnu.t<<endl;
 	if (mecnu.t>150)			 // for lower energies MM does not work
 	{							 //150 loop
 
 								 //weight
-		double wynik = mecweight2 (mecnu.t, mecnu.pdg > 0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
-		//cout<<"sleep4"<<endl;
+		//double wynik;
+		//cout<<"wait"<<endl;
+		//if ()
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg>0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
+		//else
+		//{wynik = mecweight22 (mecnu.t, false, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);}
+		
+		//cout<<"sleep   "<<mecnu.pdg<<"  "<<wynik<<endl;
 		e.weight = wynik;
 
 		//cout<<mecnucleon1<<"  "<<mecnucleon2<<"  "<<mecnucleon3<<endl;
 
 		e.out.push_back (meclepton);
 		//cout<<"sleep5"<<"  "<<meclepton<<endl;
-
+e.out.push_back (mecnucleon1);
+e.out.push_back (mecnucleon2);
+e.out.push_back (mecnucleon3);
+		
+/*
 		if (!fsi)
 		{
 			if (mecnucleon1.Ek() >0.1)
@@ -109,6 +119,7 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 			if (mecnucleon3.Ek() >potwell+ebinding)
 				e.out.push_back (mecnucleon3);
 		}
+*/
 	}							 //end 150 loop
 
 	else
