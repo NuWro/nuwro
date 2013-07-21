@@ -44,7 +44,8 @@ all:            $(TRGTS)
 $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o \
 	    mecdynamics.o mecevent.o mecevent_tem.o mecevent_Nieves.o\
 	    mecdynamics2.o mecevent2.o \
-        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_lib.o nucleus_data.o isotopes.o elements.o \
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o\
+        nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o main.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
@@ -104,7 +105,7 @@ $(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generat
 $(BIN)/ganalysis: $(addprefix src/, \
 		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o\
-        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_lib.o nucleus_data.o isotopes.o elements.o \
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o ganalysis.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
@@ -139,7 +140,7 @@ distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* core src/dis/*.o src/di
 
 src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
 		@echo "Generating dictionary ..."
-		cd src;$(ROOTSYS)/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
+		cd src;${ROOTSYS}/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
 		
 
 src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile

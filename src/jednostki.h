@@ -14,15 +14,15 @@
 /// Mathematical constants 
 ///
 
-const double Pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862;
+static const double Pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862;
 //const double e  = 2.7182818284590452353602874713526624977572470936999595749669676277240766303535;
-const double Pi2= Pi*Pi;
+static const double Pi2= Pi*Pi;
 
 ///
 /// natural units
 /// 
-const double hbar = 1;
-const double c = 1;
+static const double hbar = 1;
+static const double c = 1;
 /// Assuming also MeV=1 determines almost everything else
 
 //
@@ -30,17 +30,17 @@ const double c = 1;
 ///
 
 // const double MeV = 0.001; // use this instead of MeV=1 to test if MeV is inserted where needed
-const double MeV = 1;
-const double eV = MeV / 1E6;
-const double GeV = 1000 * MeV;
-const double GeV2 = GeV*GeV;
+static const double MeV = 1;
+static const double eV = MeV / 1E6;
+static const double GeV = 1000 * MeV;
+static const double GeV2 = GeV*GeV;
 
-const double sek = 1 / (6.58211889 * 1E-22 * MeV);
-const double metr = sek / 299792458;
-const double kg = eV / (c * c) / (1.782661731 * 1E-36);
+static const double sek = 1 / (6.58211889 * 1E-22 * MeV);
+static const double metr = sek / 299792458;
+static const double kg = eV / (c * c) / (1.782661731 * 1E-36);
 
 
-const double J = kg * metr * metr / (sek * sek);
+static const double J = kg * metr * metr / (sek * sek);
 
 ///
 /// the following two constants (should be moved to a separate file one day)

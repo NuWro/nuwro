@@ -2,18 +2,18 @@
 #define _geomy_h_
 
 #include <iostream>
-#include <string>			//geomy constructor
-#include <vector>			//
+#include <string>		//geomy constructor
+#include <vector>		//
 #include <algorithm>		//sort, unique
-#include <fstream>			//isotops.txt
-#include <sstream>			// ^
+#include <fstream>		//isotops.txt
+#include <sstream>		// ^
 #include <stdexcept>		//This header defines a set of standard exceptions that both the library and programs can use to report common errors.
-							//function setN(material), vector out of range
-#include <cmath> 			//for std::abs in d_eqls (comparing doubles)
+				//function setN(material), vector out of range
+#include <cmath> 		//for std::abs in d_eqls (comparing doubles)
 
-#include <TROOT.h>			//
+#include <TROOT.h>		//
 #include <TSystem.h>		//
-#include <TFile.h>			//loading geometry file
+#include <TFile.h>		//loading geometry file
 #include <TGeometry.h>		//geo
 #include <TGeoManager.h>	
 #include <TGeoBBox.h>		//detector bounding box
@@ -27,7 +27,6 @@ struct material
 {
 	double A, Z, N, w_density;
 	vec r;
-//	double e_bin, p_fermi;
 	material(double=0, double=0, double=0);
 };
 
@@ -51,8 +50,8 @@ class geomy
 	double max_length;
 
 	TGeometry* geo;
-    TGeoVolume* top;
-    TGeoShape* sha1;
+	TGeoVolume* top;
+	TGeoShape* sha1;
 	TGeoBBox* box1;
 	TGeoNode* node1;
 	TGeoMaterial* mat1;
@@ -62,25 +61,25 @@ class geomy
 
 
 public:
-    geomy(std::string _filename, std::string _geoname, std::string volume="", vec _d = vec(0,0,0), vec _o = vec(0,0,0) )
-    {		
-//		mtrand.SetSeed(0);  // If seed is 0 (default value) a TUUID is generated and used to fill/*
-							// the first 8 integers of the seed array.
-							// In this case the seed is guaranteed to be unique in space and time.
-        top=NULL;
-        if(!ifstream(_filename.c_str()))
-        	_filename=get_data_dir()+_filename;
-        TFile f(_filename.c_str());
-        geo = (TGeometry*)f.Get(_geoname.c_str());
-        if(!geo)
-           throw string("Error reading geometry '")+_geoname+"' from from file: '"+_filename+"'.";
-        
-        if(volume.length()>0)
-           top=gGeoManager->FindVolumeFast(volume.c_str(),false);
-        if(top==NULL)   
-		top = gGeoManager->GetTopVolume();
+	geomy(std::string _filename, std::string _geoname, std::string volume="", vec _d = vec(0,0,0), vec _o = vec(0,0,0) )
+	{		
+		//		mtrand.SetSeed(0);  // If seed is 0 (default value) a TUUID is generated and used to fill/*
+								// the first 8 integers of the seed array.
+								// In this case the seed is guaranteed to be unique in space and time.
+		top=NULL;
+		if(!ifstream(_filename.c_str()))
+			_filename=get_data_dir()+_filename;
+		TFile f(_filename.c_str());
+		TGeoManager::SetVerboseLevel(0);
+		geo = (TGeometry*)f.Get(_geoname.c_str()); // TGeoNavigator writes to cerr without reason (how to block it?)
+		if(!geo)
+			throw string("Error reading geometry '")+_geoname+"' from from file: '"+_filename+"'.";
+		if(volume.length()>0)
+			top=gGeoManager->FindVolumeFast(volume.c_str(),false);
+		if(top==NULL)   
+			top = gGeoManager->GetTopVolume();
 		if(top==NULL)
-		  throw(" Error making detector");
+			throw(" Error making detector");
 		sha1 = top->GetShape();
 		if(sha1)
 		{
@@ -93,31 +92,28 @@ public:
 				cout<< "Top Volume orig= "<<orig <<";  dxyz ="<<dxyz<<";"<<endl;				
 		}
 		else 
-		  {orig=vec(0,0,0);
-		   dxyz=vec(2000,2000,2000);
-	      }
+		{
+			orig=vec(0,0,0);
+			dxyz=vec(2000,2000,2000);
+		}
+		
 		if(not( _d.x == 0 || _d.y == 0 || _d.z == 0))
 		{   // find intersection of box of interest with detector geometry
 			vec a=max(orig-dxyz,_o-_d);
 			vec b=min(orig+dxyz,_o+_d);
 			if(b.x>a.x && b.y>a.y && b.z>a.z)
-			  {orig=(a+b)/2;
-			   dxyz=(b-a)/2;
-		      }  
-		     else
-		      {
-		       cerr<<"Box of interest outside detector. No events will be generated"<<endl;
-		       exit(23);
-		      }
+			{
+				orig=(a+b)/2;
+				dxyz=(b-a)/2;
+			}  
+			else
+			{
+				cerr<<"Box of interest outside detector. No events will be generated"<<endl;
+				exit(23);
+			}
 		}
-
+		
 		std::cout << "\nBOX:"<<" O: " << orig << " D: " << dxyz << "\n";
-//		std::cout << "Obj = " << Obj(top,0) << "\n";
-//		max_density = MaxDensity(top);
-//		max_density = 0;
-//		std::cout << "MaxDensity = " << max_density << "\n";
-
-
     }
 
 
@@ -125,7 +121,6 @@ public:
 	{
 		vec r =  orig - dxyz + 2*vec(frandom()*dxyz.x,frandom()*dxyz.y,frandom()*dxyz.z);
 		material tam=getpoint(r);
-//		tam.w_length=1;
 		return tam;
 	}
 

@@ -48,14 +48,14 @@ const double magneton_proton  = 2.793*magneton_N;
 const double magneton_neutron =-1.913*magneton_N;
 const double Pi=M_PI;
 
-const int O_16_n =8;
-const int O_16_p =8;
-const int Ar_40_n=22;
-const int Ar_40_p=18;
-const int Fe_56_n=30;
-const int Fe_56_p=26;
-const int C_12_n=6;
-const int C_12_p=6;
-
+//~ const int O_16_n =8;
+//~ const int O_16_p =8;
+//~ const int Ar_40_n=22;
+//~ const int Ar_40_p=18;
+//~ const int Fe_56_n=30;
+//~ const int Fe_56_p=26;
+//~ const int C_12_n=6;
+//~ const int C_12_p=6;
+//~ 
 
 #endif

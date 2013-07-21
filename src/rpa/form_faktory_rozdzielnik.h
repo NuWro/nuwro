@@ -37,6 +37,8 @@ namespace rpa
 		}
 	}
 
+
+
 	double F_1(double Q2, int kFF)
 	{
 		switch(kFF)
@@ -92,5 +94,25 @@ namespace rpa
 			default        : return 0; break;
 		}
 	}
+	double F_1(double q0, double qv, int kFF)
+	{
+		return F_1(qv*qv-q0*q0,kFF);
+	}
+
+	double F_2(double q0, double qv, int kFF)
+	{
+		return F_2(qv*qv-q0*q0,kFF);
+	}
+	double F_p(double q0, double qv, int kFF)
+	{
+		return F_p(qv*qv-q0*q0,kFF);
+	}
+	double G_A(double q0, double qv, int kFF)
+	{
+		return G_A(qv*qv-q0*q0,kFF);
+	}
+
 }
+
+using namespace rpa;
 #endif
