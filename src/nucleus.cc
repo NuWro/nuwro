@@ -38,7 +38,10 @@ nucleus::nucleus(params &par):
 	{
 		_r=cbrt(p+n)*1.2*fermi;
 	}
-		
+	if((par.target_type==0 || par.target_type==1)  and par.nucleus_kf>0)
+	{
+		_kf=par.nucleus_kf;
+	}
 }
 
 double nucleus::density (double r)
