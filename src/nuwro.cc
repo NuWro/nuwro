@@ -333,7 +333,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
-			if(nu.pdg>0)      // only neutrinos allowed
+			if(nu.pdg>0 || p.mec_kind==2)      // only Marteau model valid for antineutrinos
 			{	
 				if(nucleuss->A()<=1)
 					break;
