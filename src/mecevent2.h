@@ -1,5 +1,5 @@
-#ifndef _mecevent2_h_
-#define _mecevent2_h_
+#ifndef _mecevent22_h_
+#define _mecevent22_h_
 
 
 #include "params.h"
@@ -7,7 +7,7 @@
 #include "event1.h"
 
 ////////////////////////////////////////////////////////////////////////
-void mecevent2(params &p, event &e, target &t, bool prad);
+void mecevent22(params &p, event &e, target &t, bool prad, bool new);
 ////////////////////////////////////////////////////////////////////////
 
 #endif
