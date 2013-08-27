@@ -333,7 +333,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
-			if(nu.pdg>0 || p.mec_kind==2)      // only Marteau model valid for antineutrinos
+			if( nu.pdg>0 || !(p.mec_kind==3) )      // there is no CC Nieves model for antineutrinos
 			{	
 				if(nucleuss->A()<=1)
 					break;
@@ -342,7 +342,6 @@ void NuWro::makeevent(event* e, params &p)
 					case 1:mecevent_tem (p, *e, *nucleuss, true);break;
 					case 2:mecevent2 (p, *e, *nucleuss, true);break;
 					case 3:mecevent_Nieves (p, *e, *nucleuss, true);break;
-//					case 4:mecevent (p, *e, *nucleuss, true);break;//old tem implementation
 					default:mecevent_tem (p, *e, *nucleuss, true);break; 
 				}
 				for(int i=0;i<e->out.size();i++)
@@ -354,14 +353,13 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 9: 
 			if (p.dyn_mec_nc) //mec nc
-			if(nu.pdg>0)      // only neutrinos allowed
+			if(p.mec_kind==1)      // only TEM for NC
 			{   
 				if(nucleuss->A()<=1)
 					break;
 				switch(p.mec_kind)
 				{
-					//case 1: mecevent(p, *e, *nucleuss, false);break;
-					//case 2: mecevent2 (p, *e, *nucleuss, false);break; there is only TEM for NC
+					case 1: mecevent_tem(p, *e, *nucleuss, false);break;
 					default: mecevent_tem (p, *e, *nucleuss, false);break; 
 				}
 				for(int i=0;i<e->out.size();i++)
