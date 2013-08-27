@@ -340,9 +340,9 @@ void NuWro::makeevent(event* e, params &p)
 				switch(p.mec_kind)
 				{
 					case 1:mecevent_tem (p, *e, *nucleuss, true);break;
-					case 2:mecevent22 (p, *e, *nucleuss, true, false);break;
+					case 2:mecevent2 (p, *e, *nucleuss, true, false);break;
 					case 3:mecevent_Nieves (p, *e, *nucleuss, true);break;
-					case 4:mecevent22 (p, *e, *nucleuss, true, true);break;
+					case 4:mecevent2 (p, *e, *nucleuss, true, true);break;
 					default:mecevent_tem (p, *e, *nucleuss, true);break; 
 				}
 				for(int i=0;i<e->out.size();i++)

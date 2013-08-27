@@ -18,7 +18,7 @@
 
 ////////////////////////////////////////////////////////////////////////
 void
-mecevent2 (params & p, event & e, nucleus & t, bool cc)
+mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 ////////////////////////////////////////////////////////////////////////
 {
 	e.par = p;
@@ -81,9 +81,9 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc)
 		//double wynik;
 		//cout<<"wait"<<endl;
 		//if ()
-		double wynik = mecweight2 (mecnu.t, mecnu.pdg>0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg>0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell, nowy);
 		//else
-		//{wynik = mecweight22 (mecnu.t, false, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);}
+		//{wynik = mecweight2 (mecnu.t, false, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);}
 		
 		//cout<<"sleep   "<<mecnu.pdg<<"  "<<wynik<<endl;
 		e.weight = wynik;

@@ -493,8 +493,10 @@ static double mecmin2(double a, double b)
 }
 
 
-static double NN_old (double w, double q)
+static double NN_elem (double w, double q, bool nowy)
 {
+  if (!nowy)
+  {
 	if (w>475)
 		return 0;
 	else
@@ -503,11 +505,19 @@ static double NN_old (double w, double q)
 		double rest = w/25.0 - n;
 		return rest*marteau[n+1][0]  + (1-rest)*marteau[n][0];
 	}
+  }
+  else
+  {
+    double x=(q*q-w*w)/2.0/939/w;
+  return  7.904*(0.0048883*x -4.11136e-6*x*x)*exp(-1.75589*x );
+  }
 }
 
 
-static double ND_old (double w, double q)
+static double ND_elem (double w, double q, bool nowy)
 {
+  if (!nowy)
+  {
 	if (w>475)
 		return 0;
 	else
@@ -516,9 +526,47 @@ static double ND_old (double w, double q)
 		double rest = w/25.0 - n;
 		return rest*marteau[n+1][1]  + (1-rest)*marteau[n][1];
 	}
+  }
+  else
+  {
+    double x=(q*q-w*w)/2.0/939/w;
+  return 7.904*(0.000431802 +0.000948343*x)*exp(-2.40084*x - 0.00135351*0.00135351*x*x);
+  }
 }
 
+/*
+double NN_newJS (double w, double q)
+{
+  double x=(q*q-w*w)/2.0/939/w;
+  return  7.904*(0.0048883*x -4.11136e-6*x*x)*exp(-1.75589*x );
+}
 
+double ND_newJS (double w , double q)
+{
+  double x=(q*q-w*w)/2.0/939/w;
+  return 7.904*(0.000431802 +0.000948343*x)*exp(-2.40084*x - 0.00135351*0.00135351*x*x);
+}
+
+double ND_marco (double w, double q)
+{
+  double x=(q*q-w*w)/2.0/939/w;
+  double y=0.5*0.001*( 6.283 + 18.64*x - 16.93*x*x + 7.804*x*x*x )*exp (-x/0.472501);
+  if (y<0)
+    return 0;
+  else
+    return y;
+}
+
+double NN_marco (double w, double q)
+{
+  double x=(q*q-w*w)/2.0/939/w;
+  double y=0.5*0.001*( -9.78 + 161.2*x - 149.8*x*x + 96.56*x*x*x )*exp (-x/0.46586);
+  if (y<0)
+    return 0;
+  else
+    return y;
+}
+*/
 static double DD_old (double w, double q)
 {
 	if (w>475)
@@ -1099,11 +1147,11 @@ double Pi_NN_pion_t(double w, double q, bool RPA)
 }
 
 
-double Pi_NN_NN_t(double w, double q, bool RPA)
+double Pi_NN_NN_t(double w, double q, bool RPA, bool nowy)
 {
 	return
 		DI_NN(w,q)*  V_ND_t(w,q,RPA)*V_ND_t(w,q,RPA)  *(NR(w,q)*NR(w,q)+NI(w,q)*NI(w,q))/den_t(w,q,RPA)
-		+ NN_old(w,q)*(-Pi/mecVol)*mecM/sqrt(mecM2+q*q)
+		+ NN_elem(w,q,nowy)*(-Pi/mecVol)*mecM/sqrt(mecM2+q*q)
 		;
 }
 
@@ -1187,13 +1235,13 @@ double Pi_ND_pion_t(double w, double q, bool RPA)
 }
 
 
-double Pi_ND_NN_t (double w, double q, bool RPA)
+double Pi_ND_NN_t (double w, double q, bool RPA, bool nowy)
 {
 	return
 		DI_NN(w,q)*V_ND_t(w,q,RPA)*(
 		NR(w,q)-V_NN_t(w,q,RPA)*( NR(w,q)*NR(w,q)+NI(w,q)*NI(w,q) ))/den_t(w,q,RPA)
 								 //*sqrt(mecM2+q*q)/mecM
-		+ ND_old(w,q)*(-Pi/mecVol) / sqrt( fperf
+		+ ND_elem(w,q,nowy)*(-Pi/mecVol) / sqrt( fperf
 		)						 //* sqrt( 2.0*mecM * 2.0*mecMD * (mecM+w)/ (2.0*mecM+w) / (mecM+mecMD+w) / mecMD  )
 		;
 }
@@ -1244,11 +1292,11 @@ double Pi_NN_pion_l(double w, double q, bool RPA)
 }
 
 
-double Pi_NN_NN_l(double w, double q, bool RPA)
+double Pi_NN_NN_l(double w, double q, bool RPA, bool nowy)
 {
 	return
 		DI_NN(w,q)*  V_ND_l(w,q,RPA)*V_ND_l(w,q,RPA)  *(NR(w,q)*NR(w,q)+NI(w,q)*NI(w,q))/den_l(w,q,RPA)
-		+ NN_old(w,q)*(-Pi/mecVol)*mecM/sqrt(mecM2+q*q)
+		+ NN_elem(w,q,nowy)*(-Pi/mecVol)*mecM/sqrt(mecM2+q*q)
 		;
 }
 
@@ -1326,12 +1374,12 @@ double Pi_ND_pion_l(double w, double q, bool RPA)
 }
 
 
-double Pi_ND_NN_l(double w, double q, bool RPA)
+double Pi_ND_NN_l(double w, double q, bool RPA, bool nowy)
 {
 	return
 		DI_NN(w,q)*V_ND_l(w,q,RPA)*(NR(w,q)-V_NN_l(w,q,RPA)*( NR(w,q)*NR(w,q)+NI(w,q)*NI(w,q) ))/den_l(w,q,RPA)
 								 //*sqrt(mecM2+q*q)/mecM
-		+ ND_old(w,q)*(-Pi/mecVol)/ sqrt( fperf
+		+ ND_elem(w,q,nowy)*(-Pi/mecVol)/ sqrt( fperf
 		)						 //* sqrt( 2.0*mecM * 2.0*mecMD * (mecM+w)/ (2.0*mecM+w) / (mecM+mecMD+w) / mecMD  )
 		;
 }
@@ -1583,95 +1631,106 @@ double H11ND(double w, double q)
 }
 
 
-double trejsy_NN_qel_c (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_qel_c (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nc(w,q)+
 		L33(E,w,q)*H33Nc(w,q)+
-		2*L03(E,w,q)*H03Nc(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_qel_c(w,q,RPA);
+		2*L03(E,w,q)*H03Nc(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_qel_c(w,q,RPA);
 }
 
 
-double trejsy_NN_qel_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_qel_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
-		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_qel_l(w,q,RPA);
+		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_qel_l(w,q,RPA);
 }
 
 
-double trejsy_NN_D_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_D_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
-		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_D_l(w,q,RPA);
+		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_D_l(w,q,RPA);
 }
 
 
-double trejsy_NN_pion_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_pion_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
-		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_pion_l(w,q,RPA);
+		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_pion_l(w,q,RPA);
 }
 
 
-double trejsy_NN_NN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_NN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
-		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NN_l(w,q,RPA);
+		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_NN_l(w,q,RPA,nowy);
 }
 
 
-double trejsy_NN_NNN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_NNN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00Nl(w,q)+
 		L33(E,w,q)*H33Nl(w,q)+
-		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NNN_l(w,q,RPA);
+		2*L03(E,w,q)*H03Nl(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_NNN_l(w,q,RPA);
 }
 
 
-double trejsy_DD_qel_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_qel_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
-		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_qel_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_qel_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_D_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_D_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
-		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_D_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_D_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_pion_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_pion_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
-		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_pion_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_pion_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_NN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
-		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NN_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_NN_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NNN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_NNN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00D(w,q)+
 		L33(E,w,q)*H33D(w,q)+
-		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NNN_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		2*L03(E,w,q)*H03D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_NNN_l(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_ND_qel_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_qel_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1680,7 +1739,7 @@ double trejsy_ND_qel_l (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_D_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_D_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1689,7 +1748,7 @@ double trejsy_ND_D_l (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_pion_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_pion_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1698,16 +1757,16 @@ double trejsy_ND_pion_l (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_NN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_NN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
 		2*L03(E,w,q)*H03ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
-		Pi_ND_NN_l(w,q,RPA);
+		Pi_ND_NN_l(w,q,RPA,nowy);
 }
 
 
-double trejsy_ND_NNN_l (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_NNN_l (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L00(E,w,q)*H00ND(w,q)+
 		L33(E,w,q)*H33ND(w,q)+
@@ -1716,77 +1775,87 @@ double trejsy_ND_NNN_l (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_NN_qel_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_qel_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q,nu)*H12Nt(w,q)+
-		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_qel_t(w,q,RPA);
+		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_qel_t(w,q,RPA);
 }
 
 
-double trejsy_NN_D_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_D_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q,nu)*H12Nt(w,q)+
-		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_D_t(w,q,RPA);
+		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_D_t(w,q,RPA);
 }
 
 
-double trejsy_NN_pion_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_pion_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12Nt(w,q)+
-		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_pion_t(w,q,RPA);
+		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_pion_t(w,q,RPA);
 }
 
 
-double trejsy_NN_NN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_NN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12Nt(w,q)+
-		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NN_t(w,q,RPA);
+		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_NN_t(w,q,RPA,nowy);
 }
 
 
-double trejsy_NN_NNN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_NN_NNN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12Nt(w,q)+
-		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*Pi_NN_NNN_t(w,q,RPA);
+		L11(E,w,q)*H11Nt(w,q))*(mecM+sqrt(mecM2+q*q))/2/mecM*
+		Pi_NN_NNN_t(w,q,RPA);
 }
 
 
-double trejsy_DD_qel_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_qel_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12D(w,q)+
-		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_qel_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_qel_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_D_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_D_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12D(w,q)+
-		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_D_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_D_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_pion_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_pion_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12D(w,q)+
-		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_pion_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_pion_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_NN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12D(w,q)+
-		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_NN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_DD_NNN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_DD_NNN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12D(w,q)+
-		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*Pi_DD_NNN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
+		L11(E,w,q)*H11D(w,q))*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*
+		Pi_DD_NNN_t(w,q,RPA)*fperf*mecMD/sqrt(mecMD2+q*q);
 }
 
 
-double trejsy_ND_qel_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_qel_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
@@ -1794,7 +1863,7 @@ double trejsy_ND_qel_t (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_D_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_D_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
@@ -1802,7 +1871,7 @@ double trejsy_ND_D_t (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_pion_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_pion_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
@@ -1810,15 +1879,15 @@ double trejsy_ND_pion_t (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double trejsy_ND_NN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_NN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
-		Pi_ND_NN_t(w,q,RPA);
+		Pi_ND_NN_t(w,q,RPA,nowy);
 }
 
 
-double trejsy_ND_NNN_t (double E, double w, double q, bool RPA, bool nu)
+double trejsy_ND_NNN_t (double E, double w, double q, bool RPA, bool nu, bool nowy)
 {
 	return (L12(E,w,q, nu)*H12ND(w,q)+
 		L11(E,w,q)*H11ND(w,q))*sqrt((mecM+sqrt(mecM2+q*q))/2/mecM*(mecMD+sqrt(mecMD2+q*q))/2/mecMD*fperf*mecMD/(mecMD2+q*q)*mecM/sqrt(mecM2+q*q))*
@@ -1826,22 +1895,22 @@ double trejsy_ND_NNN_t (double E, double w, double q, bool RPA, bool nu)
 }
 
 
-double rozn_NN (double q, double w, double E, bool RPA, bool nu)
+double rozn_NN (double q, double w, double E, bool RPA, bool nu, bool nowy)
 {
 	return mecstala*(-mecVol/Pi)*q/Pi/32/E/E*
-		(trejsy_NN_NN_l(E,w,q,RPA,nu)+trejsy_NN_NN_t(E,w,q,RPA,nu)+
-		trejsy_DD_NN_l(E,w,q,RPA,nu)+trejsy_DD_NN_t(E,w,q,RPA,nu)+
-		2*trejsy_ND_NN_l(E,w,q,RPA,nu)+2*trejsy_ND_NN_t(E,w,q,RPA,nu)
+		(trejsy_NN_NN_l(E,w,q,RPA,nu,nowy)+trejsy_NN_NN_t(E,w,q,RPA,nu,nowy)+
+		trejsy_DD_NN_l(E,w,q,RPA,nu,nowy)+trejsy_DD_NN_t(E,w,q,RPA,nu,nowy)+
+		2*trejsy_ND_NN_l(E,w,q,RPA,nu,nowy)+2*trejsy_ND_NN_t(E,w,q,RPA,nu,nowy)
 		);
 }
 
 
-double rozn_NNN (double q, double w, double E, bool RPA, bool nu)
+double rozn_NNN (double q, double w, double E, bool RPA, bool nu, bool nowy)
 {
 	return mecstala*(-mecVol/Pi)*q/Pi/32/E/E*
-		(trejsy_NN_NNN_l(E,w,q,RPA,nu)+trejsy_NN_NNN_t(E,w,q,RPA,nu)+
-		trejsy_DD_NNN_l(E,w,q,RPA,nu)+trejsy_DD_NNN_t(E,w,q,RPA,nu)+
-		2*trejsy_ND_NNN_l(E,w,q,RPA,nu)+2*trejsy_ND_NNN_t(E,w,q,RPA,nu)
+		(trejsy_NN_NNN_l(E,w,q,RPA,nu,nowy)+trejsy_NN_NNN_t(E,w,q,RPA,nu,nowy)+
+		trejsy_DD_NNN_l(E,w,q,RPA,nu,nowy)+trejsy_DD_NNN_t(E,w,q,RPA,nu,nowy)+
+		2*trejsy_ND_NNN_l(E,w,q,RPA,nu,nowy)+2*trejsy_ND_NNN_t(E,w,q,RPA,nu,nowy)
 		);
 }
 
@@ -2062,7 +2131,7 @@ bool fsi, double poten)
 
 double mecweight2 (double E, bool nu, bool cc, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, 
 		   particle &mecnucleon2, particle &mecnucleon3,
-bool fsi, double poten)
+bool fsi, double poten, bool nowy)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
 	int pdg2=nu ? PDG::pdg_neutron:PDG::pdg_proton;
@@ -2099,13 +2168,13 @@ bool fsi, double poten)
 	mecnucleon2.set_mass (PDG::mass (mecnucleon2.pdg));
 	mecnucleon3.set_mass (PDG::mass (mecnucleon3.pdg));
 
-	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true, nu)/12.0/1e38;
+	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true, nu, nowy)/12.0/1e38;
 	if (weight2<0)
 	{
 		weight2 = 0;
 	}
 		
-	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true, nu)/12.0/1e38;
+	double weight3 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NNN (q, w, E, true, nu, nowy)/12.0/1e38;
 	if (weight3<0)
 	{
 		weight3 = 0;
