@@ -1971,11 +1971,11 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 		N2=rand_from_ball (meckf);
 		//cout<<E<<"  "<<w<<"  "<<q<<"  "<<N1<<"  "<<N2<<endl;
 		length1= sqrt(mecM2 + N1.norm2());
-		length2= sqrt(mecM2 + N2.norm2());
+		length2= sqrt(mecM2 + N2.norm2());//total energy
 
-		N11=vect(N1, length1+mecM);
+		N11=vect(N1, length1);
 								 //Fermi energy is not subtracted
-		N22=vect(N2, length2+mecM);
+		N22=vect(N2, length2);
 
 		vect sum=N11+N22;
 
@@ -2068,10 +2068,10 @@ bool fsi, double poten)
 		length2= sqrt(mecM2 + N2.norm2());
 		length3= sqrt(mecM2 + N3.norm2());
 
-		N11=vect(N1, length1+mecM);
+		N11=vect(N1, length1);
 								 //Fermi energy is NOT subtracted
-		N22=vect(N2, length2+mecM);
-		N33=vect(N3, length3+mecM);
+		N22=vect(N2, length2);
+		N33=vect(N3, length3);
 
 		vect sum=N11+N22+N33;
 

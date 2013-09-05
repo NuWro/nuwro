@@ -94,6 +94,8 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 		//cout<<"sleep5"<<"  "<<meclepton<<endl;
 e.out.push_back (mecnucleon1);
 e.out.push_back (mecnucleon2);
+
+if (mecnucleon3.Ek()>0.1)
 e.out.push_back (mecnucleon3);
 		
 /*

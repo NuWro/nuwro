@@ -315,7 +315,7 @@ int f ()
   	return noi;
   }
   
-  int number_of_particle (int pdg, bool fsi)	// fsi = 0 - before FSI, 1 - after FSI
+  int number_of_particles (int pdg, bool fsi)	// fsi = 0 - before FSI, 1 - after FSI
   {
   	int number = 0;
   	
@@ -337,6 +337,123 @@ int f ()
   	return number;
   	
   }
+  
+  int num_part_thr (int pdg, bool fsi, double threshold)	// fsi = 0 - before FSI, 1 - after FSI
+  {
+  	int number = 0;
+  	
+  	if(fsi)
+  	{
+  		for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( (post[k].pdg == pdg) && (post[k].momentum() > threshold) )
+			  number++;
+  		}
+  	}
+  	else if (!fsi)
+  	{
+  		for (int k = 0; k<out.size(); k++)
+  		{
+  			if ( (out[k].pdg == pdg) && (out[k].momentum() > threshold) )
+			  number++;
+  		}
+  	}
+  	
+  	return number;
+  	
+  }
+  
+  double proton_cosine()
+  {
+    int numer[2];
+    int ile=0;
+    for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( post[k].pdg == 2212 )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  		
+  return ( post[numer[0]].x*post[numer[1]].x + post[numer[0]].y*post[numer[1]].y + post[numer[0]].z*post[numer[1]].z )/post[numer[0]].momentum()/post[numer[1]].momentum();
+  }
+  
+  
+  double part_max_mom (int pdg, bool fsi)	// fsi = 0 - before FSI, 1 - after FSI
+  {
+  	double mom = 0.0;
+  	
+  	if(fsi)
+  	{
+	  
+  		for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( (post[k].pdg == pdg) && (post[k].momentum() > mom) )
+			  mom=post[k].momentum();
+  		}
+  	}
+  	else if (!fsi)
+  	{
+  		for (int k = 0; k<out.size(); k++)
+  		{
+  			if ( (out[k].pdg == pdg) && (out[k].momentum() > mom) )
+			  mom=out[k].momentum();
+			//cout<<mom<<endl;
+  		}
+  	}
+  	
+  	return mom;
+  	
+  }
+  
+  double part_sec_mom (int pdg, bool fsi)	// fsi = 0 - before FSI, 1 - after FSI
+  {
+  	double mom [2]= {0.0, 0.0};
+	double memory;
+  	
+  	if(fsi)
+  	{
+  		for (int k = 0; k<post.size(); k++)
+  		{
+  			if  (post[k].pdg == pdg) 
+			{
+			  double ped =post[k].momentum();
+			   if (ped >mom[1])
+			  {mom[1]=ped;}
+			  if (ped>mom[0])
+			  {
+			    memory = mom[0];
+			    mom[0]=ped;
+			    mom[1]=memory;
+			  }
+			}
+  		}
+  	}
+  	else if (!fsi)
+  	{
+  		for (int k = 0; k<out.size(); k++)
+  		{
+  			if  (out[k].pdg == pdg) 
+			{
+			  double ped =out[k].momentum();
+			  //cout<<ped<<endl;
+			  if (ped >mom[1])
+			  {mom[1]=ped;}
+			  if (ped>mom[0])
+			  {
+			    memory = mom[0];
+			    mom[0]=ped;
+			    mom[1]=memory;
+			  }
+			}
+  		}
+  	}
+  	
+  	return mom[1];
+  	
+  }
+
 	
 public:
   event ():weight(0),norm(1)

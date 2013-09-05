@@ -35,6 +35,7 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     particle N0=e.in[1];		           // initial nucleon
     particle l1;  
     particle N1;
+    particle N2;
 
 	if( (l0.pdg>0 and N0.pdg==pdg_proton)
 	    or (l0.pdg<0 and N0.pdg==pdg_neutron)
@@ -43,10 +44,12 @@ double sfevent2cc(params&par, event & e, nucleus &t)
 
 	if(l0.pdg<0) 
 	  {N1.set_neutron();
+	   N2.set_neutron();
 	   l1.pdg=l0.pdg+1;
       }
 	else 
 	  {N1.set_proton();
+	   N2.set_proton();
 	   l1.pdg=l0.pdg-1;
       }
 		
@@ -86,7 +89,76 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     vect s=l0+N0;
         
     s.t=l0.E()+N0.mass()-EBEN;
+    
+    //below approximate seperation of the correlated part in order to introduce a correlated (spectator) nucleon
+    //MF and corr momentum distributions are compared and a fraction of corr is evaluated
+    //corr contribution is assumed to correspond to larger values of the E argument
         
+    bool corr;
+    corr=false;
+    
+    if( t.p==8 && t.n==8 && par.sf_method==1)//Benhar SF; basically for protons but taken the same for neutrons
+    {
+      if (p<85 && EBEN>63)
+      corr=true;
+      
+      if (p>85 && p<320 && EBEN > (73.4 -0.167*p) )
+	corr=true;
+      
+      if (p>320 && p<390 && EBEN > 19.1)
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+    }
+      
+      if( t.p==6 && t.n==6 && par.sf_method==1)//Benhar SF; basically for protons but taken the same for neutrons
+    {
+      if (p<330 && EBEN> (52.27 + 0.00428*p - 0.0004618*p*p) )
+      corr=true;
+      
+      if (p>330)
+	corr=true;
+    }
+    
+    if( t.p==26 && t.n==30 && par.sf_method==1)//Benhar SF; basically for protons but taken the same for neutrons
+    {
+      if (p<335 && EBEN> (60.41 + 0.004134*p - 0.0004343*p*p) )
+      corr=true;
+      
+      if (p>335)
+	corr=true;
+    }
+    
+     if( t.p==18 && t.n==22 && par.sf_method==1 && N0.pdg==pdg_proton)//Argon protons
+    {
+      if (p<230 && EBEN> (49.11 - 0.08305*p + 0.0008781*p*p + 1.045e-7*p*p*p -8.312e-9*p*p*p*p ) )
+      corr=true;
+      
+      if (p>230 && p<395 && EBEN > (-52.97 + 0.8571*p - 0.001696*p*p ) )
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+    }
+    
+    if( t.p==18 && t.n==22 && par.sf_method==1 && N0.pdg==pdg_neutron)//Argon neutrons
+    {
+      if (p<225 && EBEN> (50.03 - 0.0806*p + 0.0006774*p*p + 1.717e-6*p*p*p -1.236e-8*p*p*p*p ) )
+      corr=true;
+      
+      if (p>225 && p<395 && EBEN > (-17.23 + 0.6314*p - 0.001373*p*p ) )
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+    }
+    
+     
+     
+    vec mom (N0.x, N0.y, N0.z);
+    N2.set_momentum(-mom);
+    
     double ss=s*s;
  
     if(ss<pow2(M+m))
@@ -148,6 +220,10 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     e.in[1]=N0;   
 	e.out.push_back(l1);
 	e.out.push_back(N1);
+	
+	if (corr)
+	  e.out.push_back(N2);
+	
   // cout<<val/cm2<<endl<<endl;
    return val;
 }
@@ -163,6 +239,12 @@ double sfevent2nc(params&par, event & e, nucleus &t)
     particle N0=e.in[1];		           // initial nucleon
     particle l1=l0;  
     particle N1=N0;
+    particle N2;
+    
+    if (N0.pdg == pdg_proton)
+      N2.set_neutron();
+    else
+      N2.set_proton();
 
 	
 	double m = 0;
@@ -188,6 +270,71 @@ double sfevent2nc(params&par, event & e, nucleus &t)
     vect s=l0+N0;
         
     s.t=l0.E()+N0.mass()-EBEN;
+    
+     bool corr;
+    corr=false;
+    
+    if( t.p==8 && t.n==8 && par.sf_method==1)
+    {
+      if (p<85 && EBEN>63)
+      corr=true;
+      
+      if (p>85 && p<320 && EBEN > (73.4 -0.167*p) )
+	corr=true;
+      
+      if (p>320 && p<390 && EBEN > 19.1)
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+      }
+      
+      
+      if( t.p==6 && t.n==6 && par.sf_method==1)//Benhar SF; basically for protons but taken the same for neutrons
+    {
+      if (p<330 && EBEN> (52.27 + 0.00428*p - 0.0004618*p*p) )
+      corr=true;
+      
+      if (p>330)
+	corr=true;
+    }
+    
+    if( t.p==26 && t.n==30 && par.sf_method==1)//Benhar SF; basically for protons but taken the same for neutrons
+    {
+      if (p<335 && EBEN> (60.41 + 0.004134*p - 0.0004343*p*p) )
+      corr=true;
+      
+      if (p>335)
+	corr=true;
+    }
+    
+     if( t.p==18 && t.n==22 && par.sf_method==1 && N0.pdg==pdg_proton)//Argon protons
+    {
+      if (p<230 && EBEN> (49.11 - 0.08305*p + 0.0008781*p*p + 1.045e-7*p*p*p -8.312e-9*p*p*p*p ) )
+      corr=true;
+      
+      if (p>230 && p<395 && EBEN > (-52.97 + 0.8571*p - 0.001696*p*p ) )
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+    }
+    
+    if( t.p==18 && t.n==22 && par.sf_method==1 && N0.pdg==pdg_neutron)//Argon neutrons
+    {
+      if (p<225 && EBEN> (50.03 - 0.0806*p + 0.0006774*p*p + 1.717e-6*p*p*p -1.236e-8*p*p*p*p ) )
+      corr=true;
+      
+      if (p>225 && p<395 && EBEN > (-17.23 + 0.6314*p - 0.001373*p*p ) )
+	corr=true;
+      
+      if (p>395)
+	corr=true;
+    }
+    
+      
+    vec mom (N0.x, N0.y, N0.z);
+    N2.set_momentum(-mom);
         
     double ss=s*s;
  
@@ -250,5 +397,8 @@ double sfevent2nc(params&par, event & e, nucleus &t)
     e.in[1]=N0;   
 	e.out.push_back(l1);
 	e.out.push_back(N1);
+	
+	if (corr)
+	  e.out.push_back(N2);
    return val;
 }

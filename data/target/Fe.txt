@@ -1,8 +1,8 @@
 # number of protons
-nucleus_p	    = 6
+nucleus_p	    = 26
 
 # number of neutrons
-nucleus_n           = 6
+nucleus_n           = 30
 
 # options below are kept only for historical reasons
 # proc_dis
