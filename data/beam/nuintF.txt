@@ -1,0 +1,7 @@
+beam_type=1
+beam_direction= 0 0 1
+
+beam_content = 14 100% 0 1500 1 1
+beam_content += -14 50% 0 1500 1 1 
+
+

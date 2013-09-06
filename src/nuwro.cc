@@ -54,6 +54,8 @@ NuWro::NuWro()
 
 void NuWro :: set (params &par)
 {	
+	p = par;
+	
 	frandom_init(par.random_seed);
 
 	dismode = false;

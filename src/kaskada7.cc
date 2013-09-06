@@ -76,7 +76,10 @@ void kaskada::prepare_particles()
 				p1.primary = true;
 				
 				ncount++;
-				p1.set_energy(p1.E() + par.nucleus_E_b);
+
+				//~ if (e->flag.qel)
+					//~ p1.set_energy(p1.E() + par.nucleus_E_b);
+					
 				if (nucleon(e->in[ncount].pdg))				
 					p1.set_fermi(e->in[ncount].Ek());
 			

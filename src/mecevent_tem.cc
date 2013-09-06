@@ -175,8 +175,10 @@ double mec_do_nc (double &w, double E, particle *p, double m, double ratio, bool
 	double weight_neutron = qel_sigma (E, -Q2, 5, !nu, m, M1) - qel_sigma (E, -Q2, 8, !nu, m, M1);
 				
 	double frac = weight_proton / (weight_neutron + weight_proton);
+	
+	double ratio_nc = 1.0 / (2.0 * ratio + 1);
 		
-	if (frandom () < ratio)
+	if (frandom () < ratio_nc)
 	{
 		if (frandom () < frac)
 		{

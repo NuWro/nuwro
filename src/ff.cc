@@ -140,7 +140,7 @@ pair<double,double> FF::f12(int kind)
     
 	f1= (Ge + tau*Gm)/(1 + tau);
 	f2= (Gm - Ge)/(1 + tau) ;
-    if((kind % 3) and strangeEM)// strangeness in F1, F2 (only for kind!=0 i.e. nc)
+    if((kind == 1 or kind == 2) and strangeEM)// strangeness in F1, F2 (only for kind!=0 i.e. nc)
     switch(strangeEM)
     {
     case 1:{ 
@@ -403,7 +403,7 @@ pair<double,double> fap(double q2,int kind)
 			//Fp=2.0*M2*Fa/(piMass2 - q2) ;
 			break;
     } 
-    if((kind % 3) and strange)
+    if((kind == 1 or kind == 2) and strange)
     {
     	switch(strange)
     	{case 1:
