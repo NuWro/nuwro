@@ -20,9 +20,9 @@ int kaskada::kaskadaevent()
 {	
 	int result = 0;
 	
-	if(not par.kaskada_on or e->weight <= 0) //skip cascade if it is turn off in params
+	if (e->weight <= 0)
 		return result;
-			
+	
 	if (e->in[0].lepton()) //if lepton scattering remove nucleon from primary vertex 
 		                   // (in pion or nucleon scattering there is no primary vertex
 		                   // just the cascade)
@@ -32,13 +32,27 @@ int kaskada::kaskadaevent()
 	}
 			
 	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
+
+	if(not par.kaskada_on) //skip cascade if it is turn off in params, but make sure about the energy balance
+	{
+		while (parts.size () > 0)
+		{
+			particle p1 = parts.front(); //point a particle from a queue
+			parts.pop(); 				 //remove this particle from a temp vector
+			p = &p1;		
 			
+			leave_nucleus();
+		}
+		
+		return result;
+	}
+				
 	while (parts.size () > 0 and nucl->Ar() > 0) ///main loop in cascade
     {						
 		particle p1 = parts.front(); //point a particle from a queue
 		parts.pop(); 				 //remove this particle from a temp vector
 		p = &p1;		
-		
+
 		X = prepare_interaction();
 						
 		if (!move_particle()) continue;	          //particle was jailed
@@ -77,8 +91,8 @@ void kaskada::prepare_particles()
 				
 				ncount++;
 
-				//~ if (e->flag.qel)
-					//~ p1.set_energy(p1.E() + par.nucleus_E_b);
+				if (e->flag.qel and (e->par.sf_method != 0 or e->par.nucleus_target == 1)) //add the binding energy substracted in the primary vertex (for Global Fermi Gas and Spectral Function)
+					p1.set_energy(p1.E() + par.nucleus_E_b);
 					
 				if (nucleon(e->in[ncount].pdg))				
 					p1.set_fermi(e->in[ncount].Ek());

@@ -98,10 +98,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		default: _E_bind=0;
 	}
 
-
-    if (p.kaskada_on)
-		_E_bind = 0;
-
 	vect aa;
 	aa = vect (N0);
 	aa.t-=_E_bind;

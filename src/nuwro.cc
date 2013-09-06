@@ -413,13 +413,13 @@ void NuWro::finishevent(event* e, params &p)
 
 								 // copy particle from out to post if coherent interaction
 	
-	if ( p.kaskada_on and !e->flag.coh )
+	if (!e->flag.coh )
 	{
 		kaskada k(p, *e);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true
 	}
-	
-	if(e->post.size()==0)   // copy out to post if no fsi
+	else
+//	if(e->post.size()==0)   // copy out to post if no fsi
 	{
 		for (int j = 0; j<e->out.size(); j++)
 		{
