@@ -300,6 +300,8 @@ double formation_zone (particle &p, params &par, event &e)
 				
 				flength = pa.length()*ran_exp(1.0/120.0)/mass;
 		}
+		else if (strcmp(fz.c_str(), "const") == 0)
+			flength = par.formation_length / 200.0;			
 		else flength = 0;
 	}
 	else flength = 0;

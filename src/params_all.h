@@ -71,6 +71,7 @@ PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\
 PARAM(string,formation_zone,"fz")\
 PARAM(double,tau,0)\
+PARAM(double,formation_length,1)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
 PARAM(int,xsec,0)\
