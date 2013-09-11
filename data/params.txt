@@ -230,7 +230,7 @@ kaskada_on 	 = 1      // use (1) or not (0) the cascade
 
 kaskada_writeall = 0 // store all intermedate cascade particles in the event.all vector
 tau = 8.0            // 
-first_step = 1       // length of the ferst step in cascade 
+first_step = 1       // use (1) or not (0) formation zone for primary particles
 step = 0.2           // length of one step in cascade
 
 xsec = 1 //model of cross sections in cascade: 0 - metropolis, 1 - oset
@@ -246,6 +246,9 @@ kaskada_w = 7
 # formation_zone = ranft  //
 # formation_zone = rl     //
 # formation_zone = delta  //
+# formation_zone = const  //
+
+formation_length = 1 // formation length in fm for formation_zone = const
 
 pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 

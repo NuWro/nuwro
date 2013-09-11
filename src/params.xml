@@ -326,6 +326,9 @@
   <param name="tau" type="text" ctype="double" default="0">
     <description><![CDATA[parametr in the ranft fz model]]></description>
   </param>
+  <param name="formation_length" type="text" ctype="double" default="1">
+    <description><![CDATA[formation length in fm for formation_zone = const]]></description>
+  </param>
   <param name="first_step" type="text" ctype="bool" default="1">
     <description><![CDATA[[fm] length of the first step in cascade standalone run]]></description>
   </param>
