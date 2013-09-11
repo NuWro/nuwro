@@ -1935,7 +1935,8 @@ double qplus(double w, double E)
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-void model_2body2 (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, bool fsi, double poten)
+void model_2body2 (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nucini1, particle &nucini2, 
+		   bool fsi, double poten)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
 	mecm=meclep.mass();
@@ -2021,6 +2022,8 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 	nuc1.set_momentum(nucmom1);
 	nuc2.set_momentum(nucmom2);
 	//cout<<"dormo"<<endl;
+	nucini1.set_momentum(N1);
+	nucini2.set_momentum(N2);
 
 }
 
@@ -2028,8 +2031,8 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 ///////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////
-void model_3body (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nuc3,
-bool fsi, double poten)
+void model_3body (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nuc3, particle &nucini1, particle &nucini2, 
+		  particle &nucini3, bool fsi, double poten)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
 
@@ -2117,6 +2120,9 @@ bool fsi, double poten)
 	nuc2.set_momentum(nucmom2);
 	nuc3.set_momentum(nucmom3);
 	//cout<<"dormo"<<endl;
+	nucini1.set_momentum(N1);
+	nucini2.set_momentum(N2);
+	nucini3.set_momentum(N3);
 
 }
 
@@ -2130,7 +2136,8 @@ bool fsi, double poten)
 ////////////////////////////////////////////////////////////////////
 
 double mecweight2 (double E, bool nu, bool cc, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, 
-		   particle &mecnucleon2, particle &mecnucleon3,
+		   particle &mecnucleon2, particle &mecnucleon3, particle &mecnucini1, 
+		   particle &mecnucini2, particle &mecnucini3,
 bool fsi, double poten, bool nowy)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
@@ -2142,31 +2149,44 @@ bool fsi, double poten, bool nowy)
 	double w = cut + (E-mecm-cut)*los();
 	double q = qminus(w,E) + (qplus(w,E)-qminus(w,E))*los();
 	vect nuc1, nuc2, nuc3;
-	// here is the isospin model; I assume that 3/5 times a pair is p-p and 2/5 times it is p-n
-	mecnucleon1.pdg = pdg1;		 //there must be at least one proton
-
+	
+// here is the isospin model; I assume that there is a fraction of p.mec_ratio_pp pn pairs in the initial state
+	mecnucleon1.pdg = pdg1;		 //there must be at least one pdg1 in the final state
+	
 	double losso = los();
+	 
 	if (losso<p.mec_ratio_pp) // was 0.6
 	{
 		mecnucleon2.pdg = pdg1;
+		mecnucini1.pdg = pdg1;
+		mecnucini2.pdg = pdg2;
 	}
 	else
 	{
 		mecnucleon2.pdg = pdg2;
+		mecnucini1.pdg = pdg2;
+		mecnucini2.pdg = pdg2;
 	}
 	losso = los();
 	if (losso<0.5)  // was losso<0.8
 	{
 		mecnucleon3.pdg = pdg1;
+		mecnucini3.pdg = pdg1;
 	}
 	else
 	{
 		mecnucleon3.pdg = pdg2;
+		mecnucini3.pdg = pdg2;
 	}
 
 	mecnucleon1.set_mass (PDG::mass (mecnucleon1.pdg));
 	mecnucleon2.set_mass (PDG::mass (mecnucleon2.pdg));
 	mecnucleon3.set_mass (PDG::mass (mecnucleon3.pdg));
+	
+	mecnucini1.set_mass (PDG::mass (mecnucini1.pdg));
+	mecnucini2.set_mass (PDG::mass (mecnucini2.pdg));
+	mecnucini3.set_mass (PDG::mass (mecnucini3.pdg));
+
 
 	double weight2 = ( qplus(w,E)-qminus(w,E) )*(E-mecm-cut)*rozn_NN (q, w, E, true, nu, nowy)/12.0/1e38;
 	if (weight2<0)
@@ -2183,14 +2203,14 @@ bool fsi, double poten, bool nowy)
 
 	if ( weight2>(weight2+weight3)*los() )
 	{							 //cout<<"dwa"<<endl;
-		model_2body2 (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, fsi, poten);
+		model_2body2 (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucini1, mecnucini2, fsi, poten);
 		//cout<<"2body"<<endl;
 		vec ped3 = vec (0,0,0);
 		mecnucleon3.set_momentum(ped3);
 	}
 	else
 	{							 //cout<<"trzy"<<endl;
-		model_3body (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, poten);
+		model_3body (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, mecnucini1, mecnucini2, mecnucini3, fsi, poten);
 		//cout<<"3body"<<endl;
 	}
 

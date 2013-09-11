@@ -363,10 +363,12 @@ int f ()
   	
   }
   
-  double proton_cosine()
+  double proton_cosine(bool fsi)
   {
     int numer[2];
     int ile=0;
+    if (fsi)
+    {
     for (int k = 0; k<post.size(); k++)
   		{
   			if ( post[k].pdg == 2212 )
@@ -375,8 +377,23 @@ int f ()
 			ile++;
 			}
   		}
-  		
   return ( post[numer[0]].x*post[numer[1]].x + post[numer[0]].y*post[numer[1]].y + post[numer[0]].z*post[numer[1]].z )/post[numer[0]].momentum()/post[numer[1]].momentum();
+ 		
+    }
+  	if (!fsi)
+    {
+    for (int k = 0; k<out.size(); k++)
+  		{
+  			if ( out[k].pdg == 2212 )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  return ( out[numer[0]].x*out[numer[1]].x + out[numer[0]].y*out[numer[1]].y + out[numer[0]].z*out[numer[1]].z )/out[numer[0]].momentum()/out[numer[1]].momentum();
+ 		
+    }
+  	
   }
   
   

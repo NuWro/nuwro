@@ -49,6 +49,9 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 
 	//      Final nucleons
 	particle mecnucleon1, mecnucleon2, mecnucleon3;
+	
+	//	Initial nucleons
+	particle mecnucini1, mecnucini2, mecnucini3;
 
 	//      Identification of final states
 	//      In NC reaction always pi0 is produced
@@ -81,7 +84,8 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 		//double wynik;
 		//cout<<"wait"<<endl;
 		//if ()
-		double wynik = mecweight2 (mecnu.t, mecnu.pdg>0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell, nowy);
+		double wynik = mecweight2 (mecnu.t, mecnu.pdg>0, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, mecnucini1, mecnucini2, mecnucini3,
+					   fsi, potwell, nowy);
 		//else
 		//{wynik = mecweight2 (mecnu.t, false, cc, t, p, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, fsi, potwell);}
 		
@@ -94,9 +98,13 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 		//cout<<"sleep5"<<"  "<<meclepton<<endl;
 e.out.push_back (mecnucleon1);
 e.out.push_back (mecnucleon2);
-
+e.in.push_back (mecnucini1);
+e.in.push_back (mecnucini2);
 if (mecnucleon3.Ek()>0.1)
+{
 e.out.push_back (mecnucleon3);
+e.in.push_back (mecnucini3);
+}
 		
 /*
 		if (!fsi)
