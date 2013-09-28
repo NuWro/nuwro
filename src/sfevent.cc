@@ -167,7 +167,7 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     vec v=s.v();    
  
 
-/// here we do decay(s,N1,l1) by hand    
+/// here we do ::decay(s,N1,l1) by hand    
 
     double pcms=sqrt(0.25*pow2(ss+mm-MM)/ss-mm);
     vec dircms=rand_dir();
@@ -344,7 +344,7 @@ double sfevent2nc(params&par, event & e, nucleus &t)
     vec v=s.v();    
  
 
-/// here we do decay(s,N1,l1) by hand    
+/// here we do ::decay(s,N1,l1) by hand    
 
     double pcms=sqrt(0.25*pow2(ss+mm-MM)/ss-mm);
     vec dircms=rand_dir();

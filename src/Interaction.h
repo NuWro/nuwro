@@ -694,7 +694,7 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
       p[0].set_proton ();
     else if (p1.pdg == -pdg_piP && p2.pdg == pdg_proton)
       p[0].set_neutron ();
-    return decay (p1 + p2 + p2a, p[0], p[1]);
+    return ::decay (p1 + p2 + p2a, p[0], p[1]);
   }
 
 

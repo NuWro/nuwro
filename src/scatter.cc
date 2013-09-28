@@ -16,7 +16,7 @@ double scatter_2 (particle p1, particle p2,
 {
   vect suma = vect (p1) + vect (p2);
   if(suma*suma<=0) return 0;
-  if (!decay (suma, p3, p4))
+  if (!::decay (suma, p3, p4))
 	{
 	//cerr << "The process is kinematically impossible because"<<endl;
     //cerr << "suma ="<<vect (suma)<<"  p3 ="<< vect (p3)<<"  p4 ="<<vect (p4)<<endl;
