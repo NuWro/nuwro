@@ -246,6 +246,8 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.coh = dyn/2  == 3;
 	e->flag.mec = dyn/2  == 4;
 
+	e->flag.anty = nu.pdg<0;
+
 	if(p.beam_test_only)
 	{
 		e->weight=1;
