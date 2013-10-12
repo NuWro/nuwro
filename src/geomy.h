@@ -51,6 +51,7 @@ class geomy
 	double dens,ndens;
 	double pots;
 	double npots;
+	double nuc[2];
 
 	TGeometry* geo;
 	TGeoVolume* top;
@@ -67,6 +68,7 @@ public:
 	geomy(std::string _filename, std::string _geoname, std::string volume="", vec _d = vec(0,0,0), vec _o = vec(0,0,0) )
 	{		pots=npots=0;
 			dens=ndens=0;
+			nuc[0]=nuc[1];
 		//		mtrand.SetSeed(0);  // If seed is 0 (default value) a TUUID is generated and used to fill/*
 								// the first 8 integers of the seed array.
 								// In this case the seed is guaranteed to be unique in space and time.
@@ -83,7 +85,7 @@ public:
 		if(top==NULL)   
 			top = gGeoManager->GetTopVolume();
 		if(top==NULL)
-			throw(" Error making _detector");
+			throw(" Error making detector");
 		sha1 = top->GetShape();
 		if(sha1)
 		{
@@ -102,7 +104,7 @@ public:
 		}
 		
 		if(not( _d.x == 0 || _d.y == 0 || _d.z == 0))
-		{   // find intersection of box of interest with _detector geometry
+		{   // find intersection of box of interest with detector geometry
 			vec a=max(orig-dxyz,_o-_d);
 			vec b=min(orig+dxyz,_o+_d);
 			if(b.x>a.x && b.y>a.y && b.z>a.z)
@@ -162,9 +164,12 @@ public:
 		}
 		double CLHEP_g_cm3=6.24151e+18;
 		tam.w_density = mat1->GetDensity()/CLHEP_g_cm3;
+		
 		dens+=tam.w_density;
 		ndens++;
 		max_density = max(max_density,tam.w_density);
+		nuc[0]+=tam.N*tam.w_density/(tam.N+tam.Z);
+		nuc[1]+=tam.Z*tam.w_density/(tam.N+tam.Z);
 		tam.r = r;
 		return tam;	
 	}
@@ -245,6 +250,10 @@ public:
 		return 8*dxyz.x*dxyz.y*dxyz.z*mm3*density(); 
 	}
 
+	double frac_proton()
+	{
+		return nuc[1]/(nuc[0]+nuc[1]);
+	}
 	~geomy()
 	{
 

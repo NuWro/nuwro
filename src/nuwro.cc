@@ -109,13 +109,13 @@ geomy* NuWro::make_detector(params &p)
 		}
 		catch(...)
 		{
-			cerr<<"Failed to make _detector."<<endl;
+			cerr<<"Failed to make detector."<<endl;
 			exit(3);
 		}
 	}
 	else
 	{	
-		cerr<<"Failed to make _detector. Parameter geo_file must not be empty if target_type=2."<<endl;
+		cerr<<"Failed to make detector. Parameter geo_file must not be empty if target_type=2."<<endl;
 		exit(4);
 		return NULL;
 	}
@@ -478,6 +478,7 @@ void NuWro::pot_report(ostream& o)
 		o<<"Reaction probability = "<<tot*pd<<endl;
 		o<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;
 		o<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
+		o<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
 		
 	}
 }
