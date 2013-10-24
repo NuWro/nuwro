@@ -2,6 +2,7 @@
 #include "jednostki.h" 
 #include "pidata.h"
 
+
 ///////////////////////////////////////////////////////////
 void NData::setMetropolis()
 {                             

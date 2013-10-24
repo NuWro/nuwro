@@ -156,6 +156,7 @@ vec vect::v ()
 vect & vect::boost1 (vec v)  // orig boost
   {//cout<<v<<endl;				
     double vv = v * v;
+    //cout<<vv<<endl;
     if(vv==0) return *this;
     if(vv>=1) 
        cout<<v<<vv<<flush;

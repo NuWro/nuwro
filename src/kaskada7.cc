@@ -137,7 +137,7 @@ interaction_parameters kaskada::prepare_interaction()
 	res.dens_p = res.dens * nucl->frac_proton ();
 	res.n = 2;
 
-    I->total_cross_sections (res); //calculate cross sections xsec_p and xsec_n
+    I->total_cross_sections (*p, *nucl, res); //calculate cross sections xsec_p and xsec_n
 
     res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; 
     assert(res.xsec>=0);    

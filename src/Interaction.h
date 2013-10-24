@@ -29,6 +29,7 @@ class interaction_parameters
 		double frac_proton;
 		int pdg; //particle pdg
 		double Ek; //particle kinetic energy
+		double Ekeff;
 		double freepath;
 		particle p2;	//nucleon from nucleus (initialized in particle_scattering)
 		particle p[5];	//place for the results of scatering
@@ -172,7 +173,7 @@ public:
 void NData::get_sij (double Ek_,double &resii,double &resij)
 {   set_Ek(Ek_);
 	if (Ek_ < 335 * MeV)
-	{   Ek_=max(Ek, 80 * MeV); 
+	{   Ek_=max(Ek, 40 * MeV); 
 		const double M = (mass_proton + mass_neutron) / 2;
 		double v = sqrt (1 - pow2 (M / (Ek+M)));
 		resij=((34.10 / v - 82.20) / v + 82.2)* millibarn;		
@@ -189,7 +190,7 @@ double NData::sigma (double Ek_)
 {   set_Ek(Ek_);
 	if (Ek_ < 335 * MeV)
 	{ 
-  	  Ek=max(Ek, 80 * MeV); 
+  	  Ek=max(Ek, 40 * MeV); 
 	  const double M = (mass_proton + mass_neutron) / 2;
   	  double v = sqrt (1 - pow2 (M / (Ek+M)));
 	  if(ij) return ((10.63 / v - 29.92) / v + 42.9)* millibarn;
@@ -708,7 +709,7 @@ class Interaction
 	NData ND;
   public: 
     Interaction(int xsec):PD(xsec),ND(xsec){}
-  	inline void total_cross_sections(interaction_parameters &X);
+  	inline void total_cross_sections(particle&, nucleus&, interaction_parameters &X);
 	inline bool particle_scattering (particle & p1, nucleus &t, interaction_parameters &X);
     inline int test ();
 	int process_id()
@@ -724,12 +725,54 @@ class Interaction
 /// scattering of pion or nucleon on nucleus
 /// returns: s0 - cross setion on neutron
 ///          s1 - cross setion on proton
-void Interaction::total_cross_sections(interaction_parameters &X)
+void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X)
   {
+    
+     X.p2 = t.get_nucleon (p1.r);// added - JTS
+	vec vvv = X.p2.v();
+	p1.p4().boost2 (vvv);
+	X.Ekeff = p1.Ek();
+	
+	p1.p4().boost2 (-vvv);
+	
+	double dens00 = 0.16/fermi3;
+        double Masssa = (938.272+939.56533)/2.0;
+	
+	double beta = -116.0*X.dens/dens00;
+	double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
+	double effmass1 = Masssa/
+	(1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
+	double effmass2 = Masssa/
+	(1 - 2.0*Masssa*beta/lambda/lambda/( 1+X.p2.momentum2()/lambda/lambda )/( 1+X.p2.momentum2()/lambda/lambda ) );
+	double effmass3 = Masssa/
+	(1 - 2.0*Masssa*beta/lambda/lambda
+	/( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda )
+	/( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda ) );
+		
+	double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
+	double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
+	
+	double mod = k1minusk2/k1minusk2star*effmass3/Masssa;//in medium modification of the cross section - JTS
+	
+	//cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
+	
+	
     switch (X.pdg)
       {
-      case pdg_neutron: ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);break;
-	  case pdg_proton:	ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);break;
+      case pdg_neutron: ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
+      
+      //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      X.xsec_n*=mod;
+      X.xsec_p*=mod;
+      //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      break;
+	  case pdg_proton:	ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
+	  
+	  //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+	  X.xsec_n*=mod;
+         X.xsec_p*=mod;
+	  //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+	  break;
 	  default:
 	     { 
 	      PD.set_density(X.dens);

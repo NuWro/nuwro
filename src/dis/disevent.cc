@@ -232,8 +232,9 @@ double Meff2=Meff*Meff;
       double q = sqrt (kwad (Meff + nu) - W2);
       double kprim = sqrt (kwad (E - nu) - m2);
       double cth = (E2 + kprim * kprim - q * q) / 2 / E / kprim;
-
-
+      if (cth>1 && cth<1+1e-12 )
+	cth=1;
+      
       vec kkprim;		//the unit vector in the direction of scattered lepton
       kinfinder (nunew, kkprim, cth);	//hopefully should produce kkprim 
 
@@ -265,7 +266,6 @@ double Meff2=Meff*Meff;
 
 //powrot do ukladu spoczywajacej tarczy
       par[0] = par[0].boost (nuc0.v());	//ok
-
       particle lept (par[0]);
 
       if (current == true && lepton > 0)

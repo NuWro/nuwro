@@ -37,6 +37,8 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     particle N1;
     particle N2;
 
+    N1.r=N0.r;
+    N2.r=N0.r;
 	if( (l0.pdg>0 and N0.pdg==pdg_proton)
 	    or (l0.pdg<0 and N0.pdg==pdg_neutron)
 	  )

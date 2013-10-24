@@ -363,7 +363,7 @@ int f ()
   	
   }
   
-  double proton_cosine(bool fsi)
+  double proton_cosine(bool fsi, double thr)
   {
     int numer[2];
     int ile=0;
@@ -371,7 +371,7 @@ int f ()
     {
     for (int k = 0; k<post.size(); k++)
   		{
-  			if ( post[k].pdg == 2212 )
+  			if ( post[k].pdg == 2212 && post[k].momentum() > thr  )
 			{
 			numer[ile]=k;
 			ile++;
@@ -384,7 +384,7 @@ int f ()
     {
     for (int k = 0; k<out.size(); k++)
   		{
-  			if ( out[k].pdg == 2212 )
+  			if ( out[k].pdg == 2212 && out[k].momentum() > thr  )
 			{
 			numer[ile]=k;
 			ile++;
@@ -394,6 +394,125 @@ int f ()
  		
     }
   	
+  }
+  //calculates momentum of proton which did not suffer form fsi (the first one, sometimes there are two,see below)
+  double proton_transp_mom()
+  {
+    for (int k = 0; k<out.size(); k++)
+      if (out[k].pdg ==2212)
+      {
+	for (int l = 0; l<post.size(); l++)
+	{
+	  if (post[l].pdg ==2212)
+	  {
+	    double kos = ( out[k].x*post[l].x + out[k].y*post[l].y + out[k].z*post[l].z )/out[k].momentum()/post[l].momentum();
+	    if (kos>0.999)
+	      return out[k].momentum();
+	  }
+	}
+      }
+      return 0;
+  }
+  //calculates momentum of proton which did not suffer form fsi (the second one if it happens -- very rarely, but stil...)
+  double proton_transp_mom2()
+  {
+    int counter=0;
+    for (int k = 0; k<out.size(); k++)
+      if (out[k].pdg ==2212)
+      {
+	for (int l = 0; l<post.size(); l++)
+	{
+	  if (post[l].pdg ==2212)
+	  {
+	    double kos = ( out[k].x*post[l].x + out[k].y*post[l].y + out[k].z*post[l].z )/out[k].momentum()/post[l].momentum();
+	    if (kos>0.999 && counter==1)
+	    return out[k].momentum();
+	    
+	    if (kos>0.999 && counter==0)
+	      counter++;
+	  }
+	}
+      }
+      return 0;
+  }
+  //calculates number of protons which did not suffere form fsi
+  int proton_transp()
+  {
+    int ile =0;
+    for (int k = 0; k<out.size(); k++)
+      if (out[k].pdg ==2212)
+      {
+	for (int l = 0; l<post.size(); l++)
+	{
+	  if (post[l].pdg ==2212)
+	  {
+	    double kos = ( out[k].x*post[l].x + out[k].y*post[l].y + out[k].z*post[l].z )/out[k].momentum()/post[l].momentum();
+	    if (kos>0.999)
+	      ile++;
+	  }
+	}
+      }
+      return ile;
+  }
+  
+  int proton_pair_number1 (bool fsi, double thr)
+  {
+    int numer[2];
+    int ile=0;
+    if (fsi)
+    {
+    for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( post[k].pdg == 2212 && post[k].momentum() > thr  )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  return numer[0];	
+    }
+  	if (!fsi)
+    {
+    for (int k = 0; k<out.size(); k++)
+  		{
+  			if ( out[k].pdg == 2212 && out[k].momentum() > thr  )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  return numer[0];	
+    }
+  }
+  
+   int proton_pair_number2 (bool fsi, double thr)
+  {
+    int numer[2];
+    int ile=0;
+    if (fsi)
+    {
+    for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( post[k].pdg == 2212 && post[k].momentum() > thr  )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  return numer[1];	
+    }
+  	if (!fsi)
+    {
+    for (int k = 0; k<out.size(); k++)
+  		{
+  			if ( out[k].pdg == 2212 && out[k].momentum() > thr  )
+			{
+			numer[ile]=k;
+			ile++;
+			}
+  		}
+  return numer[1];	
+    }
   }
   
   
