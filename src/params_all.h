@@ -14,9 +14,9 @@ PARAM(string,beam_folder,"flux")\
 PARAM(int,beam_file_first,1)\
 PARAM(int,beam_file_limit,0)\
 PARAM(bool,beam_weighted,0)\
-PARAM(string,beam_file,"beam/ND280hist.txt")\
 PARAM(vec,beam_offset,"0 0 0")\
 PARAM(int,beam_placement,0)\
+PARAM(string,beam_file,"beam/ND280hist.txt")\
 PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,6)\

@@ -18,7 +18,7 @@ void NuWro::UserAction(params& p)
 ///some kind of loop with changing parameters
 //for(;;) 
 ///_________________________________________  
-  { procesy.reset(active);
+  { _procesy.reset(active);
   /// prepare stuctures for this values of parameters
   
   ///________________________________________________
@@ -26,19 +26,19 @@ void NuWro::UserAction(params& p)
     { 
        e = new event ();	                            // OK
        int k=0;                                         // OK
-       e->dyn = procesy.choose ();	// choose dynamics  // OK
+       e->dyn = _procesy.choose ();	// choose dynamics  // OK
        ///_________________________________________  
        /// modify event before 
           
        ///_____________________________________
-       if(mixer)
-       	   mixer->prepare(p);                            // OK
+       if(_mixer)
+       	   _mixer->prepare(p);                            // OK
        makeevent(e,p); // OK
        ///_________________________________________  
        /// analize event fill histograms etc.
    
        ///____________________________________
-       procesy.add (e->dyn, e->weight,e->in[0].t);                   // OK
+       _procesy.add (e->dyn, e->weight,e->in[0].t);                   // OK
        delete e;                                          // OK
        raport(i+1,p.number_of_test_events," % of User events ready..."); // OK
      } // end of typical nuwro User Action loop
@@ -47,7 +47,7 @@ void NuWro::UserAction(params& p)
   
   
   ///_____________________________________ 
-   procesy.report();                                      //OK
+	_procesy.report();                                      //OK
 	
    } // end of  loop
 ///_________________________________________  

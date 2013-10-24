@@ -125,10 +125,10 @@ particle nucleus::get_nucleon (vec r)
 		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
 		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek
 		case  4: if(p==n && (p==6 || p==8))
-				{
-					p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
-					break;
-				}
+		         {
+		         	p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
+				break;
+		         }
 		case 0: // proton
 		case 5: // deuterium
 		case 6: // deuterium

@@ -20,7 +20,7 @@ class BeamRF : public beam
 	BeamRFCallback				*	_cb;
 	RootFolder<  RootFReader< ND5Event >  >	_folder;
 	RootFReader< ND5Event >	* _file;
-	int	_nextFile;
+	int _nextFile;
 	int _nextElem;
 	ND5Event *events[100000];
 	int N;
@@ -29,6 +29,8 @@ class BeamRF : public beam
 	int curevent;
 	int file_first;
 	int file_limit;
+	int nfiles;
+	double minx,miny,maxx,maxy;
 	
 	int nu_pdg_from_mode(int mode)
 	{
@@ -96,6 +98,7 @@ class BeamRF : public beam
 				_nextElem = 0;
 				_file = _folder.File( _nextFile );
 				_nextFile += 1;
+				nfiles++;
 				if( LastElem() == false )
 				{
 					event = *_file->GetEntry( _nextElem );
@@ -131,14 +134,12 @@ public:
 	_folder( p.beam_folder, treename ),
 	_file( 0 ),curevent(0),file_first(p.beam_file_first),file_limit(p.beam_file_limit)
 	{ 
+		nfiles=1;
 		if( NextLoop() == false )
 		{
 			cerr << "BeamRF: wrong input folder or files type\n";
 			throw 0;
 		}
-		//int n=60000000;
-		//n/=10;
-		//events.reserve(n);
 		N=0;
 		while(read());
 		cout<<endl;
@@ -146,88 +147,52 @@ public:
 		acum2=new double[N];
 		double prev=0;
 		for(int i=0;i<N;i++)
-		  acum[i]=prev+=events[i/100000][i%100000].norm;
+			acum[i]=prev+=events[i/100000][i%100000].norm;
 		prev=0;
 		for(int i=0;i<N;i++)
-		  {	ND5Event& ev=events[i/100000][i%100000];
-		    acum2[i]=prev+=ev.norm*ev.Enu;
-		  }
+		{	
+			ND5Event& ev=events[i/100000][i%100000];
+			acum2[i]=prev+=ev.norm*ev.Enu;
+		}
+		
+		cout<<" nu/POT="<<nu_per_POT()<<endl;
+		cout<<" POT/nu="<<1/nu_per_POT()<<endl;
+		cout<<" nfiles="<<nfiles<<endl;
+
+		double surf=(maxx-minx)*(maxy-miny);
+		cout<<" Beam Surface="<<maxx-minx<<" cm x "<<maxy-miny<<" cm = "<<surf<<" cm2"<<endl;
 	}
 	
 	~BeamRF()
 	{  
-	   for(int i=0;i<(N+100000-1)/100000;i++)
-	     delete []events[i];
-	   delete []acum;
-	   delete []acum2;
+		for(int i=0;i<(N+100000-1)/100000;i++)
+			delete []events[i];
+		delete []acum;
+		delete []acum2;
 	}
 	
-////////////////////////////////////////////////////////////////////////	
-	virtual particle shoot2()
-	{ 
-		ND5Event e;
-		
-		/// ask for next element
-		if( NextElement( e )  == false )
-		{
-			/// if was not possible to get next element then back to first file
-			NextLoop();
-			/// get element
-			NextElement( e );
-		}
-		
-		/// if this step ends up with last element then notify client
-		if( _cb )
-			if( LastElem()  &&  LastFile() )
-				_cb->Done();
-
-		/// translate root file event to nuwro particle
-		int pdg=nu_pdg_from_mode(e.mode);
-		particle p( pdg, 0.0 );
-		double E=e.Enu*1000;
-        	p.r.x = e.xnu*10;
-        	p.r.y = e.ynu*10;
-        	p.r.z = 0;
-     		p.r.t = 0;
-        	p.t=E;
-        	p.x=e.nnu[0]*E;
-        	p.y=e.nnu[1]*E;
-        	p.z=e.nnu[2]*E;
-        	p.travelled=e.norm;
-        	
-        		
-		return p;
-	}	
 ////////////////////////////////////////////////////////////////////////
 	virtual particle shoot(bool dis)
 	{  int n=N;//events.size();
 		ND5Event e;
 		bool weighted=false;
 		double *acc=(dis?acum2:acum);
-/*		if(weighted)
+		double x=frandom()*acc[n-1];
+		int i=0,j=n-1;
+		while(i<j)
 		{
-		e=events[curevent++];
-		if(curevent==n)
-		  curevent=0;
-	    }
-	    else */
-	    { double x=frandom()*acc[n-1];
-	      int i=0,j=n-1;
-	      while(i<j)
-	      {
-			  int s=(i+j)/2;
-			  if(x<acc[s])
-			    j=s;
-			  else
-			    i=s+1;  
-		  }
-		  e=events[i/100000][i%100000];
+			int s=(i+j)/2;
+			if(x<acc[s])
+				j=s;
+			else
+				i=s+1;  
 		}
+		e=events[i/100000][i%100000];
 		int pdg=nu_pdg_from_mode(e.mode);
 		particle p( pdg, 0.0 );
-		double E=e.Enu*1000;
-        	p.r.x = e.xnu*10;
-        	p.r.y = e.ynu*10;
+		double E=e.Enu*1000; // from GeV to MeV
+        	p.r.x = e.xnu*10;    // from cm (beam) to mm (geometry)
+        	p.r.y = e.ynu*10;    // from cm (beam) to mm (geometry)  
         	p.r.z = 0;
      		p.r.t = 0;
         	p.t=E;
@@ -236,7 +201,6 @@ public:
         	p.z=e.nnu[2]*E;
         	p.travelled=(weighted?e.norm:1);
         	
-        		
 		return p;
 	}	
 ////////////////////////////////////////////////////////////////////////
@@ -245,17 +209,40 @@ public:
 		ND5Event e;
 		
 		/// ask for next element
-		bool res= NextElement( e );
-//        events.push_back(e);
-        if(N%100000==0) 
-          {
-           cerr<< "File:"<<_nextFile<<" "<< N+1<<" beam events read...\r"<<flush;
-           events[N/100000]=new ND5Event[100000];
-	       }
-	     events[N/100000][N%100000]=e;
-	     N++;  
-        return res;
+		
+		if(NextElement( e ))
+		{
+			if(N%100000==0) 
+			{
+			   cerr<< "File:"<<_nextFile<<" "<< N<<" beam events read...\r"<<flush;
+			   events[N/100000]=new ND5Event[100000];
+			}
+			events[N/100000][N%100000]=e;
+			if(N==0)
+			{
+				minx=maxx=e.xnu;//in cm
+				miny=maxy=e.ynu;//in cm
+			}
+			else
+			{
+				double x=e.xnu; //in cm
+				double y=e.ynu; //in cm
+				maxx=max(x,maxx);
+				maxy=max(y,maxy);
+				minx=min(x,minx);
+				miny=min(y,miny);			
+			}
+			N++;  
+			return true;
+		}
+	    cerr<< "File:"<<_nextFile<<" "<< N<<" beam events read...\r"<<flush;
+		return false;
 	}	
+	
+	double nu_per_POT()
+	{
+			return (acum[N-1]/nfiles)/1e21;
+	}
 
 
 };

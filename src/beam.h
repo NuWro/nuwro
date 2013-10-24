@@ -17,6 +17,8 @@ class beam
 {
 public:
 	virtual particle shoot(bool dis=0) = 0;
+	virtual double nu_per_POT(){ return 0;}
+	virtual ~beam(){}
 };
 
 

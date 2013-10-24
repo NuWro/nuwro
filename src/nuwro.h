@@ -24,22 +24,23 @@ class NuWro
 		void real_events(params &p);
 		void kaskada_redo(string input, string output);
 		int main (int argc, char **argv);
-		inline int proces() {return procesy.choose();}
+		inline int proces() {return _procesy.choose();}
 		void set (params &p);
 		void refresh_target (params &p);
 		void refresh_dyn (params &p);
+		void pot_report(ostream&);
 		NuWro ();
 		~NuWro();
 
 	private:
 		params p;
 		args a;
-		chooser < 10 > procesy;
-		ofstream progress;
-		geomy *detector;
-		beam *neutrino_beam;
-		nucleus *nucleuss;
-		target_mixer *mixer;
+		chooser < 10 > _procesy;
+		ofstream _progress;
+		geomy *_detector;
+		beam *_beam;
+		nucleus *_nucleus;
+		target_mixer *_mixer;
 		bool dismode;
 };
 

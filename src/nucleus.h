@@ -56,19 +56,19 @@ class nucleus
 	int  Zr(){return pr;}                    ///< Z real
 	int  Nr(){return nr;}                    ///< N real
 	int  Ar(){return pr+nr;}                 ///< N real
-	double radius(){return _r;}	             ///< radius of nucleus
+	double radius(){return _r;}              ///< radius of nucleus
 	double r(){return _r;}	                 ///< radius of nucleus
-	double V(particle &p);         			 ///< potential of nucleon p
+	double V(particle &p);         		 ///< potential of nucleon p
 	double frac_proton ();                   ///< percentage of protons 
 	double frac_neutron ();                  ///< percentage of neutrons
 	double density (double r);               ///< nucleon density at dist r from center
 	double get_random_r ();                  ///< random distance from the center 
-	bool remove_nucleon (particle P);	     ///< remove nucleon from the nucleus
-	void insert_nucleon (particle P);	     ///< insert nucleon back to the nucleus
+	bool remove_nucleon (particle P);        ///< remove nucleon from the nucleus
+	void insert_nucleon (particle P);        ///< insert nucleon back to the nucleus
 	double localkf (particle & pa);          ///< local Fermi momentum for particle (pdg and position dependent)
-	double localkf_ (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center 
-	double kF(){return _kf;}	             ///< global Fermi momentum
-	double Mf();			                 ///< nucleon effective mass inside nucleus  
+	double localkf_ (int pdg, double r);     ///< local Fermi momentum from pdg code and  dist r from nucleus center 
+	double kF(){return _kf;}                 ///< global Fermi momentum
+	double Mf();                             ///< nucleon effective mass inside nucleus  
 	double Ef();                             ///< nucleon Fermi energy
 	double Eb(){return _Eb;}                 ///< nucleon binding energy (from experimantal data)
 	particle get_nucleon (vec r);            ///< random nucleon located at r (used in Interaction.cc)

@@ -70,14 +70,16 @@
           <param name="beam_weighted" type="checkbox" ctype="bool" default="0">
             <description></description>
           </param>
-          <param name="beam_file" type="text" ctype="string" default="beam/ND280hist.txt">
-            <description></description>
-          </param>
           <param name="beam_offset" type="text" ctype="vec" default="0 0 0">
             <description></description>
           </param>
           <param name="beam_placement" type="text" ctype="int" default="0">
             <description></description>
+          </param>
+        </condition>
+        <condition value="3" description="3">
+          <param name="beam_file" type="text" ctype="string" default="beam/ND280hist.txt">
+            <description>Beam from histogram</description>
           </param>
         </condition>
         <condition value="file" description="select from file" exclude="1">
