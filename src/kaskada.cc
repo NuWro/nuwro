@@ -41,6 +41,7 @@ int main(int argc,  char** argv)
   for(int i=0;i<p.number_of_events;i++)
   {  cout<<"event="<<i<<" begin      \r"; 
      e=new event;
+     e->weight = 1;
      e->par = p;
      particle p0=b.shoot();
      p0.r=start_point(nucl,p);

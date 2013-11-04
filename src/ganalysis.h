@@ -5,7 +5,7 @@
 #include <string>
 
 const int nof_dyn = 10; //number of dynamics in NuWro
-const int nof_class = 47;
+const int nof_class = 50;
 
 float mb_nce_start = 0;
 int mb_nce_nof = 0;
@@ -69,10 +69,13 @@ const bool active_class[nof_class] =
 	0,	//Phil total	nc pi- p
 	0,	//Phil różniczkowy
 	0,	//MEC MB NC cherenkov treshold test
-	1,	//MB NCEL BOTH
+	0,	//MB NCEL BOTH
 	0,	//MB NCEL TRANSPARENCY TEST
 	0,	//MB NCEL MEC MODELS COMPARE
-	0	//NIEVES KINEMATICS IN TEM MODEL TEST
+	0,	//NIEVES KINEMATICS IN TEM MODEL TEST
+	0,	//energy test
+	1,	//NIWG nucleons momentum in Nieves after energy balance update
+	0	//NIWG lepton kinematics for events with protons above treshold (Nieves)
 };
 
 void run_command (string com)
@@ -109,6 +112,8 @@ class histogram
 		 * 4 - for multicase - each normalized respect to number of events in 1st case
 		 * 5 - events / total
 		 * 6 - total in neutrino energy		
+		 * 7 - to number of events defined by normalization in neutrino energy
+		 * 8 - sum all dynamics
 		*/
 		
 		double normalization;
@@ -1484,6 +1489,122 @@ class tem_nieves_test : public pattern
 			delete h1;
 		}
 };
+
+class energy_test : public pattern
+{
+	protected:
+	
+		mhist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		energy_test () : pattern ("Energy test", 100000)
+		{
+			h1 = new mhist1D ("total_nucleon_energy_with_fsi_no_interaction", "", "{/Symbol n}_{/Symbol m}, E = 800 MeV, CC TEM, on carbon", "Total nucleon kinetic energy", "No. of events", 40, 0, 800, 2, 1, 100);
+			h1 -> cnames[0] = "in out";
+			h1 -> cnames[1] = "in post";
+		}
+		
+		~energy_test ()
+		{
+			delete h1;
+		}
+};	
+
+class niwg_nieves : public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		hist1D *h1norm;
+		hist1D *h2;
+		hist1D *h3;
+		hist1D *h4;
+		hist1D *h5;
+		hist1D *h5norm;
+		hist1D *h6norm;
+		hist1D *h6;
+				
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		niwg_nieves () : pattern ("NIWG Nieves", 5000000)
+		{			
+			h1 = new hist1D ("proton_above_treshold", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-})", "Neutrino energy [MeV]", "% of events with leading protons above the Cherenkov treshold", 10, 500, 1500, 8);
+			h1norm = new hist1D ("", "", "", "", "", 10, 500, 1500, 8);
+			h1norm -> saved = true;
+			h1norm -> ploted = true;
+			h5 = new hist1D ("proton_above_treshold2", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), Muon kinetic energy > 400 MeV", "Neutrino energy [MeV]", "% of events with leading protons above the Cherenkov treshold", 10, 500, 1500, 8);
+			h5norm = new hist1D ("", "", "", "", "", 10, 500, 1500, 8);
+			h5norm -> saved = true;
+			h5norm -> ploted = true;
+			h6 = new hist1D ("proton_above_treshold3", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), Muon kinetic energy < 400 MeV", "Neutrino energy [MeV]", "% of events with leading protons above the Cherenkov treshold", 10, 500, 1500, 8);
+			h6norm = new hist1D ("", "", "", "", "", 10, 500, 1500, 8);
+			h6norm -> saved = true;
+			h6norm -> ploted = true;
+			
+			h2 = new hist1D ("leading_proton_momentum_500_600", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), E_{/Symbol n} = 500-600", "Leading proton momentum [MeV]", "No. of events (normalized to 100)", 100, 0, 2000, 1, 100);
+			h3 = new hist1D ("leading_proton_momentum_900_1000", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), E_{/Symbol n} = 500-600", "Leading proton momentum [MeV]", "No. of events (normalized to 100)", 100, 0, 2000, 1, 100);
+			h4 = new hist1D ("leading_proton_momentum_1400_1500", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), E_{/Symbol n} = 500-600", "Leading proton momentum [MeV]", "No. of events (normalized to 100)", 100, 0, 2000, 1, 100);
+		}
+		
+		~niwg_nieves ()
+		{
+			h1 -> finalize();
+			h1norm -> finalize();
+			h5 -> finalize();
+			h5norm -> finalize();
+			h6 -> finalize();
+			h6norm -> finalize();
+			
+			for (int i = 0; i < h1->bins_x; i++)
+			{
+				if (h1norm->result[i] != 0)
+					h1->result[i] /= h1norm->result[i];
+				if (h5norm->result[i] != 0)
+					h5->result[i] /= h5norm->result[i];
+				if (h6norm->result[i] != 0)
+					h6->result[i] /= h6norm->result[i];
+			}
+			
+			delete h1;
+			delete h2;
+			delete h3;
+			delete h4;
+			delete h5;
+			delete h6;
+		}
+};	
+
+class niwg_nieves2 : public pattern
+{
+	protected:
+	
+		hist2D *h1;
+		hist2D *h2;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		niwg_nieves2 () : pattern ("NIWG Nieves 2", 5000000)
+		{
+			h1 = new hist2D ("lepton_kinematics", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), E_{/Symbol n} = 1000 ", "cos{/Symbol q}", "Lepton energy [MeV]", "No. of events", 20, -1, 1, 50, 0, 1000, 0);
+			h2 = new hist2D ("lepton_kinematics_above_treshold", "", "Nieves model, ^{16}O({/Symbol n}_{/Symbol m}, {/Symbol m}^{-}), E_{/Symbol n} = 1000 ", "cos{/Symbol q}", "Lepton energy [MeV]", "No. of events", 20, -1, 1, 50, 0, 1000, 0);
+		}
+		
+		~niwg_nieves2 ()
+		{
+			delete h1;
+			delete h2;
+		}
+};	
 
 pattern * choose (int x);
 void run_command (string com);

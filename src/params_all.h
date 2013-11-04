@@ -16,7 +16,6 @@ PARAM(int,beam_file_limit,0)\
 PARAM(bool,beam_weighted,0)\
 PARAM(vec,beam_offset,"0 0 0")\
 PARAM(int,beam_placement,0)\
-PARAM(string,beam_file,"beam/ND280hist.txt")\
 PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,6)\
@@ -30,7 +29,7 @@ PARAM(string,geo_volume,"")\
 PARAM(vec,geo_o,"0 0 0")\
 PARAM(vec,geo_d,"2000 2000 5000")\
 PARAM(int,nucleus_target,2)\
-PARAM(int,nucleus_model,0)\
+PARAM(int,nucleus_model,1)\
 PARAM(bool,dyn_qel_cc,1)\
 PARAM(bool,dyn_qel_nc,1)\
 PARAM(bool,dyn_res_cc,1)\
@@ -47,7 +46,6 @@ PARAM(int,qel_rpa,0)\
 PARAM(int,qel_strange,0)\
 PARAM(int,qel_strangeEM,0)\
 PARAM(double,delta_s,-0.15)\
-PARAM(double,qel_cc_vector_mass,840)\
 PARAM(double,qel_cc_axial_mass,1200)\
 PARAM(double,qel_nc_axial_mass,1350)\
 PARAM(double,qel_s_axial_mass,1200)\
@@ -65,16 +63,15 @@ PARAM(int,mec_kind,1)\
 PARAM(double,mec_ratio_pp,0.6)\
 PARAM(double,mec_ratio_ppp,0.8)\
 PARAM(bool,kaskada_on,1)\
-PARAM(bool,kaskada_newangle,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\
 PARAM(string,formation_zone,"fz")\
-PARAM(double,tau,0)\
+PARAM(double,tau,8)\
 PARAM(double,formation_length,1)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
-PARAM(int,xsec,0)\
+PARAM(int,xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
 

@@ -16,4 +16,4 @@ nucleus_n           = 6
 nucleus_E_b         =  34   // [MeV] binding energy 
 # used in qelevent.cc, target.h as Eb
 nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
-nucleus_target	    = 1
+nucleus_target	    = 2

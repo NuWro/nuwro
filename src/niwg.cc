@@ -15,9 +15,9 @@ string am2 = "_am824";
 
 string am = "1030";
 
-string pvm0 = "-p 'qel_cc_vector_mass = 840' ";
-string pvm1 = "-p 'qel_cc_vector_mass = 940' ";
-string pvm2 = "-p 'qel_cc_vector_mass = 740' ";
+string pvm0 = "";//-p 'qel_cc_vector_mass = 840' ";
+string pvm1 = "";//-p 'qel_cc_vector_mass = 940' ";
+string pvm2 = "";//-p 'qel_cc_vector_mass = 740' ";
 	
 string vm0  = "_vm840_";
 string vm1  = "_vm940_";

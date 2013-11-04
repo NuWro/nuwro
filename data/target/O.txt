@@ -1,4 +1,5 @@
 # number of protons
+target_type	    = 0
 nucleus_p	    = 8
 
 # number of neutrons
@@ -15,3 +16,4 @@ nucleus_n           = 8
 nucleus_E_b         =  34   // [MeV] binding energy 
 # used in qelevent.cc, target.h as Eb
 nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
+nucleus_target	    = 2

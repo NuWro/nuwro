@@ -294,14 +294,16 @@ void hist1D :: finalize ()
 	
 	for (int i = 0; i < nof_dyn; i++)
 		for (int j = 0; j < bins_x; j++)
-			if (norm_type == 6 and tnorm[i][j] != 0)
+			if ((norm_type == 6 or norm_type == 7) and tnorm[i][j] != 0)
 				result[j] += part_result[i][j] / tnorm[i][j];
 			else if (norm_type == 5)
 				result[j] += part_result[i][j] / xsec[i];
+			else if (norm_type == 8)
+				result[j] += part_result[i][j];
 			else if (norm[i] != 0)
 				result[j] += part_result[i][j] / norm[i] / width_x;
 
-	if (norm_type == 1)
+	if (norm_type == 1 or norm_type == 7)
 	{
 		double sum = 0;
 		
@@ -630,9 +632,9 @@ mhist1D :: mhist1D (string name_of_hist, string data_file, string plot_title, st
 
 mhist1D :: ~mhist1D ()
 {
-	//~ finalize ();
-	//save ();
-	//plot ();	
+	finalize ();
+	save ();
+	plot ();	
 
 	for (int i = 0; i < cases; i++)
 		delete [] result[i];
@@ -814,7 +816,7 @@ void pattern :: run ()
 			
 		delete e;
 		
-		//cout << name << ": " << 100*i/events << "%\r" << flush;
+		cout << name << ": " << 100*i/events << "%\r" << flush;
 	}
 	
 	cout << endl;
@@ -4157,6 +4159,149 @@ void tem_nieves_test :: calculate (event *e)
 {
 	h1 -> put (e->out[0].p().z / e->out[0].momentum(), e->out[0].E(), e -> dyn, e -> weight);
 }
+void energy_test :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "800";
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 1;	
+	
+	P.kaskada_on = 1;
+}
+
+void niwg_nieves :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "500 1500";
+	P.read("data/target/O.txt");
+					
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 1;
+}
+
+void niwg_nieves :: calculate (event *e)
+{
+	double Ev = e->in[0].E();
+	double mom = 0;
+	
+	for (int i = 0; i < e->post.size(); i++)
+		if (e->post[i].pdg == 2212 and e->post[i].momentum() > mom)
+			mom = e->post[i].momentum();
+	
+	h1norm -> put (Ev, e->dyn, 1);
+			
+	if (mom >= 1060)
+		h1 -> put (Ev, e->dyn, 1);
+		
+	if (e->out[0].Ek() > 400)
+	{
+		h5norm -> put (Ev, e->dyn, 1);
+			
+		if (mom >= 1060)
+			h5 -> put (Ev, e->dyn, 1);
+	}
+	else
+	{
+		h6norm -> put (Ev, e->dyn, 1);
+			
+		if (mom >= 1060)
+			h6 -> put (Ev, e->dyn, 1);
+	}
+	
+	if (Ev >= 500 and Ev <= 600)
+		h2 -> put (mom, e->dyn, e->weight);
+	else if (Ev >= 900 and Ev <= 1000)
+		h3 -> put (mom, e->dyn, e->weight);
+	else if (Ev >= 1400 and Ev <= 1500)
+		h4 -> put (mom, e->dyn, e->weight);
+}
+
+void niwg_nieves2 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "1000";
+	P.read("data/target/O.txt");
+					
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 1;
+}
+
+void niwg_nieves2 :: calculate (event *e)
+{
+	double Ek = e->out[0].Ek();
+	double cos = e->out[0].p().z/e->out[0].momentum();
+
+	h1 -> put (cos, Ek, e->dyn, e->weight);
+
+	double mom = 0;
+	
+	for (int i = 0; i < e->post.size(); i++)
+		if (e->post[i].pdg == 2212 and e->post[i].momentum() > mom)
+			mom = e->post[i].momentum();
+			
+	if (mom >= 1060)
+		h2 -> put (cos, Ek, e->dyn, e->weight);
+}
+
+void energy_test :: calculate (event *e)
+{	
+	if (e -> fof(211) + e -> fof(-211) + e-> fof(111) == 0 and e-> number_of_interactions() == 0)
+	{
+		double energy0 = 0;
+		double energy1 = 0;
+	
+		for (int i = 0; i < e -> out.size(); i++)
+			energy0 += e->out[i].Ek();
+			
+		for (int i = 0; i < e -> post.size(); i++)
+			energy1 += e->post[i].Ek();
+		
+		h1 -> put (energy0, e -> dyn, e -> weight, 0);
+		h1 -> put (energy1, e -> dyn, e -> weight, 1);
+	}
+}
 
 pattern * choose (int x)
 {
@@ -4211,6 +4356,9 @@ pattern * choose (int x)
 		case 44: wsk = new mb_nce_test; break;
 		case 45: wsk = new mb_nce_test2; break;
 		case 46: wsk = new tem_nieves_test; break;
+		case 47: wsk = new energy_test; break;
+		case 48: wsk = new niwg_nieves; break;
+		case 49: wsk = new niwg_nieves2; break;
 		default: wsk = NULL;
 	}
 	

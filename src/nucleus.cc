@@ -125,10 +125,10 @@ particle nucleus::get_nucleon (vec r)
 		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
 		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek
 		case  4: if(p==n && (p==6 || p==8))
-		         {
-		         	p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
-				break;
-		         }
+				{
+					p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
+					break;
+				}
 		case 0: // proton
 		case 5: // deuterium
 		case 6: // deuterium
@@ -147,4 +147,19 @@ particle nucleus::get_nucleon (vec r)
 			<<" "<<p0.v()<<endl;
 	// assert(p0.v2()<1);
 	return p0;
+}
+
+double nucleus :: Ef (particle &pa)
+{
+	double const M = 0.5*(PDG::mass_proton+PDG::mass_neutron);
+	double kmom = 0;
+	
+	switch (kMomDist)
+	{
+		case 0: case 5: case 6: return 0; break;
+		case 2: kmom = localkf (pa); break;
+		default: kmom = kF(); break;
+	};
+	
+	return sqrt(kmom*kmom + M*M) - M;
 }

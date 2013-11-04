@@ -26,12 +26,12 @@
         <option key="2">2 - Make weighted events from non-zero test events</option>
   </options>
   </param>
-  <param name="user_events" type="radio" ctype="int" default="0">
+  <param name="user_events" type="hidden" ctype="int" default="0">
     <description>Enable axial mass analysis</description>
 	<conditions>
 	  <condition value="0" description="Normal nuwro run"></condition>
 	  <condition value="1" description="Fit axial mass to MiniBoone data">
-          <param name="user_params" type="text" ctype="line" default="">
+          <param name="user_params" type="hidden" ctype="line" default="">
 		<description>Parameters  for the user defined analyser</description>
 	   </param>
 	  </condition>
@@ -75,11 +75,6 @@
           </param>
           <param name="beam_placement" type="text" ctype="int" default="0">
             <description></description>
-          </param>
-        </condition>
-        <condition value="3" description="3">
-          <param name="beam_file" type="text" ctype="string" default="beam/ND280hist.txt">
-            <description>Beam from histogram</description>
           </param>
         </condition>
         <condition value="file" description="select from file" exclude="1">
@@ -151,7 +146,7 @@
 		  <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
 		</options>
 	  </param>
-		  <param name="nucleus_model" type="select" ctype="int" default="0">
+		  <param name="nucleus_model" type="select" ctype="int" default="1">
 			<description><![CDATA[Models for the description of nucleus]]></description>
 			<options>
 			  <option key="0"><![CDATA[constant density]]></option>
@@ -226,9 +221,6 @@
   <param name="delta_s" type="text" ctype="double" default="-0.15">
     <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
   </param>
-  <param name="qel_cc_vector_mass" type="text" ctype="double" default="840">
-    <description><![CDATA[[MeV] vector mass]]></description>
-  </param>
   <param name="qel_cc_axial_mass" type="text" ctype="double" default="1200">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>
@@ -299,9 +291,6 @@
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
-  <param name="kaskada_newangle" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[new implementation in cascade]]></description>
-  </param>
   <param name="kaskada_w" type="text" ctype="double" default="7">
     <description><![CDATA[[MeV] work function]]></description>
   </param>
@@ -325,7 +314,7 @@
       <option key="nofz"><![CDATA[nofz - ]]></option>		
     </options>
   </param>
-  <param name="tau" type="text" ctype="double" default="0">
+  <param name="tau" type="text" ctype="double" default="8">
     <description><![CDATA[parametr in the ranft fz model]]></description>
   </param>
   <param name="formation_length" type="text" ctype="double" default="1">
@@ -337,7 +326,7 @@
   <param name="step" type="text" ctype="double" default="0.2">
     <description><![CDATA[[fm] length of one step in cascade]]></description>
   </param>
-  <param name="xsec" type="select" ctype="int" default="0" >
+  <param name="xsec" type="select" ctype="int" default="1" >
     <description><![CDATA[model of cross sections in cascade]]></description>
     <options>
       <option key="0"><![CDATA[metropolis]]></option>

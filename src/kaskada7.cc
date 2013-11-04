@@ -52,12 +52,12 @@ int kaskada::kaskadaevent()
 		particle p1 = parts.front(); //point a particle from a queue
 		parts.pop(); 				 //remove this particle from a temp vector
 		p = &p1;		
-
+		
 		X = prepare_interaction();
 						
 		if (!move_particle()) continue;	          //particle was jailed
 				
-		if (X.xsec == 0 or X.r >= radius)         //leaving nucleus
+		if (X.r >= radius)         //leaving nucleus
 			leave_nucleus();
 		else if(  max_step < X.freepath           //no interaction during max_step 
 		          or !make_interaction()          //or unable to generate kinematics or Pauli blocking
@@ -77,9 +77,7 @@ void kaskada::prepare_particles()
 	for (int i = 0; i < e->out.size(); i++)
 	{
 		particle p1 = e->out[i];
-		
-		int ncount = 0;
-						
+								
 		if (nucleon_or_pion (p1.pdg))
 		{		  
 			double fz = formation_zone(p1, par, *e); //calculate formation zone
@@ -89,13 +87,10 @@ void kaskada::prepare_particles()
 			{	
 				p1.primary = true;
 				
-				ncount++;
-
 				if (e->flag.qel and (e->par.sf_method != 0 or e->par.nucleus_target == 1)) //add the binding energy substracted in the primary vertex (for Global Fermi Gas and Spectral Function)
 					p1.set_energy(p1.E() + par.nucleus_E_b);
 					
-				if (nucleon(e->in[ncount].pdg))				
-					p1.set_fermi(e->in[ncount].Ek());
+				p1.set_fermi(nucl->Ef(p1));
 			
 				if (p1.Ek() <= par.kaskada_w + p1.his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
 				{
@@ -147,6 +142,7 @@ interaction_parameters kaskada::prepare_interaction()
 		res.freepath = -log (frandom ()) / res.xsec;
 		res.frac_proton = res.xsec_p * res.dens_p / res.xsec;
 	}
+	else res.freepath = 2.0 * max_step;
 	               
     return res;
 }
@@ -212,7 +208,6 @@ bool kaskada::finalize_interaction()
 	p->endproc=I->process_id();
 	double rem_en = -1.0;
 	int first_nucl;
-	bool abs_first = true;
 		
 	for (int i = 0; i < X.n; i++)
 	{
@@ -225,17 +220,7 @@ bool kaskada::finalize_interaction()
 		if (nucleon (X.p[i].pdg))
 		{			
 			if (!p->nucleon())
-			{
-				if (I->process_id() != 25)
-					X.p[i].set_fermi(X.p2.Ek());
-				else if (abs_first)
-				{
-					abs_first = false;
-					X.p[i].set_fermi(X.p2.Ek());
-				}
-				else
-					X.p[i].set_fermi(nucl->spectator->Ek());
-			}
+				X.p[i].set_fermi(nucl->Ef(X.p2));
 			else if (rem_en < 0)
 			{
 				first_nucl = i;
@@ -246,11 +231,11 @@ bool kaskada::finalize_interaction()
 				if (rem_en > X.p[i].Ek())
 				{
 					X.p[first_nucl].set_fermi (p->his_fermi);
-					X.p[i].set_fermi (X.p2.Ek());
+					X.p[i].set_fermi (nucl->Ef(X.p2));
 				}
 				else
 				{
-					X.p[first_nucl].set_fermi (X.p2.Ek());
+					X.p[first_nucl].set_fermi (nucl->Ef(X.p2));
 					X.p[i].set_fermi (p->his_fermi);
 				}
 			}
