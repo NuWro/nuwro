@@ -1935,7 +1935,7 @@ double qplus(double w, double E)
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-void model_2body2 (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nucini1, particle &nucini2, 
+void model_2body2 (nucleus t, double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nucini1, particle &nucini2, 
 		   bool fsi, double poten)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
@@ -1968,8 +1968,39 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 
 	do
 	{
-		N1=rand_from_ball (meckf);
-		N2=rand_from_ball (meckf);
+	  particle probe1 = t.get_nucleon ();
+	  vec pos (probe1.x, probe1.y, probe1.z);
+	  
+	  double localfermi = t.localkf (probe1);
+	  
+	  nuc1.r.x=probe1.r.x;
+	  nuc1.r.y=probe1.r.y;
+	  nuc1.r.z=probe1.r.z;
+	  
+	  nuc2.r.x=probe1.r.x;
+	  nuc2.r.y=probe1.r.y;
+	  nuc2.r.z=probe1.r.z;
+	  /*
+	  nucleon[0] = t.get_nucleon (pos);
+	  nucleon[1] = t.get_nucleon (pos);
+	  
+	  particle probe2 = t.get_nucleon ();
+	  particle probe3 = t.get_nucleon ();
+	  N1=probe1.p4();
+	  N2=probe2.p4();
+	  N2=probe3.p4();
+	  */
+		N1=rand_from_ball (localfermi);
+		N2=rand_from_ball (localfermi);
+		/*
+		N1=spectral_choice (6, 6);
+		N2=-N1;
+		*/
+	
+		//N1=rand_from_ball (meckf);
+		//N2=rand_from_ball (meckf);
+		
+		
 		//cout<<E<<"  "<<w<<"  "<<q<<"  "<<N1<<"  "<<N2<<endl;
 		length1= sqrt(mecM2 + N1.norm2());
 		length2= sqrt(mecM2 + N2.norm2());//total energy
@@ -2031,7 +2062,7 @@ void model_2body2 (double E, double w, double q, double Bin, particle &meclep, p
 ///////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////
-void model_3body (double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nuc3, particle &nucini1, particle &nucini2, 
+void model_3body (nucleus t, double E, double w, double q, double Bin, particle &meclep, particle &nuc1, particle &nuc2, particle &nuc3, particle &nucini1, particle &nucini2, 
 		  particle &nucini3, bool fsi, double poten)
 {
 	//it is assumed that neutrino direction is (0,0,1); perhaps should be relaxed...
@@ -2063,9 +2094,37 @@ void model_3body (double E, double w, double q, double Bin, particle &meclep, pa
 
 	do
 	{
-		N1=rand_from_ball (meckf);
-		N2=rand_from_ball (meckf);
-		N3=rand_from_ball (meckf);
+	  particle probe1 = t.get_nucleon ();
+	  vec pos (probe1.x, probe1.y, probe1.z);
+	  
+	  double localfermi = t.localkf (probe1);
+	  
+	  nuc1.r.x=probe1.r.x;
+	  nuc1.r.y=probe1.r.y;
+	  nuc1.r.z=probe1.r.z;
+	  
+	  nuc2.r.x=probe1.r.x;
+	  nuc2.r.y=probe1.r.y;
+	  nuc2.r.z=probe1.r.z;
+	  
+	  nuc3.r.x=probe1.r.x;
+	  nuc3.r.y=probe1.r.y;
+	  nuc3.r.z=probe1.r.z;
+	  
+	  /*
+	  nucleon[0] = t.get_nucleon (pos);
+	  nucleon[1] = t.get_nucleon (pos);
+	  
+	  particle probe2 = t.get_nucleon ();
+	  particle probe3 = t.get_nucleon ();
+	  N1=probe1.p4();
+	  N2=probe2.p4();
+	  N2=probe3.p4();
+	  */
+		N1=rand_from_ball (localfermi);
+		N2=rand_from_ball (localfermi);
+		N3=rand_from_ball (localfermi);
+	  
 		//cout<<E<<"  "<<w<<"  "<<q<<"  "<<N1<<"  "<<N2<<endl;
 		length1= sqrt(mecM2 + N1.norm2());
 		length2= sqrt(mecM2 + N2.norm2());
@@ -2203,14 +2262,14 @@ bool fsi, double poten, bool nowy)
 
 	if ( weight2>(weight2+weight3)*los() )
 	{							 //cout<<"dwa"<<endl;
-		model_2body2 (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucini1, mecnucini2, fsi, poten);
+		model_2body2 (t, E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucini1, mecnucini2, fsi, poten);
 		//cout<<"2body"<<endl;
 		vec ped3 = vec (0,0,0);
 		mecnucleon3.set_momentum(ped3);
 	}
 	else
 	{							 //cout<<"trzy"<<endl;
-		model_3body (E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, mecnucini1, mecnucini2, mecnucini3, fsi, poten);
+		model_3body (t, E, w, q, 8, meclepton, mecnucleon1, mecnucleon2, mecnucleon3, mecnucini1, mecnucini2, mecnucini3, fsi, poten);
 		//cout<<"3body"<<endl;
 	}
 

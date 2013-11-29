@@ -47,6 +47,16 @@ TPythia6 *pythia71 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);
 extern double SPP[2][2][2][3][40];
 
+double pdd_red (double en)
+{
+  if (en>=1000)
+    return 0.85;
+  if (en<1000 && en>750)
+    return 0.65 + en*0.05/250.0;
+  if (en<=750)
+    return 0.2 + en*0.2/250.0;
+}
+
 ///////////////////////////////////////////////////////////////////
 void
 resevent2 (params & p, event & e, bool cc)
@@ -82,7 +92,7 @@ int numneu=p.nucleus_n;
 	break;
 	case 1: _E_bind= p.nucleus_E_b;//FG
 	break;
-	case 2: _E_bind=0;//local FG
+	case 2: _E_bind= 0;//local FG
 	break;
 	case 3: _E_bind=0;//Bodek
 	break;
@@ -463,6 +473,17 @@ double Meff2=Meff*Meff;
 						     W) * alfadelta (j, k, l,
 								     t, W);
 //cout<<delta_spp<<endl;
+
+//approximate implementation of pionless delta decays
+	if ( (p.nucleus_p + p.nucleus_n)>7 )
+	{//cout<<delta_spp<<"  ";
+	  //double ennergy = e.in[0].t;
+	  //double rescale = pdd_red (ennergy);
+	  delta_spp*=pdd_red(e.in[0].t );
+	  //cout<<ennergy<<"  "<<rescale<<"  "<<delta_spp<<endl;
+	}
+//approximate implementation of pionless delta decays	
+	  
 	      double spp_strength = dis_spp + delta_spp;
 //cout<<"spp "<<W<<" "<<nu<<" "<<spp_strength<<endl;
 	      e.weight = spp_strength * 1e-38 * przedzial;

@@ -99,7 +99,7 @@ $(BIN)/ladek_topologies: src/event1.o src/event1dict.o src/pdg.o src/particle.o 
           src/fsi.o src/pitab.o
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generatormt.o src/test.o src/dirs.o
+$(BIN)/test: src/event1.o src/event1dict.o src/pdg.o src/particle.o  src/generatormt.o src/test.o src/dirs.o src/nucleus.o src/nucleus_data.o src/isotopes.o src/elements.o
 		$(LINK.cc) $^ -o $@
 		
 $(BIN)/ganalysis: $(addprefix src/, \

@@ -4,6 +4,8 @@
 #include "event1.h"
 #include "params.h"
 
+double pdd_red (double );
+
 void resevent2 (params & p, event & e, bool cc);
 
 #endif

@@ -338,6 +338,17 @@ int f ()
   	
   }
   
+  double nuc_kin_en()
+  {
+    double sum=0;
+    for (int k = 0; k<post.size(); k++)
+  		{
+  			if ( post[k].pdg == 2212 || post[k].pdg == 2112 )
+			  sum+=post[k].Ek();
+  		}
+  		return sum;
+  }
+  
   int num_part_thr (int pdg, bool fsi, double threshold)	// fsi = 0 - before FSI, 1 - after FSI
   {
   	int number = 0;
@@ -589,6 +600,59 @@ int f ()
   	return mom[1];
   	
   }
+  
+  double vert_act (double pion_threshold, bool fsi, double proton_threshold)
+  {
+    double veract=0.0;
+    
+    if(fsi)
+  	{
+    for (int k = 0; k<post.size(); k++)
+  		{
+		  if ((post[k].pdg == 211) && (post[k].momentum() < pion_threshold) )
+		    veract+=post[k].t-post[k].mass();
+		 
+		  if ((post[k].pdg == -211) && (post[k].momentum() < pion_threshold) )
+		    veract+=post[k].t-post[k].mass();
+		  
+		  if ((post[k].pdg == 2212) && (post[k].momentum() < proton_threshold) )
+		    veract+=post[k].t-post[k].mass();
+		  
+		  if (post[k].pdg == 321)//positive kaon; assume never reconstructed
+		    veract+=post[k].t-post[k].mass();
+		}
+		return veract;
+	}
+	else if (!fsi)
+  	{
+	   for (int k = 0; k<out.size(); k++)
+  		{
+		  if ((out[k].pdg == 211) && (out[k].momentum() < pion_threshold) )
+		    veract+=out[k].t-out[k].mass();
+		  
+		  if ((out[k].pdg == -211) && (out[k].momentum() < pion_threshold) )
+		    veract+=out[k].t-out[k].mass();
+		  
+		  if ((out[k].pdg == 2212) && (out[k].momentum() < proton_threshold) )
+		    veract+=out[k].t-out[k].mass();
+		  
+		  if (out[k].pdg == 321)//positive kaon; assume never reconstructed
+		    veract+=out[k].t-out[k].mass();
+		}
+		return veract;
+	}
+	
+  }
+  
+  
+
+  double Erec (double Bin)
+  {
+    double massprim = in[1].mass() - Bin;
+    return ( out[0].t*massprim + 0.5* (out[1].mass()*out[1].mass() - out[0].mass()*out[0].mass() - massprim*massprim) )/ 
+    ( massprim - out[0].t + out[0].z);
+  }
+  
 
 	
 public:

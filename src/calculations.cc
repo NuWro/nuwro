@@ -20,7 +20,7 @@ double crosssection (string filename)
 		do
 		{
 			getline (Input, y);
-			for (int j = 0; j < 8; j++)
+			for (int j = 0; j < 10; j++)
 				{
 					for (int k = 0; k < 3; k++)
 					{
@@ -46,7 +46,7 @@ double crosssection (string filename, int dyn)
 	string y;
 	double x;
 		
-	vector<double> v(8);
+	vector<double> v(10);
 	ifstream Input (filename.c_str());
 
 	if (Input)
@@ -54,7 +54,7 @@ double crosssection (string filename, int dyn)
 		do
 		{
 			getline (Input, y);
-			for (int j = 0; j < 8; j++)
+			for (int j = 0; j < 10; j++)
 				{
 					for (int k = 0; k < 3; k++)
 					{
@@ -5158,25 +5158,37 @@ void xsec_calc()
 		temp << en;
 		temp >> energy;
 		
-		string fproton = "towork/E" + energy + "_proton.root.txt";
-		string fneutron = "towork/E" + energy + "_neutron.root.txt";
+//		string fproton = "towork/E" + energy + "_proton.root.txt";
+//		string fneutron = "towork/E" + energy + "_neutron.root.txt";
+		string tmec = "towork/E" + energy + "_mec.root.txt";
 		
-		double proton[6];
-		double neutron[6];
-		double res[6];
+//		double proton[8];
+//		double neutron[8];
+//		double res[8];
+		double npnh;
 		
 		double energia = en/1000.0;
 		file << energia;
 		
-		for (int i = 0; i < 6; i++)
-		{
-			proton[i] = 1e38*crosssection(fproton, i);
-			neutron[i] = 1e38*crosssection(fneutron, i);
-			res[i] = (proton[i] + neutron[i])/2.0;
-			file << " " << res[i]/energia;
-		}
+		//~ for (int i = 0; i < 10; i++)
+		//~ {
+			//~ int a = i;
+			//~ 
+			//~ if (i == 6 or i == 7)
+				//~ continue;
+			//~ else if (i > 7)
+				//~ a = i - 2;
+			//~ 
+			//~ proton[i] = 1e38*crosssection(fproton, a);
+			//~ neutron[i] = 1e38*crosssection(fneutron, a);
+			//~ res[i] = (proton[i] + neutron[i])/2.0;
+			//~ file << " " << res[i]/energia;
+		//~ }
 		
-		file << " " << (res[0] + res[2] + res[4])/energia << " " << (res[1] + res[3] + res[5])/energia << endl;
+		npnh = 1e38*crosssection(tmec,8);
+		
+		//file << " " << (res[0] + res[2] + res[4] + res[6])/energia << " " << (res[1] + res[3] + res[5] + res[7])/energia << endl;
+		file << " " << npnh/energia << endl;
 	}
 	
 	file.close();

@@ -101,7 +101,11 @@ void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t)
 	do
 	{
 		nucleon[0] = t.get_nucleon ();
-		nucleon[1] = t.get_nucleon ();
+		vec pos (nucleon[0].x, nucleon[0].y, nucleon[0].z);
+		nucleon[1] = t.get_nucleon (pos);
+					
+		//nucleon[1] = t.get_nucleon ();
+		//nucleon[1].r=nucleon[0].r;//both should start from the same point !
 						
 		suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
 	}								 //to be able to make Lorentz boost and to "decay"

@@ -891,11 +891,13 @@ void xsec_sim()
 		temp << en;
 		temp >> energy;
 		
-		string com1 = "./bin/nuwro -o 'towork/E" + energy + "_proton.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + hydrogen;
-		string com2 = "./bin/nuwro -o 'towork/E" + energy + "_neutron.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + fneutron;
+		//string com1 = "./bin/nuwro -o 'towork/E" + energy + "_proton.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + hydrogen;
+		//string com2 = "./bin/nuwro -o 'towork/E" + energy + "_neutron.root' " + events0k + wocoh + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + fneutron;
+		string com3 = "./bin/nuwro -o 'towork/E" + energy + "_mec.root' " + events0k + mec + numu + "-p 'qel_nc_axial_mass = 1030' -p 'qel_cc_axial_mass = 1030' -p 'beam_type = 0' -p 'beam_energy = " + energy + "' " + carbon;
 		
-		run(com1);
-		run(com2);
+		//run(com1);
+		//run(com2);
+		run(com3);
 	}
 }
 

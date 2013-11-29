@@ -20,7 +20,10 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 
 ################################################################################################
 beam_type = 0
-beam_energy = 150
+# total energy,not a kinetic energy
+#beam_energy = 378.6
+#beam_energy = 301.6
+beam_energy = 257.6
 
 # the PDG code of the beam particle
 # 12 - nu_e    
@@ -59,7 +62,7 @@ nucleus_E_b         =  27     // MeV
 nucleus_kf          = 225   // MeV
 
 nucleus_model       = 1  // 0 - flatnucleus, 1 - /anynucleus
-nucleus_target = 1
+nucleus_target = 2
 
 #####################################################################################################
 #proc_qel_nc      = 1

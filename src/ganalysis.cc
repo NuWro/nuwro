@@ -4303,6 +4303,201 @@ void energy_test :: calculate (event *e)
 	}
 }
 
+void bodek :: calculate (event *e)
+{
+	h2 -> put (e->in[1].momentum(), e->dyn, e->weight);
+	
+	using namespace PDG;
+	
+	double x = e->q0() + e->q2() / 2.0 / mass_proton;
+	x /= 1000.0;
+	int i;
+	
+	double Q2 = -e->q2() / 1000000.0;
+	
+	if (Q2 >= 0.05 and Q2 < 0.15)
+		i = 0;
+	else if (Q2 >= 0.15 and Q2 < 0.45)
+		i = 1;
+	else if (Q2 >= 0.45 and Q2 < 0.55)
+		i = 2;
+	else if (Q2 >= 0.55 and Q2 < 0.85)
+		i = 3;
+	else if (Q2 >= 0.85 and Q2 < 1.15)
+		i = 4;
+	else if (Q2 >= 1.15 and Q2 < 1.25)
+		i = 5;
+	else if (Q2 >= 1.25 and Q2 < 1.75)
+		i = 6;
+	else if (Q2 >= 1.75 and Q2 < 2.25)
+		i = 7;
+	else
+		return;
+		
+	h1 -> put (x, e -> dyn, e -> weight, i);	
+}
+
+void bodek :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "10000";
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 1;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+		
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 1;
+}
+
+void phd1 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "1000";
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 1;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 1;
+}
+
+void phd1 :: calculate (event *e)
+{
+	h1 -> put (e->out[1].momentum(), e->dyn, e->weight);
+}
+
+void phd2 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "200 2000";
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 1;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 1; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+}
+
+void phd2 :: calculate (event *e)
+{
+	h1 -> histogram :: put (e -> in[0].E(), e -> dyn);
+	h1 -> put (e -> in[0].E(), e -> dyn, e -> weight);
+}
+
+void mec_bu :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "0 2000";
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+}
+
+void mec_bu :: calculate (event *e)
+{
+	h1 -> histogram :: put (e -> in[0].E(), e -> dyn);
+	h2 -> histogram :: put (e -> in[0].E(), e -> dyn);
+
+	h1 -> put (e -> in[0].E()/1000.0, e -> dyn, e -> weight);
+
+	if (e->out[1].p().z < 0)
+		h2 -> put (e -> in[0].E()/1000.0, e -> dyn, e -> weight);
+}
+
+void mec_bu2 :: set_params ()
+{
+	P.read("data/beam/T2Knumu.txt");
+	P.read("data/target/C.txt");
+					
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+}
+
+void mec_bu2 :: calculate (event *e)
+{
+	h1 -> put (e -> out[1].Ek()/1000.0, e -> dyn, e -> weight);
+
+	if (e->out[1].p().z < 0)
+		h2 -> put (e -> out[1].Ek()/1000.0, e -> dyn, e -> weight);
+}
+
 pattern * choose (int x)
 {
 	pattern *wsk;
@@ -4359,6 +4554,11 @@ pattern * choose (int x)
 		case 47: wsk = new energy_test; break;
 		case 48: wsk = new niwg_nieves; break;
 		case 49: wsk = new niwg_nieves2; break;
+		case 50: wsk = new bodek; break;
+		case 51: wsk = new phd1; break;
+		case 52: wsk = new phd2; break;
+		case 53: wsk = new mec_bu; break;
+		case 54: wsk = new mec_bu2; break;
 		default: wsk = NULL;
 	}
 	

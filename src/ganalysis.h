@@ -5,7 +5,7 @@
 #include <string>
 
 const int nof_dyn = 10; //number of dynamics in NuWro
-const int nof_class = 50;
+const int nof_class = 55;
 
 float mb_nce_start = 0;
 int mb_nce_nof = 0;
@@ -74,8 +74,13 @@ const bool active_class[nof_class] =
 	0,	//MB NCEL MEC MODELS COMPARE
 	0,	//NIEVES KINEMATICS IN TEM MODEL TEST
 	0,	//energy test
-	1,	//NIWG nucleons momentum in Nieves after energy balance update
-	0	//NIWG lepton kinematics for events with protons above treshold (Nieves)
+	0,	//NIWG nucleons momentum in Nieves after energy balance update
+	0,	//NIWG lepton kinematics for events with protons above treshold (Nieves)
+	0,	//Bodek nu - Q2/2M
+	0,	//phd1 -> proton out momentum distributions fg vs lfg vs sf
+	0,	//phd2 -> qel cross section...
+	0,	//backward muon in MEC
+	1	//backward muon in MEC 2
 };
 
 void run_command (string com)
@@ -1605,6 +1610,202 @@ class niwg_nieves2 : public pattern
 			delete h2;
 		}
 };	
+
+class bodek : public pattern
+{
+	protected:
+	
+		static string model;
+		
+		mhist1D *h1;
+		hist1D *h2;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		bodek () : pattern ("Bodek", 10000000)
+		{
+			h1 = new mhist1D (model, "", "{/Symbol n}_{/Symbol m}, E = 10 GeV, CC QEL, on carbon", "{/Symbol n} - Q^{2}/2M", "No. of events", 100, -0.5, 0.5, 8, 1, 100);
+			h1 -> cnames[0] = "0.05-0.15";
+			h1 -> cnames[1] = "0.15-0.45";
+			h1 -> cnames[2] = "0.45-0.55";
+			h1 -> cnames[3] = "0.55-0.85";
+			h1 -> cnames[4] = "0.85-1.15";
+			h1 -> cnames[5] = "1.15-1.25";
+			h1 -> cnames[6] = "1.25-1.75";
+			h1 -> cnames[7] = "1.75-2.25";
+			h2 = new hist1D ("nucleon_momentum_" + model, "", "", "Nucleon momentum [MeV]", "Probability", 100, 0, 1000, 1, 1);
+		}
+		
+		~bodek()
+		{
+			h1 -> finalize();
+			
+			string fname = "analysis/average_" + model + ".txt";
+			
+			ofstream favg(fname.c_str());
+			
+			favg << "#Q2 | average | RMS \n\n";
+			
+			double Q2[8] = {0.1, 0.3, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0};
+						
+			for (int i = 0; i < 8; i++)
+			{
+				double avg = 0;
+				double rms = 0;
+				double norm = 0;			
+	
+				for (int j = 0; j < 100; j++)
+				{	
+					double x = (h1->begin_x + h1 -> width_x * (j + 0.5));
+										
+					avg += x * h1 -> result[i][j];
+					rms += x * x * h1 -> result[i][j];
+					
+					norm += h1 -> result[i][j];
+				}
+				
+				avg /= norm;
+				rms /= norm;
+				rms = sqrt(rms);
+				
+				favg << Q2[i] << " " << avg << " " << rms << endl;
+			}
+			
+			favg.close();
+			
+			delete h1;
+			delete h2;
+		}
+};
+
+string bodek::model = "spectral_function";
+
+class phd1 : public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		phd1 () : pattern ("phd1", 5000000)
+		{
+			h1 = new hist1D ("proton_momentum_sf", "", "", "Proton momentum [MeV/c]", "No. of events", 100, 0, 2000, 1, 100);
+		}
+		
+		~phd1 ()
+		{
+			delete h1;
+		}
+};	
+
+class phd2: public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+		
+		phd2 () : pattern ("phd2", 5000000)
+		{
+			h1 = new hist1D ("qel_xsec_gfg", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 36, 200, 2000, 6);
+		}
+		
+		~phd2 ()
+		{
+			delete h1;
+		}
+};
+
+class mec_bu: public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		hist1D *h2;
+		hist1D *h3;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+		
+		mec_bu () : pattern ("mec_bu", 5000000)
+		{
+			h1 = new hist1D ("backward_muons_all", "", "", "Neutrino Energy [GeV]", "% of events with backward muon", 40, 0, 2, 6);
+			h2 = new hist1D ("backward_muons_backward", "", "", "Neutrino Energy [GeV]", "% of events with backward muon", 40, 0, 2, 6);
+			h3 = new hist1D ("backward_muons", "", "", "Neutrino Energy [GeV]", "% of events with backward muon", 40, 0, 2, 6);
+			h1 -> ploted = true;
+			h1 -> saved = true;
+			h2 -> ploted = true;
+			h2 -> saved = true;
+			h3 -> finalized = true;
+		}
+		
+		~mec_bu ()
+		{
+			h1 -> finalize();
+			h2 -> finalize();
+			
+			for (int i = 0; i < h3 -> bins_x; i++)
+				if (h1 -> result[i] != 0)
+					h3 -> result[i] = 100.0 * h2 -> result[i] / h1 -> result[i];
+	
+			delete h1;
+			delete h2;
+			delete h3;
+		}
+};
+
+class mec_bu2: public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		hist1D *h2;
+		hist1D *h3;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+		
+		mec_bu2 () : pattern ("mec_bu", 5000000)
+		{
+			h1 = new hist1D ("backward_muons2_all", "", "", "Neutrino Energy [GeV]", "% of events with backward muon", 40, 0, 2, 0);
+			h2 = new hist1D ("backward_muons2_backward", "", "", "Neutrino Energy [GeV]", "% of events with backward muon", 40, 0, 2, 0);
+			h3 = new hist1D ("backward_muons2", "", "", "Muon kinetic energy [GeV]", "% of backward muon", 40, 0, 2, 0);
+			h1 -> ploted = true;
+			h1 -> saved = true;
+			h2 -> ploted = true;
+			h2 -> saved = true;
+			h3 -> finalized = true;
+		}
+		
+		~mec_bu2 ()
+		{
+			h1 -> finalize();
+			h2 -> finalize();
+			
+			for (int i = 0; i < h3 -> bins_x; i++)
+				if (h1 -> result[i] != 0)
+					h3 -> result[i] = 100.0 * h2 -> result[i] / h1 -> result[i];
+	
+			delete h1;
+			delete h2;
+			delete h3;
+		}
+};
 
 pattern * choose (int x);
 void run_command (string com);

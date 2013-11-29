@@ -87,7 +87,8 @@ void kaskada::prepare_particles()
 			{	
 				p1.primary = true;
 				
-				if (e->flag.qel and (e->par.sf_method != 0 or e->par.nucleus_target == 1)) //add the binding energy substracted in the primary vertex (for Global Fermi Gas and Spectral Function)
+				if ((e->flag.qel or e->flag.res) and (e->par.sf_method != 0 or e->par.nucleus_target == 1)) 
+				  //add the binding energy substracted in the primary vertex (for Global Fermi Gas Local Fermi Gas and Spectral Function)
 					p1.set_energy(p1.E() + par.nucleus_E_b);
 					
 				p1.set_fermi(nucl->Ef(p1));
@@ -183,12 +184,14 @@ bool kaskada::make_interaction()
 			exit(18);
 		    return false;
 		}
-
+		
+	
 	if ((p->pdg == 2112 or p->pdg == 2212) and nucl->pauli_blocking (X.p, X.n)) //check if there was Pauli blocking
 		return false;
-		
-	assert(check(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
-	assert(check2(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
+
+	//JTS - removed assertion below	
+	//assert(check(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
+	//assert(check2(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
 
 	return true;
 }
@@ -237,7 +240,7 @@ bool kaskada::finalize_interaction()
 				{
 					X.p[first_nucl].set_fermi (nucl->Ef(X.p2));
 					X.p[i].set_fermi (p->his_fermi);
-				}
+				}	
 			}
 						
 			if (X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi) //jailed nucleon if its kinetic energy is lower than work function
@@ -266,7 +269,7 @@ bool kaskada::finalize_interaction()
 bool kaskada::move_particle()
 {	
 	p->krok (min (max_step, X.freepath)); // propagate by no more than max_step
-	
+
 	if (!p->nucleon()) return true;  // pion can not be jailed
 
 	if (p->Ek() <= par.kaskada_w + p->his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy

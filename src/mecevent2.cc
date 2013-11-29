@@ -93,7 +93,20 @@ mecevent2 (params & p, event & e, nucleus & t, bool cc, bool nowy)
 		e.weight = wynik;
 
 		//cout<<mecnucleon1<<"  "<<mecnucleon2<<"  "<<mecnucleon3<<endl;
-
+		
+		/*
+		particle probe = t.get_nucleon ();
+		mecnucleon1.r = probe.r;
+		mecnucleon2.r = probe.r;
+		mecnucleon3.r = probe.r;
+		mecnucini1.r = probe.r;
+		mecnucini2.r = probe.r;
+		mecnucini3.r = probe.r;
+		
+		mecnucleon1.his_fermi = t.kF();
+		mecnucleon2.his_fermi = t.kF();
+		mecnucleon3.his_fermi = t.kF();//a hybrid model; momentum is selected according to const kf; position according to density
+		*/
 		e.out.push_back (meclepton);
 		//cout<<"sleep5"<<"  "<<meclepton<<endl;
 e.out.push_back (mecnucleon1);

@@ -173,7 +173,7 @@ public:
 void NData::get_sij (double Ek_,double &resii,double &resij)
 {   set_Ek(Ek_);
 	if (Ek_ < 335 * MeV)
-	{   Ek_=max(Ek, 40 * MeV); 
+	{   Ek_=max(Ek, 30 * MeV); //makes virtually no difference to set 25 MeV here
 		const double M = (mass_proton + mass_neutron) / 2;
 		double v = sqrt (1 - pow2 (M / (Ek+M)));
 		resij=((34.10 / v - 82.20) / v + 82.2)* millibarn;		
@@ -674,7 +674,7 @@ bool PiData::pion_tpp (particle& p1, particle& p2, int &n, particle p[])
 /// pion absorption on a pair of nucleons
 bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particle p[])
   { 
-	static particle p2a;  
+	static particle p2a, p3a;
 	if(t.Ar()<2) return 0;
     n=2;  
 	k2=abs_;
@@ -683,7 +683,7 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
     //switch(canal)  
     //{ case 0: case 5: return 0; // no absorbtion for (pi- n) and (pi+ p) 
     //}
-    
+    /* old version
 	if(!t.remove_nucleon(p2))
 		return false;       // pretend that p2 is already removed
     p2a = t.get_nucleon (p1.r);	// get nucleon from this place in Nucleus
@@ -691,10 +691,121 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
     t.insert_nucleon(p2);       // stop pretending :)
     p[0] = p2;
     p[1] = p2a;
+    
     if (p1.pdg == pdg_piP && p2.pdg == pdg_neutron)
       p[0].set_proton ();
     else if (p1.pdg == -pdg_piP && p2.pdg == pdg_proton)
       p[0].set_neutron ();
+    end old version
+    */ 
+    p2a = t.get_nucleon (p1.r);	// get nucleon from this place in Nucleus
+    p2a.pdg = pdg_proton;
+    p3a.pdg = pdg_neutron;
+    p[0] = p2;
+    p[1] = p2a;
+    
+    if (p1.pdg == pdg_piP)
+    {
+    if ( frandom ()<7.0/8.0 ) 
+    { p[0].set_proton (); 
+      p[1].set_proton (); 
+      if (p2.pdg==pdg_proton)
+      t.remove_nucleon(p3a);
+      if (p2.pdg==pdg_neutron)
+      t.remove_nucleon(p2a);
+    }
+      else 
+      { p[0].set_neutron (); 
+        p[1].set_proton (); 
+	if (p2.pdg==pdg_proton)
+	{t.remove_nucleon(p3a);
+	t.remove_nucleon(p3a);
+	t.insert_nucleon(p2a);
+	}
+        if (p2.pdg==pdg_neutron)
+        t.remove_nucleon(p3a);
+       }
+      }
+      
+      if (p1.pdg == -pdg_piP)
+    {
+    if ( frandom ()<7.0/8.0 ) 
+    { p[0].set_neutron (); 
+      p[1].set_neutron (); 
+      if (p2.pdg==pdg_neutron)
+      t.remove_nucleon(p2a);
+      if (p2.pdg==pdg_proton)
+      t.remove_nucleon(p3a);
+    }
+      else 
+      { p[0].set_neutron (); 
+        p[1].set_proton (); 
+	if (p2.pdg==pdg_neutron)
+	{t.remove_nucleon(p2a);
+	t.remove_nucleon(p2a);
+	t.insert_nucleon(p3a);
+	}
+        if (p2.pdg==pdg_proton)
+        t.remove_nucleon(p2a);
+       }
+      }
+      
+      if (p1.pdg == 111)//p2a=proton p3a=neutron
+    {
+    if ( frandom ()<4.0/5.0 ) 
+    { p[0].set_neutron (); 
+      p[1].set_proton (); 
+      if (p2.pdg==pdg_neutron)
+      t.remove_nucleon(p2a);
+      if (p2.pdg==pdg_proton)
+      t.remove_nucleon(p3a);
+    }
+      else 
+      { 
+	if ( frandom ()<0.5 ) 
+	{
+	  p[0].set_neutron (); 
+          p[1].set_neutron ();
+	  if (p2.pdg==pdg_neutron)
+      t.remove_nucleon(p3a);
+      if (p2.pdg==pdg_proton)
+      {t.remove_nucleon(p2a);
+      t.remove_nucleon(p2a);
+      t.insert_nucleon(p3a);
+      }
+	}
+	else
+	{
+	  p[0].set_proton (); 
+          p[1].set_proton ();
+	  if (p2.pdg==pdg_proton)
+      t.remove_nucleon(p2a);
+      if (p2.pdg==pdg_neutron)
+      {t.remove_nucleon(p3a);
+      t.remove_nucleon(p3a);
+      t.insert_nucleon(p2a);
+      }
+	}
+       }
+      }
+      /*
+    if (p1.pdg == - pdg_piP)
+    {
+    if ( frandom ()<7.0/8.0 ) { p[0].set_neutron (); p[1].set_neutron (); }
+      else { p[0].set_proton (); p[1].set_neutron (); }
+    }
+    
+    if (p1.pdg == 111)
+    {
+    if ( frandom ()<0.8 ) { p[0].set_neutron (); p[1].set_proton (); }
+      else { 
+	
+	p[0].set_proton (); p[1].set_neutron (); }
+    }
+    */
+    
+    
+    //cout<<"abs"<<"  "<<endl;
     return ::decay (p1 + p2 + p2a, p[0], p[1]);
   }
 
@@ -756,6 +867,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
 	
 	//cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
 	
+	double resc=1;
 	
     switch (X.pdg)
       {
@@ -764,13 +876,21 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
+      X.xsec_n*=resc;
+      X.xsec_p*=resc;
+      if (X.Ek<40)
+	X.xsec_p*=0.9;//effective Pauli blocking 
       //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       break;
-	  case pdg_proton:	ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
+	  case pdg_proton:	ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
 	  
 	  //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
 	  X.xsec_n*=mod;
          X.xsec_p*=mod;
+	 X.xsec_n*=resc;
+         X.xsec_p*=resc;
+	 if (X.Ek<40)
+	X.xsec_n*=0.9;//effective Pauli blocking 
 	  //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
 	  break;
 	  default:

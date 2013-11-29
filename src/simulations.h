@@ -19,7 +19,8 @@ const string ALLdyn     = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_c
 const string CCwocoh    = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string QEL        = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string onlydis    = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
-const string wocoh      = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
+const string wocoh      = "-p 'dyn_qel_cc = 1' -p 'dyn_qel_nc = 1' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' -p 'dyn_mec_cc = 1' -p 'dyn_mec_nc = 1' ";
+const string mec        = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 0' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' -p 'dyn_mec_cc = 1' -p 'dyn_mec_nc = 0' ";
 const string resdis     = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 1' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string CCresdis   = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 0' -p 'dyn_dis_cc = 1' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
 const string onlyres    = "-p 'dyn_qel_cc = 0' -p 'dyn_qel_nc = 0' -p 'dyn_res_cc = 1' -p 'dyn_res_nc = 1' -p 'dyn_dis_cc = 0' -p 'dyn_dis_nc = 0' -p 'dyn_coh_cc = 0' -p 'dyn_coh_nc = 0' ";
