@@ -52,8 +52,13 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 			if ((t.n==8)&&(t.p==8)) weight=Nieves_kin_and_weight_O_numu (e.in[0].E(), meclepton, mecnucleon, t)/16;
 			else  weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t)/12;
 		}
+
+	if (weight<=0)
+		return;
+
 	e.weight = weight*1e-41*width_T;
-	if (weight>0) Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
+		
+	Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
 	e.in.push_back (mecnucleon[0]);
 	e.in.push_back (mecnucleon[1]);
 	e.out.push_back (meclepton);

@@ -124,7 +124,7 @@ cohevent_cj (params & par, event & e, nucleus & jadro, bool cc, bool fast)
     pion.set_momentum(pio);
     
 	if(e.weight>0)
-	{  e.weight/=1.5;//the last multiplicative factor is taken from Nuance MC
+	{  //e.weight/=1.5;//the last multiplicative factor is taken from Nuance MC
 	   e.out.push_back (lepton);
 	   e.out.push_back (pion);
 	 }

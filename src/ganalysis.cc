@@ -4137,7 +4137,7 @@ void tem_nieves_test :: set_params ()
 {
 	P.beam_particle = PDG::pdg_nu_mu;
 	P.beam_type = 0;
-	P.beam_energy = "800";
+	P.beam_energy = "1000";
 	P.read("data/target/C.txt");
 					
 	P.dyn_qel_cc = 0;
@@ -4152,12 +4152,12 @@ void tem_nieves_test :: set_params ()
 	P.dyn_coh_nc = 0;
 	P.dyn_mec_nc = 0;
 	
-	P.mec_kind = 4;	
+	P.mec_kind = 3;	
 }
 
 void tem_nieves_test :: calculate (event *e)
 {
-	h1 -> put (e->out[0].p().z / e->out[0].momentum(), e->out[0].E(), e -> dyn, e -> weight);
+	h1 -> put (e->out[0].p().z / e->out[0].momentum(), e->out[0].Ek(), e -> dyn, e -> weight);
 }
 void energy_test :: set_params ()
 {
@@ -4366,7 +4366,7 @@ void phd1 :: set_params ()
 {
 	P.beam_particle = PDG::pdg_nu_mu;
 	P.beam_type = 0;
-	P.beam_energy = "1000";
+	P.beam_energy = "500";
 	P.read("data/target/C.txt");
 					
 	P.dyn_qel_cc = 1;
@@ -4385,13 +4385,15 @@ void phd1 :: set_params ()
 	
 	P.kaskada_on = 0;
 	
-	P.nucleus_target = 2; //1 - gfg, 2 - lfg
-	P.sf_method = 1;
+	P.nucleus_target = 1; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+	P.sf_pb = 0;
 }
 
 void phd1 :: calculate (event *e)
 {
 	h1 -> put (e->out[1].momentum(), e->dyn, e->weight);
+	h2 -> put (-e->q2()/1000000.0, e->dyn, e->weight);
 }
 
 void phd2 :: set_params ()
@@ -4417,14 +4419,125 @@ void phd2 :: set_params ()
 	
 	P.kaskada_on = 0;
 	
-	P.nucleus_target = 1; //1 - gfg, 2 - lfg
-	P.sf_method = 0;
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 1;
+	P.sf_pb = 2;
 }
 
 void phd2 :: calculate (event *e)
 {
 	h1 -> histogram :: put (e -> in[0].E(), e -> dyn);
 	h1 -> put (e -> in[0].E(), e -> dyn, e -> weight);
+}
+
+void phd3 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "0 1500";
+	P.read("data/target/C.txt");
+	P.qel_cc_axial_mass = 1030;				
+	P.dyn_qel_cc = 1;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+}
+
+void phd3 :: calculate (event *e)
+{
+	h1 -> histogram :: put (e -> in[0].E(), e -> dyn);
+	h1 -> put (e -> in[0].E(), e -> dyn, e -> weight);
+}
+
+void phd5 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "0 200000";
+
+	P.read("data/target/C.txt");
+	
+	P.qel_cc_axial_mass = 1030;	
+	
+	P.coh_new = 1;
+				
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 1;
+	P.dyn_mec_cc = 0;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;
+	
+	P.mec_kind = 3;	
+	
+	P.kaskada_on = 0;
+	
+	P.nucleus_target = 2; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+}
+
+void phd5 :: calculate (event *e)
+{
+	h1 -> histogram :: put (e -> in[0].E()/1000.0, e -> dyn);
+	h1 -> put (e -> in[0].E()/1000.0, e -> dyn, e -> weight);
+}
+
+void phd4 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_nu_mu;
+	P.beam_type = 0;
+	P.beam_energy = "1000";
+	P.read("data/target/C.txt");
+		
+	P.mec_kind = 3;
+			
+	P.dyn_qel_cc = 0;
+	P.dyn_res_cc = 0;
+	P.dyn_dis_cc = 0;
+	P.dyn_coh_cc = 0;
+	P.dyn_mec_cc = 1;
+
+	P.dyn_qel_nc = 0;
+	P.dyn_res_nc = 0;
+	P.dyn_dis_nc = 0;
+	P.dyn_coh_nc = 0;
+	P.dyn_mec_nc = 0;	
+}
+
+void phd4 :: calculate (event *e)
+{
+	double tk0 = 0;
+	double tk1 = 0;
+	
+	for (int i = 0; i < e -> out.size(); i++)
+		if (e -> out[i].nucleon() and e -> out[i].Ek () > tk0)
+			tk0 = e -> out[i].Ek ();
+
+	for (int i = 0; i < e -> post.size(); i++)
+		if (e -> post[i].nucleon() and e -> post[i].Ek () > tk1)
+			tk1 = e -> post[i].Ek ();
+			
+	h1 -> put (tk0, e->dyn, e->weight, 0);
+	h1 -> put (tk1, e->dyn, e->weight, 1);
 }
 
 void mec_bu :: set_params ()
@@ -4559,6 +4672,9 @@ pattern * choose (int x)
 		case 52: wsk = new phd2; break;
 		case 53: wsk = new mec_bu; break;
 		case 54: wsk = new mec_bu2; break;
+		case 55: wsk = new phd3; break;
+		case 56: wsk = new phd4; break;
+		case 57: wsk = new phd5; break;
 		default: wsk = NULL;
 	}
 	

@@ -5,7 +5,7 @@
 #include <string>
 
 const int nof_dyn = 10; //number of dynamics in NuWro
-const int nof_class = 55;
+const int nof_class = 58;
 
 float mb_nce_start = 0;
 int mb_nce_nof = 0;
@@ -80,7 +80,10 @@ const bool active_class[nof_class] =
 	0,	//phd1 -> proton out momentum distributions fg vs lfg vs sf
 	0,	//phd2 -> qel cross section...
 	0,	//backward muon in MEC
-	1	//backward muon in MEC 2
+	0,	//backward muon in MEC 2
+	0,	//phd3 -> total mec
+	0,	//phd4 -> nucleon kin mec
+	1	//phd5 -> total COH
 };
 
 void run_command (string com)
@@ -1486,7 +1489,7 @@ class tem_nieves_test : public pattern
 	
 		tem_nieves_test () : pattern ("mb_nce_test2", 1000000)
 		{
-			h1 = new hist2D ("tem_nieves_test", "", "TEM xsec + Nieves kinematics", "cos{/Symbol q}", "Lepton energy [MeV]", "d{/Symbol s} / dTk / dcos{/Symbol q}", 20, -1, 1, 50, 0, 1000, 0);
+			h1 = new hist2D ("lepton_kin_nie", "", "", "cos{/Symbol q}", "Lepton kinetic energy [MeV]", "d{/Symbol s} / dTk / dcos{/Symbol q}", 20, -1, 1, 50, 0, 1000, 0);
 		}
 		
 		~tem_nieves_test ()
@@ -1688,6 +1691,10 @@ class phd1 : public pattern
 	protected:
 	
 		hist1D *h1;
+		hist1D *h2;
+		
+//		int n1;
+//		int n2;
 		
 		void set_params ();
 		void calculate (event *e);
@@ -1696,12 +1703,17 @@ class phd1 : public pattern
 	
 		phd1 () : pattern ("phd1", 5000000)
 		{
-			h1 = new hist1D ("proton_momentum_sf", "", "", "Proton momentum [MeV/c]", "No. of events", 100, 0, 2000, 1, 100);
+			h1 = new hist1D ("proton_momentum_sf2b", "", "", "Proton momentum [MeV/c]", "No. of events", 150, 0, 1500, 1, 100);
+			h2 = new hist1D ("xsec_Q2_sf2b", "", "", "Q^{2} [GeV^2]", "d^{2}{/Symbol s} / dQ^{2} [cm^2 / GeV^{2} / nucleon]", 100, 0, 1, 0);
+//			n1 = 0;
+//			n2 = 0;
 		}
 		
 		~phd1 ()
 		{
+//			cout << "\n Blocked: " << 100.0 * n1 / n2 << endl;
 			delete h1;
+			delete h2;
 		}
 };	
 
@@ -1718,10 +1730,79 @@ class phd2: public pattern
 		
 		phd2 () : pattern ("phd2", 5000000)
 		{
-			h1 = new hist1D ("qel_xsec_gfg", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 36, 200, 2000, 6);
+			h1 = new hist1D ("qel_xsec_sf2", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 36, 200, 2000, 6);
 		}
 		
 		~phd2 ()
+		{
+			delete h1;
+		}
+};
+
+class phd3: public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+		
+		phd3 () : pattern ("phd3", 5000000)
+		{
+			//h1 = new hist1D ("mec_xsec_nie", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 30, 0, 1500, 6);
+			h1 = new hist1D ("qel_xsec", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 30, 0, 1500, 6);
+		}
+		
+		~phd3 ()
+		{
+			delete h1;
+		}
+};
+
+class phd4 : public pattern
+{
+	protected:
+		
+		mhist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+	
+		phd4 () : pattern ("mec_cher", 5000000)
+		{
+			h1 = new mhist1D ("mec_nucl_nie", "", "Kinetic energy of the most energetic nucleon", "Tk [MeV]", "No. of events", 50, 0, 1000, 2, 2, 100);
+			h1 -> cnames [0] = "before FSI";
+			h1 -> cnames [1] = "after FSI";
+		}
+		
+		~phd4 ()
+		{
+			delete h1;
+		}
+};
+
+class phd5: public pattern
+{
+	protected:
+	
+		hist1D *h1;
+		
+		void set_params ();
+		void calculate (event *e);
+		
+	public:
+		
+		phd5 () : pattern ("phd5", 5000000)
+		{
+			h1 = new hist1D ("coh_xsec", "", "", "Neutrino Energy [GeV]", "{/Synbol s}_{COH}", 50, 0, 200, 6);
+		}
+		
+		~phd5 ()
 		{
 			delete h1;
 		}

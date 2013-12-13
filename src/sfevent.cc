@@ -8,6 +8,8 @@
 #include "sf/CSpectralFunc.h"
 #include "kinematics.h"
 
+static double mevtofm = 8e6 / Pi2 / 4;
+
 static inline double pow2(double x)
 {return x*x;
 }
@@ -77,8 +79,7 @@ double sfevent2cc(params&par, event & e, nucleus &t)
 //	cout<<"sf created"<<endl;
 	const double pBlock = sf->get_pBlock() ;
 //	cout<<"sf used"<<endl;
-	
-        
+		        
 	const double p = sf->MomDist()->generate() ;
 
 	N0.set_momentum(rand_dir()*p);		
@@ -191,8 +192,17 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     if(false)
     if( omega < 0 )   
 		return 0;
-	if ( par.pauli_blocking and  N1.momentum()<pBlock  )
-		return 0;
+	
+	if (par.pauli_blocking)
+	{
+		if (par.sf_pb == 0 and N1.momentum() < pBlock)
+			return 0;
+		else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
+			return 0;
+		else if (par.sf_pb == 2 and frandom() < sf -> MomDist() -> Tot(N1.momentum()) / sf -> MomDist() -> Tot(0))
+			return 0;
+	}
+	
  	    
     vect q4til=N1-N0;
 	const double q4til2= q4til*q4til;
@@ -368,8 +378,16 @@ double sfevent2nc(params&par, event & e, nucleus &t)
     if(false)
     if( omega < 0 )   
 		return 0;
-	if ( par.pauli_blocking and  N1.momentum()<pBlock  )
-		return 0;
+		
+	if (par.pauli_blocking)
+	{
+		if (par.sf_pb == 0 and N1.momentum() < pBlock)
+			return 0;
+		else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
+			return 0;
+		else if (par.sf_pb == 2 and frandom() < sf -> MomDist() -> Tot(N1.momentum()*mevtofm))
+			return 0;
+	}
  	    
     vect q4til=N1-N0;
 	const double q4til2= q4til*q4til;
