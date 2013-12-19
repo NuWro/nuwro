@@ -1,7 +1,147 @@
 #include "mecevent_Nieves.h"
+
 //int noev=0;
-double mmu=0;
-double width_T=100*MeV;
+double ml=0;
+double ml2=0;
+double width_q0=0;
+double Bmec=0;
+int ap=0;
+int nucl=0;
+bool PB=0;
+
+//double-differential cross section
+double dsdEdc(double E, double q0, double ct)
+{
+	double result=0;
+	double Ep=E-q0;
+	double lp=sqrt(Ep*Ep-ml2);
+	double vq2=E*E+lp*lp-2*E*lp*ct;
+	if((vq2>q0*q0)&&(vq2>0)&&(fabs(ct)<=1))
+	{	
+		double q=sqrt(vq2);
+		
+		//interpolating the nuclear tensor elements
+		double w00=0;
+		double w03=0;
+		double w11=0;
+		double w12=0;
+		double w33=0;
+		q0-=Bmec;
+		if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax))
+		{
+			double spacing=0.01*GeV;
+			int m=int((q-spacing)/spacing);
+			if (m>118) m=int(118);
+			int n=int((q0-spacing)/spacing);
+			int pos=int(0.5*m*(m+1)+n)*5;
+			//q0-B<0.1 GeV extrapolation with 0 at q0-B=0
+			if(n<0)
+			{
+				int a=pos;
+				int b=a+5;
+				int c=a+5*(m+1);
+				int d=c+5;
+				double H1=q0-spacing-n*spacing;
+				double H2=q-spacing*m-spacing;
+				switch(nucl)
+				{
+					case 0:
+					{
+						w00=(H2*(H1*C12grid[d])/spacing+(spacing-H2)*(H1*C12grid[b])/spacing)/spacing;
+						w03=(H2*(H1*C12grid[d+1])/spacing+(spacing-H2)*(H1*C12grid[b+1])/spacing)/spacing;
+						w11=(H2*(H1*C12grid[d+2])/spacing+(spacing-H2)*(H1*C12grid[b+2])/spacing)/spacing;
+						w12=(H2*(H1*C12grid[d+3])/spacing+(spacing-H2)*(H1*C12grid[b+3])/spacing)/spacing;
+						w33=(H2*(H1*C12grid[d+4])/spacing+(spacing-H2)*(H1*C12grid[b+4])/spacing)/spacing;
+						break;
+					}
+					case 1:
+					{
+						w00=(H2*(H1*O16grid[d])/spacing+(spacing-H2)*(H1*O16grid[b])/spacing)/spacing;
+						w03=(H2*(H1*O16grid[d+1])/spacing+(spacing-H2)*(H1*O16grid[b+1])/spacing)/spacing;
+						w11=(H2*(H1*O16grid[d+2])/spacing+(spacing-H2)*(H1*O16grid[b+2])/spacing)/spacing;
+						w12=(H2*(H1*O16grid[d+3])/spacing+(spacing-H2)*(H1*O16grid[b+3])/spacing)/spacing;
+						w33=(H2*(H1*O16grid[d+4])/spacing+(spacing-H2)*(H1*O16grid[b+4])/spacing)/spacing;
+						break;
+					}
+				}
+			}//now we are in the data grid
+			else if(n<m)
+			{
+				int a=pos;
+				int b=a+5;
+				int c=a+5*(m+1);
+				int d=c+5;
+				double H1=q0-spacing-n*spacing;
+				double H2=q-spacing*m-spacing;
+				switch(nucl)
+				{
+					case 0:
+					{
+						w00=(H2*(H1*C12grid[d]+(spacing-H1)*C12grid[c])/spacing+(spacing-H2)*(H1*C12grid[b]+(spacing-H1)*C12grid[a])/spacing)/spacing;
+						w03=(H2*(H1*C12grid[d+1]+(spacing-H1)*C12grid[c+1])/spacing+(spacing-H2)*(H1*C12grid[b+1]+(spacing-H1)*C12grid[a+1])/spacing)/spacing;
+						w11=(H2*(H1*C12grid[d+2]+(spacing-H1)*C12grid[c+2])/spacing+(spacing-H2)*(H1*C12grid[b+2]+(spacing-H1)*C12grid[a+2])/spacing)/spacing;
+						w12=(H2*(H1*C12grid[d+3]+(spacing-H1)*C12grid[c+3])/spacing+(spacing-H2)*(H1*C12grid[b+3]+(spacing-H1)*C12grid[a+3])/spacing)/spacing;
+						w33=(H2*(H1*C12grid[d+4]+(spacing-H1)*C12grid[c+4])/spacing+(spacing-H2)*(H1*C12grid[b+4]+(spacing-H1)*C12grid[a+4])/spacing)/spacing;
+						break;
+					}
+					case 1:
+					{
+						w00=(H2*(H1*O16grid[d]+(spacing-H1)*O16grid[c])/spacing+(spacing-H2)*(H1*O16grid[b]+(spacing-H1)*O16grid[a])/spacing)/spacing;
+						w03=(H2*(H1*O16grid[d+1]+(spacing-H1)*O16grid[c+1])/spacing+(spacing-H2)*(H1*O16grid[b+1]+(spacing-H1)*O16grid[a+1])/spacing)/spacing;
+						w11=(H2*(H1*O16grid[d+2]+(spacing-H1)*O16grid[c+2])/spacing+(spacing-H2)*(H1*O16grid[b+2]+(spacing-H1)*O16grid[a+2])/spacing)/spacing;
+						w12=(H2*(H1*O16grid[d+3]+(spacing-H1)*O16grid[c+3])/spacing+(spacing-H2)*(H1*O16grid[b+3]+(spacing-H1)*O16grid[a+3])/spacing)/spacing;
+						w33=(H2*(H1*O16grid[d+4]+(spacing-H1)*O16grid[c+4])/spacing+(spacing-H2)*(H1*O16grid[b+4]+(spacing-H1)*O16grid[a+4])/spacing)/spacing;
+						break;
+					}
+				}
+			}//an now we are in the external triangle near q0-B=q
+			else if(n==m)
+			{
+				int a=pos;
+				int c=a+5*(m+1);
+				int d=c+5;
+				double H=q0+(m-n+1)*spacing-q;
+				double H1=((m+2)*spacing-q);
+				switch(nucl)
+				{
+					case 0:
+					{
+						w00=(H1*(H*C12grid[a]+(spacing-H)*C12grid[c])/spacing+(H-H1)*(H*C12grid[d]+(spacing-H)*C12grid[c])/spacing)/H;
+						w03=(H1*(H*C12grid[a+1]+(spacing-H)*C12grid[c+1])/spacing+(H-H1)*(H*C12grid[d+1]+(spacing-H)*C12grid[c+1])/spacing)/H;
+						w11=(H1*(H*C12grid[a+2]+(spacing-H)*C12grid[c+2])/spacing+(H-H1)*(H*C12grid[d+2]+(spacing-H)*C12grid[c+2])/spacing)/H;
+						w12=(H1*(H*C12grid[a+3]+(spacing-H)*C12grid[c+3])/spacing+(H-H1)*(H*C12grid[d+3]+(spacing-H)*C12grid[c+3])/spacing)/H;
+						w33=(H1*(H*C12grid[a+4]+(spacing-H)*C12grid[c+4])/spacing+(H-H1)*(H*C12grid[d+4]+(spacing-H)*C12grid[c+4])/spacing)/H;
+						break;
+					}			
+					case 1:
+					{
+						w00=(H1*(H*O16grid[a]+(spacing-H)*O16grid[c])/spacing+(H-H1)*(H*O16grid[d]+(spacing-H)*O16grid[c])/spacing)/H;
+						w03=(H1*(H*O16grid[a+1]+(spacing-H)*O16grid[c+1])/spacing+(H-H1)*(H*O16grid[d+1]+(spacing-H)*O16grid[c+1])/spacing)/H;
+						w11=(H1*(H*O16grid[a+2]+(spacing-H)*O16grid[c+2])/spacing+(H-H1)*(H*O16grid[d+2]+(spacing-H)*O16grid[c+2])/spacing)/H;
+						w12=(H1*(H*O16grid[a+3]+(spacing-H)*O16grid[c+3])/spacing+(H-H1)*(H*O16grid[d+3]+(spacing-H)*O16grid[c+3])/spacing)/H;
+						w33=(H1*(H*O16grid[a+4]+(spacing-H)*O16grid[c+4])/spacing+(H-H1)*(H*O16grid[d+4]+(spacing-H)*O16grid[c+4])/spacing)/H;
+						break;
+					}
+				}		
+			}
+		}
+		q0+=Bmec;
+		double w1=0.5*w11;
+		double q02=q0*q0;
+		double w2=0.5*(w00+w11+q02/vq2*(w33-w11)-2*q0/q*w03);
+		double w3=(1-2*ap)*w12/q;
+		double w4=0.5*(w33-w11)/vq2;
+		double w5=(w03-q0/q*(w33-w11))/q;
+		double sts=1.0-ct*ct;
+		double st2=0.5*(1.0-ct);
+		double ct2=0.5*(1.0+ct);
+		result=(2*w1*st2+w2*ct2-w3*(E+Ep)*st2);
+		result+=ml2/((Ep+lp)*Ep)*(w1*ct-0.5*w2*ct+0.5*w3*(Ep*(1.0-ct)+lp-E*ct)+0.5*w4*(ml2*ct+2*Ep*(Ep+lp)*sts)-0.5*w5*(Ep+lp));
+		result*=2*G*G*Ep*lp/Pi/cm2;
+		if (result<0) { result=0;}
+	}
+	return result;
+}
 
 void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 {
@@ -14,721 +154,193 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	e.flag.mec = true;
 	
 	
-	//sadly, only \nu_\mu or \nu_e available so far...
-	if((e.flag.nc)||((e.in[0].pdg!=14)&&(e.in[0].pdg!=12)))
+	//sadly, only CC events available so far...
+	if(e.flag.nc)
 	{
 		cerr<<" MEC error: Wrong Settings!\n";
 		e.weight = 0;
 		return;
 	}
 	
-	double potwell  = t.Ef();		//Fermi energy
-	double ebinding = t.Eb();		//Binding energy
-
 	particle meclepton;
-
-	if(e.in[0].pdg==14) meclepton.pdg = 13;	//muon or electron available
-	else {meclepton.pdg = 11;}
-
+	ap=(e.in[0].pdg<0);
+	//if(e.in[0].pdg>0) meclepton.pdg = e.in[0].pdg-1;	//all leptons available
+	//else {meclepton.pdg = e.in[0].pdg+1;}
+	meclepton.pdg = e.in[0].pdg-1+2*ap;
 	meclepton.set_mass (PDG::mass (meclepton.pdg));	//set mass coresponding to pdg
-	mmu=meclepton.mass();
-	width_T=e.in[0].E()-mmu;
+	ml=meclepton.mass();
+	ml2=ml*ml;
+	//nucleus and Pauli blocking
+	nucl=(t.p>7);
+	PB=p.MEC_pauli_blocking;
+	//binding:either carbon or oxygen neutrino/antineutrino
+	Bmec=qvalues[2*nucl+(e.in[0].pdg<0)];
+	// Qvalue threshold...
+	double q0max=e.in[0].E()-ml-eV;
+	if(q0max>qmax) q0max=qmax;
+	width_q0=q0max-Bmec;
 	
-	if (blocked(e.in[0].E(), meclepton.mass()))	//check if neutrino energy is high enough
-	{
-		e.weight = 0;
-		return;
-	}
-
+	
 	particle mecnucleon[4]; //0,1 - in, 2, 3 - out
 	
 	
-	double weight;
+	double weight=0;
 	
-	if (e.in[0].pdg==12)
-		weight=Nieves_kin_and_weight_O_nue (e.in[0].E(), meclepton, mecnucleon, t)/16;
-		else if(e.in[0].pdg==14)
-		{
-			if ((t.n==8)&&(t.p==8)) weight=Nieves_kin_and_weight_O_numu (e.in[0].E(), meclepton, mecnucleon, t)/16;
-			else  weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t)/12;
-		}
-
-	if (weight<=0)
-		return;
-
-	e.weight = weight*1e-41*width_T;
-		
-	Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
+	if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t);
+	
+	e.weight = weight;
+	if (weight>0) Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
 	e.in.push_back (mecnucleon[0]);
 	e.in.push_back (mecnucleon[1]);
 	e.out.push_back (meclepton);
 	e.out.push_back (mecnucleon[2]);
 	e.out.push_back (mecnucleon[3]);
-	//noev++;
-	//cerr<<"              event "<<noev<<"\r";
 }
 
 double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t)
 {
 	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 	
-	double mecm  = mmu;
-	double mecm2 = mecm * mecm;
 	
 	//here we extrapolate the cross section from Nieves's data file
 	double result=0;
-	//muon kinetic energy
-	double Tmu=width_T*frandom();
-	double w = E-Tmu-mmu;	//energy transfer
-	double muonmom = sqrt (Tmu*Tmu+2*Tmu* mmu);
-
-	double cosmin=-1;
-	double cosmuon=cosmin+(1-cosmin)*frandom();
-	double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-	if(cosmin<1)
-	{	
-		//Are we in the data range etc?
-		if((Tmu>=0)&&(E>154.8959*MeV)&&(E<2995.104*MeV))
+	//Bmec=Qvalue we randomize q0
+	double q0_nucl=frandom()*width_q0;
+	// de-Forest like subtraction of binding energy...
+	double q0=q0_nucl+Bmec;
+	//squared final lepton momentum
+	double lp2=(E-q0)*(E-q0)-ml2;
+	//final lepton momentum
+	double lp=sqrt(lp2);
+	//minimum cosine boundary from momentum transfer cut
+	double cos_min=0.5*(E*E+lp2-qmax*qmax)/E/lp;
+	if(cos_min<-1.0) cos_min=-1.0;
+	if(cos_min<1)
+	{
+		double width_cos=1.0-cos_min;
+		//we randomize scattering angle
+		double ct=cos_min+width_cos*frandom();
+		//squared momentum transfer
+		double q2=E*E+lp2-2*E*lp*ct;
+		if((q2>q0*q0))
 		{
-			//above angular binning ->move the point inside border		
-			if(cosmuon<=-0.9965643) cosmuon=-0.99656429;
-			if(cosmuon>=0.9965643) cosmuon=0.99656429;
+			//double differential cross section
+			result=dsdEdc(E,q0,ct)*width_q0*width_cos/GeV;
 			
-			int pos_E=0;
-			int pos_E0=0;
-			//search for nearest smaller energy		
-			for(int i=0; i<40; i++)
+			//Why should we bother to do anything, if weight=0??
+			if(result>0)
 			{
-				if(List_E_[i]>E)
-				{
-					pos_E=(i-1)*1600;
-					pos_E0=i-1;
-					break;
-				}
-			}
-			int pos_cos=0;
-			int pos_cos0=0;
-			//search for nearest smaller angle	
-			for(int i=0; i<40; i++)
-			{
-				if(List_cos_[i]>cosmuon)
-				{
-					pos_cos=(i-1)*40;
-					pos_cos0=i-1;
-					break;
-				}
-			}
-			int pos_T1=0;
-			int border_T1=0;
-			//search for nearest smallest muon energy at lower neutrino energy	
-			for(int i=0; i<40; i++)
-			{
-				if(List_T_[pos_E0*40+i]>Tmu)
-				{
-					pos_T1=i-1;
-					break;
-				}
-			}
-			//above limits?
-			if(List_T_[pos_E0*40+39]<Tmu)
-			{
-				border_T1=1;
-				pos_T1=39;
-			}
-			//below limits?
-			if(pos_T1<0)
-			{
-				border_T1=-1;
-				pos_T1=0;
-			}
-			//because of different Tmu binnings...
-			int pos_T2=0;
-			int border_T2=0;
-			//search for nearest smallest muon energy at highe neutrino energy	
-			for(int i=0; i<40; i++)
-			{
-				if(List_T_[(pos_E0+1)*40+i]>Tmu)
-				{
-					pos_T2=i-1;
-					break;
-				}
-			}
-			//above limits?
-			if(List_T_[(pos_E0+1)*40+39]<Tmu)
-			{
-				border_T2=1;
-				pos_T2=39;
-			}
-			//below limits?
-			if(pos_T2<0)
-			{
-				border_T2=-1;
-				pos_T2=0;
-			}
+				
+				double phi = 2.0 * Pi * frandom();
 			
-			//positions of the cube vertices
-			unsigned int p[8]={pos_E+pos_cos+pos_T1          ,pos_E+pos_cos+40+pos_T1       ,
-							   pos_E+pos_cos+pos_T1+1        ,pos_E+pos_cos+40+pos_T1+1     ,
-							   pos_E+1600+pos_cos+pos_T2     ,pos_E+1600+pos_cos+40+pos_T2  ,
-							   pos_E+1600+pos_cos+pos_T2+1  ,pos_E+1600+pos_cos+40+pos_T2+1};
-	
-			//inside data grid_ case
-			if((border_T1==0)&&(border_T2==0))
-			{
-				double downcosmin=Nieves_XS_grid_[p[0]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[1]]-Nieves_XS_grid_[p[0]]);
-				double downcosmax=Nieves_XS_grid_[p[2]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[3]]-Nieves_XS_grid_[p[2]]);
-				double downT=downcosmin+(Tmu-List_T_[pos_E0*40+pos_T1])/(List_T_[pos_E0*40+pos_T1+1]-List_T_[pos_E0*40+pos_T1])*(downcosmax-downcosmin);
-				double lower_E=List_E_[pos_E0];
-	
-	
-				double upcosmin=Nieves_XS_grid_[p[4]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[5]]-Nieves_XS_grid_[p[4]]);
-				double upcosmax=Nieves_XS_grid_[p[6]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[7]]-Nieves_XS_grid_[p[6]]);
-				double upT=upcosmin+(Tmu-List_T_[(pos_E0+1)*40+pos_T2])/(List_T_[(pos_E0+1)*40+pos_T2+1]-List_T_[(pos_E0+1)*40+pos_T2])*(upcosmax-upcosmin);
-				double upper_E=List_E_[pos_E0+1];
-				//linear interpolation in energy
-				result=downT+(E-lower_E)/(upper_E-lower_E)*(upT-downT);
+				//momentum transfer
+				vec qq (cos(phi) * lp * sqrt(1.0 - ct * ct),
+						sin(phi) * lp * sqrt(1.0 - ct * ct),
+						E - lp * ct);
+			
+				//lepton momentum
+				vec kprim  (-cos(phi) * lp * sqrt(1.0 - ct * ct),
+							-sin(phi) * lp * sqrt(1.0 - ct * ct),
+							lp * ct);
+				
+				//4-momentum transfer
+				vect qqq (qq, q0);
+				unsigned licz=0;
+				vect suma;	
+				/*
+				//no Pauli blocking version
+				do
+				{
+					nucleon[0] = t.get_nucleon ();
+					nucleon[1] = t.get_nucleon ();
+									
+					suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
+					licz++;
+				}//to be able to make Lorentz boost and to "decay"
+				while ( (( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)) &&(licz<calls_max) );
+				if(licz<calls_max)
+				{
+					vec trans = suma.v();
+					nucleon[2].set_proton();	//in mec_do* we decide about isospin	
+					nucleon[3].set_proton();
+					//cerr<<"\n suma"<<suma;
+					//cerr<<" q"<<qqq<<"\n";
+					suma.boost2 (trans);		 	//boost to the CM frame
+					double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
 					
-				
-			}
-			//above Tmu in lower energy, but inside for higher
-			if((border_T1>0)&&(border_T2==0))
-			{
-				
-				
-				double lower_E=List_E_[pos_E0];
-	
-	
-				double upcosmin=Nieves_XS_grid_[p[4]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[5]]-Nieves_XS_grid_[p[4]]);
-				double upcosmax=Nieves_XS_grid_[p[6]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[7]]-Nieves_XS_grid_[p[6]]);
-				double upT=upcosmin+(Tmu-List_T_[(pos_E0+1)*40+pos_T2])/(List_T_[(pos_E0+1)*40+pos_T2+1]-List_T_[(pos_E0+1)*40+pos_T2])*(upcosmax-upcosmin);
-				double upper_E=List_E_[pos_E0+1];
-				//linear interpolation in energy
-				result=(E-lower_E)/(upper_E-lower_E)*upT;
-			}
-			if((border_T1==0)&&(border_T2<0))
-			{
-				
-				
-				double downcosmin=Nieves_XS_grid_[p[0]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[1]]-Nieves_XS_grid_[p[0]]);
-				double downcosmax=Nieves_XS_grid_[p[2]]+(cosmuon-List_cos_[pos_cos0])/(List_cos_[pos_cos0+1]-List_cos_[pos_cos0])*(Nieves_XS_grid_[p[3]]-Nieves_XS_grid_[p[2]]);
-				double downT=downcosmin+(Tmu-List_T_[pos_E0*40+pos_T1])/(List_T_[pos_E0*40+pos_T1+1]-List_T_[pos_E0*40+pos_T1])*(downcosmax-downcosmin);
-				double lower_E=List_E_[pos_E0];
-				double upper_E=List_E_[pos_E0+1];
-				//linear interpolation in energy
-				result=(upper_E-E)/(upper_E-lower_E)*downT;
-			}
-			if(result<0) result=0;
-				
-		}
-		//Why should we bother to do anything, if weight=0??
-		if(result>0)
-		{
+					vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
+					nucleon[2].set_momentum (dir_cm);
+					nucleon[3].set_momentum (-dir_cm);
 			
-			
-			//double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-			double phi = 2.0 * Pi * frandom();
-		
-			//momentum transfer
-			vec qq (cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					E - muonmom * cosmuon);
-		
-			//muon momentum
-			vec kprim  (-cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						-sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						muonmom * cosmuon);
-			
-			//muon 4-momentum
-			vect qqq (qq, w);
-				
-			vect suma;
-			unsigned licz=0;
-			do
-			{
-				nucleon[0] = t.get_nucleon ();
-				nucleon[1] = t.get_nucleon ();
-								
-				suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-				licz++;
-				//if(licz>calls_max) break;	
-			}								 //to be able to make Lorentz boost and to "decay"
-			while ( (( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)) &&(licz<calls_max) );
-			if(licz<calls_max)
-			{
-				result*=(1-cosmin);
-				vec trans = suma.v();
-				nucleon[2].set_proton();	//in mec_do* we decide about isospin	
-				nucleon[3].set_proton();
-			
-				suma.boost2 (trans);		 	//boost to the CM frame
-				double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
-				
-				vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
-				nucleon[2].set_momentum (dir_cm);
-				nucleon[3].set_momentum (-dir_cm);
-		
-				nucleon[2].p4().boost2 (-trans);
-				nucleon[3].p4().boost2 (-trans);		 //nucleons in the LAB frame
-			}
-			else
-			{
-				result=0;
-				vect zero (0,0,0);
-				nucleon[2].set_momentum (zero);
-				nucleon[3].set_momentum (zero);
-				nucleon[2].set_energy (MN);
-				nucleon[3].set_energy (MN);
-			}
-			//result*=(1-cosmin);
-			meclep.set_momentum(kprim);
-			
-		}	
-	}
-	
-	return result;
-	
-}
+					nucleon[2].p4().boost2 (-trans);
+					nucleon[3].p4().boost2 (-trans);		 //nucleons in the LAB frame
+				}
+				else
+				{
+					result=0;
+					vect zero (0,0,0);
+					nucleon[2].set_momentum (zero);
+					nucleon[3].set_momentum (zero);
+					nucleon[2].set_energy (MN);
+					nucleon[3].set_energy (MN);
+				}
 
-double Nieves_kin_and_weight_O_numu (double E, particle &meclep, particle *nucleon, nucleus &t)
-{
-	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
+				meclep.set_momentum(kprim);*/
 	
-	double mecm  = mmu;
-	double mecm2 = mecm * mecm;
-	
-	//here we extrapolate the cross section from Nieves's data file
-	double result=0;
-	//muon kinetic energy
-	double Tmu=width_T*frandom();
-	double w = E-Tmu-mmu;	//energy transfer
-	double muonmom = sqrt (Tmu*Tmu+2*Tmu* mmu);
-	double cosmin=-1;
-	double cosmuon=cosmin+(1-cosmin)*frandom();
-	double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-	if(cosmin<1)
-	{	
-		//Are we in the data range etc?
-		if((E-Tmu-mmu>=0)&&(E>100.0*MeV)&&(E<1500.0*MeV))
-		{
-				if (cosmuon>=1) cosmuon=0.9999999;
-				if (cosmuon<=-1) cosmuon=-0.9999999;
-				int pos_E=0;
-				int pos_E0=0;
-				//search for nearest smaller energy		
-				for(int i=0; i<57; i++)
+				do
 				{
-					if(List_E_Panos_numu_O16_[i]>E)
+					nucleon[0] = t.get_nucleon ();
+					nucleon[1] = t.get_nucleon ();
+									
+					suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
+					licz++;
+					
+					if(!( ( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)))
 					{
-						pos_E=(i-1)*1683;
-						pos_E0=i-1;
-						break;
-					}
-				}
-				int pos_cos=0;
-				int pos_cos0=0;
-				//search for nearest smaller angle	
-				for(int i=0; i<33; i++)
-				{
-					if(List_cos_Panos_numu_O16_[i]>cosmuon)
-					{
-						pos_cos=(i-1)*51;
-						pos_cos0=i-1;
-						break;
-					}
-				}
-				int pos_T1=0;
-				int border_T1=0;
-				//search for nearest smallest muon energy at lower neutrino energy	
-				for(int i=0; i<51; i++)
-				{
-					if(List_T_Panos_numu_O16_[pos_E0*51+i]>Tmu)
-					{
-						pos_T1=i-1;
-						break;
-					}
-				}
-				//above limits?
-				if(List_T_Panos_numu_O16_[pos_E0*51+50]<Tmu)
-				{
-					border_T1=1;
-					pos_T1=50;
-				}
-				//below limits?
-				if(pos_T1<0)
-				{
-					border_T1=-1;
-					pos_T1=0;
-				}
-				//because of different Tmu binnings...
-				int pos_T2=0;
-				int border_T2=0;
-				//search for nearest smallest muon energy at highe neutrino energy	
-				for(int i=0; i<51; i++)
-				{
-					if(List_T_Panos_numu_O16_[(pos_E0+1)*51+i]>Tmu)
-					{
-						pos_T2=i-1;
-						break;
-					}
-				}
-				//above limits?
-				if(List_T_Panos_numu_O16_[(pos_E0+1)*51+50]<Tmu)
-				{
-					border_T2=1;
-					pos_T2=50;
-				}
-				//below limits?
-				if(pos_T2<0)
-				{
-					border_T2=-1;
-					pos_T2=0;
-				}
+						vec trans = suma.v();
+						nucleon[2].set_proton();	//in mec_do* we decide about isospin	
+						nucleon[3].set_proton();
+					
+						suma.boost2 (trans);		 	//boost to the CM frame
+						double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
+						int licz1=0;
+						while(PB&&(licz1<calls_max))
+						{
+							licz1++;
+							vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
+							nucleon[2].set_momentum (dir_cm);
+							nucleon[3].set_momentum (-dir_cm);
 				
-				//positions of the cube vertices
-				unsigned int p[8]={pos_E+pos_cos+pos_T1          ,pos_E+pos_cos+51+pos_T1       ,
-								   pos_E+pos_cos+pos_T1+1        ,pos_E+pos_cos+51+pos_T1+1     ,
-								   pos_E+1683+pos_cos+pos_T2     ,pos_E+1683+pos_cos+51+pos_T2  ,
-								   pos_E+1683+pos_cos+pos_T2+1  ,pos_E+1683+pos_cos+51+pos_T2+1};
-		
-				//Two harmonic trianagles on the equal energy planes+ linear interpolation
-				//inside data grid_ case
-				if((border_T1==0)&&(border_T2==0))
-				{
-					double downcosmin=XS_Panos_numu_O16_[p[0]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[1]]-XS_Panos_numu_O16_[p[0]]);
-					double downcosmax=XS_Panos_numu_O16_[p[2]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[3]]-XS_Panos_numu_O16_[p[2]]);
-					double downT=downcosmin+(Tmu-List_T_Panos_numu_O16_[pos_E0*51+pos_T1])/(List_T_Panos_numu_O16_[pos_E0*51+pos_T1+1]-List_T_Panos_numu_O16_[pos_E0*51+pos_T1])*(downcosmax-downcosmin);
-					double lower_E=List_E_Panos_numu_O16_[pos_E0];
-		
-		
-					double upcosmin=XS_Panos_numu_O16_[p[4]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[5]]-XS_Panos_numu_O16_[p[4]]);
-					double upcosmax=XS_Panos_numu_O16_[p[6]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[7]]-XS_Panos_numu_O16_[p[6]]);
-					double upT=upcosmin+(Tmu-List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2])/(List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2+1]-List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2])*(upcosmax-upcosmin);
-					double upper_E=List_E_Panos_numu_O16_[pos_E0+1];
-					//linear interpolation in energy
-					result=downT+(E-lower_E)/(upper_E-lower_E)*(upT-downT);
+							nucleon[2].p4().boost2 (-trans);
+							nucleon[3].p4().boost2 (-trans);
+							PB=t.pauli_blocking(nucleon[2])+t.pauli_blocking(nucleon[3]);
+						}
 						
-					
-				}
-				//above Tmu in lower energy, but inside for higher
-				if((border_T1>0)&&(border_T2==0))
-				{
-					
-					
-					double lower_E=List_E_Panos_numu_O16_[pos_E0];
-		
-		
-					double upcosmin=XS_Panos_numu_O16_[p[4]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[5]]-XS_Panos_numu_O16_[p[4]]);
-					double upcosmax=XS_Panos_numu_O16_[p[6]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[7]]-XS_Panos_numu_O16_[p[6]]);
-					double upT=upcosmin+(Tmu-List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2])/(List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2+1]-List_T_Panos_numu_O16_[(pos_E0+1)*51+pos_T2])*(upcosmax-upcosmin);
-					double upper_E=List_E_Panos_numu_O16_[pos_E0+1];
-					//linear interpolation in energy
-					result=(E-lower_E)/(upper_E-lower_E)*upT;
-				}
-				if((border_T1==0)&&(border_T2<0))
-				{
-					
-					
-					double downcosmin=XS_Panos_numu_O16_[p[0]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[1]]-XS_Panos_numu_O16_[p[0]]);
-					double downcosmax=XS_Panos_numu_O16_[p[2]]+(cosmuon-List_cos_Panos_numu_O16_[pos_cos0])/(List_cos_Panos_numu_O16_[pos_cos0+1]-List_cos_Panos_numu_O16_[pos_cos0])*(XS_Panos_numu_O16_[p[3]]-XS_Panos_numu_O16_[p[2]]);
-					double downT=downcosmin+(Tmu-List_T_Panos_numu_O16_[pos_E0*51+pos_T1])/(List_T_Panos_numu_O16_[pos_E0*51+pos_T1+1]-List_T_Panos_numu_O16_[pos_E0*51+pos_T1])*(downcosmax-downcosmin);
-					double lower_E=List_E_Panos_numu_O16_[pos_E0];
-					double upper_E=List_E_Panos_numu_O16_[pos_E0+1];
-					//linear interpolation in energy
-					result=(upper_E-E)/(upper_E-lower_E)*downT;
-				}
+					}
+					//if(PB) std::cerr<<licz<<" Pauli blocked!\n";
+					//else std::cerr<<licz<<" On-shell fail!\n";
+				}								 //to be able to make Lorentz boost and to "decay"
+				while  ( PB &&(licz<calls_max) );
 				
-				if(result<0) result=0;		
+				if(licz>=calls_max)
+				{
+					result=0;
+					vect zero (0,0,0);
+					nucleon[2].set_momentum (zero);
+					nucleon[3].set_momentum (zero);
+					nucleon[2].set_energy (MN);
+					nucleon[3].set_energy (MN);
+				}
+				//result*=(1-cosmin);
+				meclep.set_momentum(kprim);
+			}
+			//else result=0;	
 		}
-		//Why should we bother to do anything, if weight=0??
-		if(result>0)
-		{
-			
-			
-			//double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-			double phi = 2.0 * Pi * frandom();
-		
-			//momentum transfer
-			vec qq (cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					E - muonmom * cosmuon);
-		
-			//muon momentum
-			vec kprim  (-cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						-sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						muonmom * cosmuon);
-			
-			//muon 4-momentum
-			vect qqq (qq, w);
-				
-			vect suma;
-			unsigned licz=0;
-			do
-			{
-				nucleon[0] = t.get_nucleon ();
-				nucleon[1] = t.get_nucleon ();
-								
-				suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-				licz++;
-				//if(licz>calls_max) break;	
-			}								 //to be able to make Lorentz boost and to "decay"
-			while ( (( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)) &&(licz<calls_max) );
-			if(licz<calls_max)
-			{
-				result*=(1-cosmin);
-				vec trans = suma.v();
-				nucleon[2].set_proton();	//in mec_do* we decide about isospin	
-				nucleon[3].set_proton();
-			
-				suma.boost2 (trans);		 	//boost to the CM frame
-				double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
-				
-				vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
-				nucleon[2].set_momentum (dir_cm);
-				nucleon[3].set_momentum (-dir_cm);
-		
-				nucleon[2].p4().boost2 (-trans);
-				nucleon[3].p4().boost2 (-trans);		 //nucleons in the LAB frame
-			}
-			else
-			{
-				result=0;
-				vect zero (0,0,0);
-				nucleon[2].set_momentum (zero);
-				nucleon[3].set_momentum (zero);
-				nucleon[2].set_energy (MN);
-				nucleon[3].set_energy (MN);
-			}
-			//result*=(1-cosmin);
-			meclep.set_momentum(kprim);
-			
-		}	
 	}
-	
 	return result;
 	
 }
 
-
-double Nieves_kin_and_weight_O_nue (double E, particle &meclep, particle *nucleon, nucleus &t)
-{
-	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
-	//here we extrapolate the cross section from Nieves's data file
-	double mecm  = mmu;
-	double mecm2 = mecm * mecm;
-	
-	//here we extrapolate the cross section from Nieves's data file
-	double result=0;
-	//muon kinetic energy
-	double Tmu=width_T*frandom();
-	double w = E-Tmu-mmu;	//energy transfer
-	double muonmom = sqrt (Tmu*Tmu+2*Tmu* mmu);
-	double cosmin=-1;
-	double cosmuon=cosmin+(1-cosmin)*frandom();
-	double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-	if(cosmin<1)
-	{	
-		//Are we in the data range etc?
-		if((E-Tmu-mmu>=0)&&(E>100.0*MeV)&&(E<1500.0*MeV))
-		{
-			if (cosmuon>=1) cosmuon=0.9999999;
-			if (cosmuon<=-1) cosmuon=-0.9999999;
-			int pos_E=0;
-			int pos_E0=0;
-			//search for nearest smaller energy		
-			for(int i=0; i<57; i++)
-			{
-				if(List_E_Panos_nue_O16_[i]>E)
-				{
-					pos_E=(i-1)*1683;
-					pos_E0=i-1;
-					break;
-				}
-			}
-			int pos_cos=0;
-			int pos_cos0=0;
-			//search for nearest smaller angle	
-			for(int i=0; i<33; i++)
-			{
-				if(List_cos_Panos_nue_O16_[i]>cosmuon)
-				{
-					pos_cos=(i-1)*51;
-					pos_cos0=i-1;
-					break;
-				}
-			}
-			int pos_T1=0;
-			int border_T1=0;
-			//search for nearest smallest muon energy at lower neutrino energy	
-			for(int i=0; i<51; i++)
-			{
-				if(List_T_Panos_nue_O16_[pos_E0*51+i]>Tmu)
-				{
-					pos_T1=i-1;
-					break;
-				}
-			}
-			//above limits?
-			if(List_T_Panos_nue_O16_[pos_E0*51+50]<Tmu)
-			{
-				border_T1=1;
-				pos_T1=50;
-			}
-			//below limits?
-			if(pos_T1<0)
-			{
-				border_T1=-1;
-				pos_T1=0;
-			}
-			//because of different Tmu binnings...
-			int pos_T2=0;
-			int border_T2=0;
-			//search for nearest smallest muon energy at highe neutrino energy	
-			for(int i=0; i<51; i++)
-			{
-				if(List_T_Panos_nue_O16_[(pos_E0+1)*51+i]>Tmu)
-				{
-					pos_T2=i-1;
-					break;
-				}
-			}
-			//above limits?
-			if(List_T_Panos_nue_O16_[(pos_E0+1)*51+50]<Tmu)
-			{
-				border_T2=1;
-				pos_T2=50;
-			}
-			//below limits?
-			if(pos_T2<0)
-			{
-				border_T2=-1;
-				pos_T2=0;
-			}
-			
-			//positions of the cube vertices
-			unsigned int p[8]={pos_E+pos_cos+pos_T1          ,pos_E+pos_cos+51+pos_T1       ,
-							   pos_E+pos_cos+pos_T1+1        ,pos_E+pos_cos+51+pos_T1+1     ,
-							   pos_E+1683+pos_cos+pos_T2     ,pos_E+1683+pos_cos+51+pos_T2  ,
-							   pos_E+1683+pos_cos+pos_T2+1  ,pos_E+1683+pos_cos+51+pos_T2+1};
-	
-			//Two harmonic trianagles on the equal energy planes+ linear interpolation
-			//inside data grid_ case
-			if((border_T1==0)&&(border_T2==0))
-			{
-				double downcosmin=XS_Panos_nue_O16_[p[0]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[1]]-XS_Panos_nue_O16_[p[0]]);
-				double downcosmax=XS_Panos_nue_O16_[p[2]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[3]]-XS_Panos_nue_O16_[p[2]]);
-				double downT=downcosmin+(Tmu-List_T_Panos_nue_O16_[pos_E0*51+pos_T1])/(List_T_Panos_nue_O16_[pos_E0*51+pos_T1+1]-List_T_Panos_nue_O16_[pos_E0*51+pos_T1])*(downcosmax-downcosmin);
-				double lower_E=List_E_Panos_nue_O16_[pos_E0];
-	
-	
-				double upcosmin=XS_Panos_nue_O16_[p[4]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[5]]-XS_Panos_nue_O16_[p[4]]);
-				double upcosmax=XS_Panos_nue_O16_[p[6]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[7]]-XS_Panos_nue_O16_[p[6]]);
-				double upT=upcosmin+(Tmu-List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2])/(List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2+1]-List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2])*(upcosmax-upcosmin);
-				double upper_E=List_E_Panos_nue_O16_[pos_E0+1];
-				//linear interpolation in energy
-				result=downT+(E-lower_E)/(upper_E-lower_E)*(upT-downT);
-					
-				
-			}
-			//above Tmu in lower energy, but inside for higher
-			if((border_T1>0)&&(border_T2==0))
-			{
-				
-				
-				double lower_E=List_E_Panos_nue_O16_[pos_E0];
-	
-	
-				double upcosmin=XS_Panos_nue_O16_[p[4]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[5]]-XS_Panos_nue_O16_[p[4]]);
-				double upcosmax=XS_Panos_nue_O16_[p[6]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[7]]-XS_Panos_nue_O16_[p[6]]);
-				double upT=upcosmin+(Tmu-List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2])/(List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2+1]-List_T_Panos_nue_O16_[(pos_E0+1)*51+pos_T2])*(upcosmax-upcosmin);
-				double upper_E=List_E_Panos_nue_O16_[pos_E0+1];
-				//linear interpolation in energy
-				result=(E-lower_E)/(upper_E-lower_E)*upT;
-			}
-			if((border_T1==0)&&(border_T2<0))
-			{
-				
-				
-				double downcosmin=XS_Panos_nue_O16_[p[0]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[1]]-XS_Panos_nue_O16_[p[0]]);
-				double downcosmax=XS_Panos_nue_O16_[p[2]]+(cosmuon-List_cos_Panos_nue_O16_[pos_cos0])/(List_cos_Panos_nue_O16_[pos_cos0+1]-List_cos_Panos_nue_O16_[pos_cos0])*(XS_Panos_nue_O16_[p[3]]-XS_Panos_nue_O16_[p[2]]);
-				double downT=downcosmin+(Tmu-List_T_Panos_nue_O16_[pos_E0*51+pos_T1])/(List_T_Panos_nue_O16_[pos_E0*51+pos_T1+1]-List_T_Panos_nue_O16_[pos_E0*51+pos_T1])*(downcosmax-downcosmin);
-				double lower_E=List_E_Panos_nue_O16_[pos_E0];
-				double upper_E=List_E_Panos_nue_O16_[pos_E0+1];
-				//linear interpolation in energy
-				result=(upper_E-E)/(upper_E-lower_E)*downT;
-			}
-			
-			if(result<0) result=0;		
-		}
-		//Why should we bother to do anything, if weight=0??
-		if(result>0)
-		{
-			
-			
-			//double q = sqrt(muonmom*muonmom+E*E-2*muonmom*E*cosmuon);
-			double phi = 2.0 * Pi * frandom();
-		
-			//momentum transfer
-			vec qq (cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-					E - muonmom * cosmuon);
-		
-			//muon momentum
-			vec kprim  (-cos(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						-sin(phi) * muonmom * sqrt(1.0 - cosmuon * cosmuon),
-						muonmom * cosmuon);
-			
-			//muon 4-momentum
-			vect qqq (qq, w);
-				
-			vect suma;
-			unsigned licz=0;
-			do
-			{
-				nucleon[0] = t.get_nucleon ();
-				vec pos (nucleon[0].x, nucleon[0].y, nucleon[0].z);
-				nucleon[1] = t.get_nucleon (pos);
-					
-				//nucleon[1].r = pos;//both should start from the same point !
-				suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-				licz++;
-				//if(licz>calls_max) break;	
-			}								 //to be able to make Lorentz boost and to "decay"
-			while ( (( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)) &&(licz<calls_max) );
-			if(licz<calls_max)
-			{
-				result*=(1-cosmin);
-				vec trans = suma.v();
-				nucleon[2].set_proton();	//in mec_do* we decide about isospin	
-				nucleon[3].set_proton();
-			
-				suma.boost2 (trans);		 	//boost to the CM frame
-				double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
-				
-				vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
-				nucleon[2].set_momentum (dir_cm);
-				nucleon[3].set_momentum (-dir_cm);
-		
-				nucleon[2].p4().boost2 (-trans);
-				nucleon[3].p4().boost2 (-trans);		 //nucleons in the LAB frame
-			}
-			else
-			{
-				result=0;
-				vect zero (0,0,0);
-				nucleon[2].set_momentum (zero);
-				nucleon[3].set_momentum (zero);
-				nucleon[2].set_energy (MN);
-				nucleon[3].set_energy (MN);
-			}
-			//result*=(1-cosmin);
-			meclep.set_momentum(kprim);
-			
-		}	
-	}
-	
-	return result;
-	
-}
 
 void Nieves_do_cc (particle *p, double ratio)
 {

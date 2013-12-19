@@ -334,7 +334,7 @@ void NuWro::makeevent(event* e, params &p)
 			break;
 		case 8:
 			if (p.dyn_mec_cc) // mec cc
-			if( nu.pdg>0 || !(p.mec_kind==3) )      // there is no CC Nieves model for antineutrinos
+			//if( nu.pdg>0 || !(p.mec_kind==3) )// al flavor states/antineutrinos available
 			{	
 				if(_nucleus->A()<=1)
 					break;

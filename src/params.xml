@@ -295,6 +295,9 @@
   <param name="mec_ratio_ppp" type="text" ctype="double" default="0.8">
     <description><![CDATA[]]></description>
   </param>
+  <param name="MEC_pauli_blocking" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[enable (1) or not (0) Pauli blocking of final nucleons in Nieves model]]></description>
+  </param>
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
