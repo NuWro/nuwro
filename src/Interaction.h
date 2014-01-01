@@ -8,7 +8,6 @@
 #include "nucleus.h"
 #include "jednostki.h"
 #include "scatter.h"
-//#include "proctable.h"
 #include "seek.h"
 //#define echo(x)
 #include "piangle.h"

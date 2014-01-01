@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "event1.h"
-#include "event1dict.h"
 #include "TROOT.h"
 #include "TTree.h"
 #include "TFile.h"

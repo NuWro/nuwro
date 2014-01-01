@@ -36,27 +36,5 @@ enum {
      };
 
 
-struct process
-{
-  int id;
-  string name;
-  public: 
-  process(int i=0, string n=NULL):id(i),name(n){}
-};
-
-class proctable
-{
- static const int MAXSIZE=100;
- process proc[MAXSIZE];
- int size;
-
-  public:
- proctable()
- { 
- }
-
-};
-
-
 
 #endif
