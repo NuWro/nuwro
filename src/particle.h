@@ -31,7 +31,7 @@ public:
 	bool primary;
   
 public:
-	inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;}
+	inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
 	inline particle (int code,double mass);      ///< create particle at rest 
 	inline particle (double mass);               ///< create particle at rest 
 	inline particle (vect fourmomentum);         ///< create moving particle

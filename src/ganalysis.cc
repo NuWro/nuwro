@@ -1,4 +1,23 @@
 #include "ganalysis.h"
+#include "beam.h"
+#include "beam_uniform.h"
+
+string intToStr(int n)
+{
+     string tmp;
+     
+     if(n < 0) {
+          tmp = "-";
+          n = -n;
+     }
+     
+     if(n > 9)
+          tmp += intToStr(n / 10);
+     
+     tmp += n % 10 + 48;
+     
+     return tmp;
+}
 
 void parabola (double &a, double &b, double &c, const double* x, const double& start, const double &step, const int bins)
 {
@@ -370,6 +389,14 @@ void hist1D :: put (double x, int dyn, double weight)
 	
 	if (a >= 0 and a < bins_x)
 		part_result [dyn][a] += weight;
+}
+
+void hist1D :: put (double x)
+{
+	int a = (x - begin_x) / width_x;
+	
+	if (a >= 0 and a < bins_x)
+		result [a]++;
 }
 
 void hist1D :: put_over (double x, int dyn, double weight)
@@ -795,6 +822,46 @@ void pattern :: start ()
 	run ();
 	
 	delete N;
+}
+
+void pattern :: startfsi ()
+{			
+
+	P.read("data/kaskada.txt");
+	set_params ();
+	
+	nucleus* nucl= make_nucleus(P);
+	
+	do
+	{	
+		for (int i = 0; i < events; i++)
+		{
+			event *e = new event();
+			e->weight = 1;
+			e->par = P;
+			
+			beam_uniform b(P);
+			particle p0 = b.shoot();
+			p0.r = start_point(nucl,P);
+			e->out.push_back(p0);
+			e->in.push_back(p0);
+			
+			k = new kaskada(P,*e);
+			k -> kaskadaevent();
+			
+			calculate(e);
+				
+			delete e;
+			delete k;
+			
+			cout << name << ": " << 100*i/events << "%\r" << flush;
+		}
+				
+		loop--;
+	}
+	while(loop > 0 and change_params());
+	
+	delete nucl;
 }
 
 void pattern :: run ()
@@ -4366,7 +4433,7 @@ void phd1 :: set_params ()
 {
 	P.beam_particle = PDG::pdg_nu_mu;
 	P.beam_type = 0;
-	P.beam_energy = "500";
+	P.beam_energy = "1000";
 	P.read("data/target/C.txt");
 					
 	P.dyn_qel_cc = 1;
@@ -4418,10 +4485,10 @@ void phd2 :: set_params ()
 	P.mec_kind = 3;	
 	
 	P.kaskada_on = 0;
-	
-	P.nucleus_target = 2; //1 - gfg, 2 - lfg
-	P.sf_method = 1;
-	P.sf_pb = 2;
+	P.pauli_blocking = 0;
+	P.nucleus_target = 1; //1 - gfg, 2 - lfg
+	P.sf_method = 0;
+	P.sf_pb = 0;
 }
 
 void phd2 :: calculate (event *e)
@@ -4508,7 +4575,7 @@ void phd4 :: set_params ()
 	P.beam_energy = "1000";
 	P.read("data/target/C.txt");
 		
-	P.mec_kind = 3;
+	P.mec_kind = 1;
 			
 	P.dyn_qel_cc = 0;
 	P.dyn_res_cc = 0;
@@ -4527,17 +4594,93 @@ void phd4 :: calculate (event *e)
 {
 	double tk0 = 0;
 	double tk1 = 0;
+	double cos0 = 0;
+	double cos1 = 0;
 	
 	for (int i = 0; i < e -> out.size(); i++)
 		if (e -> out[i].nucleon() and e -> out[i].Ek () > tk0)
+		{
 			tk0 = e -> out[i].Ek ();
+			cos0 = e -> out[i].p().z / e -> out[i].momentum();
+		}
 
 	for (int i = 0; i < e -> post.size(); i++)
 		if (e -> post[i].nucleon() and e -> post[i].Ek () > tk1)
+		{
 			tk1 = e -> post[i].Ek ();
+			cos1 = e -> post[i].p().z / e -> post[i].momentum();
+		}
 			
 	h1 -> put (tk0, e->dyn, e->weight, 0);
 	h1 -> put (tk1, e->dyn, e->weight, 1);
+	h2 -> put (cos0, e->dyn, e->weight, 0);
+	h2 -> put (cos1, e->dyn, e->weight, 1);
+}
+
+void phd6 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_proton;
+	P.beam_type = 0;
+	P.beam_energy = intToStr(Tk[0]*1000 + PDG::mass_proton);
+	P.read("data/target/Fe.txt");
+		
+	P.mec_kind = 1;
+				
+	P.formation_zone = "nofz";
+	P.beam_placement = 1;
+	P.first_step = 1;
+}
+
+void phd6 :: calculate (event *e)
+{		
+	if (e -> number_of_interactions() == 0)
+		T[count]++;
+}
+
+bool phd6 :: change_params()
+{
+	count++;
+	
+	if (count < N)
+	{
+		P.beam_energy = intToStr(Tk[count]*1000 + PDG::mass_proton);
+		return true;
+	}
+	else
+		return false;
+}
+
+void phd7 :: set_params ()
+{
+	P.beam_particle = PDG::pdg_piP;
+	P.beam_type = 0;
+	P.beam_energy = intToStr(sqrt(mom[0]*mom[0]*1e6 + PDG::mass_piP*PDG::mass_piP));
+	P.read("data/target/C.txt");
+		
+	P.mec_kind = 1;
+				
+	P.formation_zone = "trans";
+	P.beam_placement = 1;
+	P.first_step = 1;
+}
+
+void phd7 :: calculate (event *e)
+{		
+	if (e -> number_of_interactions() == 0)
+		T[count]++;
+}
+
+bool phd7 :: change_params()
+{
+	count++;
+	
+	if (count < N)
+	{
+		P.beam_energy = intToStr(sqrt(mom[count]*mom[count]*1e6 + PDG::mass_piP*PDG::mass_piP));
+		return true;
+	}
+	else
+		return false;
 }
 
 void mec_bu :: set_params ()
@@ -4675,6 +4818,8 @@ pattern * choose (int x)
 		case 55: wsk = new phd3; break;
 		case 56: wsk = new phd4; break;
 		case 57: wsk = new phd5; break;
+		case 58: wsk = new phd6; break;
+		case 59: wsk = new phd7; break;
 		default: wsk = NULL;
 	}
 	
@@ -4721,7 +4866,11 @@ int main (int argc, char **argv)
 		
 		if (wsk) 
 		{
+			if (wsk->fsi())
+				wsk->startfsi();
+			else
 			wsk -> start();
+			
 			delete wsk;
 		}
 	}

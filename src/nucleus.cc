@@ -96,11 +96,11 @@ particle nucleus::get_nucleon (vec r)
 		p0.set_proton ();
 	else
 		p0.set_neutron ();
-	if(pr+nr==1)
-	{
-		p0.set_momentum(vec(_p4));
-		return p0;
-	}
+	//~ if(pr+nr==1)
+	//~ {
+		//~ p0.set_momentum(vec(_p4));
+		//~ return p0;
+	//~ }
 	
 	if(p==1 and n==1)
 	{
@@ -137,7 +137,7 @@ particle nucleus::get_nucleon (vec r)
 	}
 
 	// account for the fact that the nucleus is in motion
-	p0.set_momentum(p0.p()+vec(_p4)/Ar()); ////???????
+	//p0.set_momentum(p0.p()+vec(_p4)/Ar()); ////???????
 	if(not (p0.v2()<1))
 		cerr<<kMomDist
 			<<" p="<<this->p
@@ -146,12 +146,13 @@ particle nucleus::get_nucleon (vec r)
 			<<" v2="<< p0.v2()
 			<<" "<<p0.v()<<endl;
 	// assert(p0.v2()<1);
+	
 	return p0;
 }
 
 double nucleus :: Ef (particle &pa)
 {
-	double const M = 0.5*(PDG::mass_proton+PDG::mass_neutron);
+	double const M = 0.5*(PDG::mass_proton + PDG::mass_neutron);
 	double kmom = 0;
 	
 	switch (kMomDist)

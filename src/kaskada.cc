@@ -48,9 +48,10 @@ int main(int argc,  char** argv)
      e->out.push_back(p0);
      e->flag.qel = 0;
      e->flag.res = 0;
-	 e->in.push_back(p0);
-	 e->in.push_back(p0);
-	 e->in[1].p4().t = 0;
+	 particle pi = nucl->get_nucleon(p0.r);
+	 e->in.push_back(pi);
+	 e->in.push_back(pi);
+	 //e->in[1].p4().t = 0;
 	 kaskada k(p,*e);
      k.kaskadaevent();
      t2->Fill();

@@ -17,7 +17,6 @@
 #include "Interaction.h"
 #include "proctable.h"
 #include "nucleusmaker.h"
-#include "fsi.h"
 
 using namespace std;
 using namespace PDG;

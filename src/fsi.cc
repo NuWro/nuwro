@@ -204,28 +204,66 @@ double formation_zone (particle &p, params &par, event &e)
 			
 			//for (int i = 0; i < 5; i++) theta[i] *= 3.14159265/180.0;
 			
-			double q2[5] = {1.1, 2.15, 3.0, 3.91, 4.69};
-			const double PTppi[5]   = {2.793, 3.187, 3.418, 4.077, 4.412};
-			int k = 0;
-			
-			for (int i = 0; i < 5; i++)
+			if (p.pion())
 			{
-				int energy;
-		
-				energy = PTppi[i]*1000.0;
-				energy = energy*energy + 140.0*140.0;
-				energy = sqrt(energy);
+				const double nu[] = {2.831, 3.282, 3.582, 4.344, 4.733};
+				const double Q2p[] = {1.1, 2.15, 3.0, 3.91, 4.69};
+				const double PTppi[]   = {2.793, 3.187, 3.418, 4.077, 4.412};
 				
-				if (p.E() == energy)
+				int i;
+				
+				for (i = 0; i < 5; i++)
 				{
-					k = i;
-					break;
+					double x = p.momentum() - PTppi[i]*1000;
+					if (x < 0)
+						x = -x;
+					if (x < 10)
+						break;
 				}
+				double M = PDG::mass_proton / 1000.0;
+				//flength = sqrt(nu[i]*nu[i] + Q2p[i])/(nu[i] + PDG::mass_proton/1000.0) * ran_exp(1.0/120.0);
+				//flength = sqrt(nu[i]*nu[i] + Q2p[i])/sqrt(M*M + 2.0*M*nu[i] - Q2p[i]) * ran_exp(1.0/120.0);
+				//flength = sqrt(nu[i]*nu[i] + Q2p[i])/(M*M + 2.0*M*nu[i] - Q2p[i]) * 1e-3;
+				flength = PTppi[i] / Q2p[i] * 1e-3;				
+				
+				//~ int k = 0;
+				//~ 
+				//~ for (int i = 0; i < 5; i++)
+				//~ {
+					//~ int energy;
+			//~ 
+					//~ energy = PTppi[i]*1000.0;
+					//~ energy = energy*energy + 140.0*140.0;
+					//~ energy = sqrt(energy);
+					//~ 
+					//~ if (p.E() == energy)
+					//~ {
+						//~ k = i;
+						//~ break;
+					//~ }
+				//~ }
+//~ 
+				//~ flength = 2e-6*p.momentum()/0.6; 
+				//~ flength *= 0.5*(1.0 - 0.5/q2[k]);
 			}
-
-			flength = 2e-6*p.momentum()/0.6; 
-			flength *= 0.5*(1.0 - 0.5/q2[k]);
-						
+			else
+			{
+				const double Tp[] = {0.35, 0.7, 0.97, 1.8, 0.625, 1.718, 2.742, 3.65};
+				const double Q2[] = {0.6, 1.3, 1.8, 3.3, 1.04, 3.06, 5.00, 6.77};
+				
+				int i;
+				
+				for (i = 0; i < 8; i++)
+				{
+					double x = p.Ek() - Tp[i]*1000;
+					if (x < 0)
+						x = -x;
+					if (x < 10)
+						break;
+				}
+					
+				flength = 2.0*p.momentum()/Q2[i] * 1e-6;
+			}												
 		}
 		else if (strcmp(fz.c_str(), "skat8") == 0) flength = 1e-6*p.momentum()/0.08;
 		else if (strcmp(fz.c_str(), "cohl") == 0) flength = p.momentum()/(p.mass2() - p.p4()*p0); 
@@ -301,7 +339,7 @@ double formation_zone (particle &p, params &par, event &e)
 				flength = pa.length()*ran_exp(1.0/120.0)/mass;
 		}
 		else if (strcmp(fz.c_str(), "const") == 0)
-			flength = par.formation_length / 200.0;			
+			flength = par.formation_length / 200.0;		
 		else flength = 0;
 	}
 	else flength = 0;
@@ -309,7 +347,7 @@ double formation_zone (particle &p, params &par, event &e)
 	if (flength < 0) flength = -flength;
 	
 	flength *= 200.0*fermi; //from 1/MeV to fm
-	
+
 	return flength;
 }
 

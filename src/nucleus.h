@@ -187,7 +187,7 @@ inline double nucleus::Mf ()
 /// remove nucleon P from the nucleus 
 ///////////////////////////////////////////////////////////////////////////////
 inline bool nucleus::remove_nucleon(particle P)
-{
+{		
 	switch(P.pdg)
     {
 		case pdg_proton:  //if(pr==0) cout<<proc<<endl; 

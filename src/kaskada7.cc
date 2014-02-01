@@ -1,4 +1,5 @@
 #include "kaskada7.h"
+#include "fsi.h"
 
 kaskada::kaskada(params &p, event &e1)
 {
@@ -23,6 +24,8 @@ int kaskada::kaskadaevent()
 	if (e->weight <= 0)
 		return result;
 	
+	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
+	
 	if (e->in[0].lepton()) //if lepton scattering remove nucleon from primary vertex 
 		                   // (in pion or nucleon scattering there is no primary vertex
 		                   // just the cascade)
@@ -31,8 +34,6 @@ int kaskada::kaskadaevent()
 			nucl->remove_nucleon(e->in[i]);// ignores nonnucleons
 	}
 			
-	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
-
 	if(not par.kaskada_on) //skip cascade if it is turn off in params, but make sure about the energy balance
 	{
 		while (parts.size () > 0)
@@ -79,17 +80,16 @@ void kaskada::prepare_particles()
 		particle p1 = e->out[i];
 								
 		if (nucleon_or_pion (p1.pdg))
-		{		  
-			double fz = formation_zone(p1, par, *e); //calculate formation zone
-			p1.krok(fz); //move particle by a distance defined by its formation zone
-			
+		{		  			
 			if (nucleon (p1.pdg))
 			{	
 				p1.primary = true;
 				
-				if ((e->flag.qel or e->flag.res) and (e->par.sf_method != 0 or e->par.nucleus_target == 1)) 
-				  //add the binding energy substracted in the primary vertex (for Global Fermi Gas Local Fermi Gas and Spectral Function)
-					p1.set_energy(p1.E() + par.nucleus_E_b);
+				//add the binding energy substracted in the primary vertex (for Global Fermi Gas Local Fermi Gas and Spectral Function)
+				if (e->flag.qel and (par.sf_method != 0 or par.nucleus_target == 2))
+					p1.set_energy (p1.E() + nucl->Ef(p1) + par.kaskada_w);
+				else if (par.nucleus_target == 1 and (e->flag.qel or e->flag.res))
+						p1.set_energy (p1.E() + par.nucleus_E_b);
 					
 				p1.set_fermi(nucl->Ef(p1));
 			
@@ -102,6 +102,9 @@ void kaskada::prepare_particles()
 					continue;
 				}
 			}
+			
+			double fz = formation_zone(p1, par, *e); //calculate formation zone
+			p1.krok(fz); //move particle by a distance defined by its formation zone
 		  		  
 			parts.push (p1); //put particle to a queue
 		}
@@ -197,7 +200,72 @@ bool kaskada::make_interaction()
 }
 
 bool kaskada::finalize_interaction()
-{
+{	
+	p->endproc=I->process_id();
+	
+	double FE = nucl->Ef(X.p2);
+	
+	if (!p->nucleon())
+	{
+		for (int i = 0; i < X.n; i++)
+			if (nucleon(X.p[i].pdg))
+			{
+				X.p[i].set_fermi (FE);
+				break;
+			}
+	}
+	else
+	{
+		double he = (p->his_fermi > FE) ? p->his_fermi : FE;
+		double le = p->his_fermi + FE - he;
+		
+		int n_he = -1;
+		int n_le = -1;
+		
+		for (int i = 0; i < X.n; i++)
+			if (nucleon(X.p[i].pdg))
+				if (n_he < 0)
+					n_he = i;
+				else if (X.p[i].Ek() < X.p[n_he].Ek())
+					n_le = i;
+				else
+				{
+					n_le = n_he;
+					n_he = i;
+				}
+				
+		X.p[n_he].set_fermi (he);		
+		X.p[n_le].set_fermi (le);		
+	}		
+	
+	for (int i = 0; i < X.n; i++)
+	{
+		X.p[i].r = p->r;
+		X.p[i].travelled = 0;
+				
+		if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi) //jailed nucleon if its kinetic energy is lower than work function
+		{
+			X.p[i].endproc=jailed;
+			nucl->insert_nucleon (X.p[i]);
+			if(par.kaskada_writeall) 
+				e->all.push_back(X.p[i]);
+			continue;			
+		}
+		else
+		{
+			parts.push (X.p[i]);
+			double fz = formation_zone(X.p[i], par);
+			X.p[i].krok(fz);
+		}
+
+		//procinfo(*p,X.p2,X.n,X.p);
+		
+		if(par.kaskada_writeall)
+			e->all.push_back (*p);
+	}
+	
+	int k = kod(I->process_id());
+	e->nod[k]++;
 	
 	if(!nucl->remove_nucleon (X.p2))
 		return false;    // remove from the nuclear matter
@@ -207,61 +275,6 @@ bool kaskada::finalize_interaction()
 			nucl->insert_nucleon (X.p2);
 			return false;
 		}
-	
-	p->endproc=I->process_id();
-	double rem_en = -1.0;
-	int first_nucl;
-		
-	for (int i = 0; i < X.n; i++)
-	{
-		X.p[i].r = p->r;
-		X.p[i].travelled = 0;
-		
-		double fz = formation_zone(X.p[i], par);
-		X.p[i].krok(fz);
-		
-		if (nucleon (X.p[i].pdg))
-		{			
-			if (!p->nucleon())
-				X.p[i].set_fermi(nucl->Ef(X.p2));
-			else if (rem_en < 0)
-			{
-				first_nucl = i;
-				rem_en = X.p[i].Ek();
-			}
-			else //for more energetic nucleon set fermi from primary nucleon and from secondary for the other one
-			{
-				if (rem_en > X.p[i].Ek())
-				{
-					X.p[first_nucl].set_fermi (p->his_fermi);
-					X.p[i].set_fermi (nucl->Ef(X.p2));
-				}
-				else
-				{
-					X.p[first_nucl].set_fermi (nucl->Ef(X.p2));
-					X.p[i].set_fermi (p->his_fermi);
-				}	
-			}
-						
-			if (X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi) //jailed nucleon if its kinetic energy is lower than work function
-			{
-				X.p[i].endproc=jailed;
-				nucl->insert_nucleon (X.p[i]);
-				if(par.kaskada_writeall) 
-					e->all.push_back(X.p[i]);
-				continue;			
-			}
-		}
-		
-		parts.push (X.p[i]);	// queue for further processing
-		//procinfo(*p,X.p2,X.n,X.p);
-		
-		if(par.kaskada_writeall)
-			e->all.push_back (*p);
-	}
-	
-	int k = kod(I->process_id());
-	e->nod[k]++;
 	
 	return true;
 }

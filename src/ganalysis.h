@@ -3,9 +3,10 @@
 #include "beam.h"
 #include "ff.h"
 #include <string>
+#include "kaskada7.h"
 
 const int nof_dyn = 10; //number of dynamics in NuWro
-const int nof_class = 58;
+const int nof_class = 60;
 
 float mb_nce_start = 0;
 int mb_nce_nof = 0;
@@ -78,12 +79,14 @@ const bool active_class[nof_class] =
 	0,	//NIWG lepton kinematics for events with protons above treshold (Nieves)
 	0,	//Bodek nu - Q2/2M
 	0,	//phd1 -> proton out momentum distributions fg vs lfg vs sf
-	0,	//phd2 -> qel cross section...
+	1,	//phd2 -> qel cross section...
 	0,	//backward muon in MEC
 	0,	//backward muon in MEC 2
 	0,	//phd3 -> total mec
 	0,	//phd4 -> nucleon kin mec
-	1	//phd5 -> total COH
+	0,	//phd5 -> total COH
+	0,	//phd6 -> proton transparency
+	0	//phd7 -> pion transparency
 };
 
 void run_command (string com)
@@ -148,6 +151,7 @@ class hist1D : public histogram
 		void save ();
 		void plot ();
 		void finalize ();
+		void put (double x);
 		void put (double x, int dyn, double weight);
 		void put_over (double x, int dyn, double weight);
 };
@@ -196,20 +200,26 @@ class mhist1D : public histogram
 class pattern
 {
 	protected:
-	
+		
+		bool onlyfsi;
+		int loop;
+		double *E;
 		string name;
 		NuWro *N;
+		kaskada *k;
 		params P;
 		int events;
 
 		void run ();
+		void runfsi ();
 		virtual void set_params () {}
 		virtual void calculate(event *e) {}
+		virtual bool change_params () {return true;}
 		
 	public:
 		
-		pattern (string name_of_class, int nof_events) : name (name_of_class), events (nof_events)
-		{
+		pattern (string name_of_class, int nof_events, bool fsi = false, int l = 1) : name (name_of_class), events (nof_events), onlyfsi(fsi), loop(l)
+		{			
 			for (int i  = 0; i < nof_dyn; i++)
 			{
 				norm [i] = 0;
@@ -217,8 +227,11 @@ class pattern
 			}
 		}
 		
+		inline bool fsi() {return onlyfsi;}
+		
 		virtual ~pattern () {}		
 		virtual void start ();
+		virtual void startfsi ();
 };
 
 class mb_ncpi0 : public pattern
@@ -1693,25 +1706,19 @@ class phd1 : public pattern
 		hist1D *h1;
 		hist1D *h2;
 		
-//		int n1;
-//		int n2;
-		
 		void set_params ();
 		void calculate (event *e);
 		
 	public:
 	
-		phd1 () : pattern ("phd1", 5000000)
+		phd1 () : pattern ("phd1", 10000000)
 		{
-			h1 = new hist1D ("proton_momentum_sf2b", "", "", "Proton momentum [MeV/c]", "No. of events", 150, 0, 1500, 1, 100);
-			h2 = new hist1D ("xsec_Q2_sf2b", "", "", "Q^{2} [GeV^2]", "d^{2}{/Symbol s} / dQ^{2} [cm^2 / GeV^{2} / nucleon]", 100, 0, 1, 0);
-//			n1 = 0;
-//			n2 = 0;
+			h1 = new hist1D ("proton_momentum_gfg", "", "", "Proton momentum [MeV/c]", "No. of events", 30, 0, 1500, 1, 100);
+			h2 = new hist1D ("xsec_Q2_gfg", "", "", "Q^{2} [GeV^2]", "d^{2}{/Symbol s} / dQ^{2} [cm^2 / GeV^{2} / nucleon]", 100, 0, 2, 0);
 		}
 		
 		~phd1 ()
 		{
-//			cout << "\n Blocked: " << 100.0 * n1 / n2 << endl;
 			delete h1;
 			delete h2;
 		}
@@ -1728,9 +1735,9 @@ class phd2: public pattern
 		
 	public:
 		
-		phd2 () : pattern ("phd2", 5000000)
+		phd2 () : pattern ("phd2", 1000000) //0
 		{
-			h1 = new hist1D ("qel_xsec_sf2", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 36, 200, 2000, 6);
+			h1 = new hist1D ("qel_xsec_gfg_nopb", "", "", "Neutrino Energy [MeV]", "{/Synbol s}_{QEL}", 18, 200, 2000, 6);
 		}
 		
 		~phd2 ()
@@ -1767,22 +1774,28 @@ class phd4 : public pattern
 	protected:
 		
 		mhist1D *h1;
+		mhist1D *h2;
 		
 		void set_params ();
 		void calculate (event *e);
 		
 	public:
 	
-		phd4 () : pattern ("mec_cher", 5000000)
+		phd4 () : pattern ("phd4", 5000000)
 		{
-			h1 = new mhist1D ("mec_nucl_nie", "", "Kinetic energy of the most energetic nucleon", "Tk [MeV]", "No. of events", 50, 0, 1000, 2, 2, 100);
+			h1 = new mhist1D ("mec_nucl_tem", "", "Kinetic energy of the most energetic nucleon", "Tk [MeV]", "No. of events", 20, 0, 1000, 2, 2, 100);
 			h1 -> cnames [0] = "before FSI";
 			h1 -> cnames [1] = "after FSI";
+			
+			h2 = new mhist1D ("mec_nucl2_tem", "", "Angle of the most energetic nucleon", "Tk [MeV]", "No. of events", 20, -1, 1, 2, 2, 100);
+			h2 -> cnames [0] = "before FSI";
+			h2 -> cnames [1] = "after FSI";
 		}
 		
 		~phd4 ()
 		{
 			delete h1;
+			delete h2;
 		}
 };
 
@@ -1807,6 +1820,78 @@ class phd5: public pattern
 			delete h1;
 		}
 };
+
+class phd6 : public pattern
+{
+	protected:
+			
+		void set_params ();
+		void calculate (event *e);
+		bool change_params();
+		int count;
+		
+		enum {N = 8};
+		
+		static double Tk[N];
+		static double Q2[N];
+		
+		double T[N];
+		
+	public:
+	
+		phd6 () : pattern ("phd6", 100000, true,N), count(0)
+		{
+			for (int i = 0; i < N; i++)
+				T[i] = 0;
+		}
+		
+		~phd6 ()
+		{
+			ofstream file("analysis/proton_trans_Fe.txt");
+			for (int i = 0; i < N; i++)
+				file << Q2[i] << " " << T[i]/events << endl;
+			file.close();
+		}
+};	
+
+double phd6::Tk[N] = {0.35, 0.7, 0.97, 1.8, 0.625, 1.718, 2.742, 3.65};
+double phd6::Q2[N] = {0.6, 1.3, 1.8, 3.3, 1.04, 3.06, 5.00, 6.77};
+
+class phd7 : public pattern
+{
+	protected:
+			
+		void set_params ();
+		void calculate (event *e);
+		bool change_params();
+		int count;
+		
+		enum {N = 5};
+		
+		static double mom[N];
+		static double Q2[N];
+		
+		double T[N];
+		
+	public:
+	
+		phd7 () : pattern ("phd7", 100000, true,N), count(0)
+		{
+			for (int i = 0; i < N; i++)
+				T[i] = 0;
+		}
+		
+		~phd7 ()
+		{
+			ofstream file("analysis/pion_trans_C_fz.txt");
+			for (int i = 0; i < N; i++)
+				file << Q2[i] << " " << T[i]/events << endl;
+			file.close();
+		}
+};	
+
+double phd7::mom[N] = {2.793, 3.187, 3.418, 4.077, 4.412};
+double phd7::Q2[N] = {1.1, 2.15, 3.0, 3.91, 4.69};
 
 class mec_bu: public pattern
 {

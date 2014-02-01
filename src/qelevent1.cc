@@ -87,7 +87,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	{
 		case 0: _E_bind=0; 				break;
 		case 1: _E_bind= p.nucleus_E_b;	break;
-		case 2: _E_bind=0;              break; //temporary
+		case 2: _E_bind= t.Ef(N0) + p.kaskada_w;              break; //temporary
 		case 3: _E_bind=0;              break; //temporary
 		case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);
 				 //in the future it is possible to add SF for other nuclei as well	

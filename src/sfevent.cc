@@ -232,8 +232,8 @@ double sfevent2cc(params&par, event & e, nucleus &t)
     e.in[1]=N0;   
 	e.out.push_back(l1);
 	e.out.push_back(N1);
-	
-	if (corr)
+
+	if (corr && ( l0.t-l1.t-N1.Ek()-N2.Ek() )>14 )
 	  e.out.push_back(N2);
 	
   // cout<<val/cm2<<endl<<endl;
@@ -418,7 +418,7 @@ double sfevent2nc(params&par, event & e, nucleus &t)
 	e.out.push_back(l1);
 	e.out.push_back(N1);
 	
-	if (corr)
+	if (corr && ( l0.t-l1.t-N1.Ek()-N2.Ek() )>14 )
 	  e.out.push_back(N2);
    return val;
 }
