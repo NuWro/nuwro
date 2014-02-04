@@ -63,6 +63,15 @@ double dsdEdc(double E, double q0, double ct)
 						w33=(H2*(H1*O16grid[d+4])/spacing+(spacing-H2)*(H1*O16grid[b+4])/spacing)/spacing;
 						break;
 					}
+					case 2:
+					{
+						w00=(H2*(H1*Ca40grid[d])/spacing+(spacing-H2)*(H1*Ca40grid[b])/spacing)/spacing;
+						w03=(H2*(H1*Ca40grid[d+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1])/spacing)/spacing;
+						w11=(H2*(H1*Ca40grid[d+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2])/spacing)/spacing;
+						w12=(H2*(H1*Ca40grid[d+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3])/spacing)/spacing;
+						w33=(H2*(H1*Ca40grid[d+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4])/spacing)/spacing;
+						break;
+					}
 				}
 			}//now we are in the data grid
 			else if(n<m)
@@ -93,6 +102,15 @@ double dsdEdc(double E, double q0, double ct)
 						w33=(H2*(H1*O16grid[d+4]+(spacing-H1)*O16grid[c+4])/spacing+(spacing-H2)*(H1*O16grid[b+4]+(spacing-H1)*O16grid[a+4])/spacing)/spacing;
 						break;
 					}
+					case 2:
+					{
+						w00=(H2*(H1*Ca40grid[d]+(spacing-H1)*Ca40grid[c])/spacing+(spacing-H2)*(H1*Ca40grid[b]+(spacing-H1)*Ca40grid[a])/spacing)/spacing;
+						w03=(H2*(H1*Ca40grid[d+1]+(spacing-H1)*Ca40grid[c+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1]+(spacing-H1)*Ca40grid[a+1])/spacing)/spacing;
+						w11=(H2*(H1*Ca40grid[d+2]+(spacing-H1)*Ca40grid[c+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2]+(spacing-H1)*Ca40grid[a+2])/spacing)/spacing;
+						w12=(H2*(H1*Ca40grid[d+3]+(spacing-H1)*Ca40grid[c+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3]+(spacing-H1)*Ca40grid[a+3])/spacing)/spacing;
+						w33=(H2*(H1*Ca40grid[d+4]+(spacing-H1)*Ca40grid[c+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4]+(spacing-H1)*Ca40grid[a+4])/spacing)/spacing;
+						break;
+					}
 				}
 			}//an now we are in the external triangle near q0-B=q
 			else if(n==m)
@@ -120,6 +138,15 @@ double dsdEdc(double E, double q0, double ct)
 						w11=(H1*(H*O16grid[a+2]+(spacing-H)*O16grid[c+2])/spacing+(H-H1)*(H*O16grid[d+2]+(spacing-H)*O16grid[c+2])/spacing)/H;
 						w12=(H1*(H*O16grid[a+3]+(spacing-H)*O16grid[c+3])/spacing+(H-H1)*(H*O16grid[d+3]+(spacing-H)*O16grid[c+3])/spacing)/H;
 						w33=(H1*(H*O16grid[a+4]+(spacing-H)*O16grid[c+4])/spacing+(H-H1)*(H*O16grid[d+4]+(spacing-H)*O16grid[c+4])/spacing)/H;
+						break;
+					}
+					case 2:
+					{
+						w00=(H1*(H*Ca40grid[a]+(spacing-H)*Ca40grid[c])/spacing+(H-H1)*(H*Ca40grid[d]+(spacing-H)*Ca40grid[c])/spacing)/H;
+						w03=(H1*(H*Ca40grid[a+1]+(spacing-H)*Ca40grid[c+1])/spacing+(H-H1)*(H*Ca40grid[d+1]+(spacing-H)*Ca40grid[c+1])/spacing)/H;
+						w11=(H1*(H*Ca40grid[a+2]+(spacing-H)*Ca40grid[c+2])/spacing+(H-H1)*(H*Ca40grid[d+2]+(spacing-H)*Ca40grid[c+2])/spacing)/H;
+						w12=(H1*(H*Ca40grid[a+3]+(spacing-H)*Ca40grid[c+3])/spacing+(H-H1)*(H*Ca40grid[d+3]+(spacing-H)*Ca40grid[c+3])/spacing)/H;
+						w33=(H1*(H*Ca40grid[a+4]+(spacing-H)*Ca40grid[c+4])/spacing+(H-H1)*(H*Ca40grid[d+4]+(spacing-H)*Ca40grid[c+4])/spacing)/H;
 						break;
 					}
 				}		
@@ -171,9 +198,9 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	ml=meclepton.mass();
 	ml2=ml*ml;
 	//nucleus and Pauli blocking
-	nucl=(t.p>7);
+	nucl=(t.p>7)+(t.p>15);
 	PB=p.MEC_pauli_blocking;
-	//binding:either carbon or oxygen neutrino/antineutrino
+	//binding:either carbon or oxygen or calcium neutrino/antineutrino
 	Bmec=qvalues[2*nucl+(e.in[0].pdg<0)];
 	// Qvalue threshold...
 	double q0max=e.in[0].E()-ml-eV;

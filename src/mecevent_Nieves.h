@@ -26,7 +26,7 @@ extern double ml;
 extern double ml2;
 //efffecitive CC binding energies in MeV: Carbon-neutrino, Carbon-antineutrino
 //Oxygen-neutrino, Oxygen-antineutrino
-static double qvalues[4]={16.827*MeV,13.880*MeV,14.906*MeV,10.931*MeV};
+static double qvalues[6]={16.827*MeV,13.880*MeV,14.906*MeV,10.931*MeV,13.809*MeV,1.822*MeV};
 //reaction threshold or binding energy
 extern double Bmec;
 //antinetrino
