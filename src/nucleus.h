@@ -93,7 +93,7 @@ inline double nucleus::Ef()
 
 inline double kf_from_density (double dens)
 { 
-	static const double C= 1.5 * Pi * Pi * fermi3;
+	static const double C= 3 * Pi * Pi * fermi3;
 	if(dens>0)
 		return cbrt( C*dens) * 197.4 * MeV;
 	else
