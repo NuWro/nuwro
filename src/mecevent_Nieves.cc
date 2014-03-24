@@ -398,7 +398,6 @@ void Nieves_do_cc (particle *p, double ratio)
 			p[3].set_neutron ();
 		}
 		else
-		if(ap)
 		{
 			p[0].set_proton ();
 			p[1].set_proton ();		
