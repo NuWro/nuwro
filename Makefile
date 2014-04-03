@@ -15,7 +15,7 @@ CXX	      = g++
 CC 	      = g++
 
 
-TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance \
+TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
                 fsi niwg ladek_topologies test mb_nce_run ganalysis\
                 )
@@ -82,6 +82,9 @@ $(BIN)/nuwro2neut:  $(EVENT_OBJS) src/nuwro2neut.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o
+		 $(LINK.cc) $^ -o $@
+
+$(BIN)/nuwro2rootracker: $(EVENT_OBJS) src/nuwro2rootracker.o
 		 $(LINK.cc) $^ -o $@
 
 $(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
