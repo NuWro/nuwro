@@ -1,8 +1,18 @@
-//nuwro to rootracker converter, written by Pawel Przewlocki vel Pafcio, 2013.
+//nuwro to rootracker converter, written by Pawel Przewlocki vel Pafcio, 2013-2014.
+//Author: Pawel Przewlocki, pawel.przewlocki@fuw.edu.pl
+//-------------------------------
+//--version history--
+//23.10.2014 - coh target now saved + bugfix to 5.10.2014: neutrino target code was not saved 
+//20.10.2014 - parameters now handled using getopt
+//5.10.2014 - target code now represents nuclei instead of nucleons
+//20.04.2014 - POTs can now be specified and saved to the output
+//-------------------
 
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <cstdlib>
 #include <vector>
 #include <sys/stat.h> 
 #include "event1.h"
@@ -39,7 +49,7 @@ bool FileExists(string strFilename) {
 
 int GetNeutChannel(event *e){
   //simplified neut reaction codes
-  //TODO: coh correct, what about antinus?
+  //TODO: antinus?
   if (e->flag.qel){
     if (e->flag.cc){
       return 1;
@@ -70,45 +80,82 @@ int GetNeutChannel(event *e){
   }
   if (e->flag.mec){
     if (e->flag.cc){
-      return 70;
+      return 2;//new neut flag
     }else{
-      return 90;
+      return 2;//ncs don't exist here
     }
   }
   return 100;
 }
 
-
-int main (int argc, char *argv[]){
-  if (argc < 3){    
-      std::cout << "Usage: nuwro2rootracker_series nuwrofile.root rootrackerfile_template.root [#evts_in_a_file]" << std::endl;
+void DisplayInfo(){
+      std::cout << std::endl;
+      std::cout << "Usage: nuwro2rootracker [-n #evts] [-p POT] nuwrofile.root rootrackerfile_template.root" << std::endl;
       std::cout << "Converts nuwro output file to a series of rootracker tree format files." << std::endl;
       std::cout << "The @ character in the template will be substituted with file number." << std::endl;
+      std::cout << "#evts is the number of events per one output file" << std::endl;
+      std::cout << "(must be less than the number of evts in the input file)." << std::endl;
       std::cout << "If #evts not specified, one output file will be created." << std::endl;
+      std::cout << "POT is the number of POTs in the input file." << std::endl;  
+      exit(0);
+}
 
+
+int main (int argc, char *argv[]){
+
+    //-----parameter handling using getopt--------  
+    int ncopy=-1; //we're indicating it's not set
+    bool onefile=true;    
+    float pot=1.; //by default just a random number
+    bool usepot=false;    
+    int c;
+    while((c = getopt(argc, argv, "n:p:h?")) != -1){
+        switch(c){
+            case 'n':
+	        if(optarg && sscanf(optarg,"%d",&ncopy)>0){//we have number of events specified
+		  onefile=false;
+		  printf("Each file will have %d evts.\n",ncopy);
+		}else{
+		  printf("Number of events missing or unreadable!\n");
+		  //DisplayInfo();
+		}
+		break;
+            case 'p':
+	        if (optarg && sscanf(optarg,"%e",&pot)>0){//we have pot
+		  usepot=true;
+		  printf("POT information will be added to output (total POT %e).\n",pot);
+		}else{
+		  printf("Number of POTs missing or unreadeable!\n");
+		  //DisplayInfo();
+		}
+		break;
+	    case 'h':
+	    case '?':
+	        DisplayInfo();
+		break;
+        }
+    }
+  
+  
+  if (argc - optind < 2){ 
+    printf("Insufficient number of parameters!\n");
+    //DisplayInfo();
   }else{
-    if (!FileExists(argv[1])){
-	  std::cout << argv[1] << ": File does not exist or is inaccessible." << std::endl;
+    if (!FileExists(argv[optind])){
+	  std::cout << argv[optind] << ": File does not exist or is inaccessible." << std::endl;
 	  return 1;
     }
     event *e = new event;
-    TFile *fin = new TFile(argv[1]);
+    TFile *fin = new TFile(argv[optind]);//input file
     TTree *tt1 = (TTree*)fin->Get("treeout");
     tt1->SetBranchAddress ("e", &e);
     int n = tt1->GetEntries();
-    int ncopy=n;//by default one big rootracker with n events in it.
-    bool onefile=true;
-    if (argc>=4){//we have number of events specified
-      sscanf(argv[3],"%d",&ncopy);
-      onefile=false;
-      printf("Each file will have %d evts.\n",ncopy);
-    }
+    if (onefile) ncopy=n;  //by default one big rootracker with n events in it.
 
-      
-      //vars
+    //vars
     int channel;
 
-   //rooTracker
+    //rooTracker
     /// The generator-specific event flags.
     TBits* fEvtFlags;
 
@@ -195,14 +242,9 @@ int main (int argc, char *argv[]){
     /// The vertex ID of the parent particle vertex.
     int fNuParentProNVtx;
 
-
-
-      // Create a TTree  
-      
+    // Create a TTree        
     const int fEmpty=-999999;  
       
-
-    
     printf("Number of entries in the input file: %d\n", n);
     double coef=1e38/n;
     int i0=0;
@@ -210,19 +252,20 @@ int main (int argc, char *argv[]){
     char CodeStr[20];
     int ncopied=0;
     int i=0,fnum=0;
-    string outtemplate=argv[2];
+    string outtemplate=argv[optind+1];
     int index=outtemplate.find("@");
     if (!onefile && index==std::string::npos){
       printf("No @ character in the output template, terminating.\n");
       exit(1);
     }
-      //event loops
+    //---event loops-----
+    //---main loop per output file---
     while (i<n){//until end-of-file
       string fname=outtemplate;
       char buf[5];
       sprintf(buf,"%d",fnum);
       if (!onefile) fname.replace(index,1,buf);
-      TFile *fout=TFile::Open(fname.c_str(),"RECREATE");
+      TFile *fout=TFile::Open(fname.c_str(),"RECREATE"); //an output file
       fnum++;
       TTree *fOutputTree = new TTree("nRooTracker","RooTracker");
       fEvtFlags = NULL;
@@ -257,12 +300,14 @@ int main (int argc, char *argv[]){
       fOutputTree->Branch("NuParentProNVtx",&fNuParentProNVtx, "NuParentProNVtx/I"     );  //obsolete
       
       ncopied=0;//reset to start copying again
+      //---second loop saving events to a sigle file---
       while (ncopied<ncopy){
-	  if (i>=n) break; //end of file, wrapping up
+	  if (i>=n) break; //end of input file, wrapping up
 	  tt1->GetEntry(i);
 	  i++;
 	  if (!(e->weight>0.)) continue; //we don't copy events with 0 weight, that's for weighted only
                                         //regular events don't have 0 weights
+                                        //warning: POTs don't work for weighted files
 	  ncopied++;
 	  fEvtFlags->Set(8,"00000000");
 	  sprintf(CodeStr,"%d",GetNeutChannel(e));
@@ -278,9 +323,18 @@ int main (int argc, char *argv[]){
 	  fEvtVtx[3]=0.;
 	  fStdHepN=0;
 	  
-
-	  for (int nin=0; nin<e->in.size();nin++){//incoming particles
-		  fStdHepPdg[fStdHepN]=e->in[nin].pdg; 
+	  //------------incoming particles---------------
+	  int nuccode=1e9+e->par.nucleus_p*1e4+(e->par.nucleus_p+e->par.nucleus_n)*1e1;//pdg target nucleus
+	  for (int nin=0; nin<e->in.size();nin++){
+		  if (e->in[nin].pdg==2112 || e->in[nin].pdg==2212){ //neutron or proton -> nucleus
+                    if (e->par.nucleus_p==1 && e->par.nucleus_n==0){ //hydrogen
+                       fStdHepPdg[fStdHepN]=e->in[nin].pdg; //proton code
+                    }else{
+		       fStdHepPdg[fStdHepN]=nuccode; //nucleus code
+                    }
+                  }else{
+		    fStdHepPdg[fStdHepN]=e->in[nin].pdg; //neutrino code
+		  }
 		  fStdHepStatus[fStdHepN]=0;//incoming
 		  for (int k=0;k<4;k++){
 			  fStdHepX4[fStdHepN][k]=fEmpty;
@@ -298,6 +352,32 @@ int main (int argc, char *argv[]){
 		  fStdHepLm[fStdHepN]=fEmpty;
 		  fStdHepN++;
 	  }
+	  //coherent channel - we add target which is not present in the nuwro file
+	  if (e->in.size()<2){
+                  if (e->par.nucleus_p==1 && e->par.nucleus_n==0){ //hydrogen
+                       fStdHepPdg[fStdHepN]=2212; //proton code
+                    }else{
+		       fStdHepPdg[fStdHepN]=nuccode; //nucleus code
+                    }
+		  fStdHepStatus[fStdHepN]=0;//incoming
+		  for (int k=0;k<4;k++){
+			  fStdHepX4[fStdHepN][k]=fEmpty;
+		  }
+		  for (int k=0;k<3;k++){
+			  fStdHepPolz[fStdHepN][k]=fEmpty;
+		  }
+		  fStdHepP4[fStdHepN][3]=0;
+		  fStdHepP4[fStdHepN][0]=0;
+		  fStdHepP4[fStdHepN][1]=0;
+		  fStdHepP4[fStdHepN][2]=0;
+		  fStdHepFd[fStdHepN]=fEmpty;
+		  fStdHepLd[fStdHepN]=fEmpty;
+		  fStdHepFm[fStdHepN]=fEmpty;
+		  fStdHepLm[fStdHepN]=fEmpty;
+		  fStdHepN++;  
+	  }
+	  
+	  //------------outgoing particles---------------
 	  vector <particle> & out =(e->post.size()>0 ? e->post : e->out);
 	  for (int nout=0; nout< out.size();nout++){//outgoing
 		  fStdHepPdg[fStdHepN]=out[nout].pdg; 
@@ -318,7 +398,7 @@ int main (int argc, char *argv[]){
 		  fStdHepLm[fStdHepN]=fEmpty;
 		  fStdHepN++;
 	  }
-	  //random values for parent info, disregard!
+	  //----random values for parent info, disregard!
 	  fNuParentPdg=211;
 	  fNuParentDecMode=11;
 	  //for (int k=0;k<4;k++){
@@ -332,9 +412,17 @@ int main (int argc, char *argv[]){
 	  fOutputTree->Fill();
 	  printf("\r%d%% done.",(int)((i+1)*100/n));
       }
+      //---POT value---
+      double filepot=pot*ncopied/n;
+      if (usepot){
+      	fOutputTree->SetWeight(filepot);
+      }
       fout->Write();
       fout->Close();
-      printf("\nFile %s written, %d events copied, at %dth event in file.\n",fname.c_str(),ncopied,i);
+      printf("\nOutput file: %s, %d events, currently at %dth event in the input file.\n",fname.c_str(),ncopied,i);
+      if (usepot){
+      	printf("POT for this file: %e\n",filepot);
+      }
       //delete fOutputTree;
       //delete fout;
     }
