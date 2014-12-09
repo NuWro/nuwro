@@ -20,7 +20,7 @@ struct isotope
 	const double binding_energy_error;
 	const double beta_decay_energy;
 	const double beta_decay_energy_error;
-	const int    atomic_mass;
+	const double atomic_mass;
 	const double atomic_mass_error;
 };
 
