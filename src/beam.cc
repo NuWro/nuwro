@@ -3,12 +3,13 @@
 #include "beamHist.h"
 #include "beam_mixed.h"
 #include "nozero_array.h"
+#include "geomy.h"
 
 
 void CreateNewHistogram( int dimsizes[5], string hist_out );
 
 
-beam * create_beam(params &p)
+beam * create_beam(params &p, geomy *detector)
 {   
 	int pdg = p.beam_particle;
 	if (!(pdg == 12 or pdg == 14 or pdg == 16 or pdg == -12 or pdg == -14 or pdg == -16))
@@ -18,7 +19,7 @@ beam * create_beam(params &p)
 	{
 	case 0:   return new beam_uniform(p);
 	case 1:   return new beam_mixed(p);
-	case 2:   return new BeamRF(p);
+	case 2:   return new BeamRF(p,detector);
 	case 3:
 	{
 		int dimsizes[5] = { 17, 17, 17, 17, 17 };

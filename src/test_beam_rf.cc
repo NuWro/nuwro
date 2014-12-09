@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "beam.h"
-#include "beamRF2.h"
+#include "beamRF.h"
 
 
 /// funkcjonalność tej klasy sprowadza sie do ustawienia zmiennej bool 
@@ -12,23 +12,12 @@
 /// znalezionego pliku
 /// Nic nie stoi na przeszkodzie aby nie przerywać pętli, wtedy BeamRF skoczy
 /// do pliku pierwszego itd
-class Stop : public BeamRFCallback
-{
-	bool & _run;
-	
-public:
-	Stop( bool & run ) : _run( run ) { }
-	virtual void Done()  { _run = false; 	}
-};
-
 
 
 
 int main( int argc, char * * argv )
 {
 	bool run = true;
-	/// obiekt do zatrzymania petli
-	Stop stop( run );
 	/// folder z plikami root
 	/// testowalem na plikach 
 	/// nu.nd5_horn250ka.1.root
@@ -45,7 +34,7 @@ int main( int argc, char * * argv )
 	
 	/// drugi string to nazwa drzewa w pliku root
 	params p;
-	BeamRF beam( p, string("h3002") , &stop );
+	BeamRF beam( p);
 	
 	/// et voila, generujemy elementy na podstawie wszystkich plikow
 	int ii=0;

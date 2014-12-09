@@ -174,7 +174,29 @@ public:
 		return tam;	
 	}
 
+	bool is_hit_by(vec dir, vec start)
+	{   
+		double x,dx,y,dy,z,dz;
+	    x=y=z=0;
+	    dx=dy=dz=1e40;
+		if(dir.x!=0)
+		{  x=(orig.x-start.x)/dir.x;
+		   dx=abs(dxyz.x/dir.x);
+	    }
+		if(dir.y!=0)
+		{ y=(orig.y-start.y)/dir.y;
+		  dy=abs(dxyz.y/dir.y);
+	     }
+		if(dir.z!=0)
+		{ z=(orig.z-start.z)/dir.z;
+		  dz=abs(dxyz.z/dir.z);
+		}
 
+		double ta=max(x-dx,max(y-dy,z-dz));
+		double tb=min(x+dx,min(y+dy,z+dz));
+		return tb>ta;
+    }
+    
 	material getpoint(vec dir, vec start)
 	{   
 		double x,dx,y,dy,z,dz;

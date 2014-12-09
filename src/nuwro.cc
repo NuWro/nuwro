@@ -61,14 +61,14 @@ void NuWro :: set (params &par)
 	frandom_init(par.random_seed);
 
 	dismode = false;
-	
-	_beam = create_beam (par);
-	_nucleus = make_nucleus (par);
-	
+
 	if(par.target_type == 1)
 		_mixer = new target_mixer (par);
-		
 	_detector = make_detector (par);
+	
+	_beam = create_beam (par,_detector);
+
+	_nucleus = make_nucleus (par);
 	
 	ff_configure (par);
 	refresh_dyn (par);
@@ -154,18 +154,21 @@ int NuWro::init (int argc, char **argv)
 	}							 
 	if(p.kaskada_redo==0)
 	{
-		cout<<"Creating the beam ..."<<endl;
-		_beam=create_beam(p);
-		if(_beam==NULL)
-			{cerr<<"No beam defined."<<endl;exit(5);}
-
-			_nucleus = make_nucleus(p);
+		_nucleus = make_nucleus(p);
 		if(p.target_type==1)
 			_mixer=new target_mixer(p);
 		else
 			_mixer = NULL;
-			
 		_detector=make_detector(p);
+        
+		cout<<"Creating the beam ..."<<endl;
+		_beam=create_beam(p,_detector);
+		if(_beam==NULL)
+			{
+                cerr<<"No beam defined."<<endl;
+                exit(5);
+            }
+
 
 	}
 	ff_configure(p);

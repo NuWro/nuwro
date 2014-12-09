@@ -4,6 +4,8 @@
 
 #include "particle.h"
 #include "params.h"
+#include "geomy.h"
+
 
 /// The beam shoots with identical particles (whose energy is defined by some 
 /// energy profile but the direction of momentum is identical)
@@ -23,7 +25,7 @@ public:
 
 
 /// create new beam object
-beam * create_beam(params &p);
+beam * create_beam(params &p,geomy * detector);
 
 
 #endif	/// __BEAM_H_
