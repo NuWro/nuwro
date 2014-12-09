@@ -5,20 +5,31 @@
 #include "beam.h"
 #include "particle.h"
 #include "params.h"
-#include <dirent.h>
-#include <vector>
+
+
+class BeamRFCallback
+{
+public:
+	virtual void Done() { /* this method notifies you about end of last file, so shoot goes to next loop */ }
+};
+
 
 
 class BeamRF : public beam
 {
+	BeamRFCallback				*	_cb;
+	RootFolder<  RootFReader< ND5Event >  >	_folder;
+	RootFReader< ND5Event >	* _file;
+	int _nextFile;
+	int _nextElem;
 	ND5Event *events[100000];
 	int N;
 	double * acum;
 	double * acum2;
 	int curevent;
-	string folder;
-	int first;
-	int limit;
+	int file_first;
+	int file_limit;
+	int nfiles;
 	double minx,miny,maxx,maxy;
 	
 	int nu_pdg_from_mode(int mode)
@@ -46,27 +57,91 @@ class BeamRF : public beam
 //~ #define MODE_NUEB_PI      44  /* nue_bar from pi-      */		
 		switch(mode/10)
 		{
-			case 1: return  14; //nu_mu
+			case 1: return 14; //nu_mu
 			case 2: return -14; //nu_mu_bar
-			case 3: return  12; //nu_e
+			case 3: return 12; //nu_e
 			case 4: return -12;	//nu_e
 			default: cerr<<"Unknown reaction mode "<<mode<<" reading flux files"<<endl;
 					 exit(16);
 		}
 		
 	}
+
+	/// checks if current element is the last one
+	bool LastElem()
+	{
+		if( _file == 0 )
+			return true;	
+		return _file->Count() == _nextElem;		
+	}
+	
+	/// checks if current file is the last one
+	bool LastFile()
+	{
+		return _nextFile == _folder.Count()  || _nextFile-file_first+1==file_limit;
+	}
+	
+	/// returns true if any element was found and stored in ,,event''
+	/// otherwise false
+	bool NextElement( ND5Event & event )
+	{
+		if( _file != 0 )
+		{
+			if( LastElem() == false )
+			{
+				event = *_file->GetEntry( _nextElem );
+				_nextElem += 1;
+				return true;	
+			}
+			else if( LastFile() == false )
+			{
+				_nextElem = 0;
+				_file = _folder.File( _nextFile );
+				_nextFile += 1;
+				nfiles++;
+				if( LastElem() == false )
+				{
+					event = *_file->GetEntry( _nextElem );
+					_nextElem += 1;
+					return true;
+				}	
+			}
+		}
+		return false;
+	}
 	
 	/// this method prepares object to start reading root files
 	/// from the begining
+	bool NextLoop()
+	{
+		if( _folder.Count() > 0 )
+		{  file_first=min(max(1,file_first),_folder.Count());
+			_file = _folder.File( file_first -1);
+			_nextFile = file_first;
+			_nextElem = 0;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 ///////////////////////////////////////////////////////////////////	
 public:
 	
-	BeamRF(params &p):
-		folder(p.beam_folder),
-		first(p.beam_file_first),
-		limit(p.beam_file_limit)
+	BeamRF(params &p, string treename=string("h3002"), BeamRFCallback * cb = 0 )  
+	: _cb( cb ), 
+	_folder( p.beam_folder, treename ),
+	_file( 0 ),curevent(0),file_first(p.beam_file_first),file_limit(p.beam_file_limit)
 	{ 
-		read_events();
+		nfiles=1;
+		if( NextLoop() == false )
+		{
+			cerr << "BeamRF: wrong input folder or files type\n";
+			throw 0;
+		}
+		N=0;
+		while(read());
 		cout<<endl;
 		acum=new double[N];
 		acum2=new double[N];
@@ -82,7 +157,7 @@ public:
 		
 		cout<<" nu/POT="<<nu_per_POT()<<endl;
 		cout<<" POT/nu="<<1/nu_per_POT()<<endl;
-		cout<<" nfiles="<<limit<<endl;
+		cout<<" nfiles="<<nfiles<<endl;
 
 		double surf=(maxx-minx)*(maxy-miny);
 		cout<<" Beam Surface="<<maxx-minx<<" cm x "<<maxy-miny<<" cm = "<<surf<<" cm2"<<endl;
@@ -95,91 +170,8 @@ public:
 		delete []acum;
 		delete []acum2;
 	}
-	void read_events()
-	{
-        int total=0;
-		vector<string> names=root_files(folder);
-		int n=names.size();
-		if(first>n)
-			first=0;
-		if(limit>n || limit==0) // 0 means no limit
-			limit=n;
-		for(int i=0,j=0;i<limit;j++,i= ++i%n)
-		{   
-			RootFReader<ND5Event> reader( names[j], "h3002");
-			for(int k=0;k<reader.Count();k++)
-            {   
-                total++;
-				store(*reader.GetEntry(k));
-            if(total%1000==0)
-                cout<<total<<" events read from "<<j<<" files.\r"<<flush;
-            }
-		}
-        cout<<total<<" events read from "<<limit<<" files.\r"<<flush;
-	}
-	
 	
 ////////////////////////////////////////////////////////////////////////
-	void store( const ND5Event& e)
-	{ 		
-		if(N%100000==0) 
-		{
-//		   cerr<< "File:"<<_nextFile<<" "<< N<<" beam events read...\r"<<flush;
-		   events[N/100000]=new ND5Event[100000];
-		}
-		events[N/100000][N%100000]=e;
-		if(N==0)
-		{
-			minx=maxx=e.xnu;//in cm
-			miny=maxy=e.ynu;//in cm
-		}
-		else
-		{
-			double x=e.xnu; //in cm
-			double y=e.ynu; //in cm
-			maxx=max(x,maxx);
-			maxy=max(y,maxy);
-			minx=min(x,minx);
-			miny=min(y,miny);			
-		}
-		N++;  
-	}	
-	
-	double nu_per_POT()
-	{
-			return (acum[N-1]/limit)/1e21;
-	}
-	
-
-	vector<string>  root_files(string directory)
-	{
-		vector<string> 	names;
-			
-		DIR	* dp= opendir( directory.c_str() );
-		if(dp==NULL)
-		{
-			cerr << "Directory \""<<directory<<"\" not found."<<endl;
-			exit(3);
-		}
-		dirent * dirp;
-		if(dp)
-			while(dirp = readdir( dp ))
-			{
-				string name=dirp->d_name;
-				if(name.find( string(".root") )  !=  string::npos)
-					names.push_back( directory + "/" + name );
-			}
-		if( names.size() > 0 )
-			cout << names.size()<<" root files ready to open.\n";
-		else
-		{	
-			cerr << "No root files found in directory \""<<directory<<"\""<<endl;
-			exit(34);
-		}
-		return names;
-	}
-
-	////////////////////////////////////////////////////////////////////////
 	virtual particle shoot(bool dis)
 	{  int n=N;//events.size();
 		ND5Event e;
@@ -211,5 +203,50 @@ public:
         	
 		return p;
 	}	
+////////////////////////////////////////////////////////////////////////
+	bool read()
+	{ 
+		ND5Event e;
+		
+		/// ask for next element
+		
+		if(NextElement( e ))
+		{
+			if(N%100000==0) 
+			{
+			   cerr<< "File:"<<_nextFile<<" "<< N<<" beam events read...\r"<<flush;
+			   events[N/100000]=new ND5Event[100000];
+			}
+			events[N/100000][N%100000]=e;
+			if(N==0)
+			{
+				minx=maxx=e.xnu;//in cm
+				miny=maxy=e.ynu;//in cm
+			}
+			else
+			{
+				double x=e.xnu; //in cm
+				double y=e.ynu; //in cm
+				maxx=max(x,maxx);
+				maxy=max(y,maxy);
+				minx=min(x,minx);
+				miny=min(y,miny);			
+			}
+			N++;  
+			return true;
+		}
+	    cerr<< "File:"<<_nextFile<<" "<< N<<" beam events read...\r"<<flush;
+		return false;
+	}	
+	
+	double nu_per_POT()
+	{
+			return (acum[N-1]/nfiles)/1e21;
+	}
+
+
 };
+
+
+
 #endif // _BEAMRF_H_

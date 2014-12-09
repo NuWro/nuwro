@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "beam.h"
-#include "beamRF.h"
+#include "beamRF2.h"
 
 
 /// funkcjonalność tej klasy sprowadza sie do ustawienia zmiennej bool 
