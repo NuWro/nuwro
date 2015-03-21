@@ -198,7 +198,7 @@ double findmin(double (boone::*f)(double),double a, double b)
       return a/b;
     }
     inline double avg9(int i ,int j);
-    inline double print(int i ,int j);
+    inline void print(int i ,int j);
 };
 
 

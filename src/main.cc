@@ -10,4 +10,5 @@ int main(int argc, char** argv)
 //	testsigma();return 0;
 //  test_boost();return 0;
 	nuwro.main(argc,argv);
+    return 0;
 }

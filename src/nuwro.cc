@@ -123,7 +123,7 @@ geomy* NuWro::make_detector(params &p)
 
 }
 
-int NuWro::init (int argc, char **argv)
+void NuWro::init (int argc, char **argv)
 {
 	//  dismode=false;
 	dismode=true;
@@ -284,10 +284,12 @@ void NuWro::makeevent(event* e, params &p)
 			break;				 
 		case 1:
 			if (p.dyn_qel_nc) // qel nc
+			{
 				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
 					sfevent2nc (p, *e, *_nucleus);
-			else
+				else
 				qelevent1 (p, *e, *_nucleus, true);
+			}
 			break;				 
 		case 2:
 			if (p.dyn_res_cc) // res cc
@@ -712,7 +714,7 @@ void NuWro::real_events(params& p)
 						_mixer->prepare(p);
 					makeevent(e,p);
 					double bias=1;
-					if(!p.beam_test_only && dismode & k>1 && k<6)
+					if(!p.beam_test_only && dismode && k>1 && k<6)
 						bias=e->in[0].t;
 					if (_procesy.accept(e->dyn,e->weight,bias))
 					{
@@ -862,7 +864,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 #include "UserAction.h"
 
-int NuWro::main (int argc, char **argv)
+void NuWro::main (int argc, char **argv)
 {
 	try
 	{

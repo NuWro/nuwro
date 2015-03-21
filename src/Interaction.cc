@@ -214,6 +214,6 @@ for(int i=0;i<nD;i++)
 	 } //else
    } //for
   }//for
-  E[19]=tab2[5][1];
+  //E[19]=tab2[5][1];
 }
 

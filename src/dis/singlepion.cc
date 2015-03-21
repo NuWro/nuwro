@@ -72,7 +72,6 @@ singlepion (params & p)		//produce SPP table
 
   double E = 2000;		//typical (anti-)neutrino energy; SPP should not depend on the choice of E
   double m;
-  double m2 = m * m;
 
   for (int j = 0; j < 2; j++)	//neutrino or antineutrino
     {
@@ -87,6 +86,7 @@ singlepion (params & p)		//produce SPP table
 		    m = 105;
 		  if (k == 1)
 		    m = 0;
+          double m2 = m * m;
 		  double nulow =
 		    ((M12 + E) * (W * W - M2 - m2) + 2 * M12 * E * E -
 		     E * sqrt (kwad (W * W - M2 - m2 - 2 * M12 * E) -

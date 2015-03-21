@@ -38,9 +38,7 @@ class Analyser1: public Analyser
 		stringstream in(p.user_params.c_str());
 		in>>ma_lo>>ma_hi>>ma_step;
 		
-		if(in) 
-			"OK";
-		else
+		if(not in) 
 		    throw("Bad user_params: "+p.user_params);
 		
 		string names[]={"b2-","b2g-","b1-","b1g-"};

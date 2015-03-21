@@ -2026,9 +2026,9 @@ void model_2body2 (nucleus t, double E, double w, double q, double Bin, particle
 	vec F2=-F1;
 
 								 //hadron four momenta
-	vect nuc11=((Winv*Winv+mass1*mass1-mass2*mass2)/2.0/Winv,F1);
+	vect nuc11((Winv*Winv+mass1*mass1-mass2*mass2)/2.0/Winv,F1);
 	nuc11.t= (Winv*Winv+mass1*mass1-mass2*mass2)/2.0/Winv;
-	vect nuc22=((Winv*Winv-mass1*mass1+mass2*mass2)/2.0/Winv ,F2);
+	vect nuc22((Winv*Winv-mass1*mass1+mass2*mass2)/2.0/Winv ,F2);
 	nuc22.t= (Winv*Winv-mass1*mass1+mass2*mass2)/2.0/Winv;
 
 	nuc11.boost2(-trans);

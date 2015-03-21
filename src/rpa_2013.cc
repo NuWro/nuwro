@@ -780,7 +780,7 @@ double ratio(double qv,double q0,double E, int pdg,double m_lepton, double m_eff
 }
 	
 
-int main1()
+void main1()
 {
 	for(double E=1000*MeV;E<1100*MeV;E+=500*MeV)
 	for(int znak=-1;znak<2;znak+=2)

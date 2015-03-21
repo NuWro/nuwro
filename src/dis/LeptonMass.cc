@@ -134,7 +134,7 @@ binen (vec mom, int p, int n)
 {
   double x = mom.length ();
 
-if (p==8 & n==8)
+if (p==8 && n==8)
 {
   if (x >= 0 && x < 330)
     return 4.748678e+01 - 1.722751e-01*x + 1.399298e-04*x*x + 5.699710e-06*x*x*x - 2.908039e-08*x*x*x*x + 1.266971e-10*x* x*x*x*x - 1.634620e-13*x*x*x*x*x*x;
@@ -155,13 +155,14 @@ if (x >= 0 && x < 330)
     return 1.201904e+01 + 5.318283e-02*x + 1.279047e-03*x*x -5.507682e-07*x*x*x;
 
 }
+return 0;
 }
 
 double
 binen2 (double x, int p, int n)
 {
 
-if (p==8 & n==8)//oxygen
+if (p==8 && n==8)//oxygen
 {
   if (x >= 0 && x < 330)
     return 4.748678e+01 - 1.722751e-01*x + 1.399298e-04*x*x + 5.699710e-06*x*x*x - 2.908039e-08*x*x*x*x + 1.266971e-10*x* x*x*x*x - 1.634620e-13*x*x*x*x*x*x;
@@ -182,6 +183,7 @@ if (x >= 0 && x < 330)
     return 1.201904e+01 + 5.318283e-02*x + 1.279047e-03*x*x -5.507682e-07*x*x*x;
 
 }
+return 0;
 }
 
 double

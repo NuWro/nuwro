@@ -9,7 +9,7 @@
 //routines called from pythia6
 
 
-double
+void
 hadronization (double E, double W, double nu, double m, int lepton_in,
 	       int nukleon_in, bool current)
 {

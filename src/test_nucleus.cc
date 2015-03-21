@@ -121,7 +121,7 @@ void all (int i, int j, int kind)
 }
 
 template <class F>
-int znane (F funkcja,int kind)
+void znane (F funkcja,int kind)
 {
   p.read ("kaskada.txt");
   cout << "H0 model" << endl;
@@ -204,7 +204,7 @@ int znane (F funkcja,int kind)
 }
 
 template <class F >
-int wykresy2(F funkcja, int n, int kind)
+void wykresy2(F funkcja, int n, int kind)
 {
 	for(int i=1;i<n;i++)
 	  for(int j=0;j<n;j++)
@@ -212,7 +212,7 @@ int wykresy2(F funkcja, int n, int kind)
 }
 
 template <class F >
-int znane2(F funkcja, int kind)
+void znane2(F funkcja, int kind)
 {
 	for(int i=0;dens_data[i].p()>0;i++)
 	{

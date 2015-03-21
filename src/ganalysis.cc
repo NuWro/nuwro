@@ -52,7 +52,7 @@ void parabola (double &a, double &b, double &c, const double* x, const double& s
 	c = Wc/W;
 }
 
-double find_minimum (const hist2D& h, double &a, double &b, double &c)
+void find_minimum (const hist2D& h, double &a, double &b, double &c)
 {
 	a = 0;
 	b = 0;
@@ -180,7 +180,7 @@ double hdif (const hist2D& h1, const hist2D& h2)
 void find_min (const hist2D& h, double& ma, double& ds, double& minimum)
 {
 	minimum = 1e10;
-	int x,y;
+	int x = 0, y = 0 ;
 	
 	for (int i = 0; i < h.bins_x; i++)
 		for (int j = 0; j < h.bins_y; j++)
@@ -1093,7 +1093,7 @@ void A :: calculate (event *e)
 	if (e -> flag.nc and e -> fof (pdg_pi) > 0)
 	{
 		double energy = 0;
-		double cos;
+		double cos=0;
 		
 		for (int i = 0; i < e -> post.size(); i++)
 			if (e -> post[i].pdg == pdg_pi and e -> post[i].E() > energy)
@@ -1437,7 +1437,7 @@ void D :: calculate (event *e)
 		if (N2 > 0)
 		{
 			double mom = 0;
-			double cos;
+			double cos = 0;
 
 			for (int i = 0; i < e -> post.size(); i++)
 				if (e -> post[i].pdg == pdg_proton and e -> post[i].Ek() > 50 and e -> post[i].momentum() > mom)
@@ -1463,7 +1463,7 @@ void D :: calculate (event *e)
 		if (N1 > 0)
 		{
 			double mom = 0;
-			double cos;
+			double cos = 0;
 
 			for (int i = 0; i < e -> post.size(); i++)
 				if (e -> post[i].pdg == pdg_proton and e -> post[i].momentum() > mom)
@@ -2117,7 +2117,7 @@ void test2_mec_old_cc :: calculate (event *e)
 	else if (proton == 0)
 		which = 1;
 		
-	double mom = 0, cos;
+	double mom = 0, cos = 0;
 	
 	for (int i = 0; i < e -> out.size(); i++)
 		if (e -> out[i].pdg == pdg_proton or e -> out[i].pdg == pdg_neutron)

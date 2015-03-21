@@ -4,7 +4,7 @@
 
 
 
-double funkcja_spp_0 ();
+void funkcja_spp_0 ();
 
 double funkcja_spp_3 (double W, int nukleon_in, int pion, bool current);
 

@@ -64,7 +64,7 @@ int ccpi_sim()
 	return 1;
 }
 
-double pifact(string file, double fac[][2])
+void pifact(string file, double fac[][2])
 {	
 	int events = 10000;
 	

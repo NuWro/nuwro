@@ -35,8 +35,8 @@ double prob_fey()
 double cr_sec_dis(double E, double W, double nu, int lepton, int nukleon, bool current)
 {
 
-double wynik;
-double m;
+double wynik=0;
+double m=0;
 
 if(current == true && lepton>0)
 {
@@ -112,7 +112,7 @@ return wynik/cm2*1e38 ;
 double cr_sec_dis_grv(double E, double W, double nu, int lepton, int nukleon, bool current)
 {
 
-double wynik;
+double wynik=0;
 double m;
 
 if(current == true && lepton>0)

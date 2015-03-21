@@ -224,6 +224,7 @@ bool kaskada::finalize_interaction()
 		
 		for (int i = 0; i < X.n; i++)
 			if (nucleon(X.p[i].pdg))
+            {
 				if (n_he < 0)
 					n_he = i;
 				else if (X.p[i].Ek() < X.p[n_he].Ek())
@@ -233,7 +234,7 @@ bool kaskada::finalize_interaction()
 					n_le = n_he;
 					n_he = i;
 				}
-				
+			}	
 		X.p[n_he].set_fermi (he);		
 		X.p[n_le].set_fermi (le);		
 	}		

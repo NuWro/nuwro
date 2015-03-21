@@ -40,7 +40,7 @@ vec rand_from_ball (double r)
 /// momentum of nucleon in Carbon or Oxygen
 vec spectral_choice (int p, int n)   //dependence on nucleus (p,n)
 { 
-	double pp;
+	double pp=0;
 
 	if (p==8 && n==8)//oxygen
 	{

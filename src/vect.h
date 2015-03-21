@@ -20,6 +20,7 @@ public:
 public:
   inline vect (double x0 = 0, double x1 = 0, double x2 = 0, double x3 = 0);
   inline vect (vec v0, double t0=0);
+  inline vect (double t0, vec v0);
   inline vec operator= (vec v);
   inline vect& operator+= (vect v);
   inline vect& operator-= (vect v);
@@ -64,6 +65,9 @@ vect::vect (double x0, double x1, double x2, double x3)
   {
   }
 vect::vect (vec v0, double t0):t (t0), x (v0.x), y (v0.y), z (v0.z)
+  {
+  }
+vect::vect (double t0, vec v0):t (t0), x (v0.x), y (v0.y), z (v0.z)
   {
   }
 double & vect::operator[] (int i)

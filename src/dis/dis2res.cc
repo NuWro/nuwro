@@ -45,7 +45,7 @@ bool disres;
 int p_plus=0;
 int p_zero=0;
 
-double funkcja_spp_0()
+void funkcja_spp_0()
 {
 for(int  k=0; k<200; k++)
 for(int  j=0; j<3; j++)
@@ -84,6 +84,7 @@ for(int  k=0; k<200;k++)
        }
        
     }
+return 0;
 }
 
 
@@ -100,6 +101,7 @@ for(int  k=0; k<200;k++)
 
        }
     }
+return 0;
 }
 
 
@@ -137,7 +139,7 @@ if(current == false &&  nukleon_in == neutron)
     }
 
 
-
+return 0;
 }
 
 
@@ -161,7 +163,7 @@ int nukleon_out_(double W, int lepton_in, int nukleon_in,int meson_out, bool cur
     if(current == false && nukleon_in == neutron && meson_out == pizero){return neutron;}
     if(current == false && nukleon_in == neutron && meson_out == piminus){return proton;}
     
-    
+    return 0;    
 }
 
 double funkcja_dis (double W, double W_min, double W_max, double alfa)
@@ -328,7 +330,7 @@ cout<<"W="<<W/GeV<<endl;
 cout <<"N0="<<nukleon_in<<endl;
 cout <<"N1="<<nukleon_out<<endl;
 cout <<"ME="<<meson_out<<endl;
-
+return 0;
 }
 
 

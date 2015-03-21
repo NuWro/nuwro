@@ -38,15 +38,15 @@ const int top[6][3] = {{0,1,3}, {0,1,2}, {0,0,3}, {0,0,2}, {1,1,3}, {1,1,2}};
 
 const double height[12] = {2.5, 2.5, 0.8, 0.8, 1.4, 1.4, 1.2, 1.2, 0.6, 0.6, 0.7, 0.7};
 
-int tech_sim();
-int make_vivi(string filename, double *result, double *extra, bool nucl);
-int distribution(string filename, double mom[2][15][41], double ang[2][15][20], bool nucl);
-int nu_mix(double in[4][3][27], double ex[4][3][32], double *H, double *Ofg, double * Osf, double *fg, double *sf, double *fgex, double *sfex);
-int nu_norm(double *table, double norm, int bins);
-int make_table(double *fg, double *sf, double tot_fg, double tot_sf);
-int make_table_ex(double *fg, double *sf, double *all_fg, double *all_sf);
-int norm_ex(double *tab, double norm, int from, int to);
-int make_mom_plot(string filename, string p1, string p2, string p3, int k, bool nc);
-int make_ang_plot(string filename, string p1, string p2, string p3, int k, bool nc);
-int tech_calc();
+void tech_sim();
+void make_vivi(string filename, double *result, double *extra, bool nucl);
+void distribution(string filename, double mom[2][15][41], double ang[2][15][20], bool nucl);
+void nu_mix(double in[4][3][27], double ex[4][3][32], double *H, double *Ofg, double * Osf, double *fg, double *sf, double *fgex, double *sfex);
+void nu_norm(double *table, double norm, int bins);
+void make_table(double *fg, double *sf, double tot_fg, double tot_sf);
+void make_table_ex(double *fg, double *sf, double *all_fg, double *all_sf);
+void norm_ex(double *tab, double norm, int from, int to);
+void make_mom_plot(string filename, string p1, string p2, string p3, int k, bool nc);
+void make_ang_plot(string filename, string p1, string p2, string p3, int k, bool nc);
+void tech_calc();
 #endif

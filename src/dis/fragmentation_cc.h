@@ -15,7 +15,7 @@ int frag_parton_cc_nu_p(int hit_parton, int transfer);
 int spectator_diquark1_cc_nu_p(int hit_parton, int transfer, int frag_parton, double W);
 
 int spectator_meson_cc_nu_p(int hit_parton, int transfer, int frag_parton, int spectator_diquark1, double W);
-double hadronization_cc_nu_p(double E, double W, double nu, double m);
+void hadronization_cc_nu_p(double E, double W, double nu, double m);
 
 /////////////////////Hadronization for anti-neutrinos////////////////////////
 /////////////////////////PROTON/////////////////////////////////////////
@@ -30,7 +30,7 @@ int spectator_diquark1_cc_anu_p(int hit_parton, int transfer, int frag_parton, d
 int spectator_meson_cc_anu_p(int hit_parton, int transfer, int frag_parton, int spectator_diquark1, double W);
 
 
-double hadronization_cc_anu_p(double E, double W, double nu, double m);
+void hadronization_cc_anu_p(double E, double W, double nu, double m);
 
 
 
@@ -45,7 +45,7 @@ int frag_parton_cc_nu_n(int hit_parton, int transfer);
 int spectator_diquark1_cc_nu_n(int hit_parton, int transfer, int frag_parton, double W);
 
 int spectator_meson_cc_nu_n(int hit_parton, int transfer, int frag_parton, int spectator_diquark1, double W);
-double hadronization_cc_nu_n(double E, double W, double nu, double m);
+void hadronization_cc_nu_n(double E, double W, double nu, double m);
 
 /////////////////////Hadronization for anti-neutrinos////////////////////////
 /////////////////////////Neutron/////////////////////////////////////////
@@ -60,7 +60,7 @@ int spectator_diquark1_cc_anu_n(int hit_parton, int transfer, int frag_parton, d
 int spectator_meson_cc_anu_n(int hit_parton, int transfer, int frag_parton, int spectator_diquark1, double W);
 
 
-double hadronization_cc_anu_n(double E, double W, double nu, double m);
+void hadronization_cc_anu_n(double E, double W, double nu, double m);
 
 
 #endif

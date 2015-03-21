@@ -332,7 +332,7 @@ double findmin1(double (boone::*f)(double&),double a, double b)
       return a/b;
     }
     inline double avg9(int i ,int j);
-    inline double print();
+    inline void print();
     inline void save(const char* filename);
 };
 
@@ -643,7 +643,7 @@ double boone::avg9(int i ,int j)
      return s/n;
    }
 
-double boone::print()
+void boone::print()
 { for(int i=0;i<20;i++)
     for(int j=0;j<18;j++)
     {

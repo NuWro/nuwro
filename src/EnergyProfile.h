@@ -50,7 +50,8 @@ class EnergyProfile
 
      /// diagnostic function for verifying if the beam 
      /// has been correctly constructed
-     double print();
+     void print();
+     
      double minE();
      /// how many times weighting by E enhances this beam
      double disratio(){if(n==0) return 1;else return prob2[n-1]/prob[n-1];}
@@ -123,7 +124,7 @@ inline double EnergyProfile::shoot(bool dis)
 
 /// diagnostic function for verifying if the beam 
 /// has been correctly constructed
-inline double EnergyProfile::print() 		 
+inline void EnergyProfile::print() 		 
      { 
        cout<<"Emin="<<Emin<<endl;
        cout<<"Emax="<<Emax<<endl;

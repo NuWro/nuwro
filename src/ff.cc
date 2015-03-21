@@ -107,7 +107,7 @@ FF npar_FF(const double q2);   // 6. nowa (1990:) parametryzacja JS z qelcc
 ///Calculate F1,F2
 pair<double,double> FF::f12(int kind)
 {
-  double Ge,Gm,f1,f2,F1s=0,F2s=0;
+  double Ge=0,Gm=0,f1=0,f2=0,F1s=0,F2s=0;
 	switch(kind)
 	{
 		case 0: case 6: //cc and mec qel part

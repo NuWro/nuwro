@@ -500,7 +500,7 @@ dif_cross_q0_W (int FFset, double delta_axial_mass, double delta_C5A, double E, 
   double przekroj_Q2_W =
     G * G * cos_2_theta_C * GAMMA * czynnik * W / Masa / E / E / 4 / Pi;
 
-  if (W_limit * W_limit > W * W & W * W > pow (Masa + m_pi, 2))
+  if (W_limit * W_limit > W * W && W * W > pow (Masa + m_pi, 2))
     return 2 * Masa * przekroj_Q2_W;
   else
     return 0;

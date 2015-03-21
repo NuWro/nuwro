@@ -1730,7 +1730,8 @@ int calcPiThe (int fz, int xs)
 	double normM[bins]; zero(normM, bins);
 	
 	ppi[0] = 1000.0*(PTppi[0] - (PTppi[1] - PTppi[0])/2.0);
-	for (int i = 0; i < bins - 1; i++) ppi[i+1] = 1000.0*(PTppi[i] + (PTppi[i+1] - PTppi[i])/2.0);
+	for (int i = 0; i < bins - 1; i++) 
+        ppi[i+1] = 1000.0*(PTppi[i] + (PTppi[i+1] - PTppi[i])/2.0);
 	ppi[bins-1] = 1000.0*(PTppi[bins-2] + (PTppi[bins-2] - PTppi[bins-3])/2.0);
 	
 	double C[bins]; zero(C, bins);
@@ -2668,14 +2669,14 @@ int viviNomad3(int fz, int xs)
 	double x[7] = {0};
 	double sum = 0;
 	
-	/*
-	 * 0 - in primary vertex
-	 * 1 - in single pion production
-	 * 2 - in double pion production
-	 * 3 - in triple pion production
-	 * 4 - in nucleon pion production
-	 * 5 - in nucleon double pp
-	 * 6 - other there was more than one pion production in FSI
+	
+	 //~ * 0 - in primary vertex
+	 //~ * 1 - in single pion production
+	 //~ * 2 - in double pion production
+	 //~ * 3 - in triple pion production
+	 //~ * 4 - in nucleon pion production
+	 //~ * 5 - in nucleon double pp
+	 //~ * 6 - other there was more than one pion production in FSI
 	 
 	
 	TFile *tf1 = new TFile(file.c_str());
@@ -4498,37 +4499,37 @@ void t2k_anal_calc()
 					put(P, momentum, fmom[0][1][k], help, bins);
 					put(A, angle, fang[0][1][k], help, abins);					
 				}
-				if (pion0 = 100)
+				if (pion0 == 100)
 				{
 					put(E, energy, fen[1][0][k], help, bins);
 					put(P, momentum, fmom[1][0][k], help, bins);
 					put(A, angle, fang[1][0][k], help, abins);
 				}
-				if (pion1 = 100)
+				if (pion1 == 100)
 				{
 					put(E, energy, fen[1][1][k], help, bins);
 					put(P, momentum, fmom[1][1][k], help, bins);
 					put(A, angle, fang[1][1][k], help, abins);					
 				}
-				if (pion0 = 10)
+				if (pion0 == 10)
 				{
 					put(E, energy, fen[2][0][k], help, bins);
 					put(P, momentum, fmom[2][0][k], help, bins);
 					put(A, angle, fang[2][0][k], help, abins);
 				}
-				if (pion1 = 10)
+				if (pion1 == 10)
 				{
 					put(E, energy, fen[2][1][k], help, bins);
 					put(P, momentum, fmom[2][1][k], help, bins);
 					put(A, angle, fang[2][1][k], help, abins);
 				}
-				if (pion0 = 1)
+				if (pion0 == 1)
 				{
 					put(E, energy, fen[3][0][k], help, bins);
 					put(P, momentum, fmom[3][0][k], help, bins);
 					put(A, angle, fang[3][0][k], help, abins);
 				}
-				if (pion1 = 1)
+				if (pion1 == 1)
 				{
 					put(E, energy, fen[3][1][k], help, bins);
 					put(P, momentum, fmom[3][1][k], help, bins);
@@ -4537,37 +4538,37 @@ void t2k_anal_calc()
 			}
 			else
 			{
-				if (pion0 = 100)
+				if (pion0 == 100)
 				{
 					put(E, energy, fen[4][0][k], help, bins);
 					put(P, momentum, fmom[4][0][k], help, bins);
 					put(A, angle, fang[4][0][k], help, abins);					
 				}
-				if (pion1 = 100)
+				if (pion1 == 100)
 				{
 					put(E, energy, fen[4][1][k], help, bins);
 					put(P, momentum, fmom[4][1][k], help, bins);
 					put(A, angle, fang[4][1][k], help, abins);					
 				}
-				if (pion0 = 10)
+				if (pion0 == 10)
 				{
 					put(E, energy, fen[5][0][k], help, bins);
 					put(P, momentum, fmom[5][0][k], help, bins);
 					put(A, angle, fang[5][0][k], help, abins);					
 				}
-				if (pion1 = 10)
+				if (pion1 == 10)
 				{
 					put(E, energy, fen[5][1][k], help, bins);
 					put(P, momentum, fmom[5][1][k], help, bins);
 					put(A, angle, fang[5][1][k], help, abins);					
 				}
-				if (pion0 = 1)
+				if (pion0 == 1)
 				{
 					put(E, energy, fen[6][0][k], help, bins);
 					put(P, momentum, fmom[6][0][k], help, bins);
 					put(A, angle, fang[6][0][k], help, abins);					
 				}
-				if (pion1 = 1)
+				if (pion1 == 1)
 				{
 					put(E, energy, fen[6][1][k], help, bins);
 					put(P, momentum, fmom[6][1][k], help, bins);

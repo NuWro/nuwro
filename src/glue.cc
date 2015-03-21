@@ -6,7 +6,7 @@
 #include "TFile.h"
 
 using namespace std;
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
 
 	event *e=new event;
@@ -34,4 +34,5 @@ main (int argc, char* argv[])
 	delete e;
 	delete f2;
 	cout<<"Plik wynikowy: \"out.root\""<<endl;
+    return 0;
 }

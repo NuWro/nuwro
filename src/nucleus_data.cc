@@ -1179,7 +1179,7 @@ double nucleus_data::r()
 		double r0=0;
 		double r1=20.0*fermi;
 		double oldrs=r1;
-		double rs;
+		double rs=0;
 		double ds0=1e-7*dens(0);
 		do
 		{ 

@@ -13,7 +13,7 @@ double mom_bin[40] = {50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600,
 double ang_bin[20] = {-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
 
-int tech_sim()
+void tech_sim()
 {
 	for (int n = 0; n < 4; n++)
 	{
@@ -31,10 +31,9 @@ int tech_sim()
 	com = get_bin_dir()+"nuwro -o 'NIWG/tech/root_files/" + nuname[0] + "_oxygen_stat.root' " + par_stat + oxygen_fg + nuflux[0];
 	run(com);
 	
-	return 1;
 }
 
-int make_vivi(string filename, double *result, double *extra, bool nucl)
+void make_vivi(string filename, double *result, double *extra, bool nucl)
 {
 	zero(result, 27);
 	zero(extra, 32);
@@ -186,10 +185,9 @@ int make_vivi(string filename, double *result, double *extra, bool nucl)
 
 	cout<<endl;
 	
-	return 1;
 }
 
-int distribution(string filename, double mom[2][15][41], double ang[2][15][20], bool nucl)
+void distribution(string filename, double mom[2][15][41], double ang[2][15][20], bool nucl)
 {
 	for (int i = 0; i < 15; i++)
 	{
@@ -319,11 +317,11 @@ int distribution(string filename, double mom[2][15][41], double ang[2][15][20], 
 		}
 		else if (pi0 == 2 and pic + proton == 0)
 		{
-			double mom1;
-			double mom2;
-			double ang1;
-			double ang2;
-			double rest;
+			double mom1 = 0;
+			double mom2 = 0;
+			double ang1 = 0;
+			double ang2 = 0;
+			double rest = 0;
 			int next = 0;
 			
 			for (int k = 0; k < ile; k++)
@@ -372,11 +370,11 @@ int distribution(string filename, double mom[2][15][41], double ang[2][15][20], 
 		}
 		else if (pi0 == 2 and pic == 0 and proton == 1)
 		{
-			double mom1;
-			double mom2;
-			double ang1;
-			double ang2;
-			double rest;
+			double mom1 = 0;
+			double mom2 = 0;
+			double ang1 = 0;
+			double ang2 = 0;
+			double rest = 0;
 			int next = 0;
 			
 			for (int k = 0; k < ile; k++)
@@ -430,11 +428,11 @@ int distribution(string filename, double mom[2][15][41], double ang[2][15][20], 
 		}
 		else if (pic == 2 and pi0 + proton == 0)
 		{
-			double mom1;
-			double mom2;
-			double ang1;
-			double ang2;
-			double rest;
+			double mom1 = 0;
+			double mom2 = 0;
+			double ang1 = 0;
+			double ang2 = 0;
+			double rest = 0;
 			int next = 0;
 			
 			for (int k = 0; k < ile; k++)
@@ -483,11 +481,11 @@ int distribution(string filename, double mom[2][15][41], double ang[2][15][20], 
 		}
 		else if (pic == 2 and pi0 == 0 and proton == 1)
 		{
-			double mom1;
-			double mom2;
-			double ang1;
-			double ang2;
-			double rest;
+			double mom1 = 0;
+			double mom2 = 0;
+			double ang1 = 0;
+			double ang2 = 0;
+			double rest = 0;
 			int next = 0;
 			
 			for (int k = 0; k < ile; k++)
@@ -549,10 +547,9 @@ int distribution(string filename, double mom[2][15][41], double ang[2][15][20], 
 
 	cout<<endl;
 		
-	return 1;
 }
 
-int nu_mix(double in[4][3][27], double ex[4][3][32], double *H, double *Ofg, double * Osf, double *fg, double *sf, double *fgex, double *sfex)
+void nu_mix(double in[4][3][27], double ex[4][3][32], double *H, double *Ofg, double * Osf, double *fg, double *sf, double *fgex, double *sfex)
 {
 	for (int i = 0; i < 27; i++)
 	{		
@@ -581,20 +578,18 @@ int nu_mix(double in[4][3][27], double ex[4][3][32], double *H, double *Ofg, dou
 		}
 	}
 	
-	return 1;
 }
 
-int nu_norm(double *table, double norm, int bins)
+void nu_norm(double *table, double norm, int bins)
 {
 	double sum = 0;
 	
 	for (int i = 0; i < bins; i++) sum += table[i];
 	for (int i = 0; i < bins; i++) table[i] *= norm/sum;
 	
-	return 1;
 }
 
-int make_table(double *fg, double *sf, double tot_fg, double tot_sf)
+void make_table(double *fg, double *sf, double tot_fg, double tot_sf)
 {
 	ofstream file("tech_table.tex");
 	
@@ -644,10 +639,9 @@ int make_table(double *fg, double *sf, double tot_fg, double tot_sf)
 	run(string("mv tech_table.pdf NIWG/tech/results/")); 
 	run(string("mv tech_table* NIWG/tech/results/tex/"));
 	
-	return 1;
 }
 
-int make_table_ex(double *fg, double *sf, double *all_fg, double *all_sf)
+void make_table_ex(double *fg, double *sf, double *all_fg, double *all_sf)
 {
 	
 	ofstream file("tech_table_ex.tex");
@@ -697,10 +691,9 @@ int make_table_ex(double *fg, double *sf, double *all_fg, double *all_sf)
 	run(string("mv tech_table_ex.pdf NIWG/tech/results/")); 
 	run(string("mv tech_table_ex* NIWG/tech/results/tex/"));
 	
-	return 1;
 }
 
-int norm_ex(double *tab, double norm, int from, int to)
+void norm_ex(double *tab, double norm, int from, int to)
 {
 	double sum = 0;
 	
@@ -715,7 +708,7 @@ int norm_ex(double *tab, double norm, int from, int to)
 	}
 }
 
-int make_mom_plot(string filename, string p1, string p2, string p3, int k, bool nc)
+void make_mom_plot(string filename, string p1, string p2, string p3, int k, bool nc)
 {
 	string in  = "NIWG/tech/results/dis/txt/" + filename;
 	string out = "NIWG/tech/results/dis/plots/" + filename + ".eps";
@@ -765,10 +758,9 @@ int make_mom_plot(string filename, string p1, string p2, string p3, int k, bool 
 	gfile.close();	
 	run("gnuplot tmp/gnuplot.gnu");
 	
-	return 1;
 }
 
-int make_ang_plot(string filename, string p1, string p2, string p3, int k, bool nc)
+void make_ang_plot(string filename, string p1, string p2, string p3, int k, bool nc)
 {
 	string in  = "NIWG/tech/results/dis/txt/" + filename;
 	string out = "NIWG/tech/results/dis/plots/" + filename + ".eps";
@@ -813,10 +805,9 @@ int make_ang_plot(string filename, string p1, string p2, string p3, int k, bool 
 	gfile.close();	
 	run("gnuplot tmp/gnuplot.gnu");
 	
-	return 1;
 }
 	
-int tech_calc()
+void tech_calc()
 {
 	double nof[4][2];
 	double vivi[4][3][27]; //neutrino, target, vivi
@@ -1012,5 +1003,4 @@ int tech_calc()
 		make_ang_plot(f2, part[top[i][0]], part[top[i][1]], part[top[i][2]], i, true);
 	}
 	
-	return 1;
 }

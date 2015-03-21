@@ -185,8 +185,7 @@ double cohwaga2 (double E, bool cohprocess, int cohA,
 //cohz=-1.0+2.0*sZ.random();
 cohz=-1.0+2.0*frandom();
 double cohzwaga=2.0;
-/*Czarek1*/
-/*Czarek1*/
+Czarek1*/
   double cohzwaga;
   double zpar = 1.01;
 //  static sampler<SN> sampz("losz",0);

@@ -38,6 +38,7 @@ static double mecGe(double Q2, int opcja)
 		return ( 1.0-0.0578*tau )/( 1.0 + (11.1+(13.6+33.0*tau)*tau)*tau ) -
 			( 1.25+1.30*tau )*tau/( 1.0 +(-9.86+(305.0+(-758.0+802.0*tau)*tau)*tau)*tau );
 	}
+    return 0;
 }
 
 
@@ -59,6 +60,7 @@ static double mecGm(double Q2, int opcja)
 			1.91304273*( 1.0+1.81*tau )/( 1.0 + (14.1+(20.7+68.7*tau)*tau)*tau ) )
 			*sqrt(1 + 6.0*Q2/1e6*exp(-Q2/0.35/1e6)) ;
 	}
+    return 0;
 }
 
 
@@ -73,6 +75,7 @@ static double mecGa(double Q2, int opcja)
 		double Maxial2 = Maxial*Maxial;
 		return mecGA/(1+Q2/Maxial2)/(1+Q2/Maxial2);
 	}
+    return 0;
 }
 
 
@@ -248,9 +251,9 @@ void model_2body (double E, double w, double q, double Bin, particle &meclep, pa
 	vec F1=rand_dir ()*sqrt(Winv*Winv-4.0*mecM2)/2.0;
 	vec F2=-F1;
 
-	vect nuc11=(Winv/2.0,F1);	 //hadron four momenta
+	vect nuc11(Winv/2.0,F1);	 //hadron four momenta
 	nuc11.t=Winv/2.0;
-	vect nuc22=(Winv/2.0,F2);
+	vect nuc22(Winv/2.0,F2);
 	nuc22.t=Winv/2.0;
 
 	nuc11.boost2(-trans);

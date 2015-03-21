@@ -28,13 +28,14 @@ SPPF (int j, int k, int l, int t, double W)
       return (1 - surplus / 20.0) * SPP[j][k][l][t][bin] +
 	surplus / 20.0 * SPP[j][k][l][t][bin + 1];
     }
+   return 0;  
 }
 
 
 double
 alfadis (int j, int k, int l, int t, double W)
 {
-  double alfa;
+  double alfa = 0;
   double W_min = 1300;
   double W_max = 1600;
 //cout<<j<<"  "<<k<<"  "<<l<<endl;
@@ -78,6 +79,8 @@ alfadis (int j, int k, int l, int t, double W)
 	    }
 	}
     }
+    
+    return 0;
 }
 
 double

@@ -17,13 +17,13 @@ class NuWro
 		void makeevent(event* e, params &p);
 		void finishevent(event* e, params &p);
 		void raport(double i, double n, const char* text, int precision=1000, int k=-1, bool toFile=false);
-		int init  (int argc, char **argv);
+		void init  (int argc, char **argv);
 		void test_events(params &p);
 		void user_events(params &p);
 		void UserAction(params& p);
 		void real_events(params &p);
 		void kaskada_redo(string input, string output);
-		int main (int argc, char **argv);
+		void main (int argc, char **argv);
 		inline int proces() {return _procesy.choose();}
 		void set (params &p);
 		void refresh_target (params &p);

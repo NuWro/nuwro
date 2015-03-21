@@ -202,7 +202,7 @@ else
 }
 }
 
-double hadronization_cc_nu_p(double E, double W, double nu, double m)
+void hadronization_cc_nu_p(double E, double W, double nu, double m)
 {
 
 //int scenariusz=-1;
@@ -583,7 +583,7 @@ else
 
 
 
-double hadronization_cc_anu_p(double E, double W, double nu, double m)
+void hadronization_cc_anu_p(double E, double W, double nu, double m)
 {
 //int scenariusz=-1;
 //number of line of first parton in py2ent_ routine
@@ -929,7 +929,7 @@ else
 }
 }
 
-double hadronization_cc_nu_n(double E, double W, double nu, double m)
+void hadronization_cc_nu_n(double E, double W, double nu, double m)
 {
 
 //int scenariusz=-1;
@@ -1326,7 +1326,7 @@ else
 
 
 
-double hadronization_cc_anu_n(double E, double W, double nu, double m)
+void hadronization_cc_anu_n(double E, double W, double nu, double m)
 {
 
 //int scenariusz=-1;

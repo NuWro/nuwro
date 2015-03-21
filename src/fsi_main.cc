@@ -163,8 +163,8 @@ void poster()
 		 
 		if (pion == 100)
 		{
-			double val;
-			double help;
+			double val=0;
+			double help=0;
 			
 			for (int k = 0; k < e1->n(); k++)
 			{

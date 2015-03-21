@@ -40,6 +40,7 @@ int read(int argc, char** argv)
         else 
 	   usage();
      } 
+   return 0;  
 }
 
 void usage()

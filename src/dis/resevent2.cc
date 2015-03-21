@@ -55,6 +55,7 @@ double pdd_red (double en)
     return 0.65 + en*0.05/250.0;
   if (en<=750)
     return 0.2 + en*0.2/250.0;
+  return 0;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -268,7 +269,7 @@ double Meff2=Meff*Meff;
 	  double dis1 = fromdis * spp1 * alfadis (j, k, l, 1, W);
 	  double dis2 = fromdis * spp2 * alfadis (j, k, l, 2, W);	//can be made simpler !!!
 
-	  double delta0, delta1, delta2;
+	  double delta0=0, delta1=0, delta2=0;
 
 	  double adel0 = alfadelta (j, k, l, 0, W);
 	  double adel1 = alfadelta (j, k, l, 1, W);

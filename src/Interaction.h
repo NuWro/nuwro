@@ -385,14 +385,14 @@ public:
   PiData(int k);
   void setMetropolis();
   void set(double tab[11][16][26],double tab2[6][29]);
-  double set_Ek(double NewEk)
+  void set_Ek(double NewEk)
 	{   Ek=NewEk;
 		iE=0;
 		while(NewEk>=E[iE+1])
 		  ++iE;
 		aE=(NewEk-E[iE])/(E[iE+1]-E[iE]);
 	}
-  double set_density(double dens)
+  void set_density(double dens)
 	  {   if(nD==1)
 			 {aD=0; iD=0;}
 		  else
@@ -406,9 +406,9 @@ public:
   void set_particles(particle &p1,particle& p2)
 	{
 		if(p1==PiZero) ij=2; 
-		else if(p1==PiPlus && p2==Proton || 
-	            p1==PiMinus && p2==Neutron) ij=0;
-		else ij= 1;
+		else if((p1==PiPlus && p2==Proton )|| 
+	            (p1==PiMinus && p2==Neutron)) ij=0;
+		else ij=1;
     }
     
     double cel(){return dval(Cel[ij]);}
@@ -471,9 +471,10 @@ public:
 		  switch(ij) 
 			{case 0: return 0;
 			 case 1: {double x=sij(2);return x/(x+sij(1));}
-			 case 2: {double x=sij(2);return x/(x+sij(0)+sij(1));
-				     }
+			 case 2: {double x=sij(2);return x/(x+sij(0)+sij(1));}
+             default: return 0;        
 			}
+            
 	   } 
 
 	double sigma ()
@@ -482,6 +483,7 @@ public:
         case 0: return sij(0)*millibarn;
         case 1: return (sij(1)+sij(2))*millibarn;
         case 2: return (sij(0)+sij(1)+sij(2))/2.0*millibarn;
+        default: return 0;
        } 
       }
 
@@ -511,7 +513,7 @@ public:
   /// k = 2  // abs
   /// Ek = kinetic energy 
 double PiData::sij (int k)
-  { 
+{ 
     if (Ek <= 49*MeV && xsec==0)
       {	// Low energy Metropolis formula
         double x = Ek / PDG::mass_pi;
@@ -521,8 +523,8 @@ double PiData::sij (int k)
 		  case 1:  return (6.5 + 23.9 * x);
 		  case 2:  double p = sqrt(x*(x + 2));
 					return (16.4 * (0.14 / p + p));
-				   
 		}
+        return 0;
 	}  
 	else
 		return max(0.0,dval2(s[k]));
@@ -821,7 +823,7 @@ class Interaction
     Interaction(int xsec):PD(xsec),ND(xsec){}
   	inline void total_cross_sections(particle&, nucleus&, interaction_parameters &X);
 	inline bool particle_scattering (particle & p1, nucleus &t, interaction_parameters &X);
-    inline int test ();
+    inline void test ();
 	int process_id()
 		{ 
 			return k1==nucleon_ ? ND.process_id() : PD.process_id(); 
@@ -956,7 +958,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
   }
 ///////////////////////////////////////////////////////////
 /// test functions present in this module
-int Interaction::test ()
+void Interaction::test ()
   {
 //    echo (Interaction::test);
     init_genrand (time (NULL));

@@ -74,7 +74,7 @@ vector<string>  root_files(string directory)
     }
     dirent * dirp;
     if(dp)
-        while(dirp = readdir( dp ))
+        while((dirp = readdir( dp )))
         {
             string name=dirp->d_name;
             if(name.find( string(".root") )  !=  string::npos)
@@ -153,7 +153,7 @@ public:
 			first=0;
 		if(limit>n || limit==0) // 0 means no limit
 			limit=n;
-		for(int i=0,j=0;i<limit;j++,i= ++i%n)
+		for(int i=0,j=0;i<limit;j++,++i,i%=n)
 		{   
 			RootFReader<ND5Event> reader( names[j], "h3002");
 			for(int k=0;k<reader.Count();k++)

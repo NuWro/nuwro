@@ -7,7 +7,7 @@ using namespace std;
 
 int ccpi_sim_help(string *tarpar, string en);
 int ccpi_sim();
-double pifact(string file, double fac[][2]);
+void pifact(string file, double fac[][2]);
 int ccpi_calc_help (ofstream files[][3][2], string en);
 int ccpi_calc();
 int ccpi_plot();
