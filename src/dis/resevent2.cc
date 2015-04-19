@@ -51,11 +51,10 @@ double pdd_red (double en)
 {
   if (en>=1000)
     return 0.85;
-  if (en<1000 && en>750)
+  else if (en>750)
     return 0.65 + en*0.05/250.0;
-  if (en<=750)
+  else//if (en<=750)
     return 0.2 + en*0.2/250.0;
-  return 0;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -350,7 +349,7 @@ double Meff2=Meff*Meff;
 	  vect finnuk, finpion;
 
 	  kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of final pair: nucleon + pion
-
+	  
 	  finnuk = finnuk.boost (hadrspeed);
 	  finnuk = finnuk.boost (nuc0.v ());
 
@@ -524,7 +523,19 @@ double Meff2=Meff*Meff;
 		{
 		  vect finnuk, finpion;
 
-		  kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion
+		  
+		  nu0.boost (-hadrspeed);//a boost from nu-N CMS to the hadronic CMS
+		  lepton_out.boost (-hadrspeed);//a boost from nu-N CMS to the hadronic CMS
+		  kin4part (nu0, lepton_out, W, nukleon2, pion, finnuk, finpion); //produces 4-momenta of final pair: nucleon + pion with density matrix information
+		  e.weight*= angrew;//reweight according to angular correlation
+		 
+		  //kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion
+		  
+			nu0.boost (hadrspeed);//a boost back to the nu-N CMS frame
+			nu0.boost (nuc0.v ());//a boost back to tha LAB frame
+			
+		  lepton_out.boost (hadrspeed);//a boost back to the nu-N CMS frame
+		  lepton_out.boost (nuc0.v ());//a boost back to tha LAB frame
 
 		  finnuk = finnuk.boost (hadrspeed);
 		  finnuk = finnuk.boost (nuc0.v ());

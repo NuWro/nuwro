@@ -142,13 +142,15 @@ class Analyser1: public Analyser
 			stringstream s;
 			s<<"wyk1-"<<ma<<"\0"<<flush;
 			ofstream fil(s.str().c_str());
-			boon->printq2table(fil,mult[7][2]);
+			//~ boon->printq2table(fil,mult[7][2]);
+			boon->printq2table(fil,1);
 		 }
 		 {
 			stringstream s;
 			s<<"wyk1mc-"<<ma<<"\0"<<flush;
 			ofstream fil(s.str().c_str());
-			boon->printmcq2table(fil,mult[7][2]);
+			//~ boon->printmcq2table(fil,mult[7][2]);
+			boon->printmcq2table(fil,1);
 		 }
 		//		boon->printq2table(matables);
 		//		boon->printmcq2table(matables);

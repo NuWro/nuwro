@@ -5,10 +5,17 @@
 
 extern double lepton_mass (int lepton_in, bool cur);
 
+extern double angrew;
+extern bool ANLang;
+
 void kinfinder (vec b, vec & d, double kos);
 
 void kin2part (double hama, int nukleon, int meson, vect & finnuk,
 	       vect & finpion);
+
+void kin3part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion);
+
+void kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion);
 
 void rotation (vect & cztero, vec trzy);
 

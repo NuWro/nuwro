@@ -502,9 +502,9 @@ void NuWro::test_events(params & p)
 		hist hq0((char*)"q0",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
 		hist hqv((char*)"qv",0,(p.beam_type==0 ? atof(p.beam_energy.c_str())*MeV : 2*GeV),100);
 		hist hT((char*)"T",0,2*GeV,100);
-		TFile *te;
-		TTree *t1;
-		event *e;
+		TFile *te=NULL;
+		TTree *t1=NULL;
+		event *e=NULL;
 		if(p.save_test_events)
 		{	
 			dismode=false;

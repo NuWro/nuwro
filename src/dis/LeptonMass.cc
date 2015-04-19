@@ -102,6 +102,211 @@ kin2part (double hama, int nukleon2, int meson, vect & finnuk, vect & finpion)
 	  -momentum * kierunek.z);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////Decay of hadronic mass W into 2 particles; information from ANL and BNL experiments is included
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+kin3part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion)
+{
+double Q2 = - (neutr-finlep)*(neutr-finlep);
+double rho33;
+  if (Q2<0.1*GeV2) rho33=0.6;
+  if (Q2<0.4*GeV2) rho33=0.65;
+  if (Q2<0.5*GeV2) rho33=0.7;
+  if (Q2<1.0*GeV2) rho33=0.75;
+  if (Q2>=1.0*GeV2) rho33=0.8;
+  
+double AA = 1.0;
+double BB = - 3.0*( 1.0 - 1.0/(rho33+0.5) );
+double pp = 3.0*AA/BB;
+double yy = frandom ();
+double qq = (1.0 + 3.0*AA/BB)*(1.0-2.0*yy);
+double pphi = acos ( -qq/2.0/sqrt(-pp*pp*pp/27.0) );
+double xx = 2.0*sqrt(-pp/3.0)*cos ( (pphi+4*Pi)/3.0 );
+  
+  double nukmass, pionmass;
+  double W2 = hama * hama;
+  double W4 = W2 * W2;
+
+  if (meson == 211 || meson == -211)	//this part must be done better !!!
+    pionmass = 139.57;
+  if (meson == 111)
+    pionmass = 134.98;
+  if (nukleon2 == 2212)
+    nukmass = 938.27;
+  if (nukleon2 == 2112)
+    nukmass = 939.565;
+
+  double nukmass2 = nukmass * nukmass;
+  double pionmass2 = pionmass * pionmass;
+
+  if (hama < 1080)
+    cout << "error!!! Delta decay is kinematically impossible !!!" << endl;
+
+  double momentum =
+    sqrt (W4 - 2 * W2 * (pionmass2 + nukmass2) +
+	  (nukmass2 - pionmass2) * (nukmass2 - pionmass2)) / 2.0 / hama;
+  double nukenergy = (W2 + nukmass2 - pionmass2) / 2.0 / hama;
+  double pionenergy = (W2 - nukmass2 + pionmass2) / 2.0 / hama;
+
+  /*vec momtrans = vec (neutr.x - finlep.x, neutr.y - finlep.y, neutr.z - finlep.z);
+  vec momtrans_dir = momtrans/momtrans.length();
+  
+  vec xaxis = vec (1,0,0);
+  vec trans = vecprod(momtrans, xaxis);
+  vec trans1 = trans/trans.length();
+  vec trans2 = vecprod(momtrans_dir, trans1);*/
+  vec momtrans_dir = vec (neutr.x - finlep.x, neutr.y - finlep.y, neutr.z - finlep.z);
+  momtrans_dir = momtrans_dir/momtrans_dir.length();
+  vec trans1 = vecprod(neutr,finlep);
+  trans1 = trans1/trans1.length();
+  vec trans2 = vecprod(momtrans_dir,trans1);
+  
+  double fi = 2.0*Pi*frandom();
+  vec kierunek = xx*momtrans_dir + sqrt(1-xx*xx)*( cos(fi)*trans1+sin(fi)*trans2 );
+
+  finnuk =
+    vect (nukenergy, momentum * kierunek.x, momentum * kierunek.y,
+	  momentum * kierunek.z);
+  finpion =
+    vect (pionenergy, -momentum * kierunek.x, -momentum * kierunek.y,
+	  -momentum * kierunek.z);
+}
+
+double angrew=1.0;
+//ANL or BNL?
+bool ANLang=true;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////Decay of hadronic mass W into 2 particles: test of ANL/BNL correltation in both angles
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion)
+{
+  double nukmass, pionmass;
+  double W2 = hama * hama;
+  double W4 = W2 * W2;
+
+  if (meson == 211 || meson == -211)	//this part must be done better !!!
+    pionmass = 139.57;
+  if (meson == 111)
+    pionmass = 134.98;
+  if (nukleon2 == 2212)
+    nukmass = 938.27;
+  if (nukleon2 == 2112)
+    nukmass = 939.565;
+
+  double nukmass2 = nukmass * nukmass;
+  double pionmass2 = pionmass * pionmass;
+
+  if (hama < 1080)
+    cout << "error!!! Delta decay is kinematically impossible !!!" << endl;
+
+  double momentum =
+    sqrt (W4 - 2 * W2 * (pionmass2 + nukmass2) +
+	  (nukmass2 - pionmass2) * (nukmass2 - pionmass2)) / 2.0 / hama;
+  double nukenergy = (W2 + nukmass2 - pionmass2) / 2.0 / hama;
+  double pionenergy = (W2 - nukmass2 + pionmass2) / 2.0 / hama;
+
+  vec kierunek = rand_dir ();
+
+  finnuk =
+    vect (nukenergy, momentum * kierunek.x, momentum * kierunek.y,
+	  momentum * kierunek.z);
+  finpion =
+    vect (pionenergy, -momentum * kierunek.x, -momentum * kierunek.y,
+	  -momentum * kierunek.z);
+	  
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////  HADRONIC CMS COORDINATES (ADLER SYSTEM) ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	vec zaxis = vec (neutr.x - finlep.x, neutr.y - finlep.y, neutr.z - finlep.z);
+	zaxis = zaxis/zaxis.length();
+	vec yaxis = vecprod(neutr,finlep);
+	yaxis = yaxis/yaxis.length();
+	vec xaxis = vecprod(yaxis,zaxis);
+	
+	double ct=-(kierunek*zaxis);
+	double cphi=-(kierunek*xaxis);
+	//double sphi=-(kierunek*yaxis);
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////  DENSITY MATRIX ELEMENTS: ANL OR BNL DATA //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+	double r33,r31,r3m1;
+	vect mtr=neutr-finlep;
+	double Q2=-(mtr*mtr);
+	switch(ANLang)
+	{
+		case true:
+		{
+			if(Q2<0.1*GeV2)
+			{
+				r33=0.523;
+				r31=-0.322;
+				r3m1=-0.138;
+				break;
+			}
+			else if(Q2<0.3*GeV2)
+			{
+				r33=0.649;
+				r31=-0.128;
+				r3m1=0.034;
+				break;
+			}
+			else if(Q2<0.5*GeV2)
+			{
+				r33=0.674;
+				r31=-0.017;
+				r3m1=-0.203;
+				break;
+			}
+			else
+			{
+				r33=0.748;
+				r31=0.041;
+				r3m1=-0.162;
+				break;
+			}
+		}
+		case false:
+		{
+			if(Q2<0.2*GeV2)
+			{
+				r33=0.661;
+				r31=-0.213;
+				r3m1=-0.133;
+				break;
+			}
+			else if(Q2<0.4*GeV2)
+			{
+				r33=0.673;
+				r31=0.025;
+				r3m1=-0.075;
+				break;
+			}
+			else if(Q2<0.6*GeV2)
+			{
+				r33=0.750;
+				r31=0.036;
+				r3m1=0.046;
+				break;
+			}
+			else
+			{
+				r33=0.800;
+				r31=0.075;
+				r3m1=0.004;
+				break;
+			}
+		}
+	}
+	//angrew=1.0;
+	angrew=(1.0 - (r33-0.5)*(3*ct*ct-1) - sqrt(3.0)*( 2*r31*sqrt(1-ct*ct)*ct*cphi +r3m1*(1-ct*ct)*(2.0*cphi*cphi-1.0)));
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////// Rotation of the particle produced by PYTHIA acoording to the direction of the momentum transfer
 //////////////////////// ( in PYTHIA it is assumed that this direction is the Z axis)

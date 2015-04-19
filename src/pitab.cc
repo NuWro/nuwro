@@ -717,7 +717,7 @@ pion_params (double Ek, int xsec, double dens)
 					return pdata[i];
 			return pdata[0];
 		}
-		else if (xsec != 0)
+		else //if (xsec != 0)
 		{
 			double densities[11] = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 			double d = dens/0.17*fermi*fermi*fermi;

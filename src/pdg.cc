@@ -303,14 +303,5 @@ namespace PDG
     return code1 > 0 ? sum : -sum;
   }
 
-  int spin (int code)
-  {
-  }
-
-  int J (int code)
-  {
-  }
-
-
 
 };
