@@ -174,7 +174,7 @@ bool kaskada::make_interaction()
 		}
 		cout<<endl<<p->mass()+X.p2.mass()<<' '<<suma<<endl;
 //CJ	cout<<" Interaction: "<<I.process_name()<<" ("<<I.process_id()<<") ";
-		assert(procid==I->process_id());
+//		assert(procid==I->process_id());
 		if(loop>100) return false; //it was impossible to make kinematics
 	}
 	
