@@ -281,6 +281,9 @@
   <param name="coh_new" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Use new, faster implementation of coherent events by CJ]]></description>
   </param>
+  <param name="coh_kind" type="checkbox" ctype="int" default="2">
+    <description><![CDATA[Switch between Rein-Sehgal (1) and Berger Sehgal(2) models]]></description>
+  </param>
   <param name="mec_kind" type="select" ctype="int" default="1">
     <description><![CDATA[MEC model]]></description>
 	<options>

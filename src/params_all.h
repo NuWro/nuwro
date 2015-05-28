@@ -60,6 +60,7 @@ PARAM(int,spp_precision,500)\
 PARAM(double,res_dis_cut,1600)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
+PARAM(int,coh_kind,2)\
 PARAM(int,mec_kind,1)\
 PARAM(double,mec_ratio_pp,0.6)\
 PARAM(double,mec_ratio_ppp,0.8)\

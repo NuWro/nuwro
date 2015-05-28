@@ -326,7 +326,13 @@ void NuWro::makeevent(event* e, params &p)
 		case 6:                  
 			if (p.dyn_coh_cc) // coh cc
 			{
-				if(p.coh_new) cohevent_cj (p, *e, *_nucleus, true);
+				if(p.coh_new)
+				switch(p.coh_kind)
+				{
+					case 1:cohevent_cj (p, *e, *_nucleus, true);break;
+					case 2:cohevent_bs (p, *e, *_nucleus, true);break;
+					default:cohevent_bs (p, *e, *_nucleus, true);break;
+				}
 				else          cohevent2   (p, *e, *_nucleus, true);
 			}
 			break;
