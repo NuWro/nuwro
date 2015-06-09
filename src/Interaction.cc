@@ -105,7 +105,7 @@ static const double   f2p[] ={ 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1
 
 void PiData::set(double tab[11][16][26],double tab2[6][29]=pdataHE)
 {
-static double     E[19];
+static double     E[20];
 static const int nE=sizeof(E)/sizeof(E[0])+1;
 static const int nD=11;
 static double   sii[nE][nD],  sij[nE][nD], sabs[nE][nD];  
@@ -214,6 +214,6 @@ for(int i=0;i<nD;i++)
 	 } //else
    } //for
   }//for
-  //E[19]=tab2[5][1];
+  E[19]=tab2[5][1];
 }
 
