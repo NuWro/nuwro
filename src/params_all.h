@@ -56,6 +56,7 @@ PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
 PARAM(double,pion_axial_mass,0.94)\
 PARAM(double,pion_C5A,1.19)\
+PARAM(int,delta_angular,0)\
 PARAM(int,spp_precision,500)\
 PARAM(double,res_dis_cut,1600)\
 PARAM(bool,coh_mass_correction,1)\

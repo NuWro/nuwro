@@ -175,14 +175,12 @@ double xx = 2.0*sqrt(-pp/3.0)*cos ( (pphi+4*Pi)/3.0 );
 }
 
 double angrew=1.0;
-//ANL or BNL?
-bool ANLang=true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////Decay of hadronic mass W into 2 particles: test of ANL/BNL correltation in both angles
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion)
+kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & finnuk, vect & finpion, int ANLang)
 {
   double nukmass, pionmass;
   double W2 = hama * hama;
@@ -240,7 +238,16 @@ kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & 
 	double Q2=-(mtr*mtr);
 	switch(ANLang)
 	{
-		case true:
+		//No correlations
+		case 0:
+		{
+			r33=0.5;
+			r31=0;
+			r3m1=0;
+			break;
+		}
+		//ANL
+		case 1:
 		{
 			if(Q2<0.1*GeV2)
 			{
@@ -271,7 +278,8 @@ kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & 
 				break;
 			}
 		}
-		case false:
+		//BNL
+		case 2:
 		{
 			if(Q2<0.2*GeV2)
 			{
@@ -301,6 +309,14 @@ kin4part (vect neutr, vect finlep, double hama, int nukleon2, int meson, vect & 
 				r3m1=0.004;
 				break;
 			}
+		}
+		//No correlations
+		default:
+		{
+			r33=0.5;
+			r31=0;
+			r3m1=0;
+			break;
 		}
 	}
 	//angrew=1.0;

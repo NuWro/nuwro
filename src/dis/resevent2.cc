@@ -526,7 +526,7 @@ double Meff2=Meff*Meff;
 		  
 		  nu0.boost (-hadrspeed);//a boost from nu-N CMS to the hadronic CMS
 		  lepton_out.boost (-hadrspeed);//a boost from nu-N CMS to the hadronic CMS
-		  kin4part (nu0, lepton_out, W, nukleon2, pion, finnuk, finpion); //produces 4-momenta of final pair: nucleon + pion with density matrix information
+		  kin4part (nu0, lepton_out, W, nukleon2, pion, finnuk, finpion,p.delta_angular); //produces 4-momenta of final pair: nucleon + pion with density matrix information
 		  e.weight*= angrew;//reweight according to angular correlation
 		 
 		  //kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion

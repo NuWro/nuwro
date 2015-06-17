@@ -269,6 +269,14 @@
   <param name="pion_C5A" type="text" ctype="double" default="1.19">
     <description><![CDATA[]]></description>
   </param>
+  <param name="delta_angular" type="select" ctype="int" default="0">
+    <description><![CDATA[Delta decay anisotropy]]></description>
+    <options>
+      <option key="0"><![CDATA[off]]></option>
+      <option key="1"><![CDATA[as measured by ANL]]></option>
+      <option key="2"><![CDATA[as measured by BNL]]></option>
+    </options>
+  </param>
   <param name="spp_precision" type="text" ctype="int" default="500">
     <description><![CDATA[recommended value is  500, this controls the precision in RES-DIS boundary region]]></description>
   </param>
