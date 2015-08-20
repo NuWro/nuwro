@@ -342,11 +342,11 @@ void NuWro::makeevent(event* e, params &p)
 				if(p.coh_new)
 				switch(p.coh_kind)
 				{
-					case 1:cohevent_cj (p, *e, *_nucleus, true);break;
-					case 2:cohevent_bs (p, *e, *_nucleus, true);break;
-					default:cohevent_bs (p, *e, *_nucleus, true);break;
+					case 1:cohevent_cj (p, *e, *_nucleus, false);break;
+					case 2:cohevent_bs (p, *e, *_nucleus, false);break;
+					default:cohevent_bs (p, *e, *_nucleus, false);break;
 				}
-				else          cohevent2   (p, *e, *_nucleus, true);
+				else          cohevent2   (p, *e, *_nucleus, false);
 			}
 			break;
 		case 8:
