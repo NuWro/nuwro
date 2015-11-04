@@ -113,10 +113,10 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     double xsec = 0;		
     double q2,jakobian;  
     
-    int qel_kinematics=0;  // force standard behaviour
+//    int qel_kinematics=0;  // force standard behaviour
     
 //    q2=qel_kin_gen(qel_kinematics,_E_bind, nu, N0,lepton, N1, jakobian);
-    switch(qel_kinematics)
+    switch(p.qel_kinematics)
     { 
     case  0:    // Subtract the binding energy from the nucleon energy
 		        // cout<<"jestem w switch qel-kinematics"<<endl;
@@ -159,11 +159,11 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	             N1.set_energy(N1.energy()+V(N1.momentum(),t.localkf(N1)));
                  break;	       	  
     default: 
-                 cerr<<"Kinematics code: '"<<qel_kinematics<<"' is invalid."<<endl;	  
+                 cerr<<"Kinematics code: '"<<p.qel_kinematics<<"' is invalid."<<endl;	  
 	             exit(9);
     }  
     if (q2 != 0)  		           // there was scattering
-		if(qel_kinematics==3)
+		if(p.qel_kinematics==3)
 			N1.set_energy(N1.energy()+V(N1.momentum(), t.localkf(N1)));
       
       

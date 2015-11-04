@@ -183,6 +183,16 @@
   <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
     <description>Meson exchange charged current</description>
   </param>
+  <param name="qel_kinematics" type="select" ctype="int" default="0">
+    <description>Quasi elastic kinematics</description>
+    <options>
+      <option key="0"><![CDATA[Standard - please use this one]]></option>
+      <option key="1"><![CDATA["Bodek" - correlated nucleon pairs ????]]></option>
+      <option key="2"><![CDATA[effective nucleon mass - (BAD!!!)]]></option>
+      <option key="3"><![CDATA[Momentum dependent kinematics - version A]]></option>
+      <option key="4"><![CDATA[Momentum dependent kinematics - version B]]></option>
+    </options>
+  </param>
   <param name="qel_vector_ff_set" type="select" ctype="int" default="2">
     <description>electromagnetic Form factors</description>
     <options>
