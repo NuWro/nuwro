@@ -85,6 +85,7 @@ vec ped=e.in[1].p();
 int wybor=p.nucleus_target;
 int numpro=p.nucleus_p;
 int numneu=p.nucleus_n;
+double bkgr=p.bkgrscaling;// a new parameter in the range from -1 to 1 that increases amount of nonresonant background
 
 	switch(wybor)
 	{
@@ -264,9 +265,9 @@ double Meff2=Meff*Meff;
 	  double spp1 = SPP[j][k][l][1][0];
 	  double spp2 = SPP[j][k][l][2][0];
 
-	  double dis0 = fromdis * spp0 * alfadis (j, k, l, 0, W);
-	  double dis1 = fromdis * spp1 * alfadis (j, k, l, 1, W);
-	  double dis2 = fromdis * spp2 * alfadis (j, k, l, 2, W);	//can be made simpler !!!
+	  double dis0 = fromdis * spp0 * betadis (j, k, l, 0, W, bkgr);
+	  double dis1 = fromdis * spp1 * betadis (j, k, l, 1, W, bkgr);
+	  double dis2 = fromdis * spp2 * betadis (j, k, l, 2, W, bkgr);	//can be made simpler !!!
 
 	  double delta0=0, delta1=0, delta2=0;
 
@@ -448,7 +449,7 @@ double Meff2=Meff*Meff;
 		  pion = -211;
 		}
 //cout<<pythiaParticle->K[1][3]<<" "<< pythiaParticle->K[1][4]<<endl;
-	      double dis_spp = fromdis * alfadis (j, k, l, t, W);	//dis contribution
+	      double dis_spp = fromdis * betadis (j, k, l, t, W, bkgr);	//dis contribution
 
 	      int nukleoncharge = finalcharge + t - 1;	//the charge of final nucleon
 

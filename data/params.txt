@@ -176,6 +176,8 @@ pion_C5A = 1.19
 # recommended value is  500, this controls the precision in RES-DIS boundary region
 spp_precision= 500
 res_dis_cut = 1600	//res dis boundary in MeV, should be 1600
+bkgrscaling = 0.0  //non-resonant background scaling; should be from -1.3 ... +1.3; default value is 0.0
+
 
 ################################################################
 #   COH

@@ -63,9 +63,13 @@ int kaskada::kaskadaevent()
 		else if(  max_step < X.freepath           //no interaction during max_step 
 		          or !make_interaction()          //or unable to generate kinematics or Pauli blocking
 		          or !finalize_interaction()      //or there was problem with finalizing interaction
-		       ) 		   
+		       ) 
+		  {
+		  if (nucleon (p1.pdg)) e->nod[13]++;
+		  if (pion (p1.pdg)) e->nod[12]++;
 			parts.push (*p);                      //interaction did not happend, 
-			                                      //p should be further propagated   
+			                                      //p should be further propagated 
+		}
 	}
 	
 	clean(); // if nucleus has evaporated the part queue may not be empty
@@ -118,8 +122,9 @@ void kaskada::prepare_particles()
 		}
     }
     
-   	for (int i = 0; i<12; i++) //number of dynamics defined in proctable.h
+   	for (int i = 0; i<14; i++) //number of dynamics defined in proctable.h
 		e->nod[i] = 0;
+	e->r_distance = 10;// new JS ; default (large) value, if unchanged no absorption took place
 }
 
 interaction_parameters kaskada::prepare_interaction()
@@ -267,6 +272,9 @@ bool kaskada::finalize_interaction()
 	
 	int k = kod(I->process_id());
 	e->nod[k]++;
+	if (k==8)// JS absorption
+	{e->r_distance = p->r.length()/fermi;// JS making length of r
+	}
 	
 	if(!nucl->remove_nucleon (X.p2))
 		return false;    // remove from the nuclear matter

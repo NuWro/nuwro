@@ -60,6 +60,7 @@ PARAM(double,pion_C5A,1.19)\
 PARAM(int,delta_angular,0)\
 PARAM(int,spp_precision,500)\
 PARAM(double,res_dis_cut,1600)\
+PARAM(double,bkgrscaling,0.0)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(int,coh_kind,2)\

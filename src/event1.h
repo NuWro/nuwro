@@ -50,7 +50,7 @@ class event:public TObject
 		                        ///< 6,7 - coh  cc/nc - coherent 
 		                        ///< 8,9 - mec  cc/nc - meson exhchange current   
 
-		int nod[12];            ///< number of rescattering interactions of given type:
+		int nod[14];            ///< number of rescattering interactions of given type:
 		                        ///< 0 - nucleon elastic,
 		                        ///< 1 - nucleon ce,
 		                        ///< 2 - nucleon spp,
@@ -63,8 +63,11 @@ class event:public TObject
 		                        ///< 9 - jailed,
 		                        ///< 10 - escape
 		                        ///< 11 - pion tpp
+		                        ///< 12 - pion no interaction
+		                        ///< 13 - nucleon no interaction
 		int pr;     ///< number of protons  in the residual nucleus
 		int nr;     ///< number of neutrons in the residual nucleus
+		double r_distance; //< distance from nucleus center of absorption point (if happened)
 
 		event ():weight(0),norm(1){}///< default constructor
 		inline void check();        ///< stop program if event weight or momentum of any particle is NaN (not a number) 
@@ -100,6 +103,9 @@ class event:public TObject
 		inline int number_of_pion_dpp ();             ///< number of pion dpp interactions during fsi
 		inline int number_of_pion_tpp ();             ///< number of pion tpp interactions during fsi
 		inline int number_of_pion_abs ();             ///< number of pions absorbed during fsi
+		inline int number_of_pion_no_interactions (); ///< number of pion steps with no interactions
+		inline int number_of_nucleon_no_interactions (); ///< number of nucleon steps with no interactions
+		inline double absorption_position ();         ///< positions where absorption occured
 		inline int number_of_jailed ();               ///< number of nucleons jailed in nucleous during fsi
 		inline int number_of_escape ();               ///< number of particles that escaped from nucleus during fsi
 		inline int number_of_interactions ();         ///< total number of interactions during fsi
@@ -432,6 +438,21 @@ int event::number_of_jailed ()
 int event::number_of_escape ()
 {
 	return nod[10];
+}
+
+int event::number_of_pion_no_interactions ()
+{
+	return nod[12];
+}
+
+int event::number_of_nucleon_no_interactions ()
+{
+	return nod[13];
+}
+
+double event:: absorption_position ()
+{
+  return r_distance;
 }
 
 

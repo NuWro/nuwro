@@ -83,6 +83,58 @@ alfadis (int j, int k, int l, int t, double W)
     return 0;
 }
 
+double betadis (int j, int k, int l, int t, double W, double bkgr)
+{
+  double alfa = 0;
+  double W_min = 1300;
+  double W_max = 1600;
+//cout<<j<<"  "<<k<<"  "<<l<<endl;
+  if (k == 1 || ((j == 0 && l == 0) || (j == 1 && l == 1)))
+    {				//cout<<"a"; 
+      alfa = 0.0;
+      W_min = 1300 - 75*bkgr;
+    }
+  else
+    {
+      if ((k == 0)
+	  && ((j == 0 && l == 1 && t == 1) || (j == 1 && l == 0 && t == 1)))
+	{			//cout<<"b"; 
+	  alfa = 0.3 + 0.15*bkgr;
+	}
+      else
+	{
+	  if ((k == 0)
+	      && ((j == 0 && l == 1 && t == 0)
+		  || (j == 1 && l == 0 && t == 2)))
+	    {			//cout<<"c"; 
+	      alfa = 0.2 + 0.15*bkgr;
+	    }
+	}
+    }
+
+  if ((W > 1080) && W < W_min)
+    {				//cout<<alfa<<endl; 
+      return alfa * (W - 1080) / (W_min - 1080);
+    }
+  else
+    {
+      if (W >= W_min && W < W_max)
+	{			//cout<<alfa<<endl; 
+	  return alfa + (1 - alfa) * (W - W_min) / (W_max - W_min);
+	}
+      else
+	{
+	  if (W >= W_max)
+	    {			//cout<<alfa<<endl; 
+	      return 1;
+	    }
+	}
+    }
+    
+    return 0;
+}
+
+
 double
 alfadelta (int j, int k, int l, int t, double W)
 {

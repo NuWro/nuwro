@@ -533,6 +533,14 @@ namespace PDG
 	or pdg == pdg_piP 
 	or pdg == -pdg_piP;
   }
+  
+  inline bool pion (int pdg)
+  {
+    return pdg == pdg_pi 
+	or pdg == pdg_piP 
+	or pdg == -pdg_piP;
+  }
+  
 
 };
 
