@@ -195,6 +195,14 @@ mec_kind = 1  // TEM model
 #mec_kind = 2  // Marteau model
 #mec_kind = 3  // Nieves model
 
+mec_ratio_pp = 0.9
+mec_ratio_ppp = 0.8
+
+mec_central_motion = 100.0 //motion of correlated pairs, sigma in gaussian distribution; default 0.0
+mec_back_to_back_smearing = 0.15 //smearing of originally back-to-back correlated pair nucleons momenta; default 0.0
+MEC_pauli_blocking = 1 //switch on/off Pauli blocking for nucleons from MEC dynamics; default 1 (on)
+mec_pb_trials = 25 //how many times configuration satisfying Pauli blocking is searched for; default 25
+
 ################################################################
 #
 # Final state interaction parameters

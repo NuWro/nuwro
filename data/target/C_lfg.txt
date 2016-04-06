@@ -1,0 +1,19 @@
+# number of protons
+target_type	    = 0
+nucleus_p	    = 6
+
+# number of neutrons
+nucleus_n           = 6
+
+# options below are kept only for historical reasons
+# proc_dis
+# density profile of the target 
+# 1 - means constant density
+# to be cancelled only kf and Eb survive
+
+# options below are kept only for historical reasons
+# nucleus_density     = 1
+nucleus_E_b         =  34   // [MeV] binding energy 
+# used in qelevent.cc, target.h as Eb
+nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
+nucleus_target	    = 2

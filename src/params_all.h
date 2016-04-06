@@ -67,6 +67,9 @@ PARAM(int,coh_kind,2)\
 PARAM(int,mec_kind,1)\
 PARAM(double,mec_ratio_pp,0.6)\
 PARAM(double,mec_ratio_ppp,0.8)\
+PARAM(double,mec_central_motion,0.0)\
+PARAM(double,mec_back_to_back_smearing,0.0)\
+PARAM(int,mec_pb_trials,25)\
 PARAM(bool,MEC_pauli_blocking,1)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\

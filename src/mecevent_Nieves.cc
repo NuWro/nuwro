@@ -179,7 +179,10 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	e.flag.qel = false;
 	e.flag.coh = false;
 	e.flag.mec = true;
-	
+	int ile_pb = p.mec_pb_trials;
+	double mec_central = p.mec_central_motion;
+	double mec_smearing = p.mec_back_to_back_smearing;
+	double binding = p.kaskada_w;
 	
 	//sadly, only CC events available so far...
 	if(e.flag.nc)
@@ -213,7 +216,8 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	
 	double weight=0;
 	
-	if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t);
+	if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t, mec_central, mec_smearing, 
+			      binding, ile_pb);
 	
 	e.weight = weight;
 	if (weight>0) Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
@@ -224,7 +228,8 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	e.out.push_back (mecnucleon[3]);
 }
 
-double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t)
+double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, 
+			      double binding, int ile_PB)
 {
 	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 	
@@ -316,12 +321,49 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 	
 				do
 				{
-					nucleon[0] = t.get_nucleon ();
-					nucleon[1] = t.get_nucleon ();
+					//nucleon[0] = t.get_nucleon ();
+					//nucleon[1] = t.get_nucleon ();
 									
-					suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-					licz++;
+					//suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
+				  
+					nucleon[0] = t.get_nucleon ();
+					vec N1=spectral_choice (6, 6);//we take SF carbon distribution; should be improved !!!
+					nucleon[0].set_momentum(N1);
+					vec ped2=-N1;//momenta are roughly back to back
 					
+					
+					if (mec_smearing>0.0)//smearing of back to back (does not make sense with cm motion?)
+		{
+		  ped2.x = -N1.x*rand_gauss (mec_smearing, 1.0); 
+		  ped2.y = -N1.y*rand_gauss (mec_smearing, 1.0); 
+		  ped2.z = -N1.z*rand_gauss (mec_smearing, 1.0); 
+		}
+		
+					vec pos ( nucleon[0].r.x, nucleon[0].r.y, nucleon[0].r.z );
+					nucleon[1] = t.get_nucleon (pos);// the same position
+				
+					nucleon[1].set_momentum(ped2);
+		
+		if (mec_central>0.0)//cm motion
+		{
+		vec central = rand_gauss(mec_central);
+		nucleon[0].set_momentum(central+N1);
+		nucleon[1].set_momentum(central+ped2);
+		}
+				  	
+					nucleon[0].set_fermi( t.Ef(nucleon[0]) );//local Fermi energy used in energy balance
+				
+					vect suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
+		
+					double bilans = nucleon[0].Ek() + nucleon[1].Ek() - 2*(nucleon[0].his_fermi + 0.5*binding);
+		
+		if (bilans>0)//to avoid perpetuum mobile
+		{
+		vect roznica (bilans, 0, 0, 0);
+		suma-=roznica;
+		}
+		
+					licz++;
 					if(!( ( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)))
 					{
 						vec trans = suma.v();
@@ -331,7 +373,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 						suma.boost2 (trans);		 	//boost to the CM frame
 						double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
 						int licz1=0;
-						while(PB&&(licz1<calls_max))
+						while(PB&&(licz1<ile_PB))
 						{
 							licz1++;
 							vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
@@ -340,7 +382,11 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 				
 							nucleon[2].p4().boost2 (-trans);
 							nucleon[3].p4().boost2 (-trans);
-							PB=t.pauli_blocking(nucleon[2])+t.pauli_blocking(nucleon[3]);
+							//PB=t.pauli_blocking(nucleon[2])+t.pauli_blocking(nucleon[3]);
+							if (nucleon[0].his_fermi<nucleon[2].Ek() && nucleon[0].his_fermi<nucleon[3].Ek() )//PB condition is checked
+							{//PB=t.pauli_blocking(nucleon[2])+t.pauli_blocking(nucleon[3]);
+							  PB=false;
+							}
 						}
 						
 					}

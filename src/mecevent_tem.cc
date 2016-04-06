@@ -10,6 +10,13 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 	e.flag.qel = false;
 	e.flag.coh = false;
 	e.flag.mec = true;
+	double central = p.mec_central_motion;
+	double smearing = p.mec_back_to_back_smearing;
+	double bin = p.kaskada_w;
+	bool pb_ok = p.MEC_pauli_blocking;
+	int pb_trials = p.mec_pb_trials;
+	
+	bool kinematics_ok;
 	
 	if(t.A() < 4)					//set cross section = 0 if nuclei has less nucleons than 4
 	{
@@ -42,7 +49,12 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 
 	particle mecnucleon[4]; //0,1 - in, 2, 3 - out
 	
-	tem_kin (e.in[0].E(), meclepton, mecnucleon, t);
+	tem_kin (e.in[0].E(), meclepton, mecnucleon, t, central, smearing, bin, kinematics_ok, pb_ok, pb_trials);
+	
+	if (kinematics_ok==false)
+	{e.weight =0;
+	   return;
+	}
 	
 	double weight;
 	
@@ -62,12 +74,16 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 	e.in.push_back (mecnucleon[0]);
 	e.in.push_back (mecnucleon[1]);
 	
+	mecnucleon[2].r = mecnucleon[0].r;
+	mecnucleon[3].r = mecnucleon[0].r;
+	
 	e.out.push_back (meclepton);
 	e.out.push_back (mecnucleon[2]);
 	e.out.push_back (mecnucleon[3]);
 }
 
-void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t)
+void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, double binding, 
+	      bool &kinematics, bool czy_pb, int ile_pb)
 {
 	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 	
@@ -97,20 +113,59 @@ void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t)
 	vect qqq (qq, w);
 		
 	vect suma;
-
+	int counter_max = 50;//for initial kinematics
+	int counter = 0;
+	bool initial_kinematics=true;//must be true in order to produce a non-zero weight
+	
 	do
-	{
+	{	//cout<<"counter= "<<counter<<endl;
 		nucleon[0] = t.get_nucleon ();
-		vec pos (nucleon[0].x, nucleon[0].y, nucleon[0].z);
-		nucleon[1] = t.get_nucleon (pos);
-					
-		//nucleon[1] = t.get_nucleon ();
-		//nucleon[1].r=nucleon[0].r;//both should start from the same point !
-						
+		vec N1=spectral_choice (6, 6);//we take SF carbon distribution; should be improved !!!
+		nucleon[0].set_momentum(N1);
+		vec ped2=-N1;//momenta are roughly back to back
+		
+		if (mec_smearing>0.0)//smearing of back to back (does not make sense with the cm motion?)
+		{
+		  ped2.x = -N1.x*rand_gauss (mec_smearing, 1.0); 
+		  ped2.y = -N1.y*rand_gauss (mec_smearing, 1.0); 
+		  ped2.z = -N1.z*rand_gauss (mec_smearing, 1.0); 
+		}
+		
+		vec pos ( nucleon[0].r.x, nucleon[0].r.y, nucleon[0].r.z );
+		nucleon[1] = t.get_nucleon (pos);// the same initial position of the second nucleon
+				
+		nucleon[1].set_momentum(ped2);
+		
+		if (mec_central>0.0)//cm motion
+		{
+		vec central = rand_gauss(mec_central);
+		nucleon[0].set_momentum(central+N1);
+		nucleon[1].set_momentum(central+ped2);
+		}
+				  	
+		nucleon[0].set_fermi( t.Ef(nucleon[0]) );//local Fermi energy used in energy balance
+				
 		suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
+		
+		double bilans = nucleon[0].Ek() + nucleon[1].Ek() - 2*(nucleon[0].his_fermi + 0.5*binding);
+		
+		if (bilans>0)//to avoid perpetuum mobile we subtract the excess of kinetic energy
+		{
+		vect roznica (bilans, 0, 0, 0);
+		suma-=roznica;
+		}
+		counter++;
+		
+		if (counter==counter_max)//unable to find kinematics for initial nucleons
+		{
+		  initial_kinematics=false;
+		  break;
+		}
 	}								 //to be able to make Lorentz boost and to "decay"
 	while ( ( suma.t < suma.length() )   ||   ( suma*suma < 4.0 * M2) );
 		
+	bool good_kinematics = false;
+				
 	nucleon[2].set_proton();	//in mec_do* we decide about isospin	
 	nucleon[3].set_proton();
 	
@@ -119,16 +174,48 @@ void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t)
 	suma.boost2 (trans);		 	//boost to the CM frame
 
 	double Ecm = suma.t / 2.0;	//each nucleon get the same energy in CM
-		
-	vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - M2);	//radnomly set direction of nucleons in CM
+	
+	if (czy_pb)//Pauli blocking for final state nucleons
+	{
+	for (int jj=0; jj<ile_pb; jj++)//number of trials to satisfy Pauli blocking 
+	{
+	vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - M2);	//randomly set direction of nucleons in CM
 
 	nucleon[2].set_momentum (dir_cm);
 	nucleon[3].set_momentum (-dir_cm);
 	
 	nucleon[2].p4().boost2 (-trans);
-	nucleon[3].p4().boost2 (-trans);		 //nucleons in the LAB frame
+	nucleon[3].p4().boost2 (-trans); //nucleons in the LAB frame
 	
-	meclep.set_momentum(kprim);	
+	if (nucleon[0].his_fermi<nucleon[2].Ek() && nucleon[0].his_fermi<nucleon[3].Ek() )//PB condition is checked
+	  {
+	good_kinematics = true;//event to be accepted
+	//cout<<"good"<<endl;
+	break;
+	  }
+	}
+	}
+	else//no Pauli blocking
+	{
+	  vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - M2);	//randomly set direction of nucleons in CM
+
+	nucleon[2].set_momentum (dir_cm);
+	nucleon[3].set_momentum (-dir_cm);
+	
+	nucleon[2].p4().boost2 (-trans);
+	nucleon[3].p4().boost2 (-trans); //nucleons in the LAB frame
+	  
+	good_kinematics = true; 
+	}
+	
+	kinematics=good_kinematics;
+	meclep.set_momentum(kprim);
+	
+	if (!initial_kinematics)
+	{
+	  kinematics=false;
+	}
+	
 }
 
 double mec_do_cc (double &w, double E, particle *p, double m, double ratio, bool nu)

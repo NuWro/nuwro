@@ -319,6 +319,15 @@
   <param name="mec_ratio_ppp" type="text" ctype="double" default="0.8">
     <description><![CDATA[]]></description>
   </param>
+  <param name="mec_central_motion" type="text" ctype="double" default="0.0">
+    <description><![CDATA[motion of correlated pairs, sigma in gaussian distribution]]></description>
+  </param>
+   <param name="mec_back_to_back_smearing" type="text" ctype="double" default="0.0">
+    <description><![CDATA[smearing of originally back-to-back correlated pair nucleons momenta]]></description>
+  </param>
+  <param name="mec_pb_trials" type="text" ctype="int" default="25">
+    <description><![CDATA[how many times configuration satisfying Pauli blocking is searched for]]></description>
+  </param>
   <param name="MEC_pauli_blocking" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[enable (1) or not (0) Pauli blocking of final nucleons in Nieves model]]></description>
   </param>

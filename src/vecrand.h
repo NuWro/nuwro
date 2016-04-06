@@ -14,6 +14,9 @@ inline vec spectral_choice (int p, int n);
 inline vec deuterium ();
 inline vec rand3(vec A,double b,double c);
 inline vec rand_ort (vec a);
+inline vec rand_gauss (double sigma);
+inline double rand_gauss (double sigma, double average);
+
 //inline vec rand_ort2 (vec a);
 
 
@@ -126,6 +129,40 @@ vec rand_ort (vec A)
 {				
   double phi=2*Pi*frandom();
   return vec(cos(phi),sin(phi),0).fromZto(A);
+}
+
+/// random vector from gaussian distribution; 
+vec rand_gauss (double sigma)
+{
+  double x1, x2, w, y1, y2;
+  
+  do {
+                 x1 = 2.0 * frandom() - 1.0;
+                 x2 = 2.0 * frandom() - 1.0;
+                 w = x1 * x1 + x2 * x2;
+      } while ( w >= 1.0 );
+	 
+	 w = sqrt( (-2.0 * log( w ) ) / w );
+         y1 = x1 * w * sigma;
+         //y2 = x2 * w*sigma;
+	 return y1*rand_dir();
+}
+
+/// random number from gaussian distribution; 
+double rand_gauss (double sigma, double average)
+{
+  double x1, x2, w, y1, y2;
+  
+  do {
+                 x1 = 2.0 * frandom() - 1.0;
+                 x2 = 2.0 * frandom() - 1.0;
+                 w = x1 * x1 + x2 * x2;
+      } while ( w >= 1.0 );
+	 
+	 w = sqrt( (-2.0 * log( w ) ) / w );
+         y1 = x1 * w * sigma;
+         //y2 = x2 * w*sigma;
+	 return y1 + average;
 }
 
 ////////////////////////////////////////////////////////////////
