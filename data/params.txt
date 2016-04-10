@@ -202,6 +202,7 @@ mec_central_motion = 100.0 //motion of correlated pairs, sigma in gaussian distr
 mec_back_to_back_smearing = 0.15 //smearing of originally back-to-back correlated pair nucleons momenta; default 0.0
 MEC_pauli_blocking = 1 //switch on/off Pauli blocking for nucleons from MEC dynamics; default 1 (on)
 mec_pb_trials = 25 //how many times configuration satisfying Pauli blocking is searched for; default 25
+MEC_cm_direction = 0.0 //in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1
 
 ################################################################
 #

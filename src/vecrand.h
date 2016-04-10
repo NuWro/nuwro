@@ -16,6 +16,8 @@ inline vec rand3(vec A,double b,double c);
 inline vec rand_ort (vec a);
 inline vec rand_gauss (double sigma);
 inline double rand_gauss (double sigma, double average);
+inline vec rand_direc (vec a, double alpha);
+inline double fff (double kos, double par);
 
 //inline vec rand_ort2 (vec a);
 
@@ -123,6 +125,54 @@ vec rand_dir ()
   d=sqrt(d);
   return vec (xx/d, yy/d, zz/d);
 }
+
+////////////////////////////////////////////////////////////////
+/// direction of vec R such that |R|=1 with extra information
+////////////////////////////////
+/// Direction information
+double fff (double kos, double par)
+{
+  if (par>0)
+    return 1 - (1-fabs(kos))*par;
+  else
+  { //cout<<"redukcja = "<<1 + par*fabs(kos)<<endl;
+    return 1 + par*fabs(kos);
+  }
+}
+
+vec rand_direc (vec aa, double alpha)
+{
+  double spr, los;
+  vec ran;
+  double xx, yy, zz, d;
+  //int licznik=0;
+    
+  do
+  {
+    
+    do
+    {
+      xx = 2 * frandom () - 1;
+      yy = 2 * frandom () - 1;
+      zz = 2 * frandom () - 1;
+    }
+  while ((d = xx * xx + yy * yy + zz * zz) > 1 || (d<0.25));
+  
+  d=sqrt(d);
+  ran= vec (xx/d, yy/d, zz/d);
+
+    
+  double kos = ran*aa/aa.length();
+  spr = fff (kos, alpha);
+  los = frandom();
+  //cout<<"licznik ="<<licznik<<endl;
+  //licznik++;
+  }
+  while(spr<los);
+  
+  return ran;
+}
+
 ////////////////////////////////////////////////////////////////
 /// random unit vec B orthogonal to A ( |B|=1 and B*A=0 )
 vec rand_ort (vec A) 

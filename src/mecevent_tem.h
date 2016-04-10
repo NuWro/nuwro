@@ -46,7 +46,7 @@ inline double setQ2 (double E, double m2)
 }
 
 void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t, double central, double smearing, 
-	      double binding, bool &kinematics, bool czy_pb, int ile_pb);
+	      double binding, bool &kinematics, bool czy_pb, int ile_pb, double mc_sampling);
 double mec_do_cc (double &w, double E, particle *p, double m, double ratio, bool nu);
 double mec_do_nc (double &w, double E, particle *p, double m, double ratio, bool nu);
 

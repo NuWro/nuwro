@@ -15,6 +15,7 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 	double bin = p.kaskada_w;
 	bool pb_ok = p.MEC_pauli_blocking;
 	int pb_trials = p.mec_pb_trials;
+	double mc_sampling = p.MEC_cm_direction;
 	
 	bool kinematics_ok;
 	
@@ -49,7 +50,7 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 
 	particle mecnucleon[4]; //0,1 - in, 2, 3 - out
 	
-	tem_kin (e.in[0].E(), meclepton, mecnucleon, t, central, smearing, bin, kinematics_ok, pb_ok, pb_trials);
+	tem_kin (e.in[0].E(), meclepton, mecnucleon, t, central, smearing, bin, kinematics_ok, pb_ok, pb_trials, mc_sampling);
 	
 	if (kinematics_ok==false)
 	{e.weight =0;
@@ -83,7 +84,7 @@ void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 }
 
 void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, double binding, 
-	      bool &kinematics, bool czy_pb, int ile_pb)
+	      bool &kinematics, bool czy_pb, int ile_pb, double sampling)
 {
 	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 	
@@ -179,8 +180,12 @@ void tem_kin (double E, particle &meclep, particle *nucleon, nucleus &t, double 
 	{
 	for (int jj=0; jj<ile_pb; jj++)//number of trials to satisfy Pauli blocking 
 	{
-	vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - M2);	//randomly set direction of nucleons in CM
-
+	  vec dir_cm;
+	  if (sampling<0.01 && sampling >-0.01)
+	    {dir_cm = rand_dir () * sqrt(Ecm * Ecm  - M2);} //randomly set direction of nucleons in CM
+	  else
+	    {dir_cm = rand_direc (qq, sampling) * sqrt(Ecm * Ecm  - M2);} //preferred direction wrt momentum transfer
+							
 	nucleon[2].set_momentum (dir_cm);
 	nucleon[3].set_momentum (-dir_cm);
 	

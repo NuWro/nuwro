@@ -71,6 +71,7 @@ PARAM(double,mec_central_motion,0.0)\
 PARAM(double,mec_back_to_back_smearing,0.0)\
 PARAM(int,mec_pb_trials,25)\
 PARAM(bool,MEC_pauli_blocking,1)\
+PARAM(double,MEC_cm_direction,0.0)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\

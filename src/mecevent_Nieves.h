@@ -45,7 +45,7 @@ const double MN2 = MN * MN;
 
 //because the cross section is defined by muon kinematics.
 double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, 
-			      double binding, int ile_pb);
+			      double binding, int ile_pb, double sampling);
 //This sets all final nucleon behaviour. Thanks to T.G.
 void Nieves_do_cc (particle *p, double ratio);
 

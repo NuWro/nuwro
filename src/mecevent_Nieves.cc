@@ -183,6 +183,7 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	double mec_central = p.mec_central_motion;
 	double mec_smearing = p.mec_back_to_back_smearing;
 	double binding = p.kaskada_w;
+	double mc_sampling = p.MEC_cm_direction;
 	
 	//sadly, only CC events available so far...
 	if(e.flag.nc)
@@ -217,7 +218,7 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	double weight=0;
 	
 	if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t, mec_central, mec_smearing, 
-			      binding, ile_pb);
+			      binding, ile_pb, mc_sampling);
 	
 	e.weight = weight;
 	if (weight>0) Nieves_do_cc ( mecnucleon,  p.mec_ratio_pp);
@@ -229,7 +230,7 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 }
 
 double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, 
-			      double binding, int ile_PB)
+			      double binding, int ile_PB, double sampling)
 {
 	//it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 	
@@ -376,10 +377,16 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 						while(PB&&(licz1<ile_PB))
 						{
 							licz1++;
-							vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);	//radnomly set direction of nucleons in CM
+							vec dir_cm;
+							
+							if (sampling<0.01 && sampling >-0.01)
+							{dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);} //randomly set direction of nucleons in CM
+							else
+							{dir_cm = rand_direc (qq, sampling) * sqrt(Ecm * Ecm  - MN2);} //preferred direction wrt momentum transfer
+							//cout<<"ok"<<endl;
 							nucleon[2].set_momentum (dir_cm);
 							nucleon[3].set_momentum (-dir_cm);
-				
+							
 							nucleon[2].p4().boost2 (-trans);
 							nucleon[3].p4().boost2 (-trans);
 							//PB=t.pauli_blocking(nucleon[2])+t.pauli_blocking(nucleon[3]);

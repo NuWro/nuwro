@@ -331,6 +331,9 @@
   <param name="MEC_pauli_blocking" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[enable (1) or not (0) Pauli blocking of final nucleons in Nieves model]]></description>
   </param>
+   <param name="MEC_cm_direction" type="checkbox" ctype="double" default="0.0">
+     <description><![CDATA[ in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1]]></description>
+  </param>
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
