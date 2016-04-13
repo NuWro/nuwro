@@ -184,18 +184,32 @@ vec rand_ort (vec A)
 /// random vector from gaussian distribution; 
 vec rand_gauss (double sigma)
 {
-  double x1, x2, w, y1, y2;
+  double a1, a2, w, x, y, z;
   
   do {
-                 x1 = 2.0 * frandom() - 1.0;
-                 x2 = 2.0 * frandom() - 1.0;
-                 w = x1 * x1 + x2 * x2;
+                 a1 = 2.0 * frandom() - 1.0;
+                 a2 = 2.0 * frandom() - 1.0;
+                 w = a1 * a1 + a2 * a2;
       } while ( w >= 1.0 );
 	 
 	 w = sqrt( (-2.0 * log( w ) ) / w );
-         y1 = x1 * w * sigma;
+         x = a1 * w * sigma;
+	 y = a2 * w * sigma;
+
+	 
+do {
+                 a1 = 2.0 * frandom() - 1.0;
+                 a2 = 2.0 * frandom() - 1.0;
+                 w = a1 * a1 + a2 * a2;
+      } while ( w >= 1.0 );
+	 
+	 w = sqrt( (-2.0 * log( w ) ) / w );
+         z = a1 * w * sigma;
+	 
+vec odp(x,y,z);	 
+	 
          //y2 = x2 * w*sigma;
-	 return y1*rand_dir();
+	 return odp;
 }
 
 /// random number from gaussian distribution; 
