@@ -197,6 +197,76 @@ double formation_zone (particle &p, params &par, event &e)
 				flength /= 400.0;
 			}
 		}
+		if (strcmp(fz.c_str(), "fz-new") == 0)
+		{
+			double W = e.W();
+			
+			if (qel) flength = 0;
+			else if (mec)
+			{
+				//vec mom = e.in[1].p() + e.in[2].p();
+				//vect mom4 = e.in[1].p4() + e.in[2].p4();
+				
+				//flength = mom.length() / (mom4 * q);
+				flength = 0;
+			}
+			else if (W < 1400)
+			{
+				double e = q.t + p0.t;
+				vec pa;
+				
+				pa.x = q.x + p0.x;
+				pa.y = q.y + p0.y;
+				pa.z = q.z + p0.z;
+				
+				double mass = sqrt(e*e - pa.length()*pa.length());
+				
+				flength = pa.length()*ran_exp(1.0/120.0)/mass;
+			}
+			else if (W > 1800)
+			{
+				vec help;
+				help.x = q.x;
+				help.y = q.y;
+				help.z = q.z;
+								
+				double pt = help.dir()*p.p();
+				pt = sqrt(p.momentum2() - pt*pt);
+				
+				double tau = ran_exp(par.tau)/200.0;
+					
+				flength = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
+			}
+			else
+			{
+				double e = q.t + p0.t;
+				vec pa;
+				
+				pa.x = q.x + p0.x;
+				pa.y = q.y + p0.y;
+				pa.z = q.z + p0.z;
+				
+				double mass = sqrt(e*e - pa.length()*pa.length());
+				
+				double f1 = pa.length()*ran_exp(1.0/120.0)/mass;
+				
+				vec help;
+				help.x = q.x;
+				help.y = q.y;
+				help.z = q.z;
+								
+				double pt = help.dir()*p.p();
+				pt = sqrt(p.momentum2() - pt*pt);
+												
+				double tau = ran_exp(par.tau)/200.0;
+					
+				double f2 = tau*p.momentum()*p.mass()/(p.mass2() + pt*pt);
+				
+				
+				flength = (W - 1400.0)*f2 + (1800.0 - W)*f1;
+				flength /= 400.0;
+			}
+		}
 		else if (strcmp(fz.c_str(), "nofz") == 0) flength = 0;
 		else if (strcmp(fz.c_str(), "trans") == 0)
 		{

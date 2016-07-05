@@ -10,12 +10,12 @@
 using namespace std;
 
 const int nof_expr = 19;
-const int nof_fz = 11;
+const int nof_fz = 12;
 const int nof_opt = 5;
 const int nof_xsec = 2;
 const string expr[nof_expr] = {"K2K", "MiniBooNE", "SciBooNE", "Pion-Nucleus Scattering", "Proton Transparency (high energy)", "Proton Transparency (low energy)", "Pion Transparency (high energy)", "Pion Transparency (low energy)", "Nomad", "Atmospheric Neutrinos", "Multiplicity", "MiniBooNE (CC)", "MiniBooNE (CC total)", "SciBooNE (CC total)", "NOMAD (CC total)", "MINOS (CC total)", "MB CCpi+ to CCQE", "NUINT11 proton tr", "MiniBooNE back"};
 const string fzname[nof_fz] = {"Without formation zone", "Skat ({/Symbol m}^{2} = 0.08 GeV^{2})", "Stodolsky", "Ranft ({/Symbol t} = 0.342fm)", "Ranft-like ({/Symbol t} = 0.342fm)", "Cosyn", "Delta", "Coherence length", "Formation zone", "pitrans", "Constant value"};
-const string fzwork[nof_fz] = {"nofz", "skat8", "stod", "ranft", "rl", "cosyn", "delta", "cohl", "fz", "trans", "const"};
+const string fzwork[nof_fz] = {"nofz", "skat8", "stod", "ranft", "rl", "cosyn", "delta", "cohl", "fz", "trans", "const", "fz-new"};
 const string options[nof_opt] = {"Simulation", "Calculation", "Plot", "Multiplot", "Vivisection"};
 const string xsec[nof_xsec] = {"Metropolis", "Oset"};
 
