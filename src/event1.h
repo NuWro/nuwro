@@ -122,6 +122,18 @@ class event:public TObject
 		inline double part_sec_mom (int pdg, bool fsi);         ///< second largest momentum of particle pdg 
 		inline double vert_act (double pion_threshold, bool fsi, double proton_threshold);
 		inline double Erec (double Bin);                        ///< reconstructed neutrino energy 
+		inline double Q2rec (double Bin); ///reconstructed Q2
+		inline double proton_recoil ();
+		inline double neutron_recoil ();
+		inline double photon_recoil ();
+		inline double meson_recoil_without_masses ();
+		inline double meson_recoil_with_masses ();
+		inline double lepton_recoil ();
+		inline double total_recoil_with_masses (double K, double N);
+		inline double total_recoil_without_masses (double K, double N);
+		inline double neutral_kaon_recoil ();
+		inline vec proton_max_mom();
+		inline double total_hadr_post();
 		ClassDef (event, 1);
 };
 
@@ -504,6 +516,116 @@ double event::nuc_kin_en()
 	return sum;
 }
 
+double event::proton_recoil()//contain very small antineutron contribution
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 2212 )
+			sum+=post[k].Ek();
+		if ( post[k].pdg == -2212 )
+			sum+=post[k].Ek()+2*post[k].mass();
+		if ( post[k].pdg == -2112 )
+			sum+=post[k].Ek()+2*post[k].mass();
+	}
+	return sum;
+}
+
+double event::neutron_recoil()
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 2112 )
+			sum+=post[k].Ek();
+		
+	}
+	return sum;
+}
+
+double event::photon_recoil()
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 22 )
+			sum+=post[k].t;
+	}
+	return sum;
+}
+
+double event::lepton_recoil()
+{
+  double sum=0;
+  if (post.size()>0)
+  {
+	for (int k = 1; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 13 || post[k].pdg == -13 || post[k].pdg == 11 || post[k].pdg == -11 )
+			sum+=post[k].t;
+	}
+  }
+	return sum;
+}
+
+double event::meson_recoil_with_masses()
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 211 || post[k].pdg == -211 ) 
+			sum+=post[k].t;
+		if ( post[k].pdg == 111 || post[k].pdg == 321 || post[k].pdg == -321 )
+			sum+=post[k].t;
+	}
+	return sum;
+}
+
+double event::meson_recoil_without_masses()
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 211 || post[k].pdg == -211 ) 
+			sum+=post[k].Ek();
+		if ( post[k].pdg == 111 || post[k].pdg == 321 || post[k].pdg == -321 )
+			sum+=post[k].t;
+	}
+	return sum;
+}
+
+double event::neutral_kaon_recoil()
+{
+  double sum=0;
+	for (int k = 0; k<post.size(); k++)
+	{
+		if ( post[k].pdg == 311 || post[k].pdg == -311  || post[k].pdg ==130 || post[k].pdg == 310 )
+			sum+=post[k].t;
+	}
+	return sum;
+}
+
+
+double event::total_recoil_with_masses (double K0_fraction, double neutron_fraction)
+{
+  return meson_recoil_with_masses () + lepton_recoil() + photon_recoil() + proton_recoil() + 
+  neutron_fraction*neutron_recoil() + K0_fraction*neutral_kaon_recoil() ;
+}
+
+double event::total_recoil_without_masses (double K0_fraction, double neutron_fraction)
+{
+  return meson_recoil_without_masses () + lepton_recoil() + photon_recoil() + proton_recoil() + 
+  neutron_fraction*neutron_recoil() + K0_fraction*neutral_kaon_recoil() ;
+}
+
+double event::total_hadr_post()
+{
+  double wynik=0;
+	for (int a = 1; a < post.size (); a++)
+		wynik+=post[a].t;
+	return wynik;
+}
+
 
 /// number of particles of given pdg with momentum above threshold before/after fsi 
 int event::num_part_thr (int pdg, bool fsi, double threshold)
@@ -725,6 +847,22 @@ double event::part_max_mom (int pdg, bool fsi)
 
 }
 
+vec event::proton_max_mom()
+{
+  vec proton_mom;
+  double length=0;
+
+	for (int k = 0; k<post.size(); k++)
+	{
+	if ( (post[k].pdg == 2212) && (post[k].momentum() > length) )
+	{proton_mom=post[k].p();
+	  length = post[k].momentum();
+	//cout<<"sabaka  "<<proton_mom<<"  "<<length<<endl;
+	}
+	}
+	return proton_mom;
+}
+
 					
 /// second largest momentum of particle with given pdg before/after FSI (when fsi=0/1 resp.)
 double event::part_sec_mom (int pdg, bool fsi) 
@@ -827,6 +965,12 @@ double event::Erec (double Bin)
 	return ( out[0].t*massprim + 0.5* (out[1].mass()*out[1].mass() - out[0].mass()*out[0].mass() - massprim*massprim) )/
 		( massprim - out[0].t + out[0].z);
 }
+
+double event::Q2rec (double Bin)
+{
+	return -out[0].mass()*out[0].mass() + 2.0*Erec(Bin)*(out[0].t -out[0].z);
+}
+
 
 /// stop program if event weight or momentum of any particle is NaN (not a number) 
 void event::check()

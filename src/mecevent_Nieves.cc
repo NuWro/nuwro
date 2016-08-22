@@ -202,7 +202,7 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	ml=meclepton.mass();
 	ml2=ml*ml;
 	//nucleus and Pauli blocking
-	nucl=(t.p>7)+(t.p>15);
+	nucl=(t.p>7);//+(t.p>15);
 	PB=p.MEC_pauli_blocking;
 	//binding:either carbon or oxygen or calcium neutrino/antineutrino
 	Bmec=qvalues[2*nucl+(e.in[0].pdg<0)];
@@ -227,6 +227,73 @@ void mecevent_Nieves(params & p, event & e, nucleus & t, bool cc)
 	e.out.push_back (meclepton);
 	e.out.push_back (mecnucleon[2]);
 	e.out.push_back (mecnucleon[3]);
+	
+	//corrections for A>39; combinatoric factors with respect to hypothetical isosymmetric target here approximated by calcium
+int NN=p.nucleus_n;
+int ZZ=p.nucleus_p;
+
+if ( NN+ZZ>39 )
+{
+  double NZ=(NN+ZZ)/2.0;
+  
+  if (e.in[0].pdg>0  && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224 )//neutrino on neutron-neutron pair
+  {
+    double renorm = NN*(NN-1)/NZ/(NZ-1);
+    weight=weight*renorm;
+  }
+    
+  if (e.in[0].pdg>0  && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324 )//neutrino on neutron-proton pair
+    {
+      double renorm = NN*ZZ/NZ/NZ;
+      weight=weight*renorm;
+    }
+   
+  if (e.in[0].pdg<0  && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424 )//neutrino on proton-proton pair
+    {
+      double renorm = ZZ*(ZZ-1)/NZ/(NZ-1);
+      weight=weight*renorm;
+    }
+  
+  if (e.in[0].pdg<0  && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324 )//neutrino on neutron-proton pair
+    {
+      double renorm = NN*ZZ/NZ/NZ;
+      weight=weight*renorm;
+    }
+}
+
+	
+	/*
+	if (e.in[0].pdg>0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
+	  weight=weight*1.21;
+	if (e.in[0].pdg>0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.99;
+	
+	if (e.in[0].pdg>0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
+	  weight=weight*1.15;
+	if (e.in[0].pdg>0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.995;
+	
+	if (e.in[0].pdg>0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
+	  weight=weight*1.47;
+	if (e.in[0].pdg>0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.955;
+	
+	if (e.in[0].pdg<0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
+	  weight=weight*0.805;
+	if (e.in[0].pdg<0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.99;
+	
+	if (e.in[0].pdg<0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
+	  weight=weight*0.86;
+	if (e.in[0].pdg<0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.995;
+	
+	if (e.in[0].pdg<0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
+	  weight=weight*0.62;
+	if (e.in[0].pdg<0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
+	  weight=weight*0.955;
+*/
+	
 }
 
 double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t, double mec_central, double mec_smearing, 

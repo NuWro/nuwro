@@ -10,5 +10,6 @@
 # target_content += 8 8 1x 34 220 1 
 
 target_type=1
-target_content = 6 6 1x 27 220 2
-target_content += 1 0 2x 0 0 0
+target_content = 6 6 1x 
+target_content += 1 0 2x 
+nucleus_target = 2 
