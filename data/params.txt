@@ -41,8 +41,8 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 ################################################################
 
 #@target/proton.txt
-#@target/C.txt
-@target/CH.txt
+@target/C.txt
+#@target/CH.txt
 #@target/ND280_975.txt
 #@target/proton.txt
 #@target/neutron.txt
