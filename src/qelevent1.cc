@@ -204,8 +204,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		bool new_ver=true;
 		switch(p.qel_rpa)
  		{                         //     qv   ,  q0            ,  E         , nu_pdg, lepton_mass  ,  Meff     , kF   , version                               
-			case 1:e.weight*= ratio(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(), N1.mass(), t.kF(), new_ver);break;
-			case 3:e.weight*= ratio(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(),    t.Mf(), t.kF(), new_ver);break;
+			case 1:e.weight*= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(), N1.mass(), t.kF(), new_ver);break;
+			case 3:e.weight*= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(),    t.Mf(), t.kF(), new_ver);break;
 		} 
 	}
 	if( p.pauli_blocking) 	/// inlined mypauli_qel

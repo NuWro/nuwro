@@ -749,7 +749,7 @@ void plot_przekroj_q0(double E, int ilosc_punktow, int ZNAK, bool nowy)
 	rpa_switch=tmp;
 }
 
-double ratio(double qv,double q0,double E, int pdg,double m_lepton, double m_eff, double kf0,  bool nowy=true)
+double ratio_rpa(double qv,double q0,double E, int pdg,double m_lepton, double m_eff, double kf0,  bool nowy=true)
 {	
 	znak=(pdg>0)-(pdg<0);
 	En =E;
