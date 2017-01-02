@@ -2,16 +2,16 @@
 #include "particle.h"
 #include <TGenPhaseSpace.h>
 
-/// transate root TLorentzVector to vect  
+/// transate root TLorentzVector to vect
 static inline vect makevect (TLorentzVector * v)
 {
   return vect (v->T (), v->X (), v->Y (), v->Z ());
 }
 
-/// Scatter p1,p2 into p3,p4  isotropically in cms 
+/// Scatter p1,p2 into p3,p4  isotropically in cms
 // if f is given returns f(s,q2) for chosen kinematics
 double scatter_2 (particle p1, particle p2,
-		         particle & p3, particle & p4, 
+		         particle & p3, particle & p4,
 	             double (*f) (double, double))
 {
   vect suma = vect (p1) + vect (p2);
@@ -30,10 +30,10 @@ double scatter_2 (particle p1, particle p2,
     return q2;
 }
 
-/// Scatter p1,p2 into p3,p4 according to distribution 
+/// Scatter p1,p2 into p3,p4 according to distribution
 /// given by f=Ax^3+Bx where x=\cos \theta
-bool scatterAB (particle p1, particle p2, 
-		 	      particle & p3, particle & p4, 
+bool scatterAB (particle p1, particle p2,
+		 	      particle & p3, particle & p4,
 			      double A, double B, double C, double D, double E, double F, double G, double H)
 {
   vect sum = vect (p1) + vect (p2);
@@ -48,18 +48,18 @@ bool scatterAB (particle p1, particle p2,
   vect P1 = p1;
   P1.boost (-v);  // go to CMS
   if (vect(P1).length () == 0)
-  {  
+  {
     cerr<<"scatterAB: p1.Ek()==0"<<endl;
     return 0; // 0 means failure
   }
 
-  
+
   double z = get_cos (A, B, C, D, E, F, G, H);
   double r = sqrt (1 - z*z);
-  
+
   double phi=frandom()*2*Pi;
   vec P3=vec(r*cos(phi), r*sin(phi), z)*sqrt (pp);
-  
+
   P3.fromZto(P1);
 
   p3.set_momentum (P3);
@@ -73,12 +73,12 @@ bool scatterAB (particle p1, particle p2,
 
 
 /// Scatter p1,p2 into p[0],..,p[n-1] uniformly in phase space
-int scatter_n (int n, particle p1, particle p2, 
+int scatter_n (int n, particle p1, particle p2,
 		    particle p[])
-  { 
+  {
     vect in = p1 + p2;
-    
-    double masses[4];
+
+    double masses[5];
     double sm = 0;
     for (int i = 0; i < n; i++)
       {
@@ -95,7 +95,7 @@ int scatter_n (int n, particle p1, particle p2,
 
     TGenPhaseSpace event;
     TLorentzVector v1 (in.x, in.y, in.z, in.t);
-    event.SetDecay (v1, n, masses); // give the total momentum, number of particles, 
+    event.SetDecay (v1, n, masses); // give the total momentum, number of particles,
                                     // and masses of particles in the final state
 
     double x;
@@ -117,5 +117,3 @@ int scatter_n (int n, particle p1, particle p2,
       }
     return 1;
   }
-
-
