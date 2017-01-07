@@ -693,7 +693,7 @@ void NuWro::real_events(params& p)
 	TTree *tf = new TTree ("treeout", "Tree of events");
 	tf->Branch ("e", "event", &e);
 	delete e;
-	TH1 * xsections= new TH1D("xsections","xsections",8,0,7);
+	TH1 * xsections= new TH1D("xsections","xsections",_procesy.size(),0,_procesy.size());
 	for(int i=0;i<_procesy.size();i++)
 	{
 		xsections->SetBinContent(i+1,_procesy.avg(i));
