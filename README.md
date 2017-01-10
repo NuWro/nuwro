@@ -1,6 +1,4 @@
-![](https://github.com/TomaszGolan/nuwro_logo/raw/master/nuwro_head.png)
-
-# About
+# NuWro
 
 NuWro is a Monte Carlo neutrino event generator, created at the University of Wroclaw. It simulates neutrino-nucleon and neutrino-nucleus reactions for energies from threshold to TeV. The generator has a detector geometry module and can handle realistic neutrino beams, which make it suitable to use in neutrino experiments. [ROOT](https://root.cern.ch/) framework is used to store generated events.
 
