@@ -1,23 +1,3 @@
-To get the most up to date version of NuWro use:
-
-```
-git clone https://github.com/NuWro/nuwro.git
-```
-
-To get one of the stable releases use:
-
-```
-git clone -b [release tag] https://github.com/NuWro/nuwro.git
-```
-
-e.g.
-
-```
-git clone -b nuwro_17.01 https://github.com/NuWro/nuwro.git
-```
-
----
-
 1. Install [ROOT](https://root.cern.ch/) with [PYTHIA6](https://pythia6.hepforge.org/)
 2. Set ROOTSYS to the folder where ROOT is installed
 3. In this directory type:
