@@ -27,6 +27,7 @@ ofstream logfile;
 #include <conio.h>
 #else
 #include <termios.h>
+#include <unistd.h>
 int getch (void)
 {
         int key;
