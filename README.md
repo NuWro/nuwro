@@ -1,23 +1,39 @@
-1. Install [ROOT](https://root.cern.ch/) with [PYTHIA6](https://pythia6.hepforge.org/)
-2. Set ROOTSYS to the folder where ROOT is installed
-3. In this directory type:
+# NuWro
+
+NuWro is a Monte Carlo neutrino event generator, created at the University of Wroclaw. It simulates neutrino-nucleon and neutrino-nucleus reactions for energies from threshold to TeV. The generator has a detector geometry module and can handle realistic neutrino beams, which make it suitable to use in neutrino experiments. [ROOT](https://root.cern.ch/) framework is used to store generated events.
+
+More information can be found in [wiki](https://github.com/NuWro/nuwro/wiki).
+
+# Installation
+
+* Install [ROOT](https://root.cern.ch/) with [PYTHIA6](https://pythia6.hepforge.org/)
+* Set *ROOTSYS* to the folder where ROOT is installed
+* In NuWro directory type:
 
   ```
   make
   ```
 
-4. Add nuwro/bin to your PATH
-5. Copy data/params.txt to your working directory and modify as needed.
-6. Type:
+For more details see [wiki/Installation](https://github.com/NuWro/nuwro/wiki/Installation).
+
+# Usage
+
+* Add *nuwro/bin* to your *PATH*
+* Copy *data/params.txt* to your working directory and modify as needed (see [wiki/Parameters](https://github.com/NuWro/nuwro/wiki/Parameters))
+* Type
 
   ```
   nuwro
   ```
 
-7. To analyse the output type:
+* To analyse the output type
 
   ```
   myroot eventsout.root
   ```
 
-For more detailed information see [tutorial](http://www.ift.uni.wroc.pl/~tgolan/talks/NuWro_howto.pdf)
+For more details see [wiki/Running NuWro](https://github.com/NuWro/nuwro/wiki/Running-NuWro) or [tutorial](http://www.ift.uni.wroc.pl/~tgolan/talks/NuWro_howto.pdf).
+
+# Releases
+
+Every stable release is tagged using the year followed by the month of the release, e.g. nuwro_17.01 is a stable release from January 2017. Not-tagged versions should be treated as release candidates.

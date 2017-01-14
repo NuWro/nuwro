@@ -262,7 +262,7 @@ double rel_rho (double r)
 }
 
 
-double ratio (double x)
+double ratio_mec (double x)
 {
 	double radius = 2.2 - 0.49*tan(4.47 - 2.75*x) - 1.67*x +5.29*x*x -3.67*x*x*x;
 	return rel_rho (radius);
@@ -335,7 +335,7 @@ double oset_pion_NNN (double w, double q, double stos)
 double oset_new (double w, double q)
 {
 	double x=los();
-	double stos = ratio(x);
+	double stos = ratio_mec(x);
 	double y= 2*oset_gamma_all(w,q,stos) - oset_pion_all(w,q,stos);
 	if (y>0)
 		return y;
@@ -347,7 +347,7 @@ double oset_new (double w, double q)
 double oset_pion_new (double w, double q)
 {
 	double x=los();
-	double stos = ratio(x);
+	double stos = ratio_mec(x);
 	double y= 2*oset_gamma_pion(w,q,stos) - oset_pion_pion(w,q,stos);
 	if (y>0)
 		return y;
@@ -359,7 +359,7 @@ double oset_pion_new (double w, double q)
 double oset_NN_new (double w, double q)
 {
 	double x=los();
-	double stos = ratio(x);
+	double stos = ratio_mec(x);
 	double y= 2*oset_gamma_NN(w,q,stos) - oset_pion_NN(w,q,stos);
 	if (y>0)
 		return y;
@@ -371,7 +371,7 @@ double oset_NN_new (double w, double q)
 double oset_NNN_new (double w, double q)
 {
 	double x=los();
-	double stos = ratio(x);
+	double stos = ratio_mec(x);
 	double y= 2*oset_gamma_NNN(w,q,stos) - oset_pion_NNN(w,q,stos);
 	if (y>0)
 		return y;
