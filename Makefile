@@ -30,8 +30,8 @@ TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2ne
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
-		dis_cc_proton.o fragmentation.o fragmentation_nc.o fragmentation_cc.o singlepion.o \
-	    disevent.o resevent2.o singlepionhadr.o alfa.o
+	dis_cc_proton.o fragmentation.o fragmentation_nc.o fragmentation_cc.o singlepion.o \
+	disevent.o resevent2.o singlepionhadr.o alfa.o
 
 SF_OBJS = $(patsubst %.cc,%.o,$(wildcard src/sf/*.cc))
 GUI_OBJS = $(patsubst %.cc,%.o,$(wildcard src/gui/*.cc))
@@ -59,16 +59,6 @@ $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
 
-#src/gui/moc_%.cc:	src/gui/%.h 
-#			moc $< -o $@
-
-#QtNuwro:  $(addprefix src/, event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o dirs.o \
-#        qel_sigma.o kinsolver.o kinematics.o pdg.o scatter.o kaskada7.o  Interaction.o target_mixer.o nucleus.o  sfevent.o ff.o nuwro.o\
-#        beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o) $(SF_OBJS) $(DIS_OBJS)  $(GUI_OBJS)\
-#        gui/CMainWindow.o gui/moc_CMainWindow.o gui/QtNuwro.o gui/CGeneralTab.o gui/moc_CGeneralTab.o gui/CBeamTab.o gui/moc_CBeamTab.o \
-#        gui/CTargetTab.o gui/moc_CTargetTab.o gui/CPhysicsTab.o gui/moc_CPhysicsTab.o gui/CElement.o gui/moc_CElement.o \
-#        gui/CQel.o gui/moc_CQel.o gui/CRes.cc gui/moc_CRes.o gui/CCoh.o gui/moc_CCoh.o gui/CKaskada.o gui/moc_CKaskada.o 
-#		$(LINK.cc) $^ -o $@
 
 
 $(BIN)/kaskada:   $(addprefix src/, scatter.o generatormt.o particle.o event1.o event1dict.o kaskada7.o Interaction.o dirs.o\

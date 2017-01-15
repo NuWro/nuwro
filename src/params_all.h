@@ -16,6 +16,14 @@ PARAM(int,beam_file_limit,0)\
 PARAM(bool,beam_weighted,0)\
 PARAM(vec,beam_offset,"0 0 0")\
 PARAM(int,beam_placement,0)\
+PARAM(string,beam_inputroot,"")\
+PARAM(string,beam_inputroot_flux,"")\
+PARAM(string,beam_inputroot_nue,"")\
+PARAM(string,beam_inputroot_nueb,"")\
+PARAM(string,beam_inputroot_numu,"")\
+PARAM(string,beam_inputroot_numub,"")\
+PARAM(string,beam_inputroot_nutau,"")\
+PARAM(string,beam_inputroot_nutaub,"")\
 PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,6)\

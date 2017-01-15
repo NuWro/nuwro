@@ -1,4 +1,6 @@
 #include "beam_uniform.h"
+#include "beam_singleroothist.h"
+#include "beam_mixedroothist.h"
 #include "beamRF.h"
 #include "beamHist.h"
 #include "beam_mixed.h"
@@ -37,6 +39,16 @@ beam * create_beam(params &p, geomy *detector)
 		
 		/// return NULL, rest of the simulation will stop here
 		return NULL;
+	}
+	case 5:
+	{
+	  cout << "Using single flux from root file." << endl;
+	  return new beam_singleroothist( p );
+	}
+	case 6:
+	{
+	  cout << "Using combined flux from root file." << endl;
+	  return new beam_mixedroothist( p );
 	}
 	default:
 	{
