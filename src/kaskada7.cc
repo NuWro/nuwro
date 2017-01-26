@@ -148,30 +148,82 @@ void kaskada::prepare_particles()
 interaction_parameters kaskada::prepare_interaction()
 {
 	interaction_parameters res;
-	
+
 	res.pdg = p->pdg;
 	res.Ek = p->Ek();
 	res.r = p->r.length ();
-    res.dens = nucl->density (res.r); 
-//    cout<<res.dens<<' '<<nucl->Z()<<' '<<nucl->N()<<nucl->pr<<' '<<nucl->	nr<<endl;
-    assert(res.dens>=0);
+
+	res.dens = nucl->density (res.r);
+	assert(res.dens>=0);
+
 	res.dens_n = res.dens * nucl->frac_neutron ();
 	res.dens_p = res.dens * nucl->frac_proton ();
 	res.n = 2;
 
-    I->total_cross_sections (*p, *nucl, res); //calculate cross sections xsec_p and xsec_n
+	I->total_cross_sections (*p, *nucl, res);	// calculate cross sections xsec_p and xsec_n
 
-    res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; 
-    assert(res.xsec>=0);    
-        
-    if (res.xsec != 0)
-    {
-		res.freepath = -log (frandom ()) / res.xsec;
+	res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p;	// calculate mean free path
+	assert(res.xsec>=0);
+
+	if (res.xsec != 0)
+	{
+		res.freepath = -log (frandom ()) / res.xsec; // choose free path according to mean free path (res.xsec)
 		res.frac_proton = res.xsec_p * res.dens_p / res.xsec;
 	}
-	else res.freepath = 2.0 * max_step;
-	               
-    return res;
+	else
+		res.freepath = 2.0 * max_step;
+
+	return res;
+}
+
+////////////////////////////////////////
+
+bool kaskada::move_particle()
+{	
+	p->krok (min (max_step, X.freepath));	// propagate by no more than max_step
+
+	if (!p->nucleon())										// pion can not be jailed
+		return true;
+
+	// jail nucleon if its kinetic energy is lower than binding energy
+	if (p->Ek() <= par.kaskada_w + p->his_fermi)
+	{
+		p->endproc=jailed;
+		nucl->insert_nucleon (*p);
+		if(par.kaskada_writeall) 
+			e->all.push_back(*p);
+		return false;												// nucleon was jailed  
+	}
+	else
+		return true;												// nucleon was not jailed
+}
+
+////////////////////////////////////////
+
+bool kaskada::leave_nucleus()
+{	
+	if (nucleon (p->pdg))									// substract fermi energy and work function
+	{
+		// jail nucleon if its kinetic energy is lower than binding energy
+		if (p->Ek() <= p->his_fermi + par.kaskada_w)
+		{
+			p->endproc=jailed;
+			nucl->insert_nucleon (*p);
+			if(par.kaskada_writeall) 
+				e->all.push_back(*p);
+			return false;											// particle did not escape
+		}
+		else
+			p->set_energy(p->E() - p->his_fermi - par.kaskada_w);
+	}
+		
+	p->endproc=escape;
+	e->post.push_back (*p);
+	
+	if(par.kaskada_writeall)
+		e->all.push_back (*p);
+		
+	return true;													// particle escaped
 }
 
 ////////////////////////////////////////
@@ -183,7 +235,7 @@ bool kaskada::make_interaction()
 	static int rep=0;
 	static int procid=0;
 			
-	while(++call && 0 == I->particle_scattering (*p, *nucl, X))
+	while(++call && 0 == I->particle_scattering (*p, *nucl, X))	// try to generate kinematics
 	{
 		if(loop==0)
 			procid=I->process_id();
@@ -200,7 +252,9 @@ bool kaskada::make_interaction()
 		cout<<endl<<p->mass()+X.p2.mass()<<' '<<suma<<endl;
 //CJ	cout<<" Interaction: "<<I.process_name()<<" ("<<I.process_id()<<") ";
 //		assert(procid==I->process_id());
-		if(loop>100) return false; //it was impossible to make kinematics
+/* KN: Is it important to keep the lines above? */
+		if(loop>100)
+			return false;		// it was impossible to make kinematics
 	}
 	
 	for (int i = 0; i < X.n; i++)
@@ -210,11 +264,11 @@ bool kaskada::make_interaction()
 			delete nucl;
 			delete I;
 			exit(18);
-		    return false;
+			return false;
 		}
 		
 	
-	if ((p->pdg == 2112 or p->pdg == 2212) and nucl->pauli_blocking (X.p, X.n)) //check if there was Pauli blocking
+	if ((p->pdg == 2112 or p->pdg == 2212) and nucl->pauli_blocking (X.p, X.n)) // check if there was Pauli blocking
 		return false;
 
 	//JTS - removed assertion below	
@@ -227,7 +281,7 @@ bool kaskada::make_interaction()
 ////////////////////////////////////////
 
 bool kaskada::finalize_interaction()
-{	
+{
 	p->endproc=I->process_id();
 	
 	double FE = nucl->Ef(X.p2);
@@ -251,7 +305,7 @@ bool kaskada::finalize_interaction()
 		
 		for (int i = 0; i < X.n; i++)
 			if (nucleon(X.p[i].pdg))
-            {
+			{
 				if (n_he < 0)
 					n_he = i;
 				else if (X.p[i].Ek() < X.p[n_he].Ek())
@@ -261,23 +315,24 @@ bool kaskada::finalize_interaction()
 					n_le = n_he;
 					n_he = i;
 				}
-			}	
-		X.p[n_he].set_fermi (he);		
-		X.p[n_le].set_fermi (le);		
-	}		
+			}
+		X.p[n_he].set_fermi (he);
+		X.p[n_le].set_fermi (le);
+	}
 	
 	for (int i = 0; i < X.n; i++)
 	{
 		X.p[i].r = p->r;
 		X.p[i].travelled = 0;
-				
-		if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi) //jailed nucleon if its kinetic energy is lower than work function
+		
+		// jail nucleon if its kinetic energy is lower than work function
+		if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= par.kaskada_w + X.p[i].his_fermi)
 		{
 			X.p[i].endproc=jailed;
 			nucl->insert_nucleon (X.p[i]);
 			if(par.kaskada_writeall) 
 				e->all.push_back(X.p[i]);
-			continue;			
+			continue;
 		}
 		else
 		{
@@ -294,66 +349,21 @@ bool kaskada::finalize_interaction()
 	
 	int k = kod(I->process_id());
 	e->nod[k]++;
-	if (k==8)// JS absorption
-	{e->r_distance = p->r.length()/fermi;// JS making length of r
+
+	if (k==8)																// JS absorption
+	{
+		e->r_distance = p->r.length()/fermi;	// making length of r
 	}
 	
 	if(!nucl->remove_nucleon (X.p2))
-		return false;    // remove from the nuclear matter
+		return false;													// remove from the nuclear matter
 	if(nucl->spectator!=NULL)
 		if(!nucl->remove_nucleon (*nucl->spectator))
-		{	
+		{
 			nucl->insert_nucleon (X.p2);
 			return false;
 		}
 	
-	return true;
-}
-
-////////////////////////////////////////
-
-bool kaskada::move_particle()
-{	
-	p->krok (min (max_step, X.freepath)); // propagate by no more than max_step
-
-	if (!p->nucleon()) return true;  // pion can not be jailed
-
-	if (p->Ek() <= par.kaskada_w + p->his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
-	{
-		p->endproc=jailed;
-		nucl->insert_nucleon (*p);
-		if(par.kaskada_writeall) 
-			e->all.push_back(*p);
-		return false;                // nucleon was jailed  
-	}
-	else
-		return true;                 // nucleon was not jailed
-}
-
-////////////////////////////////////////
-
-bool kaskada::leave_nucleus()
-{	
-	if (nucleon (p->pdg))	//substract fermi energy and work function
-	{
-		if (p->Ek() <= p->his_fermi + par.kaskada_w) //jailed nucleon if its kinetic energy is lower than binding energy
-		{
-			p->endproc=jailed;
-			nucl->insert_nucleon (*p);
-			if(par.kaskada_writeall) 
-				e->all.push_back(*p);
-			return false;
-		}
-		else
-			p->set_energy(p->E() - p->his_fermi - par.kaskada_w);
-	}
-		
-	p->endproc=escape;
-	e->post.push_back (*p);
-	
-	if(par.kaskada_writeall)
-		e->all.push_back (*p);
-		
 	return true;
 }
 
@@ -385,16 +395,17 @@ bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, parti
 	if(spect) ch1+=spect->charge();
 	int i=n;
 	while(i)
-	  ch1-=p[--i].charge();
+		ch1-=p[--i].charge();
 	if(ch1!=0)
-	{   cout<<endl<<"Proc:"<<k<<endl;
-  	    cout<<p1<<endl<<p2<<endl;
+	{
+		cout<<endl<<"Proc:"<<k<<endl;
+		cout<<p1<<endl<<p2<<endl;
 		if(spect) 
-		  cout<<(*spect)<<endl;
+			cout<<(*spect)<<endl;
 		cout<<endl;
 		while(i<n)
-		  cout<<p[i++]<<endl;
-		cout<<endl;	
+			cout<<p[i++]<<endl;
+		cout<<endl;
 	}
 	return ch1==0;
 }
@@ -407,17 +418,18 @@ bool kaskada::check2 (particle & p1, particle & p2, particle *spect, int n, part
 	if(spect) p4+=*spect;
 	int i=n;
 	while(i)
-	  p4-=p[--i];
+		p4-=p[--i];
 	double prec=0.001*MeV;  
 	if(abs(p4.t)>prec ||abs(p4.x)>prec ||abs(p4.y)>prec ||abs(p4.z)>prec)
-	{   cout<<endl<<"Proc:"<<k<<" delta p4 = "<<p4<<endl;
-  	    cout<<p1<<endl<<p2<<endl;
+	{
+		cout<<endl<<"Proc:"<<k<<" delta p4 = "<<p4<<endl;
+		cout<<p1<<endl<<p2<<endl;
 		if(spect) 
-		  cout<<(*spect)<<endl;
+			cout<<(*spect)<<endl;
 		cout<<endl;
 		while(i<n)
-		  cout<<p[i++]<<endl;
-		cout<<endl;	
+			cout<<p[i++]<<endl;
+		cout<<endl;
 		return false;
 	}
 	return true;
