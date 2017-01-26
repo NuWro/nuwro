@@ -931,8 +931,10 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
 bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_parameters &X)
   {
 	t.spectator=NULL;
-    X.p2 = t.get_nucleon (p1.r);
+  //X.p2 = t.get_nucleon (p1.r);
 	//X.p2.set_momentum(vec(0,0,0));
+
+    X.p2.r = p1.r;
 
     if(X.p2.v().length()>=1) 
          cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
