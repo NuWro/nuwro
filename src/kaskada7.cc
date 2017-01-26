@@ -1,21 +1,29 @@
 #include "kaskada7.h"
 #include "fsi.h"
 
+////////////////////////////////////////
+// Public methods
+////////////////////////////////////////
+
 kaskada::kaskada(params &p, event &e1)
 {
 	par = p;
 	e = &e1;
-	max_step = par.step * fermi; 	//set maximum step defined in params
-	nucl = make_nucleus(par); //create nucleus defined in params
-	radius = nucl->radius(); //calculate radius of the nucleus
+	max_step = par.step * fermi;		// set maximum step defined in params
+	nucl = make_nucleus(par);				// create nucleus defined in params
+	radius = nucl->radius();				// calculate radius of the nucleus
 	I = new Interaction(par.xsec);
 }
+
+////////////////////////////////////////
 
 kaskada::~kaskada()
 {		
 	delete nucl;
 	delete I;
 }
+
+////////////////////////////////////////
 
 int kaskada::kaskadaevent()
 {	
@@ -24,58 +32,64 @@ int kaskada::kaskadaevent()
 	if (e->weight <= 0)
 		return result;
 	
-	prepare_particles(); //copy all nucleons and pions from primary vertex (out) to queue and other particles to output (post)
+	prepare_particles();		// copy all nucleons and pions from primary vertex (out) to queue
+													// and other particles to output (post)
 	
-	if (e->in[0].lepton()) //if lepton scattering remove nucleon from primary vertex 
-		                   // (in pion or nucleon scattering there is no primary vertex
-		                   // just the cascade)
+	if (e->in[0].lepton())	// if lepton scattering -> remove nucleon from primary vertex 
+													// (in pion or nucleon scattering there is no primary vertex just the cascade)
 	{
 		for(int i=1;i< e->in.size();i++)
-			nucl->remove_nucleon(e->in[i]);// ignores nonnucleons
+			nucl->remove_nucleon(e->in[i]);	// ignores nonnucleons
 	}
 			
-	if(not par.kaskada_on) //skip cascade if it is turn off in params, but make sure about the energy balance
+	if(not par.kaskada_on)	// skip the cascade if it is turn off in params,
+													// but make sure about the energy balance
 	{
 		while (parts.size () > 0)
 		{
-			particle p1 = parts.front(); //point a particle from a queue
-			parts.pop(); 				 //remove this particle from a temp vector
-			p = &p1;		
+			particle p1 = parts.front();		// point a particle from a queue
+			parts.pop();										// remove this particle from a temp vector
+			p = &p1;
 			
-			leave_nucleus();
+			leave_nucleus();		// check if the particle is jailed or escapes (and returns on the mass shell)
 		}
 		
 		return result;
 	}
 				
-	while (parts.size () > 0 and nucl->Ar() > 0) ///main loop in cascade
-    {						
-		particle p1 = parts.front(); //point a particle from a queue
-		parts.pop(); 				 //remove this particle from a temp vector
-		p = &p1;		
+	while (parts.size () > 0 and nucl->Ar() > 0)	// main loop in cascade
+		{						
+		particle p1 = parts.front();								// point a particle from a queue
+		parts.pop();																// remove this particle from a temp vector
+		p = &p1;
 		
-		X = prepare_interaction();
-						
-		if (!move_particle()) continue;	          //particle was jailed
+		X = prepare_interaction();									// set the density and the total cross section
+																								// calculate free path
+		
+		if (!move_particle()) continue;							// propagate particle, returns false if jailed
 				
-		if (X.r >= radius)         //leaving nucleus
+		if (X.r >= radius)													// particle leaves nucleus
 			leave_nucleus();
-		else if(  max_step < X.freepath           //no interaction during max_step 
-		          or !make_interaction()          //or unable to generate kinematics or Pauli blocking
-		          or !finalize_interaction()      //or there was problem with finalizing interaction
+		else if(  max_step < X.freepath							// no interaction during max_step 
+		          or !make_interaction()						// or unable to generate kinematics or Pauli blocking
+		          or !finalize_interaction()				// or there was problem with finalizing interaction
 		       ) 
 		  {
 		  if (nucleon (p1.pdg)) e->nod[13]++;
 		  if (pion (p1.pdg)) e->nod[12]++;
-			parts.push (*p);                      //interaction did not happend, 
-			                                      //p should be further propagated 
+			parts.push (*p);													// interaction did not happend, 
+																								// p should be further propagated 
 		}
 	}
 	
-	clean(); // if nucleus has evaporated the part queue may not be empty
+	clean();	// if nucleus has evaporated the part queue may not be empty
 	
 	return result;
 }
+
+////////////////////////////////////////
+// Private methods
+////////////////////////////////////////
 
 void kaskada::prepare_particles()
 {	
@@ -83,21 +97,23 @@ void kaskada::prepare_particles()
 	{
 		particle p1 = e->out[i];
 								
-		if (nucleon_or_pion (p1.pdg))
+		if (nucleon_or_pion (p1.pdg))	// formation zone for both nucleons and pions
 		{		  			
 			if (nucleon (p1.pdg))
 			{	
 				p1.primary = true;
 				
-				//add the binding energy substracted in the primary vertex (for Global Fermi Gas Local Fermi Gas and Spectral Function)
+				// add the binding energy substracted in the primary vertex
+				// (for Global Fermi Gas Local Fermi Gas and Spectral Function)
 				if (e->flag.qel and (par.sf_method != 0 or par.nucleus_target == 2))
 					p1.set_energy (p1.E() + nucl->Ef(p1) + par.kaskada_w);
 				else if (par.nucleus_target == 1 and (e->flag.qel or e->flag.res))
-						p1.set_energy (p1.E() + par.nucleus_E_b);
+					p1.set_energy (p1.E() + par.nucleus_E_b);
 					
 				p1.set_fermi(nucl->Ef(p1));
 			
-				if (p1.Ek() <= par.kaskada_w + p1.his_fermi) //jailed nucleon if its kinetic energy is lower than binding energy
+				if (p1.Ek() <= par.kaskada_w + p1.his_fermi)	// jailed nucleon if its kinetic energy
+																											// is lower than binding energy
 				{
 					p1.endproc=jailed;
 					nucl->insert_nucleon (p1);
@@ -107,12 +123,12 @@ void kaskada::prepare_particles()
 				}
 			}
 			
-			double fz = formation_zone(p1, par, *e); //calculate formation zone
-			p1.krok(fz); //move particle by a distance defined by its formation zone
-		  		  
-			parts.push (p1); //put particle to a queue
+			double fz = formation_zone(p1, par, *e);				// calculate formation zone
+			p1.krok(fz);			// move particle by a distance defined by its formation zone
+			
+			parts.push (p1);	// put particle to a queue
 		}
-		else
+		else								// if not a nucleon nor pion
 		{
 			p1.endproc=escape;
 			e->post.push_back (p1);
@@ -120,12 +136,14 @@ void kaskada::prepare_particles()
 			if(par.kaskada_writeall) 
 				e->all.push_back(p1);
 		}
-    }
-    
-   	for (int i = 0; i<14; i++) //number of dynamics defined in proctable.h
+	}
+	
+	for (int i = 0; i<14; i++)	// number of dynamics defined in proctable.h
 		e->nod[i] = 0;
-	e->r_distance = 10;// new JS ; default (large) value, if unchanged no absorption took place
+	e->r_distance = 10;					// new JS ; default (large) value, if unchanged no absorption took place
 }
+
+////////////////////////////////////////
 
 interaction_parameters kaskada::prepare_interaction()
 {
@@ -155,6 +173,8 @@ interaction_parameters kaskada::prepare_interaction()
 	               
     return res;
 }
+
+////////////////////////////////////////
 
 bool kaskada::make_interaction()
 {
@@ -203,6 +223,8 @@ bool kaskada::make_interaction()
 
 	return true;
 }
+
+////////////////////////////////////////
 
 bool kaskada::finalize_interaction()
 {	
@@ -288,6 +310,8 @@ bool kaskada::finalize_interaction()
 	return true;
 }
 
+////////////////////////////////////////
+
 bool kaskada::move_particle()
 {	
 	p->krok (min (max_step, X.freepath)); // propagate by no more than max_step
@@ -305,6 +329,8 @@ bool kaskada::move_particle()
 	else
 		return true;                 // nucleon was not jailed
 }
+
+////////////////////////////////////////
 
 bool kaskada::leave_nucleus()
 {	
@@ -331,6 +357,8 @@ bool kaskada::leave_nucleus()
 	return true;
 }
 
+////////////////////////////////////////
+
 void kaskada::clean()
 {
 	while(! parts.empty())
@@ -348,6 +376,8 @@ void kaskada::clean()
 	e->pr=nucl->Zr();
 	e->nr=nucl->Nr();
 }
+
+////////////////////////////////////////
 
 bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, particle p[],int k)
 {
@@ -368,6 +398,8 @@ bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, parti
 	}
 	return ch1==0;
 }
+
+////////////////////////////////////////
 
 bool kaskada::check2 (particle & p1, particle & p2, particle *spect, int n, particle p[],int k)
 {
