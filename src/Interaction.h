@@ -31,7 +31,7 @@ class interaction_parameters
 		double Ekeff;
 		double freepath;
 		particle p2;	//nucleon from nucleus (initialized in particle_scattering)
-		particle p[5];	//place for the results of scatering
+		particle p[5];	//place for the results of scattering
 		int n;			//place for the number of particles after scattering
 };
 
@@ -810,41 +810,57 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
     return ::decay (p1 + p2 + p2a, p[0], p[1]);
   }
 
+////////////////////////////////////////
 
-///////////////////////////////////////////////////////////
-/// Interaction
-///////////////////////////////////////////////////////////
+//! Handler of particle interactions in the cascade.
+/*! It is responsible for the interaction of a particular particle (nucleon, pion) and nucleons from
+    the residual nucleus. At first, the total cross section of interaction is calculated. Data is
+    taken from the NData and PiData objects, that contain experimental cross sections (e.g. Metropolis,
+    Oset). If the interaction does occur, then the kinematics is generated. The important information
+    (cross section, target particle) is stored within the interaction_parameters object. */
+
 class Interaction
 {
-	int k1;
-	PiData PD;
-	NData ND;
+  int k1;                                     //!< Type of particle that interacted: nucleon_ or pion_.
+  NData ND;                                   //!< Storage of nucleon experimental cross sections.
+  PiData PD;                                  //!< Storage of pion experimental cross sections.
+
   public: 
-    Interaction(int xsec):PD(xsec),ND(xsec){}
-  	inline void total_cross_sections(particle&, nucleus&, interaction_parameters &X);
-	inline bool particle_scattering (particle & p1, nucleus &t, interaction_parameters &X);
-    inline void test ();
-	int process_id()
-		{ 
-			return k1==nucleon_ ? ND.process_id() : PD.process_id(); 
-		}
-	const char* process_name()
-		{ 
-			return k1==nucleon_ ? ND.process_name() : PD.process_name(); 
-		}
+    Interaction(int xsec):ND(xsec),PD(xsec){} //!< The default constructor.
+                                              /*!< Takes the params option "xsec" for the chosen set of data
+                                                   Initializes NData and PiData for a given option. */
+    inline void total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X);
+                                              //!< Calculates in-medium cross sections for scattering on nucleons.
+                                              /*!< The experimental cross section data is taken from NData, PiData
+                                                   for nucleons and pions respectively. The in-medium modification
+                                                   is made using the Pandharipande & Piper description. */
+    inline bool particle_scattering (particle &p1, nucleus &t, interaction_parameters &X);
+                                              //!< Generates kinematics for scattering on nucleons.
+                                              /*!< Returns 0 if the generated kinematics was wrong.
+                                                   Interaction_parameters object keeps track of resulting particles
+                                                   (table p) and the number of outgoing particles (n). */
+    int process_id()                          //! Returns the process id.
+    { 
+      return k1==nucleon_ ? ND.process_id() : PD.process_id(); 
+    }
+    const char* process_name()                //! Returns the process name.
+    {
+      return k1==nucleon_ ? ND.process_name() : PD.process_name();
+    }
+    inline void test ();                      //!< Test function.
 };
-///////////////////////////////////////////////////////////
-/// scattering of pion or nucleon on nucleus
-/// returns: s0 - cross setion on neutron
-///          s1 - cross setion on proton
+
+////////////////////////////////////////
+
 void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X)
 {
-  // Pandharipende & Piper procedure for the in-medium cross section modification (added by JTS)
-  X.p2 = t.get_nucleon (p1.r);    // note! the further calculations are isospin independent,
+  // Pandharipande & Piper procedure for the in-medium cross section modification (added by JTS)
+  X.p2 = t.get_nucleon (p1.r);    // target nucleon (stored in the interaction_parameters)
+                                  // note! the further calculations (P&P) are isospin independent,
                                   //       it will be chosen precisely in the interaction itself
   vec vvv = X.p2.v();
   p1.p4().boost2 (vvv);
-  X.Ekeff = p1.Ek();
+  X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
   p1.p4().boost2 (-vvv);
 
   double dens00 = 0.16/fermi3;
@@ -880,7 +896,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       X.xsec_n*=resc;
       X.xsec_p*=resc;
       if (X.Ek<40)
-        X.xsec_p*=0.9;                // effective Pauli blocking 
+        X.xsec_p*=0.9;                 // effective Pauli blocking 
       //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       break;
 
@@ -892,9 +908,9 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       X.xsec_n*=resc;
       X.xsec_p*=resc;
       if (X.Ek<40)
-        X.xsec_n*=0.9;                // effective Pauli blocking 
+        X.xsec_n*=0.9;                 // effective Pauli blocking 
       //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
-    break;
+      break;
 
     default:
     { 
@@ -906,35 +922,31 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       switch(X.pdg)
       {
         case pdg_pi:  
-          X.xsec_n =(rii+rij+rabs)/2; //.n 
-          X.xsec_p = X.xsec_n;        //.p
+          X.xsec_n = (rii+rij+rabs)/2; //.n 
+          X.xsec_p = X.xsec_n;         //.p
           break;
         case pdg_piP: 
-          X.xsec_n =  rij+rabs;       //+n
-          X.xsec_p =  rii;            //+p
+          X.xsec_n = rij+rabs;         //+n
+          X.xsec_p = rii;              //+p
           break;
         case -pdg_piP:
-          X.xsec_n =  rii;            //-n
-          X.xsec_p =  rij+rabs;       //-p
+          X.xsec_n = rii;              //-n
+          X.xsec_p = rij+rabs;         //-p
           break;
         default:
-          X.xsec_n=X.xsec_p=0;
+          X.xsec_n = X.xsec_p = 0;
       };
     };
   }
 }
 
-///////////////////////////////////////////////////////////
-/// pion or nucleon scattering on nucleon
-/// fracproton - probability that the scattering will be on proton 
-/// scattering results are writen to table p 
-/// and n is set to number of outgoing particles
-///////////////////////////////////////////////////////////
+////////////////////////////////////////
+
 bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_parameters &X)
 {
   t.spectator=NULL;
 
-  X.p2.r = p1.r;          // moves the target nucleon from interaction parameters to the position of interaction
+  X.p2.r = p1.r;          // moves the target nucleon to the position of the interaction
                           // note! in e.g. Local Fermi Gas, the momentum distribution changes with position
                           //       it is assumed that the step is small and it does not change
 
@@ -942,12 +954,14 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
   assert(X.p2.v().length()<1 && "particle scattering");
 
-  if (frandom () < X.frac_proton)   // X.frac_proton has the proton cross section included!!!
+  if (frandom () < X.frac_proton)   // X.frac_proton is the probability of interaction on proton
+                                    // it has the proton cross section included!!!
+                                    // KN: The name is a bit misleading.
     X.p2.set_proton ();
   else
     X.p2.set_neutron ();
 
-  switch (p1.pdg)
+  switch (p1.pdg)                   // generate the kinematics
   {
     case pdg_proton:
     case pdg_neutron:
@@ -962,8 +976,9 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
       return 0;
   }
 }
-///////////////////////////////////////////////////////////
-/// test functions present in this module
+
+////////////////////////////////////////
+
 void Interaction::test ()
 {
   // echo (Interaction::test);
@@ -989,6 +1004,8 @@ void Interaction::test ()
     cout << i << '\t' << t[i] << endl;
   }
 }
+
+////////////////////////////////////////
 
 #undef echo
 
