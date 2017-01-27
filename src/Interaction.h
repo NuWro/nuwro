@@ -15,24 +15,27 @@
 enum {nucleon_=10,pion_=20};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
+//! Parameters of interaction within the cascade.
+/*! */
+
 class interaction_parameters
 {
-	public:
-		double r; //distance from a center
-		double dens; //density in r
-		double dens_n; //neutron density in r
-		double dens_p; //proton density in r
-		double xsec; //total cross section
-		double xsec_n; //xsec for neutron
-		double xsec_p; //xsec for proton
-		double frac_proton;
-		int pdg; //particle pdg
-		double Ek; //particle kinetic energy
-		double Ekeff;
-		double freepath;
-		particle p2;	//nucleon from nucleus (initialized in particle_scattering)
-		particle p[5];	//place for the results of scattering
-		int n;			//place for the number of particles after scattering
+  public:
+    double r;               //!> Distance from the center.
+    double dens;            //!> Density in the given position.
+    double dens_n;          //!> Neutron density in the given position.
+    double dens_p;          //!> Proton density in the given position.
+    double xsec;            //!> Total cross section.
+    double xsec_n;          //!> Cross section for neutron target.
+    double xsec_p;          //!> Cross section for proton target.
+    double frac_proton;     //!> Probability that the interaction happen on proton.
+    int pdg;                //!> Interacting particle pdg.
+    double Ek;              //!> Interacting particle kinetic energy.
+    double Ekeff;           //!> Interacting particle effective kinetic energy.
+    double freepath;        //!> Current free path of the interacting particle.
+    particle p2;            //!> Target nucleon from nucleus.
+    particle p[5];          //!> Results of scattering.
+    int n;                  //!> Number of particles after scattering.
 };
 
 inline int kod(int i)
