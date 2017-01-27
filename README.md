@@ -37,3 +37,23 @@ For more details see [wiki/Running NuWro](https://github.com/NuWro/nuwro/wiki/Ru
 # Releases
 
 Every stable release is tagged using the year followed by the month of the release, e.g. nuwro_17.01 is a stable release from January 2017. Not-tagged versions should be treated as release candidates.
+
+# Credits
+
+Currently involved in the project:
+
+* Jan Sobczyk
+* Cezary Juszczak
+* [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
+* [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
+
+Former members with significant contribution:
+
+* [Jarek Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
+* Jakub Żmuda
+* [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
+
+and
+
+* Artur Kobyliński
+* Maciej Tabiszewski
