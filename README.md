@@ -49,7 +49,7 @@ Currently involved in the project:
 
 Former members with significant contribution:
 
-* [Jarek Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
+* [Jarosław Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
 * Jakub Żmuda
 * [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 
