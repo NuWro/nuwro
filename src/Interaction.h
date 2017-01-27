@@ -864,11 +864,11 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
   double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
 
-  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in medium modification of the cross section - JTS
+  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the cross section - JTS
 
   //cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
 
-  double resc=1;
+  double resc=1;                                        // KN: is that ever used?
 
   switch (X.pdg)
   {
@@ -880,7 +880,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       X.xsec_n*=resc;
       X.xsec_p*=resc;
       if (X.Ek<40)
-        X.xsec_p*=0.9;  // effective Pauli blocking 
+        X.xsec_p*=0.9;                // effective Pauli blocking 
       //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       break;
 
@@ -892,7 +892,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       X.xsec_n*=resc;
       X.xsec_p*=resc;
       if (X.Ek<40)
-        X.xsec_n*=0.9;  // effective Pauli blocking 
+        X.xsec_n*=0.9;                // effective Pauli blocking 
       //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
     break;
 
@@ -942,7 +942,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
   assert(X.p2.v().length()<1 && "particle scattering");
 
-  if (frandom () < X.frac_proton)
+  if (frandom () < X.frac_proton)   // X.frac_proton has the proton cross section included!!!
     X.p2.set_proton ();
   else
     X.p2.set_neutron ();
@@ -965,30 +965,30 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
 ///////////////////////////////////////////////////////////
 /// test functions present in this module
 void Interaction::test ()
+{
+  // echo (Interaction::test);
+  init_genrand (time (NULL));
+  particle proton (pdg_proton, mass_proton);
+  particle neutron (pdg_pi, mass_pi);
+  particle neutron2 (neutron);
+  particle proton2 (proton);
+  proton.set_momentum (vec (1000, 0, 0));
+  neutron.set_momentum (vec (-1000, 0, 0));
+  int t[1000];
+  for (int i = 0; i < 1000; i++)
   {
-//    echo (Interaction::test);
-    init_genrand (time (NULL));
-    particle proton (pdg_proton, mass_proton);
-    particle neutron (pdg_pi, mass_pi);
-    particle neutron2 (neutron);
-    particle proton2 (proton);
-    proton.set_momentum (vec (1000, 0, 0));
-    neutron.set_momentum (vec (-1000, 0, 0));
-    int t[1000];
-    for (int i = 0; i < 1000; i++)
-      {
-	t[i] = 0;
-      }
-    for (int i = 0; i < 1000000; i++)
-      {
-	scatterAB (proton, neutron, proton2, neutron2, 100, 0, 0, 0, 0, 0, 0, 0);
-	t[int (proton2.y + 1000) / 2]++;
-      }
-    for (int i = 0; i < 1000; i++)
-      {
-	cout << i << '\t' << t[i] << endl;
-      }
+    t[i] = 0;
   }
+  for (int i = 0; i < 1000000; i++)
+  {
+    scatterAB (proton, neutron, proton2, neutron2, 100, 0, 0, 0, 0, 0, 0, 0);
+    t[int (proton2.y + 1000) / 2]++;
+  }
+  for (int i = 0; i < 1000; i++)
+  {
+    cout << i << '\t' << t[i] << endl;
+  }
+}
 
 #undef echo
 
