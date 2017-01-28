@@ -304,7 +304,7 @@ const int NOMADmultiPion[4] = {939617, 4238, 164, 0};
 const double PTQ2[5]    = {1.1, 2.1, 3.0, 3.9, 4.7};
 const double PTQ2err[5] = {0.08, 0.12, 0.11, 0.15, 0.18};
 
-const double PTppi[5]   = {2.793, 3.187, 3.418, 4.077, 4.412};
+const double PTppi[6]   = {2.793, 3.187, 3.418, 4.077, 4.412,0};
 
 const double PTC[5]     = {0.67, 0.65, 0.68, 0.77, 0.70};
 const double PTCerr[5]  = {0.03, 0.03, 0.03, 0.04, 0.04};

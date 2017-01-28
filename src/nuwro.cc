@@ -33,6 +33,11 @@
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
+extern "C" {
+void shhpythiaitokay_(void);
+void youcanspeaknowpythia_(void);
+}
+
 
 params *p1=NULL;
 string data_dir;
@@ -878,6 +883,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 void NuWro::main (int argc, char **argv)
 {
+  	shhpythiaitokay_();
 	try
 	{
 		init(argc,argv);

@@ -259,6 +259,9 @@
   <param name="delta_s" type="text" ctype="double" default="-0.15">
     <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
   </param>
+    <param name="qel_cc_vector_mass" type="text" ctype="double" default="1000">
+      <description><![CDATA[[MeV] vector mass]]></description>
+    </param>
   <param name="qel_cc_axial_mass" type="text" ctype="double" default="1200">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>

@@ -11,6 +11,7 @@
 #include "vec.h"
 #include "dirs.h"
 
+
 //#include "params_all_orig.h" // original params (hand written)
 #include "params_all.h"		// auto_generated (from params.xml)
 
@@ -238,4 +239,5 @@ public:
   }
 
 };
+
 #endif

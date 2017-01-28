@@ -358,13 +358,15 @@ private:
 		return (E1*piAngle[bin+1][z] + E2*piAngle[bin][z])/(E1+E2);
 	}
 	void dump(const double *V)
-	{if(nD>1) cout<<endl;
-		  for (int i=0;i<nE;i++)
-	     {if(nD>1) cout<<setw(8)<<E[i]<<": ";
+	{
+		if(nD>1) cout<<endl;
+		for (int i=0;i<nE;i++)
+	    {
+	      if(nD>1) cout<<setw(8)<<E[i]<<": ";
 		  for(int j=0;j<max(nD,1);j++)
 	        cout<<setw(10)<<V[i*max(nD,1)+j]<<' ';
 	       if (nD>1) cout<<endl; 
-	      }
+	    }
        cout<<endl; 
 	}
 	void dump()

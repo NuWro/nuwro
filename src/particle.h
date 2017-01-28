@@ -70,7 +70,9 @@ public:
 										 
 	inline bool lepton ();						///true if lepton   
 	inline bool pion   ();						///true if pion
-	inline bool nucleon();						///true if nucleon
+  inline bool nucleon();            ///true if nucleon
+  inline bool proton();             ///true if proton
+	inline bool neutron();						///true if neutron
 
 	inline particle& mom()                      ///mother particle !!! ONLY for elements of the vector all !!!
 	{  return this[mother-id];
@@ -297,7 +299,17 @@ bool particle::pion()
 
 bool particle::nucleon()
 {   
-	return pdg==pdg_proton || pdg== pdg_neutron;
+  return pdg==pdg_proton || pdg== pdg_neutron;
+}
+
+bool particle::proton()
+{   
+  return pdg==pdg_proton;
+}
+
+bool particle::neutron()
+{   
+	return pdg==pdg_neutron;
 }
 
 double particle::Ek_in_frame (vec v)
