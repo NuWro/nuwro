@@ -21,40 +21,41 @@ enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 class interaction_parameters
 {
   public:
-    double r;               //!> Distance from the center.
-    double dens;            //!> Density in the given position.
-    double dens_n;          //!> Neutron density in the given position.
-    double dens_p;          //!> Proton density in the given position.
-    double xsec;            //!> Total cross section.
-    double xsec_n;          //!> Cross section for neutron target.
-    double xsec_p;          //!> Cross section for proton target.
-    double frac_proton;     //!> Probability that the interaction happen on proton.
-    int pdg;                //!> Interacting particle pdg.
-    double Ek;              //!> Interacting particle kinetic energy.
-    double Ekeff;           //!> Interacting particle effective kinetic energy.
-    double freepath;        //!> Current free path of the interacting particle.
-    particle p2;            //!> Target nucleon from nucleus.
-    particle p[5];          //!> Results of scattering.
-    int n;                  //!> Number of particles after scattering.
+    double   r;               //!< Distance from the center.
+    double   dens;            //!< Density in the given position.
+    double   dens_n;          //!< Neutron density in the given position.
+    double   dens_p;          //!< Proton density in the given position.
+    double   xsec;            //!< Total cross section.
+    double   xsec_n;          //!< Cross section for neutron target.
+    double   xsec_p;          //!< Cross section for proton target.
+    double   frac_proton;     //!< Probability that the interaction happen on proton.
+    int      pdg;             //!< Interacting particle pdg.
+    double   Ek;              //!< Interacting particle kinetic energy.
+    double   Ekeff;           //!< Interacting particle effective kinetic energy.
+    double   freepath;        //!< Current free path of the interacting particle.
+    particle p2;              //!< Target nucleon from nucleus.
+    particle p[5];            //!< Results of scattering.
+    int      n;               //!< Number of particles after scattering.
 };
 
 inline int kod(int i)
-{switch(i)
+{
+  switch(i)
   {
-	case 10: return 0;
-	case 11: return 1;
-	case 12: return 2;
-	case 13: return 3;
-	case 20: return 4;
-	case 21: return 5;
-	case 22: return 6;
-	case 23: return 7;
-	case 25: return 8;
-	case 24: return 11; 
-	case 99: return 9;
-	case 100: return 10;
-	default: return -1;
-  }		  	
+    case 10: return 0;
+    case 11: return 1;
+    case 12: return 2;
+    case 13: return 3;
+    case 20: return 4;
+    case 21: return 5;
+    case 22: return 6;
+    case 23: return 7;
+    case 25: return 8;
+    case 24: return 11; 
+    case 99: return 9;
+    case 100: return 10;
+    default: return -1;
+  }
 }
 ///////////////////////////////////////////)////////////////
 /// Help to "reuse" random number "x" a few times in nested ifs.
