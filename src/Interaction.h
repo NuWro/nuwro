@@ -14,6 +14,10 @@
 enum {nucleon_=10,pion_=20};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
+////////////////////////////////////////
+// interaction_parameters
+////////////////////////////////////////
+
 //! Parameters of interaction within the cascade.
 /*! */
 
@@ -36,6 +40,11 @@ struct interaction_parameters
   int      n;               //!< Number of particles after scattering.
 };
 
+
+////////////////////////////////////////
+// Utilities - general
+////////////////////////////////////////
+
 inline int kod(int i)
 {
   switch(i)
@@ -55,31 +64,37 @@ inline int kod(int i)
     default: return -1;
   }
 }
-///////////////////////////////////////////)////////////////
-/// Help to "reuse" random number "x" a few times in nested ifs.
-/// Assume x - random in [0,1) and type:
-/// if(below(x,val))
-///       ....../// branch 1   //probability=val
-///    else
-///        ...../// branch 2   //probability=1-val
-/// Then x is again random in [0,1) in each branch
-////////////////////////////////////////////////////////////
+
+////////////////////////////////////////
+
+//! Help to "reuse" random number "x" a few times in nested ifs.
+/*! Assume x - random in [0,1) and type:
+      if(below(x,val))
+        ......          /// branch 1   //probability=val
+      else
+        .....           /// branch 2   //probability=1-val
+    Then x is again random in [0,1) in each branch. */
+
 inline bool below(double &x,double val)
 {
   if(x<val) {x/=val;    return true; } ///<<renormalize x  
   else      {x/=(1-val);return false;} ///<<renormalize x  
 }
-///////////////////////////////////////////)////////////////
-///one should use "if(above(x,val))" instead of "if(not below(x,val))"
-///////////////////////////////////////////)////////////////
+//! one should use "if(above(x,val))" instead of "if(not below(x,val))"
 inline bool above(double &x,double val)
 {
   if(x>=val) {x/=(1-val); return true; } ///<<renormalize x  
   else       {x/=val;     return false;} ///<<renormalize x  
 }
 
-///////////////////////////////////////////)////////////////
+////////////////////////////////////////
+
 inline double pow2(double x) {return x*x;}
+
+
+////////////////////////////////////////
+// Utilities - channel in NData, PiData
+////////////////////////////////////////
 
 using namespace std;
 
@@ -89,35 +104,45 @@ static particle PiZero(PDG::pdg_pi,PDG::mass_pi);
 static particle Proton(PDG::pdg_proton,PDG::mass_proton);
 static particle Neutron(PDG::pdg_neutron,PDG::mass_neutron);
 
-///////////////////////////////////////////)////////////////
+////////////////////////////////////////
+
 struct channel{double dist;const char* codes;};
 
-///////////////////////////////////////////)////////////////
-/// choose reaction channel from table a[] 
-/// according to probability distribution a[?].dist
-/// and fill p with particles according to codes string
+////////////////////////////////////////
+
+//! Reaction channel
+/*! choose reaction channel from table a[] 
+    according to probability distribution a[?].dist
+    and fill p with particles according to codes string */
+
 inline void doit(int& n,const channel a[],particle p[])
 {
   if(a->dist<1)
   {
-	  double x=frandom();
-	  while(x>=a->dist) 
-		 ++a;
+    double x=frandom();
+    while(x>=a->dist) 
+      ++a;
   }
   const char *c=a->codes;
   for(int i=0;true;i++)
-	switch(c[i])  ///Fill p with particles at rest based on char codes
-	{ case '-':p[i]=PiMinus;break;
-	  case '.':p[i]=PiZero;break;
-	  case '+':p[i]=PiPlus;break;
-	  case 'n':p[i]=Neutron;break;
-	  case 'p':p[i]=Proton;break;
-	  case'\0':n=i;return;
-	  default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(27);
-	 }
+  {
+    switch(c[i])                    // Fill p with particles at rest based on char codes
+    {
+      case '-':p[i]=PiMinus;break;
+      case '.':p[i]=PiZero;break;
+      case '+':p[i]=PiPlus;break;
+      case 'n':p[i]=Neutron;break;
+      case 'p':p[i]=Proton;break;
+      case'\0':n=i;return;
+      default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(27);
+    }
 } 
 
-///////////////////////////////////////////)////////////////
+
+////////////////////////////////////////
+// NData
+////////////////////////////////////////
+
 class NData
 {
 private:
@@ -284,7 +309,10 @@ bool NData::nucleon_dpp (particle p1, particle p2, int &n, particle p[])
   }
 
 
-///////////////////////////////////////////////////////////
+////////////////////////////////////////
+// PiData
+////////////////////////////////////////
+
 class PiData
 { 
 private:
