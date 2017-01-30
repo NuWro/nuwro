@@ -50,6 +50,7 @@ class nucleus
 	public:
 
 	nucleus(params &par);                    ///< construct nucleus from params
+	void reset(){pr=p;nr=n;_p4=vect();}      ///< recover  initial state
 	int  A(){return n+p;}                    ///< A initial
 	int  Z(){return p;}                      ///< Z initial
 	int  N(){return n;}                      ///< N initial
