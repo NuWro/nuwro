@@ -222,12 +222,15 @@ void NuWro::makeevent(event* e, params &p)
 		nu=_beam->shoot(dyn>1 && dyn<6 && dismode);
 		nu.r=vec(nu.r)+p.beam_offset;
 	}
+
 	if(_detector or _mixer) // _nucleus not reusable
 	{
 		delete _nucleus;
 		_nucleus= make_nucleus(p);
 		//cout<<"make_nucleus "<<_nucleus->p<<" "<<_nucleus->n<<endl;
 	}
+	else
+		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
 	if(dyn<6)
 	{
