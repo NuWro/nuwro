@@ -167,4 +167,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 endif
 
+doxygen:
+	@doxygen doc/doxygen/Doxyfile
+
 # DO NOT DELETE

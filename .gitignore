@@ -7,3 +7,4 @@ nuwro.geany
 *.DS_Store
 .vscode
 *.pcm
+doc/doxygen/html
