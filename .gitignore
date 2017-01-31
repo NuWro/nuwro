@@ -1,6 +1,9 @@
 *.root
 *.txt
 *.par
+*.pdf
 random_seed
 nuwro.geany
 *.DS_Store
+.vscode
+*.pcm
