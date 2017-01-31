@@ -22,7 +22,7 @@ args(const char* p="nuwro",const char* i="params.txt",const char* o="eventsout.r
 
 int read(int argc, char** argv)
 { 
-  if (string(argv[1]) == "-v" or string(argv[1]) == "--version")
+  if (argc==2 and (string(argv[1]) == "-v" or string(argv[1]) == "--version"))
   {
     cout << VERSION << endl;
     exit(0);
