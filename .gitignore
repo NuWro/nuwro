@@ -8,3 +8,4 @@ nuwro.geany
 .vscode
 *.pcm
 doc/doxygen/html
+.clang-format

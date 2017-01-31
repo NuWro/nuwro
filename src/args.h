@@ -22,6 +22,11 @@ args(const char* p="nuwro",const char* i="params.txt",const char* o="eventsout.r
 
 int read(int argc, char** argv)
 { 
+  if (string(argv[1]) == "-v" or string(argv[1]) == "--version")
+  {
+    cout << VERSION << endl;
+    exit(0);
+  }
   if(argc%2==0) 
      usage();
   for(int i=1;i<argc-1;i++)

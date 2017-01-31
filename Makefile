@@ -7,15 +7,19 @@
 # Detecting OS type
 OS := $(shell uname)
 
+# get version tag using git describe
+
+VERSION := $(shell git describe --tags)
+
 #DEBUG         = 1
 #DEBUGON = -g
 #CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 -I src
 ifeq ($(OS),Darwin)
   # Flags for OSX
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS)
+  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 else
   # Flags for others
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS)
+  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 endif
 #LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6 -lEG -lEGPythia6 -lCore  -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lGeom -lpthread -lm -ldl -rdynamic -lHist $(QTLIBS)
 LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 -lGeom -lMinuit $(QTLIBS)
