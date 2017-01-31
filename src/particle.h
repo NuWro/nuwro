@@ -276,6 +276,7 @@ void particle::krok(double dl)
 void particle::krok(vec dl)
 { 
   r+=vect(dl, 0);
+  travelled += dl.length();
 }
 
 void particle::krok_czasowy(double dt)
