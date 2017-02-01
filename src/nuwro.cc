@@ -700,6 +700,9 @@ void NuWro::real_events(params& p)
 		xsections->SetBinError(i+1,_procesy.sigma(i));
 	}
 
+	TNamed version("NuWro version", VERSION);
+	version.Write();
+
 	/////////////////////////////////////////////////////////////
 	// The main loop in NPROC -- generate file with unweighted events
 	//////////////////////////////////////////////////////////////
