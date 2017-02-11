@@ -198,7 +198,7 @@ double formation_zone (particle &p, params &par, event &e)
 				flength /= 400.0;
 			}
 		}
-		if (strcmp(fz.c_str(), "fz-new") == 0)
+		else if (strcmp(fz.c_str(), "fz-new") == 0)
 		{
 			double W = e.W();
 			

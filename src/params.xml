@@ -378,6 +378,7 @@
     <description><![CDATA[Name of formation zone model]]></description>
     <options>
       <option key="fz"><![CDATA[fz - ]]></option>
+      <option key="fz-new"><![CDATA[fz-new - ]]></option>
       <option key="trans"><![CDATA[trans - ]]></option>		
       <option key="skat8"><![CDATA[skat8 - ]]></option>		
       <option key="cohl"><![CDATA[cohl - ]]></option>		
