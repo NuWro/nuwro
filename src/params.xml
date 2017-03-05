@@ -377,10 +377,11 @@
   <param name="kaskada_writeall" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[Store all intermediate FSI particles int the event::all vector]]></description>
   </param> 
-  <param name="formation_zone" type="select" ctype="string" default="fz">
+  <param name="formation_zone" type="select" ctype="string" default="fz-new">
     <description><![CDATA[Name of formation zone model]]></description>
     <options>
       <option key="fz"><![CDATA[fz - ]]></option>
+      <option key="fz-new"><![CDATA[fz-new - ]]></option>
       <option key="trans"><![CDATA[trans - ]]></option>		
       <option key="skat8"><![CDATA[skat8 - ]]></option>		
       <option key="cohl"><![CDATA[cohl - ]]></option>		
