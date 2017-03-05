@@ -46,12 +46,12 @@ Currently involved in the project:
 * Cezary Juszczak
 * [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
 * [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
+* [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 
 Former members with significant contribution:
 
 * [Jarosław Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
 * Jakub Żmuda
-* [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 
 and
 

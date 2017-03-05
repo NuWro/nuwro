@@ -3,7 +3,6 @@
 #include <iostream>
 #include <TGenPhaseSpace.h>
 #include "pdg.h"
-#include "pdg.h"
 #include "particle.h"
 #include "nucleus.h"
 #include "jednostki.h"
@@ -15,69 +14,87 @@
 enum {nucleon_=10,pion_=20};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
-class interaction_parameters
+////////////////////////////////////////
+// interaction_parameters
+////////////////////////////////////////
+
+//! Parameters of interaction within the cascade.
+/*! */
+
+struct interaction_parameters
 {
-	public:
-		double r; //distance from a center
-		double dens; //density in r
-		double dens_n; //neutron density in r
-		double dens_p; //proton density in r
-		double xsec; //total cross section
-		double xsec_n; //xsec for neutron
-		double xsec_p; //xsec for proton
-		double frac_proton;
-		int pdg; //particle pdg
-		double Ek; //particle kinetic energy
-		double Ekeff;
-		double freepath;
-		particle p2;	//nucleon from nucleus (initialized in particle_scattering)
-		particle p[5];	//place for the results of scattering
-		int n;			//place for the number of particles after scattering
+  double   r;               //!< Distance from the center.
+  double   dens;            //!< Density in the given position.
+  double   dens_n;          //!< Neutron density in the given position.
+  double   dens_p;          //!< Proton density in the given position.
+  double   xsec;            //!< Total cross section.
+  double   xsec_n;          //!< Cross section for neutron target.
+  double   xsec_p;          //!< Cross section for proton target.
+  double   frac_proton;     //!< Probability that the interaction happen on proton.
+  int      pdg;             //!< Interacting particle pdg.
+  double   Ek;              //!< Interacting particle kinetic energy.
+  double   Ekeff;           //!< Interacting particle effective kinetic energy.
+  double   freepath;        //!< Current free path of the interacting particle.
+  particle p2;              //!< Target nucleon from nucleus.
+  particle p[5];            //!< Results of scattering.
+  int      n;               //!< Number of particles after scattering.
 };
 
+
+////////////////////////////////////////
+// Utilities - general
+////////////////////////////////////////
+
 inline int kod(int i)
-{switch(i)
+{
+  switch(i)
   {
-	case 10: return 0;
-	case 11: return 1;
-	case 12: return 2;
-	case 13: return 3;
-	case 20: return 4;
-	case 21: return 5;
-	case 22: return 6;
-	case 23: return 7;
-	case 25: return 8;
-	case 24: return 11; 
-	case 99: return 9;
-	case 100: return 10;
-	default: return -1;
-  }		  	
+    case 10: return 0;
+    case 11: return 1;
+    case 12: return 2;
+    case 13: return 3;
+    case 20: return 4;
+    case 21: return 5;
+    case 22: return 6;
+    case 23: return 7;
+    case 25: return 8;
+    case 24: return 11; 
+    case 99: return 9;
+    case 100: return 10;
+    default: return -1;
+  }
 }
-///////////////////////////////////////////)////////////////
-/// Help to "reuse" random number "x" a few times in nested ifs.
-/// Assume x - random in [0,1) and type:
-/// if(below(x,val))
-///       ....../// branch 1   //probability=val
-///    else
-///        ...../// branch 2   //probability=1-val
-/// Then x is again random in [0,1) in each branch
-////////////////////////////////////////////////////////////
+
+////////////////////////////////////////
+
+//! Help to "reuse" random number "x" a few times in nested ifs.
+/*! Assume x - random in [0,1) and type:
+      if(below(x,val))
+        ......          /// branch 1   //probability=val
+      else
+        .....           /// branch 2   //probability=1-val
+    Then x is again random in [0,1) in each branch. */
+
 inline bool below(double &x,double val)
 {
   if(x<val) {x/=val;    return true; } ///<<renormalize x  
   else      {x/=(1-val);return false;} ///<<renormalize x  
 }
-///////////////////////////////////////////)////////////////
-///one should use "if(above(x,val))" instead of "if(not below(x,val))"
-///////////////////////////////////////////)////////////////
+//! one should use "if(above(x,val))" instead of "if(not below(x,val))"
 inline bool above(double &x,double val)
 {
   if(x>=val) {x/=(1-val); return true; } ///<<renormalize x  
   else       {x/=val;     return false;} ///<<renormalize x  
 }
 
-///////////////////////////////////////////)////////////////
+////////////////////////////////////////
+
 inline double pow2(double x) {return x*x;}
+
+
+////////////////////////////////////////
+// Utilities - channel in NData, PiData
+////////////////////////////////////////
 
 using namespace std;
 
@@ -87,35 +104,46 @@ static particle PiZero(PDG::pdg_pi,PDG::mass_pi);
 static particle Proton(PDG::pdg_proton,PDG::mass_proton);
 static particle Neutron(PDG::pdg_neutron,PDG::mass_neutron);
 
-///////////////////////////////////////////)////////////////
+////////////////////////////////////////
+
 struct channel{double dist;const char* codes;};
 
-///////////////////////////////////////////)////////////////
-/// choose reaction channel from table a[] 
-/// according to probability distribution a[?].dist
-/// and fill p with particles according to codes string
+////////////////////////////////////////
+
+//! Reaction channel
+/*! choose reaction channel from table a[] 
+    according to probability distribution a[?].dist
+    and fill p with particles according to codes string */
+
 inline void doit(int& n,const channel a[],particle p[])
 {
   if(a->dist<1)
   {
-	  double x=frandom();
-	  while(x>=a->dist) 
-		 ++a;
+    double x=frandom();
+    while(x>=a->dist) 
+      ++a;
   }
   const char *c=a->codes;
   for(int i=0;true;i++)
-	switch(c[i])  ///Fill p with particles at rest based on char codes
-	{ case '-':p[i]=PiMinus;break;
-	  case '.':p[i]=PiZero;break;
-	  case '+':p[i]=PiPlus;break;
-	  case 'n':p[i]=Neutron;break;
-	  case 'p':p[i]=Proton;break;
-	  case'\0':n=i;return;
-	  default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(27);
-	 }
+  {
+    switch(c[i])                    // Fill p with particles at rest based on char codes
+    {
+      case '-':p[i]=PiMinus;break;
+      case '.':p[i]=PiZero;break;
+      case '+':p[i]=PiPlus;break;
+      case 'n':p[i]=Neutron;break;
+      case 'p':p[i]=Proton;break;
+      case'\0':n=i;return;
+      default:cerr<<"doit: Invalid process: n="<<n<<" \""<<a->codes<<"\""<<endl;exit(27);
+    }
+  }
 } 
 
-///////////////////////////////////////////)////////////////
+
+////////////////////////////////////////
+// NData
+////////////////////////////////////////
+
 class NData
 {
 private:
@@ -282,7 +310,10 @@ bool NData::nucleon_dpp (particle p1, particle p2, int &n, particle p[])
   }
 
 
-///////////////////////////////////////////////////////////
+////////////////////////////////////////
+// PiData
+////////////////////////////////////////
+
 class PiData
 { 
 private:
@@ -831,12 +862,12 @@ class Interaction
     Interaction(int xsec):ND(xsec),PD(xsec){} //!< The default constructor.
                                               /*!< Takes the params option "xsec" for the chosen set of data
                                                    Initializes NData and PiData for a given option. */
-    inline void total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X);
+    void total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X);
                                               //!< Calculates in-medium cross sections for scattering on nucleons.
                                               /*!< The experimental cross section data is taken from NData, PiData
                                                    for nucleons and pions respectively. The in-medium modification
                                                    is made using the Pandharipande & Piper description. */
-    inline bool particle_scattering (particle &p1, nucleus &t, interaction_parameters &X);
+    bool particle_scattering (particle &p1, nucleus &t, interaction_parameters &X);
                                               //!< Generates kinematics for scattering on nucleons.
                                               /*!< Returns 0 if the generated kinematics was wrong.
                                                    Interaction_parameters object keeps track of resulting particles
@@ -849,163 +880,8 @@ class Interaction
     {
       return k1==nucleon_ ? ND.process_name() : PD.process_name();
     }
-    inline void test ();                      //!< Test function.
+    void test ();                      //!< Test function.
 };
-
-////////////////////////////////////////
-
-void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X)
-{
-  // Pandharipande & Piper procedure for the in-medium cross section modification (added by JTS)
-  X.p2 = t.get_nucleon (p1.r);    // target nucleon (stored in the interaction_parameters)
-                                  // note! the further calculations (P&P) are isospin independent,
-                                  //       it will be chosen precisely in the interaction itself
-  vec vvv = X.p2.v();
-  p1.p4().boost2 (vvv);
-  X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
-  p1.p4().boost2 (-vvv);
-
-  double dens00 = 0.16/fermi3;
-  double Masssa = (938.272+939.56533)/2.0;
-
-  double beta = -116.0*X.dens/dens00;
-  double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
-  double effmass1 = Masssa/
-  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
-  double effmass2 = Masssa/
-  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+X.p2.momentum2()/lambda/lambda )/( 1+X.p2.momentum2()/lambda/lambda ) );
-  double effmass3 = Masssa/
-  (1 - 2.0*Masssa*beta/lambda/lambda
-  /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda )
-  /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda ) );
-
-  double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
-  double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
-
-  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the cross section - JTS
-
-  //cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
-
-  double resc=1;                                        // KN: is that ever used?
-
-  switch (X.pdg)
-  {
-    case pdg_neutron:
-      ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
-      //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
-      X.xsec_n*=mod;
-      X.xsec_p*=mod;
-      X.xsec_n*=resc;
-      X.xsec_p*=resc;
-      if (X.Ek<40)
-        X.xsec_p*=0.9;                 // effective Pauli blocking 
-      //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
-      break;
-
-    case pdg_proton:
-      ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
-      //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
-      X.xsec_n*=mod;
-      X.xsec_p*=mod;
-      X.xsec_n*=resc;
-      X.xsec_p*=resc;
-      if (X.Ek<40)
-        X.xsec_n*=0.9;                 // effective Pauli blocking 
-      //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
-      break;
-
-    default:
-    { 
-      PD.set_density(X.dens);
-      PD.set_Ek(X.Ek);
-      double rii=PD.sij(0)*millibarn;
-      double rij=PD.sij(1)*millibarn;
-      double rabs=PD.sij(2)*millibarn;
-      switch(X.pdg)
-      {
-        case pdg_pi:  
-          X.xsec_n = (rii+rij+rabs)/2; //.n 
-          X.xsec_p = X.xsec_n;         //.p
-          break;
-        case pdg_piP: 
-          X.xsec_n = rij+rabs;         //+n
-          X.xsec_p = rii;              //+p
-          break;
-        case -pdg_piP:
-          X.xsec_n = rii;              //-n
-          X.xsec_p = rij+rabs;         //-p
-          break;
-        default:
-          X.xsec_n = X.xsec_p = 0;
-      };
-    };
-  }
-}
-
-////////////////////////////////////////
-
-bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_parameters &X)
-{
-  t.spectator=NULL;
-
-  X.p2.r = p1.r;          // moves the target nucleon to the position of the interaction
-                          // note! in e.g. Local Fermi Gas, the momentum distribution changes with position
-                          //       it is assumed that the step is small and it does not change
-
-  if(X.p2.v().length()>=1) 
-    cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
-  assert(X.p2.v().length()<1 && "particle scattering");
-
-  if (frandom () < X.frac_proton)   // X.frac_proton is the probability of interaction on proton
-                                    // it has the proton cross section included!!!
-                                    // KN: The name is a bit misleading.
-    X.p2.set_proton ();
-  else
-    X.p2.set_neutron ();
-
-  switch (p1.pdg)                   // generate the kinematics
-  {
-    case pdg_proton:
-    case pdg_neutron:
-      k1=nucleon_;
-      return ND.nucleon_scattering (p1, X.p2 , X.n,  X.p);
-    case pdg_pi: 
-    case pdg_piP: 
-    case -pdg_piP:
-      k1=pion_;
-      return PD.pion_scattering (p1, X.p2, t, X.n, X.p, X.dens);
-    default:
-      return 0;
-  }
-}
-
-////////////////////////////////////////
-
-void Interaction::test ()
-{
-  // echo (Interaction::test);
-  init_genrand (time (NULL));
-  particle proton (pdg_proton, mass_proton);
-  particle neutron (pdg_pi, mass_pi);
-  particle neutron2 (neutron);
-  particle proton2 (proton);
-  proton.set_momentum (vec (1000, 0, 0));
-  neutron.set_momentum (vec (-1000, 0, 0));
-  int t[1000];
-  for (int i = 0; i < 1000; i++)
-  {
-    t[i] = 0;
-  }
-  for (int i = 0; i < 1000000; i++)
-  {
-    scatterAB (proton, neutron, proton2, neutron2, 100, 0, 0, 0, 0, 0, 0, 0);
-    t[int (proton2.y + 1000) / 2]++;
-  }
-  for (int i = 0; i < 1000; i++)
-  {
-    cout << i << '\t' << t[i] << endl;
-  }
-}
 
 ////////////////////////////////////////
 

@@ -1,5 +1,4 @@
 #include "Interaction.h"
-#include "jednostki.h" 
 #include "pidata.h"
 
 
@@ -217,3 +216,164 @@ for(int i=0;i<nD;i++)
   E[19]=tab2[5][1];
 }
 
+
+////////////////////////////////////////
+// Interaction
+////////////////////////////////////////
+
+////////////////////////////////////////
+// Public methods
+////////////////////////////////////////
+
+void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X)
+{
+  // Pandharipande & Piper procedure for the in-medium cross section modification (added by JTS)
+  X.p2 = t.get_nucleon (p1.r);    // target nucleon (stored in the interaction_parameters)
+                                  // note! the further calculations (P&P) are isospin independent,
+                                  //       it will be chosen precisely in the interaction itself
+  vec vvv = X.p2.v();
+  p1.p4().boost2 (vvv);
+  X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
+  p1.p4().boost2 (-vvv);
+
+  double dens00 = 0.16/fermi3;
+  double Masssa = (938.272+939.56533)/2.0;
+
+  double beta = -116.0*X.dens/dens00;
+  double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
+  double effmass1 = Masssa/
+  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
+  double effmass2 = Masssa/
+  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+X.p2.momentum2()/lambda/lambda )/( 1+X.p2.momentum2()/lambda/lambda ) );
+  double effmass3 = Masssa/
+  (1 - 2.0*Masssa*beta/lambda/lambda
+  /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda )
+  /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda ) );
+
+  double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
+  double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
+
+  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the cross section - JTS
+
+  //cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
+
+  double resc=1;                                        // KN: is that ever used?
+
+  switch (X.pdg)
+  {
+    case pdg_neutron:
+      ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
+      //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      X.xsec_n*=mod;
+      X.xsec_p*=mod;
+      X.xsec_n*=resc;
+      X.xsec_p*=resc;
+      if (X.Ek<40)
+        X.xsec_p*=0.9;                 // effective Pauli blocking 
+      //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      break;
+
+    case pdg_proton:
+      ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
+      //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      X.xsec_n*=mod;
+      X.xsec_p*=mod;
+      X.xsec_n*=resc;
+      X.xsec_p*=resc;
+      if (X.Ek<40)
+        X.xsec_n*=0.9;                 // effective Pauli blocking 
+      //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      break;
+
+    default:
+    { 
+      PD.set_density(X.dens);
+      PD.set_Ek(X.Ek);
+      double rii=PD.sij(0)*millibarn;
+      double rij=PD.sij(1)*millibarn;
+      double rabs=PD.sij(2)*millibarn;
+      switch(X.pdg)
+      {
+        case pdg_pi:  
+          X.xsec_n = (rii+rij+rabs)/2; //.n 
+          X.xsec_p = X.xsec_n;         //.p
+          break;
+        case pdg_piP: 
+          X.xsec_n = rij+rabs;         //+n
+          X.xsec_p = rii;              //+p
+          break;
+        case -pdg_piP:
+          X.xsec_n = rii;              //-n
+          X.xsec_p = rij+rabs;         //-p
+          break;
+        default:
+          X.xsec_n = X.xsec_p = 0;
+      };
+    };
+  }
+}
+
+////////////////////////////////////////
+
+bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_parameters &X)
+{
+  t.spectator=NULL;
+
+  X.p2.r = p1.r;          // moves the target nucleon to the position of the interaction
+                          // note! in e.g. Local Fermi Gas, the momentum distribution changes with position
+                          //       it is assumed that the step is small and it does not change
+
+  if(X.p2.v().length()>=1) 
+    cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
+  assert(X.p2.v().length()<1 && "particle scattering");
+
+  if (frandom () < X.frac_proton)   // X.frac_proton is the probability of interaction on proton
+                                    // it has the proton cross section included!!!
+                                    // KN: The name is a bit misleading.
+    X.p2.set_proton ();
+  else
+    X.p2.set_neutron ();
+
+  switch (p1.pdg)                   // generate the kinematics
+  {
+    case pdg_proton:
+    case pdg_neutron:
+      k1=nucleon_;
+      return ND.nucleon_scattering (p1, X.p2 , X.n,  X.p);
+    case pdg_pi: 
+    case pdg_piP: 
+    case -pdg_piP:
+      k1=pion_;
+      return PD.pion_scattering (p1, X.p2, t, X.n, X.p, X.dens);
+    default:
+      return 0;
+  }
+}
+
+////////////////////////////////////////
+
+void Interaction::test ()
+{
+  // echo (Interaction::test);
+  init_genrand (time (NULL));
+  particle proton (pdg_proton, mass_proton);
+  particle neutron (pdg_pi, mass_pi);
+  particle neutron2 (neutron);
+  particle proton2 (proton);
+  proton.set_momentum (vec (1000, 0, 0));
+  neutron.set_momentum (vec (-1000, 0, 0));
+  int t[1000];
+  for (int i = 0; i < 1000; i++)
+  {
+    t[i] = 0;
+  }
+  for (int i = 0; i < 1000000; i++)
+  {
+    scatterAB (proton, neutron, proton2, neutron2, 100, 0, 0, 0, 0, 0, 0, 0);
+    t[int (proton2.y + 1000) / 2]++;
+  }
+  for (int i = 0; i < 1000; i++)
+  {
+    cout << i << '\t' << t[i] << endl;
+  }
+}

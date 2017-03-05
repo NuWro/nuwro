@@ -240,7 +240,8 @@ step = 0.2           // length of one step in cascade
 xsec = 1 //model of cross sections in cascade: 0 - metropolis, 1 - oset
 kaskada_w = 7
 
-  formation_zone = fz
+  formation_zone = fz-new
+# formation_zone = fz     //
 # formation_zone = nofz   //
 # formation_zone = fz     //
 # formation_zone = trans  //
