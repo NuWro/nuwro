@@ -30,6 +30,7 @@
 #include "hist.h"
 #include "nucleusmaker.h"
 #include "Interaction.h"
+#include "rew/rewparams.h"
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
@@ -140,6 +141,7 @@ void NuWro::init (int argc, char **argv)
 	p.list (cout);
 	p.list (string(a.output)+".par");
 	p1=&p;
+	rew.init(p);
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
@@ -147,15 +149,6 @@ void NuWro::init (int argc, char **argv)
 	{
 		cout<<" Calculating the one pion functions ..."<<endl;
 		singlepion (p);
-		/*  for (int c = 0; c < 40; c++)
-			cout << 1210 + c * 20 << "  MeV -> "
-			 << setw(10)<< SPP[0][0][0][0][c] << "  "
-			 << setw(10)<< SPP[0][0][0][1][c] << "  "
-			 << setw(10)<< SPP[0][0][0][2][c] << "  "
-			 << setw(10)<< SPP[0][0][1][0][c] << "  "
-			 << setw(10)<< SPP[0][0][1][1][c] << "  "
-				 << setw(10)<< SPP[0][0][1][2][c] << endl;
-	*/
 	}							 
 	if(p.kaskada_redo==0)
 	{

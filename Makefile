@@ -30,7 +30,7 @@ CC 	      = g++
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
-                fsi niwg ladek_topologies test mb_nce_run ganalysis reweight_example\
+                fsi niwg ladek_topologies test mb_nce_run ganalysis reweight_to reweight_along\
                 )
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
@@ -116,12 +116,21 @@ $(BIN)/ganalysis: $(addprefix src/, \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/reweight_example: $(addprefix src/, \
+$(BIN)/reweight_to: $(addprefix src/, \
 		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o\
-        rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_example.o rew/PythiaQuiet.o) \
+        rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_to.o rew/PythiaQuiet.o) \
+        $(SF_OBJS) $(DIS_OBJS)
+		$(LINK.cc)  $^ -o $@ 
+
+$(BIN)/reweight_along: $(addprefix src/, \
+		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
+	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o\
+        rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc)  $^ -o $@ 
 

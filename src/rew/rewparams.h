@@ -31,6 +31,7 @@ struct RewParam
 	void setErrors(double plus, double minus){ errPlus=plus; errMinus=minus;}
 
 	void reset(){ val=def; twk=0;}
+	void set(double v){ val=def=v; twk=0;}
 
 	RewParam & setTwk(double twk0)
 	{
@@ -277,15 +278,22 @@ struct RewParams
 				o<<"\t"<<p->name<<"\n";
 	}
 
+	void list_vals(ostream& o)
+	{
+		for(RewParam* p=begin(); p!=end(); p++)
+			if(p->engine!="")
+				o<<"\t"<<p->name<<"="<<p->val<<"\n";
+	}
+
 	RewParams &init(params &p)
 	{
-		delta_s.def		        =p.delta_s;		
-		qel_cc_vector_mass.def  =p.qel_cc_vector_mass;
-		qel_cc_axial_mass.def   =p.qel_cc_axial_mass;
-		qel_nc_axial_mass.def   =p.qel_nc_axial_mass;
-		qel_s_axial_mass.def    =p.qel_s_axial_mass;
-		pion_axial_mass.def  	=p.pion_axial_mass;
-		pion_C5A.def  		    =p.pion_C5A;  
+		delta_s.set(p.delta_s);		
+		qel_cc_vector_mass.set(p.qel_cc_vector_mass);
+		qel_cc_axial_mass.set(p.qel_cc_axial_mass);
+		qel_nc_axial_mass.set(p.qel_nc_axial_mass);
+		qel_s_axial_mass.set(p.qel_s_axial_mass);
+		pion_axial_mass.set(p.pion_axial_mass);
+		pion_C5A.set(p.pion_C5A);  
 	
 		return *this;
 	}

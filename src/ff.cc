@@ -713,18 +713,21 @@ pair<double, double> fap(double q2, int kind) {
   switch (kind) {
     case 0:  // cc
 
-      Fa = Axialfromq2(q2, MA_cc); 
+      //Fa = Axialfromq2(q2, MA_cc); 
+      Fa = Axialfromq2(q2, rew.qel_cc_axial_mass.val); 
 
       Fa *= axialcorr(axialFFset, q2);
       Fp = 2 * MM * Fa / (piMass2 - q2);
 
       break;
     case 1:  // nc proton
-      Fa = 0.5 * Axialfromq2(q2, MA_nc); 
+      //Fa = 0.5 * Axialfromq2(q2, MA_nc); 
+      Fa = 0.5 * Axialfromq2(q2, rew.qel_nc_axial_mass.val); 
       // Fp=2.0*M2*Fa/(piMass2 - q2) ;
       break;
     case 2:  // nc neutron
-      Fa = -0.5 * Axialfromq2(q2, MA_nc);
+      //Fa = -0.5 * Axialfromq2(q2, MA_nc);
+      Fa = -0.5 * Axialfromq2(q2, rew.qel_nc_axial_mass.val);
       // Fp=2.0*M2*Fa/(piMass2 - q2) ;
       break;
     case 3:
@@ -802,7 +805,6 @@ double axialcorr(int axialFF, double q2) {
 ///////////////////////////////////////////////////////////////
 /// Form Factor Configuration
 void ff_configure(params & p) {
-  rew.init(p);
   switch (p.qel_vector_ff_set) {
     case 1:
       FFfromq2 = DipoleFF;
