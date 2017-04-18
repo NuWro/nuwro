@@ -58,7 +58,7 @@ int kaskada::kaskadaevent()
   }
         
   while (parts.size () > 0 and nucl->Ar() > 0)  // main loop in cascade
-    {           
+  {           
     particle p1 = parts.front();                // point a particle from a queue
     parts.pop();                                // remove this particle from a temp vector
     p = &p1;
