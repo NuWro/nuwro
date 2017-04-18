@@ -368,6 +368,9 @@
   <param name="kaskada_w" type="text" ctype="double" default="7">
     <description><![CDATA[[MeV] work function]]></description>
   </param>
+  <param name="kaskada_freepath" type="text" ctype="double" default="1">
+    <description><![CDATA[Free path scaling]]></description>
+  </param>
   <param name="kaskada_redo" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[Only recalculate FSI for an existing eventsout.root]]></description>
   </param>
