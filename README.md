@@ -2,7 +2,7 @@
 
 NuWro is a Monte Carlo neutrino event generator, created at the University of Wroclaw. It simulates neutrino-nucleon and neutrino-nucleus reactions for energies from threshold to TeV. The generator has a detector geometry module and can handle realistic neutrino beams, which make it suitable to use in neutrino experiments. [ROOT](https://root.cern.ch/) framework is used to store generated events.
 
-More information can be found in [wiki](https://github.com/NuWro/nuwro/wiki).
+More information can be found in [NuWro User Guide](https://nuwro.github.io/user-guide/).
 
 # Installation
 
@@ -14,12 +14,12 @@ More information can be found in [wiki](https://github.com/NuWro/nuwro/wiki).
   make
   ```
 
-For more details see [wiki/Installation](https://github.com/NuWro/nuwro/wiki/Installation).
+For more details see [user-guide/getting-started/installation](https://nuwro.github.io/user-guide/getting-started/installation/).
 
 # Usage
 
 * Add *nuwro/bin* to your *PATH*
-* Copy *data/params.txt* to your working directory and modify as needed (see [wiki/Parameters](https://github.com/NuWro/nuwro/wiki/Parameters))
+* Copy *data/params.txt* to your working directory and modify as needed (see [user-guide/getting-started/parameters](https://nuwro.github.io/user-guide/getting-started/parameters/))
 * Type
 
   ```
@@ -32,7 +32,7 @@ For more details see [wiki/Installation](https://github.com/NuWro/nuwro/wiki/Ins
   myroot eventsout.root
   ```
 
-For more details see [wiki/Running NuWro](https://github.com/NuWro/nuwro/wiki/Running-NuWro) or [tutorial](http://www.ift.uni.wroc.pl/~tgolan/talks/NuWro_howto.pdf).
+For more details see [user-guide/getting-started/running](https://nuwro.github.io/user-guide/getting-started/running/) and [user-guide/analyze-output](https://nuwro.github.io/user-guide/analyze-output/basics/).
 
 # Releases
 
