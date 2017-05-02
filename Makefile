@@ -26,7 +26,7 @@ LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 
 LD	      = g++
 CXX	      = g++
 CC 	      = g++
-
+FC            = gfortran
 
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
