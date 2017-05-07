@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	if(argc<4)
 	{
 		cerr<<"[INFO] Usage: " 
-		"reweight_example <nuwro_output.root> <results_filename.root> rewpar1 rewpar2 ...\n";
+		"reweight_along <nuwro_output.root> <results_filename.root> rewpar1 rewpar2 ...\n";
 		exit(-1);
 	}
 
