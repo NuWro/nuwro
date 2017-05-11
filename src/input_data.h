@@ -6,16 +6,11 @@
 /*! This class decides which data files should be read, reads them and stores the data */
 
 
+class input_data
+{
 
-
-
-
-
-
-
-
-
-
-
+  public:
+    input_data();
+};
 
 #endif

@@ -1,2 +1,12 @@
 #include "input_data.h"
 
+#include <iostream>
+
+////////////////////////////////////////
+// Public methods
+////////////////////////////////////////
+
+input_data::input_data()
+{
+  std::cout << "test\n";
+}
