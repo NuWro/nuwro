@@ -150,8 +150,8 @@ interaction_parameters kaskada::prepare_interaction()
   interaction_parameters res;
 
   res.pdg = p->pdg;
-  res.Ek = p->Ek();
-  res.r = p->r.length ();
+  res.Ek  = p->Ek();
+  res.r   = p->r.length ();
 
   res.dens = nucl->density (res.r);
   assert(res.dens>=0);
@@ -162,13 +162,15 @@ interaction_parameters kaskada::prepare_interaction()
 
   I->total_cross_sections (*p, *nucl, res); // calculate cross sections xsec_p and xsec_n
 
-  res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the mean free path
-  res.xsec *= par.kaskada_freepath;                         // rescale the mean free path according to params
+  res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path
+
+  res.xsec /= par.kaskada_meanfreepath_scale;               // scale the mean free path (1/res.xsec)
+                                                            // according to the params
   assert(res.xsec>=0);
 
   if (res.xsec != 0)
   {
-    res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (res.xsec)
+    res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
     res.frac_proton = res.xsec_p * res.dens_p / res.xsec;
   }
   else
