@@ -146,54 +146,62 @@ inline void doit(int& n,const channel a[],particle p[])
 
 class NData
 {
-private:
-     int k2;
-     double Ek;
-     int iE;
-     double aE; 
-     int ij;
-	 const double *E,*s[2],*F[2],*A[2],*B[2],*Fp[2];
-     double val(const double* v){return (1-aE)*v[iE]+aE*v[iE+1];}
-public:
-  NData(int i )
-	{if(i) setMetropolis();
-	 else  setOset();
-	 }
-  void setMetropolis();
-  void setOset();
-  void set_Ek(double NewEk)
-	{   Ek=NewEk;
-		iE=0;
-		while(NewEk>=E[iE+1])
-			++iE;
-		aE=(NewEk-E[iE])/(E[iE+1]-E[iE]);
-	}
-  void set_particles(particle& p1,particle& p2){ ij= p1!=p2; }
-//  void set_density(double dens){}
-  inline void get_sij (double Ek,double &resii,double &resij);
-  inline double sigma (double Ek);
-  double finel(){return F[ij][iE];}    
-  double a(){return A[ij][iE];}    
-  double b(){return B[ij][iE];}    
-  double fp(){return Fp[ij][iE];}
-  inline bool nucleon_scattering (particle & p1, particle & p2, 
-							     int &n,  particle p[]);
-  inline bool nucleon_elastic    (particle & p1, particle & p2, 
-                                 int &n,  particle p[]);
-  inline bool nucleon_spp 		 (particle p1, particle p2,     
-                                  int &n, particle p[]);// p[2] is pion
-  inline bool nucleon_dpp         (particle p1, particle p2,
-			                       int &n, particle p[]);// p[2], p[3] are pions
-  inline int process_id()
-	{
-		return nucleon_+k2;
-	}
-  inline const char * process_name()
-	{const char *name[4]=
-	     {"nucleon elastic","nucleon ce","nucleon spp","nucleon dpp"};
-	 if(k2<4) return name[k2];
-     else     return NULL;
-	}
+  int k2;
+  double Ek;
+  int iE;
+  double aE; 
+  int ij;
+  const double *E,*s[2],*F[2],*A[2],*B[2],*Fp[2];
+  double val(const double* v)
+  {
+    return (1-aE)*v[iE]+aE*v[iE+1];
+  }
+
+  public:
+    NData(int i)
+    {
+      if(i)                   // 0 is Metropolis, others are Oset
+        setOset();
+      else
+        setMetropolis();
+    }
+    void setMetropolis();
+    void setOset();
+    void set_Ek(double NewEk)
+    {
+      Ek=NewEk;
+      iE=0;
+      while(NewEk>=E[iE+1])
+        ++iE;
+      aE=(NewEk-E[iE])/(E[iE+1]-E[iE]);
+    }
+    void set_particles(particle& p1,particle& p2)
+    {
+      ij=p1!=p2;
+    }
+    //void set_density(double dens){}
+    inline void get_sij (double Ek,double &resii,double &resij);
+    inline double sigma (double Ek);
+    double finel(){return F[ij][iE];}
+    double a(){return A[ij][iE];}
+    double b(){return B[ij][iE];}
+    double fp(){return Fp[ij][iE];}
+    inline bool nucleon_scattering (particle & p1, particle & p2, int &n, particle p[]);
+    inline bool nucleon_elastic    (particle & p1, particle & p2, int &n, particle p[]);
+    inline bool nucleon_spp        (particle p1, particle p2, int &n, particle p[]);// p[2] is pion
+    inline bool nucleon_dpp        (particle p1, particle p2, int &n, particle p[]);// p[2], p[3] are pions
+    inline int process_id()
+    {
+      return nucleon_+k2;
+    }
+    inline const char * process_name()
+    {
+      const char *name[4]={"nucleon elastic","nucleon ce","nucleon spp","nucleon dpp"};
+      if(k2<4)
+        return name[k2];
+      else
+        return NULL;
+    }
 };
 ///////////////////////////////////////////////////////////
 /// Cross section for same (ii) and different (ij) nucleons
