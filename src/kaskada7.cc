@@ -12,7 +12,7 @@ kaskada::kaskada(params &p, event &e1)
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
-  I = new Interaction(par.xsec);
+  I = new Interaction(par.kaskada_xsec_NN,par.kaskada_xsec_piN);
 }
 
 ////////////////////////////////////////

@@ -865,8 +865,10 @@ class Interaction
   PiData PD;                                  //!< Storage of pion experimental cross sections.
 
   public: 
-    Interaction(int xsec):ND(xsec),PD(xsec){} //!< The default constructor.
-                                              /*!< Takes the params option "xsec" for the chosen set of data
+    Interaction(int xsec_NN, int xsec_piN):ND(xsec_NN),PD(xsec_piN){}
+                                              //!< The default constructor.
+                                              /*!< Takes the params options "kaskada_xsec_NN" and "kaskada_xsec_piN"
+                                                   for the chosen set of data of NN and piN cross sections.
                                                    Initializes NData and PiData for a given option. */
     void total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X);
                                               //!< Calculates in-medium cross sections for scattering on nucleons.
