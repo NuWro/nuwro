@@ -9,6 +9,8 @@
 input_data::input_data(params _par)
 {
   par = _par;
+  holder_test.file_name = "test";
+  cout << "constructed\n";
 }
 
 ////////////////////////////////////////
@@ -22,6 +24,7 @@ input_data::~input_data()
 int input_data::load_data()
 {
   std::cout << par.xsec << "\n";
+  std::cout << holder_test.file_name << "\n";
   return 1;
 }
 

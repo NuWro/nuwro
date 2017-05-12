@@ -19,8 +19,8 @@ int main(int argc,  char** argv)
   p.list();
   frandom_init(p.random_seed);
   
-  input_data *test = new input_data(p);
-  cout << "test: " << test->test() << "\n";
+  input_data input_test(p);
+  cout << "load_data: " << input_test.load_data() << "\n";
 
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
