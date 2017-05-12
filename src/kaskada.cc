@@ -6,6 +6,7 @@
 #include "args.h"
 #include "nucleusmaker.h"
 #include "dirs.h"
+#include "input_data.h"
 
 int main(int argc,  char** argv)
 {  
@@ -18,6 +19,9 @@ int main(int argc,  char** argv)
   p.list();
   frandom_init(p.random_seed);
   
+  input_data *test = new input_data(p);
+  cout << "test: " << test->test() << "\n";
+
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
   TTree * t2=new TTree("treeout","Tree of events");
