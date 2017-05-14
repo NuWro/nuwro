@@ -42,13 +42,14 @@ class input_data
     input_data( params _par );                    //!< The default constructor.
                                                   /*!< Receives the params provided. */
     ~input_data();                                //!< The default destructor.
-    int initialize();                             //!< Initialize objects, check essential things.
-    int load_data();                              //!< Loads the data needed for given simulation.
+    bool initialize();                            //!< Initialize objects, check essential things.
+    bool load_data();                             //!< Loads the data needed for given simulation.
 
   private:
-    int initialize_input_path();                  //!< Create the input_path and check if it exists.
-    int initialize_data_containers();             //!< Prepare data containers for reading files.
+    bool   initialize_input_path();               //!< Create the input_path and check if it exists.
+    bool   initialize_data_containers();          //!< Prepare data containers for reading files.
     string generate_file_name( string name, int option ); //!< Generate file name.
+    bool   read_data( data_container &container );        //!< Read and store the input data.
 };
 
 #endif

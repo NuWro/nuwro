@@ -24,7 +24,7 @@ input_data::~input_data()
 
 ////////////////////////////////////////
 
-int input_data::initialize()
+bool input_data::initialize()
 {
   if( initialize_input_path() && initialize_data_containers() )
     return 1;
@@ -34,11 +34,12 @@ int input_data::initialize()
 
 ////////////////////////////////////////
 
-int input_data::load_data()
+bool input_data::load_data()
 {
-  std::cout << par.kaskada_xsec_NN        << "\n";
-  std::cout << cascade_xsec_NN->file_name << "\n";
-  return 1;
+  if( read_data( *cascade_xsec_NN ) )
+    return 1;
+  else
+    return 0;
 }
 
 
@@ -46,7 +47,7 @@ int input_data::load_data()
 // Private methods
 ////////////////////////////////////////
 
-int input_data::initialize_input_path()
+bool input_data::initialize_input_path()
 {
   // generate the input_path
   name_sstream.str(string());                  // clear the stringstream
@@ -74,7 +75,7 @@ int input_data::initialize_input_path()
 
 ////////////////////////////////////////
 
-int input_data::initialize_data_containers()
+bool input_data::initialize_data_containers()
 {
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
@@ -95,4 +96,12 @@ string input_data::generate_file_name( string name, int option )
   name_sstream.str(string());                                    // clear the stringstream
   name_sstream << input_path << name << "_" << option << ".dat"; // path + name + extension
   return name_sstream.str();
+}
+
+////////////////////////////////////////
+
+bool input_data::read_data( data_container &container )
+{
+  cout << container.file_name << "\t";
+  return 1;
 }
