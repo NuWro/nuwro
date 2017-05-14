@@ -9,10 +9,10 @@
 #include "input_data.h"
 
 int main(int argc,  char** argv)
-{  
-  set_dirs(argv[0]);	
+{
+  set_dirs(argv[0]);
   args a("kaskada","kaskada.txt","kaskada.root");
-  a.read(argc,argv);   
+  a.read(argc,argv);
   params p;
   p.read(a.input);
   p.read(a.params,"Command line");
@@ -20,7 +20,8 @@ int main(int argc,  char** argv)
   frandom_init(p.random_seed);
   
   input_data input_test(p);
-  cout << "load_data: " << input_test.load_data() << "\n";
+  cout << "initialize: " << input_test.initialize() << "\n";
+  cout << "load_data:  " << input_test.load_data()  << "\n";
 
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
