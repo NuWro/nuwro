@@ -3,8 +3,10 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "params.h"
+
 
 ////////////////////////////////////////
 // data_container
@@ -16,13 +18,19 @@
 struct data_container
 {
   int     number_of_options;                      //!< Number of possible options within the parameter.
-  string  parameter_name;                         //!< Name of the parameter that controls that data.
-  string  file_name;                              //!< The name of the file with input data.
+  string     parameter_name;                      //!< Name of the parameter that controls that data.
+  string          file_name;                      //!< The name of the file with input data.
+  int      number_of_points;                      //!< Number of data points.
 
-  data_container( string _parameter_name, int _number_of_options ):
-                  parameter_name(_parameter_name), number_of_options(_number_of_options)
-                  {};                             //!< The default constructor.
+  vector<double>     energy;                      //!< Temporary
+
+  data_container( string _parameter_name, int _number_of_options );
+                                                  //!< The default constructor.
+  ~data_container();                              //!< The default destructor.
+
+  void create_data_vector();                      //!< Create vector for data points.
 };
+
 
 ////////////////////////////////////////
 // input_data
@@ -39,6 +47,7 @@ class input_data
   stringstream        name_sstream;               //!< Stringstream needed for generic names.
   ifstream           file_ifstream;               //!< Stream for handling files.
   string                 file_line;               //!< String for reading lines from files.
+  size_t             char_position;               //!< Size_t for manipulating strings;
 
   public:
     input_data( params _par );                    //!< The default constructor.

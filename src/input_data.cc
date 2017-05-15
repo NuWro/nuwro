@@ -6,6 +6,34 @@
 
 #include "dirs.h"
 
+
+////////////////////////////////////////
+// data_container
+////////////////////////////////////////
+
+data_container::data_container( string _parameter_name, int _number_of_options ):
+                                parameter_name(_parameter_name),
+                                number_of_options(_number_of_options)
+{}
+
+////////////////////////////////////////
+
+data_container::~data_container()
+{
+}
+
+////////////////////////////////////////
+
+void data_container::create_data_vector()
+{
+  energy.reserve(number_of_points);
+}
+
+
+////////////////////////////////////////
+// input_data
+////////////////////////////////////////
+
 ////////////////////////////////////////
 // Public methods
 ////////////////////////////////////////
@@ -53,7 +81,7 @@ void input_data::initialize_input_path()
   DIR* dir = opendir( input_path.c_str() );
   if ( dir )                                    // the directory exists
   {
-    closedir(dir);
+    closedir( dir );
   }
   else
   {
@@ -65,7 +93,7 @@ void input_data::initialize_input_path()
 
 void input_data::initialize_data_containers()
 {
-  cascade_xsec_NN = new data_container("kaskada_xsec_NN",2);
+  cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2 );
 
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
@@ -94,15 +122,35 @@ void input_data::read_data( data_container &container )
 
   if( file_ifstream.is_open() )
   {
-    while( getline ( file_ifstream, file_line ) )
+    container.number_of_points = 0;                         // make sure its zero
+    while( getline ( file_ifstream, file_line ) )           // first check the number of data points
     {
-      //if( file_line[0] == '#' )                             // a comment starts with #
-      //  continue;
-      //if( file_line.find_first_not_of('\t\n ') == string::npos ) // line is empty
-      //  continue;
-      cout << file_line << '\n';
+      if( file_line[0] == '-' )
+      {
+        container.number_of_points++;
+      }
     }
+    container.create_data_vector();                         // reserve proper amount of memory
 
+    file_ifstream.clear();                                  // go back to the start of the file
+    file_ifstream.seekg(0, ios::beg);
+    while( getline ( file_ifstream, file_line ) )           // first check the number of data points
+    {
+      if( file_line[0] == '#' )                             // a comment starts with #
+       continue;
+      if( file_line[0] == '-' )                             // new point starts after -
+      {
+        getline ( file_ifstream, file_line );
+        if( file_line.find('energy') )
+        {
+          char_position = file_line.find(':');              // find ":"
+          file_line = file_line.substr(char_position+1);    // erase everything up to ":"
+          container.energy.push_back( stod(file_line) );    // convert to double and add the data point
+        }
+      }
+    }
+    cout << container.energy[2] << "\n";
+    cout << container.energy[9] << "\n";
     file_ifstream.close();                                  // close the file
   }
   else

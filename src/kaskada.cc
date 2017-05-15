@@ -19,13 +19,13 @@ int main(int argc,  char** argv)
   p.list();
   frandom_init(p.random_seed);
   
-  input_data input_test(p);
+  input_data input_test( p );
   try
   {
     input_test.initialize();
     input_test.load_data();
   }
-  catch(char const* ex)
+  catch( char const* ex )
   {
     cout << ex << endl;
     return 1;
