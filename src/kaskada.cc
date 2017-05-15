@@ -20,8 +20,16 @@ int main(int argc,  char** argv)
   frandom_init(p.random_seed);
   
   input_data input_test(p);
-  cout << "initialize: " << input_test.initialize() << "\n";
-  cout << "load_data:  " << input_test.load_data()  << "\n";
+  try
+  {
+    input_test.initialize();
+    input_test.load_data();
+  }
+  catch(char const* ex)
+  {
+    cout << ex << endl;
+    return 1;
+  }
 
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
