@@ -94,7 +94,16 @@ void input_data::read_data( data_container &container )
 
   if( file_ifstream.is_open() )
   {
-    file_ifstream.close();                                    // close the file
+    while( getline ( file_ifstream, file_line ) )
+    {
+      //if( file_line[0] == '#' )                             // a comment starts with #
+      //  continue;
+      //if( file_line.find_first_not_of('\t\n ') == string::npos ) // line is empty
+      //  continue;
+      cout << file_line << '\n';
+    }
+
+    file_ifstream.close();                                  // close the file
   }
   else
   {

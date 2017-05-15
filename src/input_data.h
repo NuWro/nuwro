@@ -38,6 +38,7 @@ class input_data
   string                input_path;               //!< Path to the folder with input data.
   stringstream        name_sstream;               //!< Stringstream needed for generic names.
   ifstream           file_ifstream;               //!< Stream for handling files.
+  string                 file_line;               //!< String for reading lines from files.
 
   public:
     input_data( params _par );                    //!< The default constructor.
