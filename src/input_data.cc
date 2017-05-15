@@ -12,7 +12,6 @@
 input_data::input_data( params _par )
 {
   par = _par;
-  cascade_xsec_NN = new data_container("kaskada_xsec_NN",2);
 }
 
 ////////////////////////////////////////
@@ -59,7 +58,6 @@ bool input_data::initialize_input_path()
   if ( dir )                    // the directory exists
   {
     closedir(dir);
-    cerr << "test\n";
     return 1;
   }
   else if ( ENOENT == errno )   // the directory does not exist
@@ -77,15 +75,17 @@ bool input_data::initialize_input_path()
 
 bool input_data::initialize_data_containers()
 {
+  cascade_xsec_NN = new data_container("kaskada_xsec_NN",2);
+
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
     cascade_xsec_NN->file_name = generate_file_name( cascade_xsec_NN->parameter_name, 
                                                      par.kaskada_xsec_NN );
+    return 1;
   }
   else
   {
-    cerr << "input_data: unknown kaskada_xsec_NN code " << par.kaskada_xsec_NN << "." << endl;
-    exit(29);
+    return 0;
   }
 }
 
