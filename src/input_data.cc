@@ -1,6 +1,7 @@
 #include "input_data.h"
 
 #include <iostream>
+#include <fstream>
 #include <dirent.h>
 
 #include "dirs.h"
@@ -44,12 +45,12 @@ void input_data::load_data()
 void input_data::initialize_input_path()
 {
   // generate the input_path
-  name_sstream.str(string());                   // clear the stringstream
+  name_sstream.str( string() );                 // clear the stringstream
   name_sstream << get_data_dir() << "input/";   // data_dir + relative folder
   input_path = name_sstream.str();
 
   // check if the directory exists
-  DIR* dir = opendir(input_path.c_str());
+  DIR* dir = opendir( input_path.c_str() );
   if ( dir )                                    // the directory exists
   {
     closedir(dir);
@@ -68,8 +69,7 @@ void input_data::initialize_data_containers()
 
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
-    cascade_xsec_NN->file_name = generate_file_name( cascade_xsec_NN->parameter_name, 
-                                                     par.kaskada_xsec_NN );
+    generate_file_name( *cascade_xsec_NN, par.kaskada_xsec_NN );
   }
   else
   {
@@ -79,16 +79,25 @@ void input_data::initialize_data_containers()
 
 ////////////////////////////////////////
 
-string input_data::generate_file_name( string name, int option )
+void input_data::generate_file_name( data_container &container, int option )
 {
-  name_sstream.str(string());                                    // clear the stringstream
-  name_sstream << input_path << name << "_" << option << ".dat"; // path + name + extension
-  return name_sstream.str();
+  name_sstream.str( string() );                                                      // clear the stringstream
+  name_sstream << input_path << container.parameter_name << "_" << option << ".dat"; // path + name + extension
+  container.file_name = name_sstream.str();
 }
 
 ////////////////////////////////////////
 
 void input_data::read_data( data_container &container )
 {
-  cout << container.file_name << "\n";
+  file_ifstream.open( container.file_name.c_str() );        // open the file
+
+  if( file_ifstream.is_open() )
+  {
+    file_ifstream.close();                                    // close the file
+  }
+  else
+  {
+    throw "input_data error: Could not open the data file.";
+  }
 }

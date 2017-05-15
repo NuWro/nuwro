@@ -37,6 +37,7 @@ class input_data
   data_container  *cascade_xsec_NN;               //!< Container for data.
   string                input_path;               //!< Path to the folder with input data.
   stringstream        name_sstream;               //!< Stringstream needed for generic names.
+  ifstream           file_ifstream;               //!< Stream for handling files.
 
   public:
     input_data( params _par );                    //!< The default constructor.
@@ -46,10 +47,10 @@ class input_data
     void load_data();                             //!< Loads the data needed for given simulation.
 
   private:
-    void   initialize_input_path();               //!< Create the input_path and check if it exists.
-    void   initialize_data_containers();          //!< Prepare data containers for reading files.
-    string generate_file_name( string name, int option ); //!< Generate file name.
-    void   read_data( data_container &container );        //!< Read and store the input data.
+    void initialize_input_path();                 //!< Create the input_path and check if it exists.
+    void initialize_data_containers();            //!< Prepare data containers for reading files.
+    void generate_file_name( data_container &container, int option ); //!< Generate file name.
+    void read_data( data_container &container );                      //!< Read and store the input data.
 };
 
 #endif
