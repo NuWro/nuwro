@@ -20,11 +20,12 @@ struct data_container
   int     number_of_options;                      //!< Number of possible options within the parameter.
   string     parameter_name;                      //!< Name of the parameter that controls that data.
   string          file_name;                      //!< The name of the file with input data.
+  string       *data_fields;                      //!< Possible fields within data file.
   int      number_of_points;                      //!< Number of data points.
 
   vector<double>     energy;                      //!< Temporary
 
-  data_container( string _parameter_name, int _number_of_options );
+  data_container( string _parameter_name, int _number_of_options, string &_data_fields );
                                                   //!< The default constructor.
   ~data_container();                              //!< The default destructor.
 

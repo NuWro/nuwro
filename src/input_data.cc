@@ -11,7 +11,7 @@
 // data_container
 ////////////////////////////////////////
 
-data_container::data_container( string _parameter_name, int _number_of_options ):
+data_container::data_container( string _parameter_name, int _number_of_options, string &_data_fields ):
                                 parameter_name(_parameter_name),
                                 number_of_options(_number_of_options)
 {}
@@ -20,6 +20,7 @@ data_container::data_container( string _parameter_name, int _number_of_options )
 
 data_container::~data_container()
 {
+  delete data_fields;
 }
 
 ////////////////////////////////////////
@@ -93,7 +94,8 @@ void input_data::initialize_input_path()
 
 void input_data::initialize_data_containers()
 {
-  cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2 );
+  string cascade_xsec_NN_fields[] = {"energy", "xsec_ii"};
+  cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2, *cascade_xsec_NN_fields );
 
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
@@ -137,20 +139,27 @@ void input_data::read_data( data_container &container )
     while( getline ( file_ifstream, file_line ) )           // first check the number of data points
     {
       if( file_line[0] == '#' )                             // a comment starts with #
-       continue;
+      {
+        continue;
+      }
       if( file_line[0] == '-' )                             // new point starts after -
       {
-        getline ( file_ifstream, file_line );
-        if( file_line.find('energy') )
-        {
-          char_position = file_line.find(':');              // find ":"
-          file_line = file_line.substr(char_position+1);    // erase everything up to ":"
-          container.energy.push_back( stod(file_line) );    // convert to double and add the data point
-        }
+        cout << "next point\n";
+        continue;
       }
+      char_position = file_line.find( ':' );
+      if( file_line.find( ':' ) )
+      cout << file_line << " " << char_position << "\n";
+        // getline ( file_ifstream, file_line );
+        // if( file_line.find('energy') )
+        // {
+        //   char_position = file_line.find(':');              // find ":"
+        //   file_line = file_line.substr(char_position+1);    // erase everything up to ":"
+        //   container.energy.push_back( stod(file_line) );    // convert to double and add the data point
+        // }
     }
-    cout << container.energy[2] << "\n";
-    cout << container.energy[9] << "\n";
+    // cout << container.energy[2] << "\n";
+    // cout << container.energy[9] << "\n";
     file_ifstream.close();                                  // close the file
   }
   else
