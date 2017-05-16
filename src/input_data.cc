@@ -26,8 +26,6 @@ data_container::data_container( string _parameter_name, int _number_of_options, 
 
 data_container::~data_container()
 {
-  delete data_fields;
-  delete interpolate_fields;
 }
 
 ////////////////////////////////////////
@@ -107,9 +105,9 @@ void input_data::initialize_data_containers()
 {
   // Provide the name of the parameter that governs the data, the number of options,
   // then the number of different fields in the file, their names and the method of interpolation for each.
-  int cascade_xsec_NN_number_of_fields     = 2;
-  string cascade_xsec_NN_data_fields[]     = {"energy", "xsec_ii"};
-  int cascade_xsec_NN_interpolate_fields[] = {0, 0};
+  int cascade_xsec_NN_number_of_fields     = 3;
+  string cascade_xsec_NN_data_fields[]     = {"energy", "xsec_ii", "xsec_ij"};
+  int cascade_xsec_NN_interpolate_fields[] = {0, 0, 0};
   cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2, cascade_xsec_NN_number_of_fields,
                                *cascade_xsec_NN_data_fields, *cascade_xsec_NN_interpolate_fields );
 
