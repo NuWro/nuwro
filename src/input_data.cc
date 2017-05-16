@@ -136,14 +136,20 @@ void input_data::generate_file_name( data_container &container, int option )
 
 void input_data::read_data( data_container &container )
 {
+  cerr << container.data_fields[0] << "\n";
   ifstream file_ifstream;
+  cerr << container.data_fields[0] << "\n";
+  cerr << "test\n";
   file_ifstream.open( container.file_name.c_str() );        // open the file
 
   if( file_ifstream.is_open() )
   {
     string file_line;
+
+    // first check the number of data points
     container.number_of_points = 0;                         // make sure its zero
-    while( getline ( file_ifstream, file_line ) )           // first check the number of data points
+
+    while( getline ( file_ifstream, file_line ) )
     {
       if( file_line[0] == '-' )
       {
@@ -153,10 +159,18 @@ void input_data::read_data( data_container &container )
     container.create_data_vector();                         // reserve proper amount of memory
                                                             // and fill the vector with empty data
 
+
     file_ifstream.clear();                                  // go back to the start of the file
     file_ifstream.seekg(0, ios::beg);
-    int point = -1;
-    while( getline ( file_ifstream, file_line ) )           // first check the number of data points
+
+
+    // then iterate through points
+    int point = -1;                                         // which data point
+    size_t char_position;                                   // position of a given char
+    string field;                                           // which field
+    double value;                                           // what is the data
+
+    while( getline ( file_ifstream, file_line ) )
     {
       if( file_line[0] == '#' )                             // a comment starts with #
       {
@@ -167,19 +181,34 @@ void input_data::read_data( data_container &container )
         point++;
         continue;
       }
-      size_t char_position = file_line.find( ':' );
-      //if( char_position ==  )
-      cout << file_line << " " << point << " " << char_position << "\n";
-        // getline ( file_ifstream, file_line );
-        // if( file_line.find('energy') )
-        // {
-        //   char_position = file_line.find(':');              // find ":"
-        //   file_line = file_line.substr(char_position+1);    // erase everything up to ":"
-        //   container.energy.push_back( stod(file_line) );    // convert to double and add the data point
-        // }
+      char_position = file_line.find( ':' );                // ":" means data
+      if( char_position != string::npos )                   // we have something to take care of
+      {
+        field = file_line.substr(0, char_position);         // erase everything up to ":"
+        field.erase(0, field.find_first_not_of(" \n\r\t") );// trim from left
+
+        value = stod( file_line.substr(char_position+1) );  // everything after ":", convert to double
+        //cout << field << " " << value << "\n";
+        for( int i=0; i<container.number_of_fields; i++ )   // determine the row and fill
+        {
+          //cout << container.data_fields[i] << "\n";
+          //cout << field << "\n";
+          if( container.data_fields[i] == field )
+          {
+            container.data[point][i] = value;
+            cout << "siiiii\n";
+            //break;
+          }
+
+          //if( i == container.number_of_fields-1 )
+          //{
+          //  throw "input_data error: Invalid syntax.";
+          //}
+        }
+        //cout << field << " " << value << "\n";
+      }
     }
-    // cout << container.energy[2] << "\n";
-    // cout << container.energy[9] << "\n";
+
     file_ifstream.close();                                  // close the file
   }
   else

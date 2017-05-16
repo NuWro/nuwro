@@ -69,14 +69,13 @@ int main(int argc,  char** argv)
      k.kaskadaevent();
      t2->Fill();
      delete e;
-     cout<<"event "<<i<<": completed.\r"; 
-
+     cout<<"event "<<i<<": completed.\r";
   }
-  
+
   f->Write();
   delete nucl;
   delete t2;
   delete f;
-  genrand_write_state(); 
+  genrand_write_state();
   return 0;
 }
