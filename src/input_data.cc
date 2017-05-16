@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
+#include <math.h>
 
 #include "dirs.h"
 
@@ -11,23 +12,33 @@
 // data_container
 ////////////////////////////////////////
 
-data_container::data_container( string _parameter_name, int _number_of_options, string &_data_fields ):
+data_container::data_container( string _parameter_name, int _number_of_options, int _number_of_fields,
+                                string &_data_fields, int &_interpolate_fields ):
                                 parameter_name(_parameter_name),
-                                number_of_options(_number_of_options)
-{}
+                                number_of_options(_number_of_options),
+                                number_of_fields(_number_of_fields)
+{
+  data_fields         = &_data_fields;
+  interpolate_fields  = &_interpolate_fields;
+}
 
 ////////////////////////////////////////
 
 data_container::~data_container()
 {
   delete data_fields;
+  delete interpolate_fields;
 }
 
 ////////////////////////////////////////
 
 void data_container::create_data_vector()
 {
-  energy.reserve(number_of_points);
+  vector<double> empty_array(number_of_fields);                    // create a placeholder for data
+  for(int i=0;i<number_of_fields;i++) empty_array[i] = NAN;        // fill it with NANs
+
+  data.reserve(number_of_points);                                  // reserve proper amount of memory
+  for(int i=0;i<number_of_points;i++) data.push_back(empty_array); // fill the vector with empty data
 }
 
 
@@ -74,8 +85,8 @@ void input_data::load_data()
 void input_data::initialize_input_path()
 {
   // generate the input_path
-  name_sstream.str( string() );                 // clear the stringstream
-  name_sstream << get_data_dir() << "input/";   // data_dir + relative folder
+  stringstream name_sstream;
+  name_sstream << get_data_dir() << "input/"; // data_dir + relative folder
   input_path = name_sstream.str();
 
   // check if the directory exists
@@ -94,8 +105,13 @@ void input_data::initialize_input_path()
 
 void input_data::initialize_data_containers()
 {
-  string cascade_xsec_NN_fields[] = {"energy", "xsec_ii"};
-  cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2, *cascade_xsec_NN_fields );
+  // Provide the name of the parameter that governs the data, the number of options,
+  // then the number of different fields in the file, their names and the method of interpolation for each.
+  int cascade_xsec_NN_number_of_fields     = 2;
+  string cascade_xsec_NN_data_fields[]     = {"energy", "xsec_ii"};
+  int cascade_xsec_NN_interpolate_fields[] = {0, 0};
+  cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2, cascade_xsec_NN_number_of_fields,
+                               *cascade_xsec_NN_data_fields, *cascade_xsec_NN_interpolate_fields );
 
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
@@ -111,7 +127,7 @@ void input_data::initialize_data_containers()
 
 void input_data::generate_file_name( data_container &container, int option )
 {
-  name_sstream.str( string() );                                                      // clear the stringstream
+  stringstream name_sstream;
   name_sstream << input_path << container.parameter_name << "_" << option << ".dat"; // path + name + extension
   container.file_name = name_sstream.str();
 }
@@ -120,10 +136,12 @@ void input_data::generate_file_name( data_container &container, int option )
 
 void input_data::read_data( data_container &container )
 {
+  ifstream file_ifstream;
   file_ifstream.open( container.file_name.c_str() );        // open the file
 
   if( file_ifstream.is_open() )
   {
+    string file_line;
     container.number_of_points = 0;                         // make sure its zero
     while( getline ( file_ifstream, file_line ) )           // first check the number of data points
     {
@@ -133,9 +151,11 @@ void input_data::read_data( data_container &container )
       }
     }
     container.create_data_vector();                         // reserve proper amount of memory
+                                                            // and fill the vector with empty data
 
     file_ifstream.clear();                                  // go back to the start of the file
     file_ifstream.seekg(0, ios::beg);
+    int point = -1;
     while( getline ( file_ifstream, file_line ) )           // first check the number of data points
     {
       if( file_line[0] == '#' )                             // a comment starts with #
@@ -144,12 +164,12 @@ void input_data::read_data( data_container &container )
       }
       if( file_line[0] == '-' )                             // new point starts after -
       {
-        cout << "next point\n";
+        point++;
         continue;
       }
-      char_position = file_line.find( ':' );
-      if( file_line.find( ':' ) )
-      cout << file_line << " " << char_position << "\n";
+      size_t char_position = file_line.find( ':' );
+      //if( char_position ==  )
+      cout << file_line << " " << point << " " << char_position << "\n";
         // getline ( file_ifstream, file_line );
         // if( file_line.find('energy') )
         // {
