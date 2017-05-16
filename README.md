@@ -48,12 +48,15 @@ Currently involved in the project:
 * [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
 * [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 
-Former members with significant contribution:
+Former members:
 
 * [Jarosław Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
 * Jakub Żmuda
 
-and
+Significant contribution
 
 * Artur Kobyliński
 * Maciej Tabiszewski
+* Paweł Przewłocki
+* Luke Pickering
+* Patrick Stowell
