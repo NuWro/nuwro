@@ -13,13 +13,14 @@
 ////////////////////////////////////////
 
 data_container::data_container( string _parameter_name, int _number_of_options, int _number_of_fields,
-                                string &_data_fields, int &_interpolate_fields ):
+                                string *_data_fields, int *_interpolate_fields ):
                                 parameter_name(_parameter_name),
                                 number_of_options(_number_of_options),
                                 number_of_fields(_number_of_fields)
 {
-  data_fields         = &_data_fields;
-  interpolate_fields  = &_interpolate_fields;
+  // copy data from arrays to vectors
+  data_fields        = vector<string> (_data_fields, _data_fields + _number_of_fields);
+  interpolate_fields = vector<int> (_interpolate_fields, _interpolate_fields + _number_of_fields);
 }
 
 ////////////////////////////////////////
@@ -105,11 +106,14 @@ void input_data::initialize_data_containers()
 {
   // Provide the name of the parameter that governs the data, the number of options,
   // then the number of different fields in the file, their names and the method of interpolation for each.
-  int cascade_xsec_NN_number_of_fields     = 3;
-  string cascade_xsec_NN_data_fields[]     = {"energy", "xsec_ii", "xsec_ij"};
-  int cascade_xsec_NN_interpolate_fields[] = {0, 0, 0};
+  int cascade_xsec_NN_number_of_fields     = 10;
+  string cascade_xsec_NN_data_fields[]     = {"energy",
+                                              "xsec_ii", "xsec_ij",
+                                              "inel_ii", "inel_ij", "inel_1pi",
+                                              "angle_A_ii", "angle_A_ij", "angle_B_ii","angle_B_ij"};
+  int cascade_xsec_NN_interpolate_fields[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   cascade_xsec_NN = new data_container( "kaskada_xsec_NN", 2, cascade_xsec_NN_number_of_fields,
-                               *cascade_xsec_NN_data_fields, *cascade_xsec_NN_interpolate_fields );
+                               cascade_xsec_NN_data_fields, cascade_xsec_NN_interpolate_fields );
 
   if ( par.kaskada_xsec_NN < cascade_xsec_NN->number_of_options )  // if the parameter is ok
   {
@@ -134,10 +138,7 @@ void input_data::generate_file_name( data_container &container, int option )
 
 void input_data::read_data( data_container &container )
 {
-  cerr << container.data_fields[0] << "\n";
   ifstream file_ifstream;
-  cerr << container.data_fields[0] << "\n";
-  cerr << "test\n";
   file_ifstream.open( container.file_name.c_str() );        // open the file
 
   if( file_ifstream.is_open() )
@@ -186,26 +187,26 @@ void input_data::read_data( data_container &container )
         field.erase(0, field.find_first_not_of(" \n\r\t") );// trim from left
 
         value = stod( file_line.substr(char_position+1) );  // everything after ":", convert to double
-        //cout << field << " " << value << "\n";
+
         for( int i=0; i<container.number_of_fields; i++ )   // determine the row and fill
         {
-          //cout << container.data_fields[i] << "\n";
-          //cout << field << "\n";
           if( container.data_fields[i] == field )
           {
             container.data[point][i] = value;
-            cout << "siiiii\n";
-            //break;
+            break;
           }
 
-          //if( i == container.number_of_fields-1 )
-          //{
-          //  throw "input_data error: Invalid syntax.";
-          //}
+          if( i == container.number_of_fields-1 )
+          {
+            throw "input_data error: Invalid syntax.";
+          }
         }
-        //cout << field << " " << value << "\n";
       }
     }
+    for(int i=0;i<container.data.size();i++){
+    for(int j=0;j<container.data[i].size();j++)
+      cout << container.data[i][j] << "\t";
+    cout << "\n";}
 
     file_ifstream.close();                                  // close the file
   }

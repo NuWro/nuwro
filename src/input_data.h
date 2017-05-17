@@ -22,13 +22,13 @@ struct data_container
   string               file_name;                 //!< The name of the file with input data.
   int           number_of_points;                 //!< Number of data points.
   int           number_of_fields;                 //!< Number of fields within data file.
-  string            *data_fields;                 //!< Names of the fields.
-  int        *interpolate_fields;                 //!< Interpolation type for the fields.
+  vector<string>     data_fields;                 //!< Names of the fields.
+  vector<int> interpolate_fields;                 //!< Interpolation type for the fields.
 
   vector< vector<double> > data;                  //!< 2d vector with data.
 
   data_container( string _parameter_name, int _number_of_options, int _number_of_fields,
-                  string &_data_fields, int &_interpolate_fields );
+                  string *_data_fields, int *_interpolate_fields );
                                                   //!< The default constructor.
   ~data_container();                              //!< The default destructor.
 

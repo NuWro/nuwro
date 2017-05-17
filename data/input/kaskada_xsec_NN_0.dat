@@ -2,8 +2,6 @@
 # reference
 # E, sii
 
-test
-
 -
     energy: 0
     xsec_ii: 24.5
@@ -13,7 +11,7 @@ test
     inel_1pi: 1.0
     angle_A_ii: 0.1
     angle_A_ij: 2.2
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: -1.0
 -
     energy: 335
@@ -24,7 +22,7 @@ test
     inel_1pi: 1.0
     angle_A_ii: 0.1
     angle_A_ij: 2.2
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: -1.0
 -
     energy: 410
@@ -35,7 +33,7 @@ test
     inel_1pi: 1.0
     angle_A_ii: 0.9
     angle_A_ij: 1.8
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: -1.1
 -
     energy: 510
@@ -46,7 +44,7 @@ test
     inel_1pi: 1.0
     angle_A_ii: 2.7
     angle_A_ij: 2.3
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: -0.7
 -
     energy: 660
@@ -57,7 +55,7 @@ test
     inel_1pi: 1.0
     angle_A_ii: 9.0
     angle_A_ij: 8.8
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: -0.2
 -
     energy: 840
@@ -68,7 +66,7 @@ test
     inel_1pi: 0.97
     angle_A_ii: 14.3
     angle_A_ij: 15.0
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1160
@@ -79,7 +77,7 @@ test
     inel_1pi: 0.8
     angle_A_ii: 19.2
     angle_A_ij: 29.4
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1780
@@ -90,7 +88,7 @@ test
     inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 3900
@@ -101,7 +99,7 @@ test
     inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1e+300
@@ -112,5 +110,5 @@ test
     inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
-    angle_B_ij: 0
+    angle_B_ii: 0
     angle_B_ij: 0.0
