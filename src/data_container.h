@@ -27,6 +27,8 @@ class data_container
     void read_data();                             //!< Read and store the data.
 
   private:
+    void copy_fields_information( string *_data_fields, int *_interpolate_fields );
+                                                  //!< Copy information about the fields.
     void create_data_vector();                    //!< Create vector for data points.
 };
 
