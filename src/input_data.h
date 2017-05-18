@@ -2,46 +2,15 @@
 #define _INPUT_DATA_h_
 
 #include <string>
-#include <sstream>
-#include <vector>
 
+#include "data_container.h"
 #include "params.h"
 
 
-////////////////////////////////////////
-// data_container
-////////////////////////////////////////
-
-//! A container for data.
-/*! Contains data and the information needed for reading of the input file. */
-
-struct data_container
-{
-  int          number_of_options;                 //!< Number of possible options within the parameter.
-  string          parameter_name;                 //!< Name of the parameter that controls that data.
-  string               file_name;                 //!< The name of the file with input data.
-  int           number_of_points;                 //!< Number of data points.
-  int           number_of_fields;                 //!< Number of fields within data file.
-  vector<string>     data_fields;                 //!< Names of the fields.
-  vector<int> interpolate_fields;                 //!< Interpolation type for the fields.
-
-  vector< vector<double> > data;                  //!< 2d vector with data.
-
-  data_container( string _parameter_name, int _number_of_options, int _number_of_fields,
-                  string *_data_fields, int *_interpolate_fields );
-                                                  //!< The default constructor.
-  ~data_container();                              //!< The default destructor.
-
-  void create_data_vector();                      //!< Create vector for data points.
-};
-
-
-////////////////////////////////////////
-// input_data
-////////////////////////////////////////
-
 //! Manager of the input data needed in NuWro.
-/*! This class decides which data files should be read, reads them and stores the data. */
+/*! This class is resposible for the management of the input data files. It creates proper
+    "data_containers" that read and store the data. It supplies them with the name of the file,
+    the number of different data fields, their names and the method of interpolation for each. */
 
 class input_data
 {
@@ -59,8 +28,7 @@ class input_data
   private:
     void initialize_input_path();                 //!< Create the input_path and check if it exists.
     void initialize_data_containers();            //!< Prepare data containers for reading files.
-    void generate_file_name( data_container &container, int option ); //!< Generate file name.
-    void read_data( data_container &container );                      //!< Read and store the input data.
+    string generate_file_name( string parameter_name, int parameter_option ); //!< Generate file name.
 };
 
 #endif
