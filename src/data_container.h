@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <fstream>
 
 #include "dirs.h"
 
@@ -24,12 +25,15 @@ class data_container
                   string *_data_fields, int *_interpolate_fields );
                                                   //!< The default constructor.
     ~data_container();                            //!< The default destructor.
-    void read_data();                             //!< Read and store the data.
+    void read_data_file();                        //!< Read and store the data.
 
   private:
     void copy_fields_information( string *_data_fields, int *_interpolate_fields );
                                                   //!< Copy information about the fields.
+    void count_data_points( ifstream &file_ifstream );
+                                                  //!< Count number of points in the data file.
     void create_data_vector();                    //!< Create vector for data points.
+    void read_data( ifstream &file_ifstream );    //!< Read and store the actual data.
 };
 
 #endif

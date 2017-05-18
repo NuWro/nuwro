@@ -36,7 +36,7 @@ void input_data::initialize()
 
 void input_data::load_data()
 {
-  cascade_xsec_NN->read_data();
+  cascade_xsec_NN->read_data_file();
 }
 
 
