@@ -64,7 +64,7 @@ double sfevent(const params &p, event &e, const nucleus &t) {
   if (e.flag.cc) l1.pdg += is_anti ? 1 : -1;
 
   // spectator isospin (assuming pn pairs for SRC)
-  is_on_n ? N2.set_neutron() : N2.set_proton();
+  is_on_n ? N2.set_proton() : N2.set_neutron();
 
   // masses
   const double m = mass(l1.pdg);  // outgoing lepton mass
@@ -73,6 +73,8 @@ double sfevent(const params &p, event &e, const nucleus &t) {
   const double M2 = M * M;        // nucleon mass squared
 
   l1.set_mass(m);  // set outgoing lepton mass
+
+  return 0;
 }
 
 double sfevent2cc(params &par, event &e, nucleus &t) {
