@@ -31,6 +31,50 @@ bool has_sf(nucleus &t, int method) {
   }
 }
 
+double sfevent(const params &p, event &e, const nucleus &t) {
+  // references to initial particles (for convenience)
+  const particle &l0 = e.in[0];  // incoming neutrino
+  const particle &N0 = e.in[1];  // target nucleon
+
+  // flags used to set up final state configuration
+  const bool is_anti = l0.pdg < 0;                  // true for anti-neutrino
+  const bool is_on_n = N0.pdg == pdg_neutron;       // true for target neutron
+  const bool is_cc_possible = is_anti xor is_on_n;  // true for nu+n and nubar+p
+
+  if (e.flag.cc and not is_cc_possible) return 0;  // CC is not possible
+
+  particle l1;  // outgoing lepton
+  particle N1;  // outgoing nucleon
+  particle N2;  // nucleon spectator
+
+  N2.r = N1.r = N0.r;  // final nucleons position = target nucleon position
+
+  // outoing nucleon isospin
+  // CC on proton  -> neutron (xor = 1)
+  // CC on neutron -> proton  (xor = 0)
+  // NC on proton  -> proton  (xor = 0)
+  // NC on neutron -> neutron (xor = 1)
+  is_on_n xor e.flag.cc ? N1.set_neutron() : N1.set_proton();
+
+  // outgoing lepton pdg
+  // NC = the same as incoming neutrino
+  // CC nu = neutrino pdg - 1
+  // CC nubar = neutrino pdg + 1
+  l1.pdg = l0.pdg;
+  if (e.flag.cc) l1.pdg += is_anti ? 1 : -1;
+
+  // spectator isospin (assuming pn pairs for SRC)
+  is_on_n ? N2.set_neutron() : N2.set_proton();
+
+  // masses
+  const double m = mass(l1.pdg);  // outgoing lepton mass
+  const double M = N1.mass();     // outgoing nucleon mass
+  const double m2 = m * m;        // lepton mass squared
+  const double M2 = M * M;        // nucleon mass squared
+
+  l1.set_mass(m);  // set outgoing lepton mass
+}
+
 double sfevent2cc(params &par, event &e, nucleus &t) {
   particle l0 = e.in[0];  // neutrino
   particle N0 = e.in[1];  // initial nucleon
@@ -247,6 +291,8 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
   particle l1 = l0;
   particle N1 = N0;
   particle N2;
+
+  N2.r = N0.r;
 
   if (N0.pdg == pdg_proton)
     N2.set_neutron();

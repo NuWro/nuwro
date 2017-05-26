@@ -13,6 +13,6 @@ double sfevent2cc(params &p, event &e, nucleus &t);
 double sfevent2nc(params &p, event &e, nucleus &t);
 
 //! TODO: not yet defined; placeholder for new implementation (for both CC and NC)
-double sfevent(params &p, event &e, nucleus &t);
+double sfevent(const params &p, event &e, const nucleus &t);
 
 #endif
