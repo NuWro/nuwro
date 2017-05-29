@@ -12,29 +12,16 @@ static double mevtofm = 8e6 / Pi2 / 4;
 
 static inline double pow2(double x) { return x * x; }
 
-// method=1 - grid (from Benhar)
-// method=2 - sum of gaussians
-bool has_sf(nucleus &t, int method) {
-  switch (1000 * t.Z() + t.N()) {
-    case 6006:
-      return method == 1;
-    case 8008:
-      return method == 1 || method == 2;
-    case 20020:
-      return method == 2;
-    case 18022:
-      return method == 1 || method == 2;
-    case 26030:
-      return method == 1;
-    default:
-      return false;
-  }
-}
+//! get removal energy (for given nucleon momentum p)
+double get_E(CSpectralFunc *sf, double p);
 
-double sfevent(const params &p, event &e, const nucleus &t) {
+//! check if the interaction occurs on correlated pair
+bool is_src(double p, double E, int Z, int N, bool is_on_p);
+
+double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
-  const particle &l0 = e.in[0];  // incoming neutrino
-  const particle &N0 = e.in[1];  // target nucleon
+  particle &l0 = e.in[0];  // incoming neutrino
+  particle &N0 = e.in[1];  // target nucleon
 
   // flags used to set up final state configuration
   const bool is_anti = l0.pdg < 0;                  // true for anti-neutrino
@@ -66,7 +53,6 @@ double sfevent(const params &p, event &e, const nucleus &t) {
   // spectator isospin (assuming pn pairs for SRC)
   is_on_n ? N2.set_proton() : N2.set_neutron();
 
-  // masses
   const double m = mass(l1.pdg);  // outgoing lepton mass
   const double M = N1.mass();     // outgoing nucleon mass
   const double m2 = m * m;        // lepton mass squared
@@ -74,7 +60,82 @@ double sfevent(const params &p, event &e, const nucleus &t) {
 
   l1.set_mass(m);  // set outgoing lepton mass
 
-  return 0;
+  CSFOptions options(par, e.flag.cc, !is_on_n, is_anti);  // SF configuration
+  CSpectralFunc *sf = options.get_SF();  // create spectral function
+
+  // target nucleon momentum (p) and removal energy (E) generated according to
+  // probability distribution given by SF
+  const double p = sf->MomDist()->generate();  // target nucleon momentum
+  const double E = get_E(sf, p);               // removal energy
+
+  // set target nucleon momentum randomly from Fermi sphere
+  N0.set_momentum(rand_dir() * p);
+  // set opposite momentum for nucleon spectator
+  N2.set_momentum(-N0.p());
+
+  // s mandelstam-like
+  vect s = l0 + N0;
+  s.t = l0.E() + N0.mass() - E;
+  const double s2 = s * s;
+
+  if (s2 < pow2(M + m)) return 0;  // check if kinematics possible
+
+  const vec v = s.v();  // the velocity of cms frame
+
+  // kinematics in cms
+  const double mom_cms = sqrt(0.25 * pow2(s2 + m2 - M2) / s2 - m2);
+  const vec dir_cms = rand_dir();
+  // set lepton and nucleon momenta (in cns)
+  l1.set_momentum(mom_cms * dir_cms);
+  N1.set_momentum(-l1.p());
+  // boost to lab frame
+  l1.boost(v);
+  N1.boost(v);
+
+  // check Pauli blocking
+  if (par.pauli_blocking) {
+    if (par.sf_pb == 0 and N1.momentum() < sf->get_pBlock())
+      return 0;
+    else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
+      return 0;
+    else if (par.sf_pb == 2 and
+             frandom() <
+                 sf->MomDist()->Tot(N1.momentum()) / sf->MomDist()->Tot(0))
+      return 0;
+  }
+
+  // sphere volume in cms
+  const double vol = 4 * pi * mom_cms * mom_cms;
+  // gradient for Dirac delta when integrating over k'
+  const double graddelta = (l1.v() - N1.v()).length();
+  // surface scaling when going from lab (elipsoide) to cms (sphere)
+  const double surfscale = sqrt(1 - pow2(v * dir_cms)) / sqrt(1 - v * v);
+  // four-momentum transfer
+  vect q = N1 - N0;
+  // cross section
+  const double common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) /
+                        (l1.E() * l0.E() * N0.E() * N1.E());
+  const double val = e.flag.cc
+                         ? common * cos2thetac *
+                               options.evalLH(q * q, l0 * N0, l1 * N0, q * N0,
+                                              l0 * q, l1 * q, l0 * l1)
+                         : common *
+                               options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q,
+                                                l0 * q, l1 * q, l0 * l1);
+  e.weight = val / cm2;
+
+  // push final state particles
+  N0.t = N0.mass() - E;
+  e.in[1] = N0;
+  e.out.push_back(l1);
+  e.out.push_back(N1);
+
+  // add a spectator if on correlated pair
+  if (par.sf_method == 1 and is_src(p, E, t.p, t.n, !is_on_n) and
+      (l0.t - l1.t - N1.Ek() - N2.Ek()) > 14)
+    e.out.push_back(N2);
+
+  return val;
 }
 
 double sfevent2cc(params &par, event &e, nucleus &t) {
@@ -452,4 +513,83 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
 
   if (corr && (l0.t - l1.t - N1.Ek() - N2.Ek()) > 14) e.out.push_back(N2);
   return val;
+}
+
+// method=1 - grid (from Benhar)
+// method=2 - sum of gaussians
+bool has_sf(nucleus &t, int method) {
+  switch (1000 * t.Z() + t.N()) {
+    case 6006:
+      return method == 1;
+    case 8008:
+      return method == 1 || method == 2;
+    case 20020:
+      return method == 2;
+    case 18022:
+      return method == 1 || method == 2;
+    case 26030:
+      return method == 1;
+    default:
+      return false;
+  }
+}
+
+// get removal energy for given momentum p
+double get_E(CSpectralFunc *sf, double p) {
+  // TODO: do we need this loop? or generateE(p) should be modified?
+  double E;
+
+  do {
+    E = sf->generateE(p);
+  } while (!(E == E));
+
+  return E;
+}
+
+bool is_src(double p, double E, int Z, int N, bool is_on_p) {
+  // oxygen
+  if (Z == 8 and N == 8) {
+    if (p < 85 and E > 63) return true;
+    if (p > 85 and p < 320 and E > (73.4 - 0.167 * p)) return true;
+    if (p > 320 and p < 390 and E > 19.1) return true;
+    if (p > 395) return true;
+  }
+  // carbon
+  // Benhar SF; basically for protons but taken the same for neutrons
+  if (Z == 6 and N == 6) {
+    if (p < 330 and E > (52.27 + 0.00428 * p - 0.0004618 * p * p)) return true;
+    if (p > 330) return true;
+  }
+  // iron
+  // Benhar SF; basically for protons but taken the same for neutrons
+  if (Z == 26 and N == 30) {
+    if (p < 335 and E > (60.41 + 0.004134 * p - 0.0004343 * p * p)) return true;
+    if (p > 335) return true;
+  }
+  // argon
+  if (Z == 18 and N == 22) {
+    if (is_on_p) {  // protons
+      if (p < 230 and
+          E > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p -
+               8.312e-9 * p * p * p * p))
+        return true;
+
+      if (p > 230 and p < 395 and E > (-52.97 + 0.8571 * p - 0.001696 * p * p))
+        return true;
+
+      if (p > 395) return true;
+    } else {  // neutrons
+      if (p < 225 and
+          E > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p -
+               1.236e-8 * p * p * p * p))
+        return true;
+
+      if (p > 225 and p < 395 and E > (-17.23 + 0.6314 * p - 0.001373 * p * p))
+        return true;
+
+      if (p > 395) return true;
+    }
+  }
+
+  return false;
 }

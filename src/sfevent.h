@@ -12,7 +12,7 @@ double sfevent2cc(params &p, event &e, nucleus &t);
 //! generate kinematics and calculate cross section for NC EL event using SF
 double sfevent2nc(params &p, event &e, nucleus &t);
 
-//! TODO: not yet defined; placeholder for new implementation (for both CC and NC)
-double sfevent(const params &p, event &e, const nucleus &t);
+//! generate kinematics and calculate cross section using SF
+double sfevent(params &par, event &e, nucleus &t);
 
 #endif
