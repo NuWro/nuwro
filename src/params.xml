@@ -282,6 +282,9 @@
       <option key="2"><![CDATA[use factorized spectral function: (O16, Ar40, Ca40)]]></option>
     </options>
   </param>
+  <param name="sf_fsi" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[Turn on/off FSI for spectral function]]></description>
+  </param>
   <param name="sf_pb" type="select" ctype="int" default="0">
     <description><![CDATA[Pauli blocking model for SF.]]></description>
     <options>
