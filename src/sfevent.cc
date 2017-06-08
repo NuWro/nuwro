@@ -1,4 +1,5 @@
 #include <fstream>
+#include <random>
 
 #include "event1.h"
 #include "kinematics.h"
@@ -17,6 +18,15 @@ double get_E(CSpectralFunc *sf, double p);
 
 //! check if the interaction occurs on correlated pair
 bool is_src(double p, double E, int Z, int N, bool is_on_p);
+
+//! return transparency (C) for given Q2 [GeV^2]
+double transparency(double Q2);
+
+//! return real part of the potential for given kinetic energy [MeV]
+double potential_real(double Tk);
+
+//! return random energy shift according to distribution given by Fq
+double random_omega();
 
 double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
@@ -104,14 +114,14 @@ double sfevent(params &par, event &e, nucleus &t) {
       return 0;
   }
 
+  // four-momentum transfer
+  vect q = N1 - N0;
   // sphere volume in cms
   const double vol = 4 * pi * mom_cms * mom_cms;
   // gradient for Dirac delta when integrating over k'
   const double graddelta = (l1.v() - N1.v()).length();
   // surface scaling when going from lab (elipsoide) to cms (sphere)
   const double surfscale = sqrt(1 - pow2(v * dir_cms)) / sqrt(1 - v * v);
-  // four-momentum transfer
-  vect q = N1 - N0;
   // cross section
   const double common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) /
                         (l1.E() * l0.E() * N0.E() * N1.E());
@@ -122,6 +132,29 @@ double sfevent(params &par, event &e, nucleus &t) {
                          : common *
                                options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q,
                                                 l0 * q, l1 * q, l0 * l1);
+
+  if (par.sf_fsi and par.nucleus_p == 6 and par.nucleus_n == 6) {
+    // apply FSI as described in: A. Ankowski et al, PRD91 (2015) 033005
+    // express knock-out nucleon kinetic energy in terms of beam energy and
+    // scattering angle (eq. 7)
+    const double Ek = e.in[0].E();
+    const double x = 1 - l1.p().z / l1.momentum();
+    const double Tk = Ek * Ek * x / (M + Ek * x);
+
+    // energy transfer shift (as defined in eq. 3)
+    double shift = potential_real(Tk);  // real part of optical potential
+    // apply folding function smearing (eq. 2)
+    if (frandom11() > sqrt(transparency(2 * M * Tk))) shift += random_omega();
+
+    // modify lepton kinetic energy
+    // or xsec = 0 if not possible
+
+    if (l1.Ek() - shift > 0)
+      l1.set_energy(l1.E() - shift);
+    else
+      return 0;
+  }
+
   e.weight = val / cm2;
 
   // push final state particles
@@ -592,4 +625,56 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p) {
   }
 
   return false;
+}
+
+double transparency(double Q2) {
+  // parametrization for Carbon: O. Benhar et al. Phys.Rev. D72 (2005) 053005
+
+  Q2 /= 1000.0;  // please note units [GeV^2 *1000]
+
+  // constant for Q2 > 1000
+  if (Q2 > 1000) return 0.5792642140468227;
+
+  // fit (polynomial)
+  static const double coeff[] = {
+      7.71692837e-01, -2.77751361e-04, 2.24980171e-06, -1.11358859e-08,
+      1.98862243e-11, -1.50900788e-14, 4.17699547e-18};
+
+  double T = coeff[0];
+  double x = Q2;
+
+  for (int i = 1; i < 7; i++) {
+    T += coeff[i] * x;
+    x *= Q2;
+  }
+
+  return T;
+}
+
+double potential_real(double Tk) {
+  // parametrization for Carbon: A. Ankowski et al, PRD91 (2015) 033005
+  // fit (polynomial)
+  static const double coeff[] = {
+      -3.76929648e+01, 4.35269313e-01, -2.59678634e-03, 9.55434214e-06,
+      -2.15373898e-08, 3.07501687e-11, -2.83810998e-14, 1.69043802e-17,
+      -6.27515290e-21, 1.32038136e-24, -1.20270294e-28};
+
+  double V = coeff[0];
+  double x = Tk;
+
+  for (int i = 1; i < 11; i++) {
+    V += coeff[i] * x;
+    x *= Tk;
+  }
+
+  return V;
+}
+
+double random_omega() {
+  // for |q| = 1 GeV: O. Benhar PRC 87 (2013) 024606
+  // fit to gauss
+  static std::default_random_engine generator;
+  static std::normal_distribution<double> distribution(5.43264624e-04,
+                                                       8.88774322e+01);
+  return distribution(generator);
 }
