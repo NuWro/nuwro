@@ -44,12 +44,20 @@ int main(int argc, char *argv[])
 	vector<double> vals;
 	int nargs=0;
 	char* outname=NULL;
+	char* weightsname=NULL;
+	
 	for(int i=2;i<argc;i++)
 	{
 
 		if(string(argv[i])=="-o")
 		{
 			outname=argv[++i];
+			continue;
+		}
+		else
+		if(string(argv[i])=="-w")
+		{
+			weightsname=argv[++i];
 			continue;
 		}
 		else
@@ -84,7 +92,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-		   cerr <<"[Error] -p or -o expexted instead of\""<<argv[i]<<"\".\n";
+		   cerr <<"[Error] -p or -o expected instead of\""<<argv[i]<<"\".\n";
 			cerr<<"[INFO] Usage: " 
 			"reweight_to <nuwro_output.root> -o <results_filename.root> -p par1 val1 -p par2 val2 ...\n";
 			exit(1);
@@ -94,37 +102,41 @@ int main(int argc, char *argv[])
 			
 	}
 	
-	if(nargs==0 or outname==NULL)
+	if(nargs==0 or (outname==NULL && weightsname==NULL))
 	{
-		   cerr <<"[Error] -p or -o .\n";
+		   
 			cerr<<"[INFO] Usage: " 
-			"reweight_to <nuwro_output.root> -o <results_filename.root> -p par1 val1 -p par2 val2 ...\n";
+			"reweight_to <nuwro_output.root> (-o <weighted_events.root> | -w <weights_only.root>) -p par1 val1 -p par2 val2 ...\n";
 			exit(1);
 		
 	}	
 	
     /// create output file
-	TFile * f2 = new TFile(outname,"recreate");
-	TTree * t2 = new TTree("weights","Tree of weights");
-
-	//event *e=new event;
-	TFile * f3 = new TFile("out.root","recreate");
-	TTree * t3 = new TTree("treeout","Tree of events");
-	t3->Branch("e","event",&e);
-
-
 	double weight;
 
-    // Setup branches 
+	TFile * f2=NULL;
+	TTree * t2=NULL;
+	TFile * f3=NULL;
+	TTree * t3=NULL;
 	
-	t2->Branch("weight",&weight,"weight/D");
+	if (weightsname) 
+	  {
+		f2 = new TFile((string(outname)+".weights").c_str(),"recreate");
+	    t2 = new TTree("weights","Tree of weights");
+	    t2->Branch("weight",&weight,"weight/D");
+      }
+	
+	
+	if(outname)
+	{ 
+	  f3 = new TFile(outname,"recreate");
+	  t3 = new TTree("treeout","Tree of events");
+  	  t3->Branch("e","event",&e);
+	}
+
 
     // Calculate and save weights for each event 
 	int n = t1->GetEntries();
-	//~ for(int j=0;j<nargs;j++)
-		//~ args[j]->set(vals[j]);
-
-	//~ rew.list_vals(cout);
 	
 	for (int ie=0;ie<n;ie++)
 	{
@@ -138,23 +150,35 @@ int main(int argc, char *argv[])
 
 		for(int j=0;j<nargs;j++)
 			args[j]->set(vals[j]);
+
 		ff_configure(e->par);
-        //cout<<rew.qel_cc_axial_mass.val<<endl;
-        
         
 		weight=REW.weight(*e,e->par,t)/nominal;
+
 		cout<<weight<< " ";//endl;
-		t2->Fill();
-		e->weight*=weight;
-		t3->Fill();
+        if(t2)
+		  t2->Fill();
+
+		if(t3)
+		{  
+		  e->weight*=weight;
+  		  t3->Fill();
+		}
 	}
 	
 	f1->Close();
 	delete f1;
-	f2->Write();
-	f2->Close();
-	f3->Write();
-	f3->Close();
+	if(f2)
+	{
+  	  f2->Write();
+	  f2->Close();
+	}
+	if(f3)
+	{
+	  f3->Write();
+	  f3->Close();
+	}
+	
 	delete e;
 	delete f2;
 	delete f3;
