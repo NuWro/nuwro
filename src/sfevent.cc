@@ -28,6 +28,15 @@ double potential_real(double Tk);
 //! return random energy shift according to distribution given by Fq
 double random_omega();
 
+//! return Couloumb correction (opposite sign for nu and nubar)
+double coulomb_correction(bool is_anti, int p, int n) {
+  double shift = 0.0;  // correction in MeV
+
+  if (p == 6 and n == 6) shift = 3.5;  // carbon
+
+  return is_anti ? -shift : shift;
+}
+
 double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
   particle &l0 = e.in[0];  // incoming neutrino
@@ -76,7 +85,9 @@ double sfevent(params &par, event &e, nucleus &t) {
   // target nucleon momentum (p) and removal energy (E) generated according to
   // probability distribution given by SF
   const double p = sf->MomDist()->generate();  // target nucleon momentum
-  const double E = get_E(sf, p);               // removal energy
+  const double E =
+      get_E(sf, p) + coulomb_correction(is_anti, par.nucleus_p,
+                                        par.nucleus_n);  // removal energy
 
   // set target nucleon momentum randomly from Fermi sphere
   N0.set_momentum(rand_dir() * p);
