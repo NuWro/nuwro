@@ -122,7 +122,7 @@ double gridfun2d::generateE(const double p) const {
   for (unsigned int i = 0; i < eRes; i++) erow[i] /= total;
 
   // create cumulative distribution function
-  double cdf[eRes] = {0};
+  double* cdf = new double[eRes];
   cdf[0] = erow[0];
   for (unsigned int i = 1; i < eRes; i++) cdf[i] = cdf[i - 1] + erow[i];
 
@@ -135,6 +135,8 @@ double gridfun2d::generateE(const double p) const {
       e_bin = i;
       break;
     }
+
+  delete[] cdf;
 
   // removal energy bin width in SF grid
   static const double e_bin_width = (eMax - eMin) / eRes;
