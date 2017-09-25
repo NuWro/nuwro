@@ -8,7 +8,11 @@
 kaskada::kaskada(params &p, event &e1)
 {
   par = p;
-  e = &e1;
+
+  if (par.nucleus_p + par.nucleus_n < 3)
+    par.kaskada_w = 0;  //for free nucleons and deuteron there is no extra binding energy
+  
+    e = &e1;
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
