@@ -29,7 +29,7 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 
 beam_type = 0       // single flavor beam
 beam_energy = 1000  // monoenergetic (in MeV)
-beam_particle 14    // neutrino PDG
+beam_particle = 14    // neutrino PDG
 
 # It is convenient to include one of the predefined beam specifications
 # with the @ char
