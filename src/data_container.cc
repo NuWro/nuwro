@@ -47,6 +47,58 @@ void data_container::read_data_file()
   }
 }
 
+////////////////////////////////////////
+
+void data_container::set_input_point( double input_value )
+{
+  if( input_value < data[0][input_axis] || input_value > data[number_of_points-1][input_axis] )
+  {
+    throw "input_data error: Cannot set the data-taking point, out of bounds.";
+  }
+
+  input_prev_bin = 0;
+  while( input_value >= data[input_prev_bin+1][input_axis] )
+  {
+        input_prev_bin++;
+  }
+
+  input_mid_point = (input_value - data[input_prev_bin][input_axis])
+                  / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
+}
+
+////////////////////////////////////////
+
+double data_container::get_value( int field )
+{
+  switch( interpolate_fields[field] )
+  {
+    case 0:                                       // no interpolation
+    {
+      if( input_mid_point <= 0.5 )
+        return data[input_prev_bin][field];
+      else
+        return data[input_prev_bin+1][field];
+    }
+    case 1:                                       // linear interpolation
+    {
+      return (1-input_mid_point)*data[input_prev_bin][field]
+               +input_mid_point *data[input_prev_bin+1][field];
+    }
+
+    default:
+    {
+      if( interpolate_fields[field] < 0 )
+      {
+        throw "input_data error: Cannot return the value of the input axis.";
+      }
+      else
+      {
+        throw "input_data error: Cannot determine the interpolation type.";
+      }
+    }
+  }
+}
+
 
 ////////////////////////////////////////
 // Private methods
@@ -56,6 +108,20 @@ void data_container::copy_fields_information( string *_data_fields, int *_interp
 {
   data_fields        = vector<string> (_data_fields, _data_fields + number_of_fields);
   interpolate_fields = vector<int> (_interpolate_fields, _interpolate_fields + number_of_fields);
+
+  int check_minus = 0;                               // find the input axis and check if there is only one
+  for( int i=0; i<interpolate_fields.size(); i++)
+  {
+    if( interpolate_fields[i] < 0 )
+    {
+      input_axis = i;
+      check_minus++;
+    }
+  }
+  if( check_minus != 1 )
+  {
+    throw "input_data error: Cannot specify a single input axis.";
+  }
 }
 
 ////////////////////////////////////////
@@ -132,9 +198,24 @@ void data_container::read_data( ifstream &file_ifstream )
           throw "input_data error: Invalid syntax.";
         }
       }
+
+      if( isnan(data[point][input_axis]) )
+      {
+        throw "input_data error: Point specified without a value on the input axis.";
+      }
     }
   }
 
   file_ifstream.clear();                                  // go back to the start of the file
   file_ifstream.seekg(0, ios::beg);
+
+  // just testing
+  for(int i=0;i<data.size();i++)
+  {
+    for(int j=0;j<data[0].size();j++)
+    {
+      cout << data[i][j] << "\t";
+    }
+    cout << "\n";
+  }
 }

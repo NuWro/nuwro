@@ -60,9 +60,9 @@
 -
     energy: 840
     xsec_ii: 47.2
-    xsec_ij: 37.9
+#    xsec_ij: 37.9
     inel_ii: 0.58
-    inel_ij: 0.37
+#    inel_ij: 0.37
     inel_1pi: 0.97
     angle_A_ii: 14.3
     angle_A_ij: 15.0

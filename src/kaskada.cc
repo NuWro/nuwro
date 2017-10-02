@@ -19,11 +19,18 @@ int main(int argc,  char** argv)
   p.list();
   frandom_init(p.random_seed);
   
-  input_data input_test( p );
   try
   {
+    input_data input_test( p );
     input_test.initialize();
     input_test.load_data();
+    data_container *test = input_test.get_data_container();
+    test->set_input_point(334);
+    cout << test->get_value(1) << "\n";
+    cout << test->get_value(3) << "\n";
+    test->set_input_point(4000);
+    cout << test->get_value(1) << "\n";
+    cout << test->get_value(3) << "\n";
   }
   catch( char const* ex )
   {

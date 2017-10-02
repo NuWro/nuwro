@@ -19,13 +19,19 @@ class data_container
   vector<string>     data_fields;                 //!< Names of the fields.
   vector<int> interpolate_fields;                 //!< Interpolation type for the fields.
   vector< vector<double> >  data;                 //!< 2d vector with data.
+  int                 input_axis;                 //!< An input axis.
+  int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
+  float          input_mid_point;                 //!< Fraction between the data-taking bins.
 
   public:
-    data_container( string _parameter_name, int _number_of_fields,
+    data_container( string _file_name, int _number_of_fields,
                   string *_data_fields, int *_interpolate_fields );
                                                   //!< The default constructor.
     ~data_container();                            //!< The default destructor.
     void read_data_file();                        //!< Read and store the data.
+    void set_input_point( double input_value );
+                                                  //!< Set the point where the data is taken.
+    double get_value( int field );                //!< Get a value (interpolated) for a given field.
 
   private:
     void copy_fields_information( string *_data_fields, int *_interpolate_fields );
