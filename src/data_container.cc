@@ -64,6 +64,8 @@ void data_container::set_input_point( double input_value )
 
   input_mid_point = (input_value - data[input_prev_bin][input_axis])
                   / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
+
+  cout << input_prev_bin << " " << input_mid_point << "\n";
 }
 
 ////////////////////////////////////////
@@ -208,6 +210,8 @@ void data_container::read_data( ifstream &file_ifstream )
 
   file_ifstream.clear();                                  // go back to the start of the file
   file_ifstream.seekg(0, ios::beg);
+
+  std::sort(data.begin(), data.end(), data_compare(input_axis));
 
   // just testing
   for(int i=0;i<data.size();i++)

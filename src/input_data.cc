@@ -76,8 +76,8 @@ void input_data::initialize_data_containers()
 {
   // Provide the parameter that governs the data,
   // then the number of different fields in the file, their names and the method of interpolation:
-  // 0 is no interpolation,
-  // 1 is linear interpolation,
+  //  0 is no interpolation,
+  //  1 is linear interpolation,
   // -1 means it is the input axis.
 
     string cascade_xsec_NN_file_name            = generate_file_name( "kaskada_xsec_NN", par.kaskada_xsec_NN );

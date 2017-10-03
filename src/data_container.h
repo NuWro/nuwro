@@ -40,6 +40,27 @@ class data_container
                                                   //!< Count number of points in the data file.
     void create_data_vector();                    //!< Create vector for data points.
     void read_data( ifstream &file_ifstream );    //!< Read and store the actual data.
+    static bool sort_rows( const vector<double>& row1, const vector<double>& row2 );
+                                                  //!< Sorting function for rows of data.
+};
+
+////////////////////////////////////////
+
+//! Contain rules used to sort the data.
+/*! Allows for the generic sorting in terms of "input_axis". */
+
+class data_compare
+{
+    int input_axis;
+  public:
+    data_compare( int _input_axis ) : input_axis(_input_axis) {}
+                                                  //!< The default constructor.
+
+    bool operator()( const vector<double>& row1, const vector<double>& row2 )
+    {
+      return row1[input_axis] < row2[input_axis];
+    }
+                                                  //!< The sorting function that uses the "input_axis".
 };
 
 #endif
