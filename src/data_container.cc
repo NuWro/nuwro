@@ -15,14 +15,12 @@ data_container::data_container( string _file_name, int _number_of_fields,
                                 number_of_fields(_number_of_fields)
 {
   copy_fields_information( _data_fields, _interpolate_fields ); // copy the information to vectors
-  input_next_bin = new int[number_of_fields];                   // create an array for the next bins
 }
 
 ////////////////////////////////////////
 
 data_container::~data_container()
 {
-  delete input_next_bin;
 }
 
 ////////////////////////////////////////
@@ -66,8 +64,6 @@ void data_container::set_input_point( double input_value )
 
   input_mid_point = (input_value - data[input_prev_bin][input_axis])
                   / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
-
-  //cout << input_prev_bin << " " << input_mid_point << "\n";
 }
 
 ////////////////////////////////////////
@@ -215,8 +211,13 @@ void data_container::read_data( ifstream &file_ifstream )
 
   // sort the data
   std::sort(data.begin(), data.end(), data_compare(input_axis));
+}
 
-  // fill the sides if there are nans
+////////////////////////////////////////
+
+void data_container::fill_nan_data()
+{
+  // fill the back and front if there are nans
   for( int field = 0; field < number_of_fields; field++ )
   {
     if( field != input_axis )                         // for data fields only
@@ -247,6 +248,15 @@ void data_container::read_data( ifstream &file_ifstream )
           break;
         }
       }
+    }
+  }
+
+  // interpolate nans in the middle
+  for( int field = 0; field < number_of_fields; field++ )
+  {
+    if( field != input_axis )                         // for data fields only
+    {
+
     }
   }
 

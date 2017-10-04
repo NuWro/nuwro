@@ -21,7 +21,6 @@ class data_container
   vector< vector<double> >  data;                 //!< 2d vector with data.
   int                 input_axis;                 //!< An input axis.
   int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
-  int            *input_next_bin;                 //!< A valid input bin next to the data-taking point.
   float          input_mid_point;                 //!< Fraction between the data-taking bins.
 
   public:
@@ -41,8 +40,7 @@ class data_container
                                                   //!< Count number of points in the data file.
     void create_data_vector();                    //!< Create vector for data points.
     void read_data( ifstream &file_ifstream );    //!< Read and store the actual data.
-    static bool sort_rows( const vector<double>& row1, const vector<double>& row2 );
-                                                  //!< Sorting function for rows of data.
+    void fill_nan_data();                         //!< Interpolate (or not) the missing data.
 };
 
 ////////////////////////////////////////
