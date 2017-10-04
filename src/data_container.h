@@ -21,6 +21,7 @@ class data_container
   vector< vector<double> >  data;                 //!< 2d vector with data.
   int                 input_axis;                 //!< An input axis.
   int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
+  int            *input_next_bin;                 //!< A valid input bin next to the data-taking point.
   float          input_mid_point;                 //!< Fraction between the data-taking bins.
 
   public:

@@ -4,7 +4,8 @@
 
 -
     energy: 0
-    xsec_ij: 33.0
+#    xsec_ii: 24.5
+#    xsec_ij: 33.0
     inel_ii: 0.07
     inel_ij: 0.04
     inel_1pi: 1.0
@@ -15,7 +16,7 @@
 -
     energy: 335
     xsec_ii: 24.5
-    xsec_ij: 33.0
+#    xsec_ij: 33.0
     inel_ii: 0.07
     inel_ij: 0.04
     inel_1pi: 1.0
@@ -102,6 +103,7 @@
     angle_B_ij: 0.0
 -
     energy: 1e+300
+    xsec_ii: 41.0
     xsec_ij: 42.0
     inel_ii: 0.69
     inel_ij: 0.35

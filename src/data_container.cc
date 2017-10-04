@@ -15,12 +15,14 @@ data_container::data_container( string _file_name, int _number_of_fields,
                                 number_of_fields(_number_of_fields)
 {
   copy_fields_information( _data_fields, _interpolate_fields ); // copy the information to vectors
+  input_next_bin = new int[number_of_fields];                   // create an array for the next bins
 }
 
 ////////////////////////////////////////
 
 data_container::~data_container()
 {
+  delete input_next_bin;
 }
 
 ////////////////////////////////////////
@@ -65,7 +67,7 @@ void data_container::set_input_point( double input_value )
   input_mid_point = (input_value - data[input_prev_bin][input_axis])
                   / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
 
-  cout << input_prev_bin << " " << input_mid_point << "\n";
+  //cout << input_prev_bin << " " << input_mid_point << "\n";
 }
 
 ////////////////////////////////////////
@@ -208,10 +210,45 @@ void data_container::read_data( ifstream &file_ifstream )
     }
   }
 
-  file_ifstream.clear();                                  // go back to the start of the file
+  file_ifstream.clear();                              // go back to the start of the file
   file_ifstream.seekg(0, ios::beg);
 
+  // sort the data
   std::sort(data.begin(), data.end(), data_compare(input_axis));
+
+  // fill the sides if there are nans
+  for( int field = 0; field < number_of_fields; field++ )
+  {
+    if( field != input_axis )                         // for data fields only
+    {
+      for( int point_up = 0; point_up < number_of_points; point_up++ ) // scan upwards
+      {
+        if( !isnan(data[point_up][field]) )           // find the first one that is a number
+        {
+          for( int nan = point_up; nan >= 0; nan-- )  // fill the previous ones with this number
+          {
+            data[nan][field] = data[point_up][field];
+          }
+          break;
+        }
+        if( point_up == number_of_points-1 )          // if only nans in a field
+        {
+          throw "input_data error: One of the fields has no data.";
+        }
+      }
+      for( int point_down = number_of_points-1; point_down >= 0; point_down-- ) // scan downwards
+      {
+        if( !isnan(data[point_down][field]) )         // find the last one that is a number
+        {
+          for( int nan = point_down+1; nan < number_of_points; nan++ ) // fill the next ones with this number
+          {
+            data[nan][field] = data[point_down][field];
+          }
+          break;
+        }
+      }
+    }
+  }
 
   // just testing
   for(int i=0;i<data.size();i++)

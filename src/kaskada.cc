@@ -25,9 +25,10 @@ int main(int argc,  char** argv)
     input_test.initialize();
     input_test.load_data();
     data_container *test = input_test.get_data_container();
-    test->set_input_point(850);
-    //cout << test->get_value(2) << "\n";
-    cout << test->get_value(4) << "\n";
+    // for(int i=0;i<1000000;i++)
+    //   test->set_input_point(i);
+    test->set_input_point(300);
+    cout << test->get_value(1) << "\n";
   }
   catch( char const* ex )
   {
