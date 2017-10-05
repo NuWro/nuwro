@@ -38,7 +38,7 @@
 -
     energy: 510
     xsec_ii: 30.4
-    xsec_ij: 35.1
+#    xsec_ij: 35.1
     inel_ii: 0.31
     inel_ij: 0.15
     inel_1pi: 1.0
@@ -49,7 +49,7 @@
 -
     energy: 660
     xsec_ii: 41.2
-    xsec_ij: 36.5
+#    xsec_ij: 36.5
     inel_ii: 0.43
     inel_ij: 0.27
     inel_1pi: 1.0
@@ -71,7 +71,7 @@
 -
     energy: 1160
     xsec_ii: 48.0
-    xsec_ij: 40.2
+#    xsec_ij: 40.2
     inel_ii: 0.65
     inel_ij: 0.36
     inel_1pi: 0.8

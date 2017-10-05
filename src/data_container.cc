@@ -39,6 +39,8 @@ void data_container::read_data_file()
 
     read_data( file_ifstream );                   // read and store the actual data
 
+    fill_nan_data();                              // fill in the points with no data
+
     file_ifstream.close();                        // close the file
   }
   else
@@ -211,6 +213,16 @@ void data_container::read_data( ifstream &file_ifstream )
 
   // sort the data
   std::sort(data.begin(), data.end(), data_compare(input_axis));
+
+  // just testing
+  for(int i=0;i<data.size();i++)
+  {
+    for(int j=0;j<data[0].size();j++)
+    {
+      cout << data[i][j] << "\t";
+    }
+    cout << "\n";
+  }
 }
 
 ////////////////////////////////////////
@@ -222,7 +234,8 @@ void data_container::fill_nan_data()
   {
     if( field != input_axis )                         // for data fields only
     {
-      for( int point_up = 0; point_up < number_of_points; point_up++ ) // scan upwards
+      for( int point_up = 0; point_up < number_of_points; point_up++ )
+                                                      // scan upwards
       {
         if( !isnan(data[point_up][field]) )           // find the first one that is a number
         {
@@ -237,11 +250,13 @@ void data_container::fill_nan_data()
           throw "input_data error: One of the fields has no data.";
         }
       }
-      for( int point_down = number_of_points-1; point_down >= 0; point_down-- ) // scan downwards
+      for( int point_down = number_of_points-1; point_down >= 0; point_down-- )
+                                                      // scan downwards
       {
         if( !isnan(data[point_down][field]) )         // find the last one that is a number
         {
-          for( int nan = point_down+1; nan < number_of_points; nan++ ) // fill the next ones with this number
+          for( int nan = point_down+1; nan < number_of_points; nan++ )
+                                                      // fill the next ones with this number
           {
             data[nan][field] = data[point_down][field];
           }
@@ -252,11 +267,35 @@ void data_container::fill_nan_data()
   }
 
   // interpolate nans in the middle
+  float mid_point;                                    // relative position in the interpolation
   for( int field = 0; field < number_of_fields; field++ )
   {
     if( field != input_axis )                         // for data fields only
     {
-
+      for( int nan_up = 0; nan_up < number_of_points; nan_up++ )
+                                                      // scan upwards
+      {
+        if( isnan(data[nan_up][field]) )            // find the first nan
+        {
+          for( int point_up = nan_up+1; point_up < number_of_points; point_up++ )
+                                                      // scan for the next number
+          {
+            if( !isnan(data[point_up][field]) )     // find the next number
+            {
+              for ( int nan = nan_up; nan < point_up; nan++ )
+                                                      // for every nan in a sequence
+              {
+                // now interpolate
+                mid_point = ( data[nan][input_axis] - data[nan_up-1][input_axis] )
+                          / ( data[point_up][input_axis] - data[nan_up-1][input_axis] );
+                data[nan][field] = (1-mid_point)*data[nan_up-1][field]
+                                 +    mid_point *data[point_up][field];
+              }
+              break;
+            }
+          }
+        }
+      }
     }
   }
 
