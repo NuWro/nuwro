@@ -80,14 +80,11 @@ double sfevent(params &par, event &e, nucleus &t) {
   l1.set_mass(m);  // set outgoing lepton mass
 
   CSFOptions options(par, e.flag.cc, !is_on_n, is_anti);  // SF configuration
-  CSpectralFunc *sf = options.get_SF();  // create spectral function
+  CSpectralFunc *sf = options.get_SF();                   // create spectral function
 
-  // target nucleon momentum (p) and removal energy (E) generated according to
-  // probability distribution given by SF
-  const double p = sf->MomDist()->generate();  // target nucleon momentum
-  const double E =
-      get_E(sf, p) + coulomb_correction(is_anti, par.nucleus_p,
-                                        par.nucleus_n);  // removal energy
+  // target nucleon momentum (p) and removal energy (E) generated according to probability distribution given by SF
+  const double p = sf->MomDist()->generate();                                                 // target nucleon momentum
+  const double E = get_E(sf, p) + coulomb_correction(is_anti, par.nucleus_p, par.nucleus_n);  // removal energy
 
   // set target nucleon momentum randomly from Fermi sphere
   N0.set_momentum(rand_dir() * p);
@@ -119,9 +116,7 @@ double sfevent(params &par, event &e, nucleus &t) {
       return 0;
     else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
       return 0;
-    else if (par.sf_pb == 2 and
-             frandom() <
-                 sf->MomDist()->Tot(N1.momentum()) / sf->MomDist()->Tot(0))
+    else if (par.sf_pb == 2 and frandom() < sf->MomDist()->Tot(N1.momentum()) / sf->MomDist()->Tot(0))
       return 0;
   }
 
@@ -134,20 +129,14 @@ double sfevent(params &par, event &e, nucleus &t) {
   // surface scaling when going from lab (elipsoide) to cms (sphere)
   const double surfscale = sqrt(1 - pow2(v * dir_cms)) / sqrt(1 - v * v);
   // cross section
-  const double common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) /
-                        (l1.E() * l0.E() * N0.E() * N1.E());
-  const double val = e.flag.cc
-                         ? common * cos2thetac *
-                               options.evalLH(q * q, l0 * N0, l1 * N0, q * N0,
-                                              l0 * q, l1 * q, l0 * l1)
-                         : common *
-                               options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q,
-                                                l0 * q, l1 * q, l0 * l1);
+  const double common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
+  const double val =
+      e.flag.cc ? common * cos2thetac * options.evalLH(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1)
+                : common * options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q, l0 * q, l1 * q, l0 * l1);
 
   if (par.sf_fsi and par.nucleus_p == 6 and par.nucleus_n == 6) {
     // apply FSI as described in: A. Ankowski et al, PRD91 (2015) 033005
-    // express knock-out nucleon kinetic energy in terms of beam energy and
-    // scattering angle (eq. 7)
+    // express knock-out nucleon kinetic energy in terms of beam energy and scattering angle (eq. 7)
     const double Ek = e.in[0].E();
     const double x = 1 - l1.p().z / l1.momentum();
     const double Tk = Ek * Ek * x / (M + Ek * x);
@@ -157,9 +146,7 @@ double sfevent(params &par, event &e, nucleus &t) {
     // apply folding function smearing (eq. 2)
     if (frandom11() > sqrt(transparency(2 * M * Tk))) shift += random_omega();
 
-    // modify lepton kinetic energy
-    // or xsec = 0 if not possible
-
+    // modify lepton kinetic energy or xsec = 0 if not possible
     if (l1.Ek() - shift > 0)
       l1.set_energy(l1.E() - shift);
     else
@@ -175,8 +162,7 @@ double sfevent(params &par, event &e, nucleus &t) {
   e.out.push_back(N1);
 
   // add a spectator if on correlated pair
-  if (par.sf_method == 1 and is_src(p, E, t.p, t.n, !is_on_n) and
-      (l0.t - l1.t - N1.Ek() - N2.Ek()) > 14)
+  if (par.sf_method == 1 and is_src(p, E, t.p, t.n, !is_on_n) and (l0.t - l1.t - N1.Ek() - N2.Ek()) > 14)
     e.out.push_back(N2);
 
   return val;
@@ -191,8 +177,7 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
 
   N1.r = N0.r;
   N2.r = N0.r;
-  if ((l0.pdg > 0 and N0.pdg == pdg_proton) or
-      (l0.pdg < 0 and N0.pdg == pdg_neutron))
+  if ((l0.pdg > 0 and N0.pdg == pdg_proton) or (l0.pdg < 0 and N0.pdg == pdg_neutron))
     return 0;  // no CC interaction possible on this nucleon
 
   if (l0.pdg < 0) {
@@ -227,9 +212,8 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
   e.in[1] = N0;
 
   //	cout<<"Options to create"<<endl;
-  CSFOptions options(par, 1, N0.pdg == pdg_proton,
-                     l0.pdg < 0);  // czy proton // czy antyneutrino
-                                   //	cout<<"sf about to create"<<endl;
+  CSFOptions options(par, 1, N0.pdg == pdg_proton, l0.pdg < 0);  // czy proton // czy antyneutrino
+                                                                 //	cout<<"sf about to create"<<endl;
   CSpectralFunc *sf = options.get_SF();
   //	cout<<"sf created"<<endl;
   const double pBlock = sf->get_pBlock();
@@ -275,8 +259,7 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
                                                    // protons but taken the same
                                                    // for neutrons
   {
-    if (p < 330 && EBEN > (52.27 + 0.00428 * p - 0.0004618 * p * p))
-      corr = true;
+    if (p < 330 && EBEN > (52.27 + 0.00428 * p - 0.0004618 * p * p)) corr = true;
 
     if (p > 330) corr = true;
   }
@@ -285,36 +268,27 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
                                                      // protons but taken the
                                                      // same for neutrons
   {
-    if (p < 335 && EBEN > (60.41 + 0.004134 * p - 0.0004343 * p * p))
-      corr = true;
+    if (p < 335 && EBEN > (60.41 + 0.004134 * p - 0.0004343 * p * p)) corr = true;
 
     if (p > 335) corr = true;
   }
 
-  if (t.p == 18 && t.n == 22 && par.sf_method == 1 &&
-      N0.pdg == pdg_proton)  // Argon protons
+  if (t.p == 18 && t.n == 22 && par.sf_method == 1 && N0.pdg == pdg_proton)  // Argon protons
   {
-    if (p < 230 &&
-        EBEN > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p -
-                8.312e-9 * p * p * p * p))
+    if (p < 230 && EBEN > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p - 8.312e-9 * p * p * p * p))
       corr = true;
 
-    if (p > 230 && p < 395 && EBEN > (-52.97 + 0.8571 * p - 0.001696 * p * p))
-      corr = true;
+    if (p > 230 && p < 395 && EBEN > (-52.97 + 0.8571 * p - 0.001696 * p * p)) corr = true;
 
     if (p > 395) corr = true;
   }
 
-  if (t.p == 18 && t.n == 22 && par.sf_method == 1 &&
-      N0.pdg == pdg_neutron)  // Argon neutrons
+  if (t.p == 18 && t.n == 22 && par.sf_method == 1 && N0.pdg == pdg_neutron)  // Argon neutrons
   {
-    if (p < 225 &&
-        EBEN > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p -
-                1.236e-8 * p * p * p * p))
+    if (p < 225 && EBEN > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p - 1.236e-8 * p * p * p * p))
       corr = true;
 
-    if (p > 225 && p < 395 && EBEN > (-17.23 + 0.6314 * p - 0.001373 * p * p))
-      corr = true;
+    if (p > 225 && p < 395 && EBEN > (-17.23 + 0.6314 * p - 0.001373 * p * p)) corr = true;
 
     if (p > 395) corr = true;
   }
@@ -352,9 +326,7 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
       return 0;
     else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
       return 0;
-    else if (par.sf_pb == 2 and
-             frandom() <
-                 sf->MomDist()->Tot(N1.momentum()) / sf->MomDist()->Tot(0))
+    else if (par.sf_pb == 2 and frandom() < sf->MomDist()->Tot(N1.momentum()) / sf->MomDist()->Tot(0))
       return 0;
   }
 
@@ -370,12 +342,9 @@ double sfevent2cc(params &par, event &e, nucleus &t) {
 
   double gamma = 1 / sqrt(1 - v * v);
   double graddelta = (l1.v() - N1.v()).length();
-  double surfscale =
-      sqrt(1 + (1 - pow2(v * dircms) / (v * v)) * (gamma * gamma - 1));
-  double val = G * G * cos2thetac / 8 / pi / pi * vol *
-               (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E()) *
-               options.evalLH(q4til * q4til, l0 * N0, l1 * N0, q4til * N0,
-                              l0 * q4til, l1 * q4til, l0 * l1);
+  double surfscale = sqrt(1 + (1 - pow2(v * dircms) / (v * v)) * (gamma * gamma - 1));
+  double val = G * G * cos2thetac / 8 / pi / pi * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E()) *
+               options.evalLH(q4til * q4til, l0 * N0, l1 * N0, q4til * N0, l0 * q4til, l1 * q4til, l0 * l1);
 
   e.weight = val / cm2;
   N0.t = N0.mass() - EBEN;
@@ -413,8 +382,7 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
 
   e.in[1] = N0;
 
-  CSFOptions options(par, 0, N0.pdg == pdg_proton,
-                     l0.pdg < 0);  // czy proton // czy antyneutrino
+  CSFOptions options(par, 0, N0.pdg == pdg_proton, l0.pdg < 0);  // czy proton // czy antyneutrino
   CSpectralFunc *sf = options.get_SF();
   double pBlock = sf->get_pBlock();
 
@@ -448,8 +416,7 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
                                                    // protons but taken the same
                                                    // for neutrons
   {
-    if (p < 330 && EBEN > (52.27 + 0.00428 * p - 0.0004618 * p * p))
-      corr = true;
+    if (p < 330 && EBEN > (52.27 + 0.00428 * p - 0.0004618 * p * p)) corr = true;
 
     if (p > 330) corr = true;
   }
@@ -458,36 +425,27 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
                                                      // protons but taken the
                                                      // same for neutrons
   {
-    if (p < 335 && EBEN > (60.41 + 0.004134 * p - 0.0004343 * p * p))
-      corr = true;
+    if (p < 335 && EBEN > (60.41 + 0.004134 * p - 0.0004343 * p * p)) corr = true;
 
     if (p > 335) corr = true;
   }
 
-  if (t.p == 18 && t.n == 22 && par.sf_method == 1 &&
-      N0.pdg == pdg_proton)  // Argon protons
+  if (t.p == 18 && t.n == 22 && par.sf_method == 1 && N0.pdg == pdg_proton)  // Argon protons
   {
-    if (p < 230 &&
-        EBEN > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p -
-                8.312e-9 * p * p * p * p))
+    if (p < 230 && EBEN > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p - 8.312e-9 * p * p * p * p))
       corr = true;
 
-    if (p > 230 && p < 395 && EBEN > (-52.97 + 0.8571 * p - 0.001696 * p * p))
-      corr = true;
+    if (p > 230 && p < 395 && EBEN > (-52.97 + 0.8571 * p - 0.001696 * p * p)) corr = true;
 
     if (p > 395) corr = true;
   }
 
-  if (t.p == 18 && t.n == 22 && par.sf_method == 1 &&
-      N0.pdg == pdg_neutron)  // Argon neutrons
+  if (t.p == 18 && t.n == 22 && par.sf_method == 1 && N0.pdg == pdg_neutron)  // Argon neutrons
   {
-    if (p < 225 &&
-        EBEN > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p -
-                1.236e-8 * p * p * p * p))
+    if (p < 225 && EBEN > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p - 1.236e-8 * p * p * p * p))
       corr = true;
 
-    if (p > 225 && p < 395 && EBEN > (-17.23 + 0.6314 * p - 0.001373 * p * p))
-      corr = true;
+    if (p > 225 && p < 395 && EBEN > (-17.23 + 0.6314 * p - 0.001373 * p * p)) corr = true;
 
     if (p > 395) corr = true;
   }
@@ -525,8 +483,7 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
       return 0;
     else if (par.sf_pb == 1 and N1.momentum() < t.localkf(N1))
       return 0;
-    else if (par.sf_pb == 2 and
-             frandom() < sf->MomDist()->Tot(N1.momentum() * mevtofm))
+    else if (par.sf_pb == 2 and frandom() < sf->MomDist()->Tot(N1.momentum() * mevtofm))
       return 0;
   }
 
@@ -542,12 +499,9 @@ double sfevent2nc(params &par, event &e, nucleus &t) {
 
   double gamma = 1 / sqrt(1 - v * v);
   double graddelta = (l1.v() - N1.v()).length();
-  double surfscale =
-      sqrt(1 + (1 - pow2(v * dircms) / (v * v)) * (gamma * gamma - 1));
-  double val = G * G / 8 / pi / pi * vol * (surfscale / graddelta) /
-               (l1.E() * l0.E() * N0.E() * N1.E()) *
-               options.evalLHnc(q4til * q4til, l0 * N0, l1 * N0, N0 * q4til,
-                                l0 * q4til, l1 * q4til, l0 * l1);
+  double surfscale = sqrt(1 + (1 - pow2(v * dircms) / (v * v)) * (gamma * gamma - 1));
+  double val = G * G / 8 / pi / pi * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E()) *
+               options.evalLHnc(q4til * q4til, l0 * N0, l1 * N0, N0 * q4til, l0 * q4til, l1 * q4til, l0 * l1);
 
   e.weight = val / cm2;
   N0.t = N0.mass() - EBEN;
@@ -613,23 +567,17 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p) {
   // argon
   if (Z == 18 and N == 22) {
     if (is_on_p) {  // protons
-      if (p < 230 and
-          E > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p -
-               8.312e-9 * p * p * p * p))
+      if (p < 230 and E > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p - 8.312e-9 * p * p * p * p))
         return true;
 
-      if (p > 230 and p < 395 and E > (-52.97 + 0.8571 * p - 0.001696 * p * p))
-        return true;
+      if (p > 230 and p < 395 and E > (-52.97 + 0.8571 * p - 0.001696 * p * p)) return true;
 
       if (p > 395) return true;
     } else {  // neutrons
-      if (p < 225 and
-          E > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p -
-               1.236e-8 * p * p * p * p))
+      if (p < 225 and E > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p - 1.236e-8 * p * p * p * p))
         return true;
 
-      if (p > 225 and p < 395 and E > (-17.23 + 0.6314 * p - 0.001373 * p * p))
-        return true;
+      if (p > 225 and p < 395 and E > (-17.23 + 0.6314 * p - 0.001373 * p * p)) return true;
 
       if (p > 395) return true;
     }
@@ -647,9 +595,8 @@ double transparency(double Q2) {
   if (Q2 > 1000) return 0.5792642140468227;
 
   // fit (polynomial)
-  static const double coeff[] = {
-      7.71692837e-01, -2.77751361e-04, 2.24980171e-06, -1.11358859e-08,
-      1.98862243e-11, -1.50900788e-14, 4.17699547e-18};
+  static const double coeff[] = {7.71692837e-01, -2.77751361e-04, 2.24980171e-06, -1.11358859e-08,
+                                 1.98862243e-11, -1.50900788e-14, 4.17699547e-18};
 
   double T = coeff[0];
   double x = Q2;
@@ -665,10 +612,9 @@ double transparency(double Q2) {
 double potential_real(double Tk) {
   // parametrization for Carbon: A. Ankowski et al, PRD91 (2015) 033005
   // fit (polynomial)
-  static const double coeff[] = {
-      -3.76929648e+01, 4.35269313e-01, -2.59678634e-03, 9.55434214e-06,
-      -2.15373898e-08, 3.07501687e-11, -2.83810998e-14, 1.69043802e-17,
-      -6.27515290e-21, 1.32038136e-24, -1.20270294e-28};
+  static const double coeff[] = {-3.76929648e+01, 4.35269313e-01, -2.59678634e-03, 9.55434214e-06,
+                                 -2.15373898e-08, 3.07501687e-11, -2.83810998e-14, 1.69043802e-17,
+                                 -6.27515290e-21, 1.32038136e-24, -1.20270294e-28};
 
   double V = coeff[0];
   double x = Tk;
@@ -685,7 +631,6 @@ double random_omega() {
   // for |q| = 1 GeV: O. Benhar PRC 87 (2013) 024606
   // fit to gauss
   static std::default_random_engine generator;
-  static std::normal_distribution<double> distribution(5.43264624e-04,
-                                                       8.88774322e+01);
+  static std::normal_distribution<double> distribution(5.43264624e-04, 8.88774322e+01);
   return distribution(generator);
 }
