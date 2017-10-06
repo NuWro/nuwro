@@ -45,7 +45,7 @@ void data_container::read_data_file()
   }
   else
   {
-    throw "input_data error: Could not open the data file.";
+    throw "input_data error: Could not open the data file. Make sure the params are correct and files for given options exist.";
   }
 }
 
@@ -213,16 +213,6 @@ void data_container::read_data( ifstream &file_ifstream )
 
   // sort the data
   std::sort(data.begin(), data.end(), data_compare(input_axis));
-
-  // just testing
-  for(int i=0;i<data.size();i++)
-  {
-    for(int j=0;j<data[0].size();j++)
-    {
-      cout << data[i][j] << "\t";
-    }
-    cout << "\n";
-  }
 }
 
 ////////////////////////////////////////

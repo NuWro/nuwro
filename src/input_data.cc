@@ -95,14 +95,7 @@ void input_data::initialize_data_containers()
 
 string input_data::generate_file_name( string parameter_name, int parameter_option )
 {
-  if ( parameter_option < 2 )  // check if the parameter is ok, it should be read from params, hardcoded for now
-  {
-    stringstream name_sstream;
-    name_sstream << input_path << parameter_name << "_" << parameter_option << ".dat"; // path + name + extension
-    return name_sstream.str();
-  }
-  else
-  {
-    throw "input_data error: Invalid parameter.";
-  }
+  stringstream name_sstream;
+  name_sstream << input_path << parameter_name << "_" << parameter_option << ".dat"; // path + name + extension
+  return name_sstream.str();
 }
