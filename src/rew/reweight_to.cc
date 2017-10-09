@@ -8,17 +8,45 @@
 
 void SetupSPP(params&);  // defined in rewRES.cc
 
+void info(const string msg) { std::cout << "\033[32m[INFO] " << msg << "\033[0m\n"; }
+
+void usage() {
+  // print usage and exit
+  info(
+      "Usage: "
+      "reweight_to <nuwro_output.root> "
+      "-p par1 val1 -p par2 val2 ..."
+      "[-o <weighted_events.root>] "
+      "[--no_weights] [--no_events]");
+  exit(1);
+}
+
+void error(const string msg) {
+  std::cerr << "\033[31m[ERROR] " << msg << "\033[0m\n";
+  usage();
+}
+
+void not_reweightable(const string par) {
+  // print available parameters to reweight and exit
+  error("Parameter \"" + par + "\" can not be reweighted. Try one of:\n");
+  rew.list(cerr);
+  exit(1);
+}
+
+enum {
+  both = 0,  // create both outputs (default)
+  events,    // create only file with weighted events
+  weights    // create only file with weights
+} mode;
+
 int main(int argc, char* argv[]) {
-  if (argc < 4) {
-    cerr << "[INFO] Usage: "
-            "reweight_to <nuwro_output.root> -o <results_filename.root> -p par1 val1 -p par2 val2 ...\n";
-    exit(-1);
-  }
+  // at least input and output files and on parameter to reweight is required
+  if (argc < 7) usage();
 
   // setup input tree
   TFile* f1 = new TFile(argv[1]);
   if (f1->IsZombie()) {
-    std::cout << "Error opening file" << std::endl;
+    std::cout << "[ERROR] Couldn't open input file: " << argv[1] << std::endl;
     exit(-1);
   }
 
@@ -35,66 +63,70 @@ int main(int argc, char* argv[]) {
 
   vector<RewParam*> args;    // the list of parameters to reweight
   vector<double> vals;       // the list of new parameters values
-  int nargs = 0;             // the number of parameters to reweight
   char* outname = NULL;      // the full NuWro output file with new weight
-  char* weightsname = NULL;  // the output ROOT file with weight only
+  char* weightsname = NULL;  // the output ROOT file with weights only
 
   for (int i = 2; i < argc; i++) {
-    if (string(argv[i]) == "-o") {
+    // parse command line arguments
+    if (string(argv[i]) == "-o")
       outname = argv[++i];
-      continue;
-    } else if (string(argv[i]) == "-w") {
-      weightsname = argv[++i];
-      continue;
-    } else if (string(argv[i]) == "-p") {
+    else if (string(argv[i]) == "--no_events")
+      mode = weights;
+    else if (string(argv[i]) == "--no_weights")
+      mode = events;
+    else if (string(argv[i]) == "-p") {
+      // check if parameter is given after -p
+      if (not argv[i + 1]) error("Parameter name is required after -p");
+      // check it parameter value is given
+      if (not argv[i + 2]) error("Parameter value is required after -p parameter_name");
+
+      // create parameter to reweight
       RewParam& p = rew(argv[++i]);
-      if (p.name == "") {
-        cerr << "[Error] parameter \"" << argv[i] << "\" can not be reweighted. Try one of:\n";
-        rew.list(cerr);
-        exit(1);
-      } else {
-        args.push_back(&p);
-        stringstream s(argv[++i]);
-        double x;
-        if (i < argc && (s >> x)) {
-          vals.push_back(x);
-          REW(p.engine).active = true;
-          nargs++;
-        } else {
-          cerr << "[Error] parameter \"" << argv[i - 1] << "\" must have numeric value (not \"" << argv[i] << "\").\n";
-          exit(1);
-        }
+
+      // check if it is reweightable (empty string -> not on RewParams list)
+      if (p.name == "") not_reweightable(argv[i]);
+
+      // add a paramter to the reweighters list
+      args.push_back(&p);
+
+      // exit if given parameter value is NaN
+      try {
+        vals.push_back(stod(argv[++i]));
+      } catch (std::exception& e) {
+        error("Parameter value must be a number");
       }
-    } else {
-      cerr << "[Error] -p or -o expected instead of\"" << argv[i] << "\".\n";
-      cerr << "[INFO] Usage: "
-              "reweight_to <nuwro_output.root> -o <results_filename.root> -p par1 val1 -p par2 val2 ...\n";
-      exit(1);
-    }
+
+      // parameter added successfully
+      REW(p.engine).active = true;
+
+    } else
+      error("Unexpected flag");
   }
 
-  if (nargs == 0 or (outname == NULL && weightsname == NULL)) {
-    cerr << "[INFO] Usage: "
-            "reweight_to <nuwro_output.root> (-o <weighted_events.root> | -w <weights_only.root>) -p par1 val1 -p par2 "
-            "val2 ...\n";
-    exit(1);
-  }
+  // obviously, there must be something to reweight
+  if (args.size() == 0) error("Provide at least one parameter to reweight");
 
-  /// create output file
-  double weight;
+  // if output filename is not given - use input filename with .reweighted suffix
+  if (outname == NULL) outname = &(string(argv[1]) + ".reweighted")[0];
 
+  // use .weights suffix for a file with weights only
+  weightsname = &(string(outname) + ".weights")[0];
+
+  /// create output files
   TFile* f2 = NULL;
   TTree* t2 = NULL;
   TFile* f3 = NULL;
   TTree* t3 = NULL;
 
-  if (weightsname) {
-    f2 = new TFile((string(outname) + ".weights").c_str(), "recreate");
+  double weight;  // weights holder
+
+  if (mode != events) {
+    f2 = new TFile(weightsname, "recreate");
     t2 = new TTree("weights", "Tree of weights");
     t2->Branch("weight", &weight, "weight/D");
   }
 
-  if (outname) {
+  if (mode != weights) {
     f3 = new TFile(outname, "recreate");
     t3 = new TTree("treeout", "Tree of events");
     t3->Branch("e", "event", &e);
@@ -111,7 +143,7 @@ int main(int argc, char* argv[]) {
 
     double nominal = REW.weight(*e, e->par, t);
 
-    for (int j = 0; j < nargs; j++) args[j]->set(vals[j]);
+    for (int j = 0; j < args.size(); j++) args[j]->set(vals[j]);
 
     ff_configure(e->par);
 
