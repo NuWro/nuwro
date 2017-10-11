@@ -37,6 +37,16 @@ double coulomb_correction(bool is_anti, int p, int n) {
   return is_anti ? -shift : shift;
 }
 
+//! return Couloumb correction to neutron energy levels
+double coulomb_correction_neutron(int p, int n) {
+  switch (1000 * p + n) {
+    case 6006:
+      return 2.8;  // carbon
+    default:
+      return 0;
+  }
+}
+
 double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
   particle &l0 = e.in[0];  // incoming neutrino
@@ -83,8 +93,16 @@ double sfevent(params &par, event &e, nucleus &t) {
   CSpectralFunc *sf = options.get_SF();                   // create spectral function
 
   // target nucleon momentum (p) and removal energy (E) generated according to probability distribution given by SF
-  const double p = sf->MomDist()->generate();                                                 // target nucleon momentum
-  const double E = get_E(sf, p) + coulomb_correction(is_anti, par.nucleus_p, par.nucleus_n);  // removal energy
+  const double p = sf->MomDist()->generate();  // target nucleon momentum
+  double E = get_E(sf, p);                     // removal energy
+
+  if (par.sf_coulomb) {
+    // if the interaction occurs on neutron apply Coulomb correction to energy levels
+    if (is_on_n) E += coulomb_correction_neutron(par.nucleus_p, par.nucleus_n);
+
+    // apply Couloumb corrections to the spectral function
+    if (e.flag.cc) E += coulomb_correction(is_anti, par.nucleus_p, par.nucleus_n);
+  }
 
   // set target nucleon momentum randomly from Fermi sphere
   N0.set_momentum(rand_dir() * p);
