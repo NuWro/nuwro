@@ -8,44 +8,11 @@
 #include "sf/CSFOptions.h"
 #include "sf/CSpectralFunc.h"
 #include "sf/GConstants.h"
+#include "sfevent.h"
 
 static double mevtofm = 8e6 / Pi2 / 4;
 
 static inline double pow2(double x) { return x * x; }
-
-//! get removal energy (for given nucleon momentum p)
-double get_E(CSpectralFunc *sf, double p);
-
-//! check if the interaction occurs on correlated pair
-bool is_src(double p, double E, int Z, int N, bool is_on_p);
-
-//! return transparency (C) for given Q2 [GeV^2]
-double transparency(double Q2);
-
-//! return real part of the potential for given kinetic energy [MeV]
-double potential_real(double Tk);
-
-//! return random energy shift according to distribution given by Fq
-double random_omega();
-
-//! return Couloumb correction (opposite sign for nu and nubar)
-double coulomb_correction(bool is_anti, int p, int n) {
-  double shift = 0.0;  // correction in MeV
-
-  if (p == 6 and n == 6) shift = 3.5;  // carbon
-
-  return is_anti ? -shift : shift;
-}
-
-//! return Couloumb correction to neutron energy levels
-double coulomb_correction_neutron(int p, int n) {
-  switch (1000 * p + n) {
-    case 6006:
-      return 2.8;  // carbon
-    default:
-      return 0;
-  }
-}
 
 double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
@@ -306,4 +273,21 @@ double random_omega() {
   static std::default_random_engine generator;
   static std::normal_distribution<double> distribution(5.43264624e-04, 8.88774322e+01);
   return distribution(generator);
+}
+
+double coulomb_correction(bool is_anti, int p, int n) {
+  double shift = 0.0;  // correction in MeV
+
+  if (p == 6 and n == 6) shift = 3.5;  // carbon
+
+  return is_anti ? -shift : shift;
+}
+
+double coulomb_correction_neutron(int p, int n) {
+  switch (1000 * p + n) {
+    case 6006:
+      return 2.8;  // carbon
+    default:
+      return 0;
+  }
 }
