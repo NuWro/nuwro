@@ -138,8 +138,8 @@ double sfevent(params &par, event &e, nucleus &t) {
     return 0;
 
   // modify nucleon kinetic energy or xsec = 0 if not possible
-  if (N1.Ek() - q0_shift > 0)
-    N1.set_energy(N1.E() - q0_shift);
+  if (N1.Ek() + q0_shift > 0)
+    N1.set_energy(N1.E() + q0_shift);
   else
     return 0;
 
