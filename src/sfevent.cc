@@ -12,6 +12,7 @@
 
 static inline double pow2(double x) { return x * x; }
 
+// main function to generate event using spectral function
 double sfevent(params &par, event &e, nucleus &t) {
   // references to initial particles (for convenience)
   particle &l0 = e.in[0];  // incoming neutrino
@@ -61,13 +62,8 @@ double sfevent(params &par, event &e, nucleus &t) {
   const double p = sf->MomDist()->generate();  // target nucleon momentum
   double E = get_E(sf, p);                     // removal energy
 
-  if (par.sf_coulomb) {
-    // if the interaction occurs on neutron apply Coulomb correction to energy levels
-    if (is_on_n) E += coulomb_correction_neutron(par.nucleus_p, par.nucleus_n);
-
-    // apply Couloumb corrections to the spectral function
-    if (e.flag.cc) E += coulomb_correction(is_anti, par.nucleus_p, par.nucleus_n);
-  }
+  // if the interaction occurs on neutron apply Coulomb correction to energy levels
+  if (par.sf_coulomb and is_on_n) E += coulomb_correction_neutron(par.nucleus_p, par.nucleus_n);
 
   // set target nucleon momentum randomly from Fermi sphere
   N0.set_momentum(rand_dir() * p);
@@ -117,6 +113,11 @@ double sfevent(params &par, event &e, nucleus &t) {
       e.flag.cc ? common * cos2thetac * options.evalLH(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1)
                 : common * options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q, l0 * q, l1 * q, l0 * l1);
 
+  double q0_shift = 0.0;  // energy transfer shift due to FSI and/or Coulomb correction
+
+  // apply Couloumb corrections for charged leptons
+  if (par.sf_coulomb and e.flag.cc) q0_shift += coulomb_correction(is_anti, par.nucleus_p, par.nucleus_n);
+
   if (par.sf_fsi and par.nucleus_p == 6 and par.nucleus_n == 6) {
     // apply FSI as described in: A. Ankowski et al, PRD91 (2015) 033005
     // express knock-out nucleon kinetic energy in terms of beam energy and scattering angle (eq. 7)
@@ -125,16 +126,22 @@ double sfevent(params &par, event &e, nucleus &t) {
     const double Tk = Ek * Ek * x / (M + Ek * x);
 
     // energy transfer shift (as defined in eq. 3)
-    double shift = potential_real(Tk);  // real part of optical potential
+    q0_shift += potential_real(Tk);  // real part of optical potential
     // apply folding function smearing (eq. 2)
-    if (frandom11() > sqrt(transparency(2 * M * Tk))) shift += random_omega();
-
-    // modify lepton kinetic energy or xsec = 0 if not possible
-    if (l1.Ek() - shift > 0)
-      l1.set_energy(l1.E() - shift);
-    else
-      return 0;
+    if (frandom11() > sqrt(transparency(2 * M * Tk))) q0_shift += random_omega();
   }
+
+  // modify lepton kinetic energy or xsec = 0 if not possible
+  if (l1.Ek() - q0_shift > 0)
+    l1.set_energy(l1.E() - q0_shift);
+  else
+    return 0;
+
+  // modify nucleon kinetic energy or xsec = 0 if not possible
+  if (N1.Ek() - q0_shift > 0)
+    N1.set_energy(N1.E() - q0_shift);
+  else
+    return 0;
 
   e.weight = val / cm2;
 
@@ -182,6 +189,7 @@ double get_E(CSpectralFunc *sf, double p) {
   return E;
 }
 
+// determine if scattering occured on correlated pair of nucleons
 bool is_src(double p, double E, int Z, int N, bool is_on_p) {
   // oxygen
   if (Z == 8 and N == 8) {
@@ -224,6 +232,7 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p) {
   return false;
 }
 
+// return the value of transparency for given Q2 (used to determine FSI)
 double transparency(double Q2) {
   // parametrization for Carbon: O. Benhar et al. Phys.Rev. D72 (2005) 053005
 
@@ -247,6 +256,7 @@ double transparency(double Q2) {
   return T;
 }
 
+// real part of the potential which modifies energy transfer
 double potential_real(double Tk) {
   // parametrization for Carbon: A. Ankowski et al, PRD91 (2015) 033005
   // fit (polynomial)
@@ -265,6 +275,7 @@ double potential_real(double Tk) {
   return V;
 }
 
+// gaussian fit to energy transfer shift
 double random_omega() {
   // for |q| = 1 GeV: O. Benhar PRC 87 (2013) 024606
   // fit to gauss
@@ -273,6 +284,7 @@ double random_omega() {
   return distribution(generator);
 }
 
+// Coulomb correction for outgoing charged lepton
 double coulomb_correction(bool is_anti, int p, int n) {
   double shift = 0.0;  // correction in MeV
 
@@ -281,6 +293,7 @@ double coulomb_correction(bool is_anti, int p, int n) {
   return is_anti ? -shift : shift;
 }
 
+// Coulomb correction to the neutron energy levels
 double coulomb_correction_neutron(int p, int n) {
   switch (1000 * p + n) {
     case 6006:
