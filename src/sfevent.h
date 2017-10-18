@@ -32,7 +32,7 @@ double random_omega();
 double coulomb_correction(bool is_anti, int p, int n);
 
 //! return Couloumb correction to neutron energy levels
-double coulomb_correction_neutron(int p, int n)
+double coulomb_correction_neutron(int p, int n);
 
 
 #endif
