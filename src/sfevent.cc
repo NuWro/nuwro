@@ -10,8 +10,6 @@
 #include "sf/GConstants.h"
 #include "sfevent.h"
 
-static double mevtofm = 8e6 / Pi2 / 4;
-
 static inline double pow2(double x) { return x * x; }
 
 double sfevent(params &par, event &e, nucleus &t) {
