@@ -128,25 +128,38 @@ double sfevent(params &par, event &e, nucleus &t) {
     // energy transfer shift (as defined in eq. 3)
     q0_shift += potential_real(Tk);  // real part of optical potential
     // apply folding function smearing (eq. 2)
-    if (frandom11() > sqrt(transparency(2 * M * Tk))) q0_shift += random_omega();
+    if (frandom11() > sqrt(transparency(2 * M * Tk))) {
+      // repeat until energy transfer > 0
+      // loop stopped after 100 tries (although it should never happen)
+      int n_tries = 0;
+      while (n_tries++ < 100) {
+        // calculate total shift
+        const double shift = q0_shift + random_omega();
+        if (l1.E() - shift < l0.E()) {
+          // accept random omega
+          q0_shift = shift;
+          break;
+        }
+      }
+    }
   }
 
   // modify lepton kinetic energy or xsec = 0 if not possible
-  if (l1.Ek() - q0_shift > 0)
+  if (l1.Ek() > q0_shift)
     l1.set_energy(l1.E() - q0_shift);
   else
     return 0;
 
   // modify nucleon kinetic energy or xsec = 0 if not possible
-  if (N1.Ek() + q0_shift > 0)
-    N1.set_energy(N1.E() + q0_shift);
+  if (N0.mass() > E + q0_shift)
+    N0.t = N0.mass() - E - q0_shift;
   else
     return 0;
 
   e.weight = val / cm2;
 
   // push final state particles
-  N0.t = N0.mass() - E;
+  // N0.t = N0.mass() - E;
   e.in[1] = N0;
   e.out.push_back(l1);
   e.out.push_back(N1);
