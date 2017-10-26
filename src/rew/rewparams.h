@@ -288,7 +288,7 @@ struct RewParams
 	RewParams &init(params &p)
 	{
 		delta_s.set(p.delta_s);		
-		qel_cc_vector_mass.set(p.qel_cc_vector_mass);
+		qel_cc_vector_mass.set(p.qel_cc_vector_mass);  // TODO: remove?
 		qel_cc_axial_mass.set(p.qel_cc_axial_mass);
 		qel_nc_axial_mass.set(p.qel_nc_axial_mass);
 		qel_s_axial_mass.set(p.qel_s_axial_mass);
