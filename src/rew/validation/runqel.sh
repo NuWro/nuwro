@@ -67,25 +67,25 @@ do
             "${OUTDIR}/numu${energy}_cc_ma800.root" \
             -o "${OUTDIR}/numu${energy}_cc_rewto_ma${ma}.root" \
             -p qel_cc_axial_mass $ma \
-            -p qel_nc_axial_mass = $ma &
+            -p qel_nc_axial_mass $ma &
 
         ../../../bin/reweight_to \
             "${OUTDIR}/numu${energy}_nc_ma800.root" \
             -o "${OUTDIR}/numu${energy}_nc_rewto_ma${ma}.root" \
             -p qel_cc_axial_mass $ma \
-            -p qel_nc_axial_mass = $ma &
+            -p qel_nc_axial_mass $ma &
 
         ../../../bin/reweight_to \
             "${OUTDIR}/numubar${energy}_cc_ma800.root" \
             -o "${OUTDIR}/numubar${energy}_cc_rewto_ma${ma}.root" \
             -p qel_cc_axial_mass $ma \
-            -p qel_nc_axial_mass = $ma &
+            -p qel_nc_axial_mass $ma &
 
         ../../../bin/reweight_to \
             "${OUTDIR}/numubar${energy}_nc_ma800.root" \
             -o "${OUTDIR}/numubar${energy}_nc_rewto_ma${ma}.root" \
             -p qel_cc_axial_mass $ma \
-            -p qel_nc_axial_mass = $ma
+            -p qel_nc_axial_mass $ma
     done
 done
 
