@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "event1.h"
+//#include "event1.h" // uncomment when using root 6 (with nuwro/src in include path)
 
 using namespace std;
 
@@ -77,13 +77,9 @@ void qel(const string prefix)
         const double Tk = e->out[0].Ek() / 1000.0;
         const double ang = e->out[0].p().z / e->out[0].momentum();
 
-        h_Q2 -> Fill(Q2);
-        h_Tk -> Fill(Tk);
-        h_ang -> Fill(ang);
-
-        const double ed = e->out[0].E() + e->out[1].Ek() - e->in[0].E() - e->in[1].Ek();
-
-        ediff -> Fill(ed);
+        h_Q2 -> Fill(Q2, e->weight);
+        h_Tk -> Fill(Tk, e->weight);
+        h_ang -> Fill(ang, e->weight);
     }
 
     normalize (h_Q2, xsec / nEvents);
