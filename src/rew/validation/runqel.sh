@@ -95,13 +95,13 @@ for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
 do
     for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
     do
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numu${energy}_cc_ma${ma}')" &
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numu${energy}_nc_ma${ma}')" &      
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numu${energy}_cc_rewto_ma${ma}')" &
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numu${energy}_nc_rewto_ma${ma}')"
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numubar${energy}_cc_ma${ma}')" &
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numubar${energy}_nc_ma${ma}')" &
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numubar${energy}_cc_rewto_ma${ma}')" &
-        ../../../bin/myroot -b -q "qel.c('${OUTDIR}/numubar${energy}_nc_rewto_ma${ma}')"        
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_rewto_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_rewto_ma'${ma}'")'
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_rewto_ma'${ma}'")' &
+        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_rewto_ma'${ma}'")'
     done
 done
