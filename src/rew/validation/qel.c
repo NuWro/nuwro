@@ -53,10 +53,8 @@ void normalize(TH1* h, const double factor)
 void qel(const string prefix)
 {
     string root_file = prefix + ".root";
-    string xsec_file = prefix + ".root.txt";
 
     TFile *file = new TFile(root_file.c_str());
-    const double xsec = getSigma(xsec_file.c_str());
 
     TTree *tree = (TTree*)file->Get("treeout");
     event *e    = new event();
@@ -81,10 +79,6 @@ void qel(const string prefix)
         h_Tk -> Fill(Tk, e->weight);
         h_ang -> Fill(ang, e->weight);
     }
-
-    normalize (h_Q2, xsec / nEvents);
-    normalize (h_Tk, xsec / nEvents);
-    normalize (h_ang, xsec / nEvents);
     
     saveHist(h_Q2, (prefix + "_Q2.txt").c_str());
     saveHist(h_Tk, (prefix + "_Tk.txt").c_str());
