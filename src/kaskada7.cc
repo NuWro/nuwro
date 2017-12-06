@@ -170,8 +170,17 @@ interaction_parameters kaskada::prepare_interaction()
 
   res.xsec /= par.kaskada_meanfreepath_scale;               // scale the mean free path (1/res.xsec)
                                                             // according to the params
-  assert(res.xsec>=0);
 
+  switch (res.pdg)                                          // fits of scaling the mean free path
+  {
+    case pdg_neutron:                                       // for nucleons
+    case pdg_proton:
+      res.xsec /= meanfreepath_NN_scale_from_fit();         // fit to data
+      break;
+  }
+
+  assert(res.xsec>=0);                           // make sure that the cross section is positive
+  // KN: so what if xsec == 0? there is an assertion but it's covered later
   if (res.xsec != 0)
   {
     res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
@@ -184,6 +193,40 @@ interaction_parameters kaskada::prepare_interaction()
 }
 
 ////////////////////////////////////////
+
+double kaskada::meanfreepath_NN_scale_from_fit()
+{
+  double particle_momentum = p->momentum();
+
+  switch(par.kaskada_meanfreepath_NN_fit)
+  {
+    case 1:                                      // fit to available transparency data
+                                                 // without the c_a factors
+      if(particle_momentum > 1650)
+      {
+        return 1.05;
+      }
+      else if(particle_momentum > 927)
+      {
+        return 0.00049793 * particle_momentum + 0.22842324;
+      }
+      else if(particle_momentum > 625)
+      {
+        return -0.00102649 * particle_momentum + 1.64155629;
+      }
+      else
+      {
+        return 1;
+      }
+      break;
+
+    default:
+      return 1;
+  }
+}
+
+////////////////////////////////////////
+
 
 bool kaskada::move_particle()
 { 
