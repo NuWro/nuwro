@@ -86,6 +86,7 @@ PARAM(double,MEC_cm_direction,0.0)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(double,kaskada_meanfreepath_scale,1)\
+PARAM(int,kaskada_meanfreepath_NN_fit,0)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\
 PARAM(string,formation_zone,"fz-new")\
