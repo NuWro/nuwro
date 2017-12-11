@@ -91,17 +91,62 @@ mkdir -p $OUTDIR
 
 ###### RUN MACRO ######
 
-for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
-do
-    for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
-    do
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_rewto_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_rewto_ma'${ma}'")'
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_rewto_ma'${ma}'")' &
-        ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_rewto_ma'${ma}'")'
-    done
-done
+# for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
+# do
+#     for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
+#     do
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_cc_rewto_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu'${energy}'_nc_rewto_ma'${ma}'")'
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_cc_rewto_ma'${ma}'")' &
+#         ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numubar'${energy}'_nc_rewto_ma'${ma}'")'
+#     done
+# done
+
+##### COMBO TEST #####
+
+../../../bin/nuwro -i "parqel.txt" \
+    -p "beam_particle = 14" \
+    -p "beam_energy = 1000" \
+    -p "qel_cc_axial_mass = 1000" \
+    -p "qel_nc_axial_mass = 1000" \
+    -p "qel_s_axial_mass = 1000" \
+    -p "delta_s = 0" \
+    -p "dyn_qel_cc = 1" \
+    -p "dyn_qel_nc = 1" \
+    -o "${OUTDIR}/numu1000.root"
+
+../../../bin/nuwro -i "parqel.txt" \
+    -p "beam_particle = 14" \
+    -p "beam_energy = 1000" \
+    -p "qel_cc_axial_mass = 1200" \
+    -p "qel_nc_axial_mass = 1200" \
+    -p "qel_s_axial_mass = 1200" \
+    -p "delta_s = -0.2" \
+    -p "dyn_qel_cc = 1" \
+    -p "dyn_qel_nc = 1" \
+    -o "${OUTDIR}/numu1200.root"
+
+../../../bin/reweight_to \
+    "${OUTDIR}/numu1200.root" \
+    -o "${OUTDIR}/numu1000r.root" \
+    -p qel_cc_axial_mass 1000 \
+    -p qel_nc_axial_mass 1000 \
+    -p qel_s_axial_mass = 1000 \
+    -p delta_s = 0
+
+../../../bin/reweight_to \
+    "${OUTDIR}/numu1000.root" \
+    -o "${OUTDIR}/numu1200r.root" \
+    -p qel_cc_axial_mass 1200 \
+    -p qel_nc_axial_mass 1200 \
+    -p qel_s_axial_mass = 1200 \
+    -p delta_s = -0.2
+
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000r")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200r")' &
