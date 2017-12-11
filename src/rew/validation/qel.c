@@ -61,26 +61,36 @@ void qel(const string prefix)
 
     tree->SetBranchAddress("e", &e);
 
+    TH1D* h_Q0 = new TH1D("hQ0", "Q0", 50, 0, 2);
     TH1D* h_Q2 = new TH1D("hQ2", "Q2", 50, 0, 2);
     TH1D* h_Tk = new TH1D("hTk", "Lepton kinetic energy", 50, 0, 2);
     TH1D* h_ang = new TH1D("hang", "Scattering angle", 50, -1, 1);
     
     const unsigned int nEvents = tree->GetEntries();
 
+    double sum = 0;
+
     for (unsigned int i = 0; i < nEvents; i++)
     {
         tree->GetEntry(i);
 
+        const double Q0 = e->q0() / 1000.0;
         const double Q2 = -e->q2() / 1000000.0;
         const double Tk = e->out[0].Ek() / 1000.0;
         const double ang = e->out[0].p().z / e->out[0].momentum();
 
+        h_Q0 -> Fill(Q0, e->weight);
         h_Q2 -> Fill(Q2, e->weight);
         h_Tk -> Fill(Tk, e->weight);
         h_ang -> Fill(ang, e->weight);
+
+        sum += e->weight;
     }
-    
+
+    saveHist(h_Q0, (prefix + "_Q0.txt").c_str());
     saveHist(h_Q2, (prefix + "_Q2.txt").c_str());
     saveHist(h_Tk, (prefix + "_Tk.txt").c_str());
     saveHist(h_ang, (prefix + "_ang.txt").c_str());
+
+    cout << "Sum of weights = " << sum << "\n\n";
 }

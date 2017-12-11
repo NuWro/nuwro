@@ -7,7 +7,7 @@
 
 # The number of events used to calculate the cross sections: 
 
-number_of_test_events = 2000000
+number_of_test_events = 1000000
 
 # The number of equally weighted events to be saved:
 
