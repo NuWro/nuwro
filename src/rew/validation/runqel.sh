@@ -135,16 +135,16 @@ mkdir -p $OUTDIR
     -o "${OUTDIR}/numu1000r.root" \
     -p qel_cc_axial_mass 1000 \
     -p qel_nc_axial_mass 1000 \
-    -p qel_s_axial_mass = 1000 \
-    -p delta_s = 0
+    -p qel_s_axial_mass 1000 \
+    -p delta_s 0
 
 ../../../bin/reweight_to \
     "${OUTDIR}/numu1000.root" \
     -o "${OUTDIR}/numu1200r.root" \
     -p qel_cc_axial_mass 1200 \
     -p qel_nc_axial_mass 1200 \
-    -p qel_s_axial_mass = 1200 \
-    -p delta_s = -0.2
+    -p qel_s_axial_mass 1200 \
+    -p delta_s -0.2
 
 ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000")' &
 ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000r")' &
