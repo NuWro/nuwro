@@ -63,12 +63,12 @@ double calcQEL(event &e, params &p, nucleus &t) {
   switch (p.qel_rpa) { //     qv   ,  q0            ,  E         , nu_pdg,
                        //     lepton_mass  ,  Meff     , kF   , version
   case 1:
-    e.weight *= ratio_rpa(e.qv(), e.q0() - _E_bind, nu.t - _E_bind, nu.pdg,
-                          lepton.mass(), N1.mass(), t.kF(), new_ver);
+    weight *= ratio_rpa(e.qv(), e.q0() - _E_bind, nu.t - _E_bind, nu.pdg,
+                        lepton.mass(), N1.mass(), t.kF(), new_ver);
     break;
   case 3:
-    e.weight *= ratio_rpa(e.qv(), e.q0() - _E_bind, nu.t - _E_bind, nu.pdg,
-                          lepton.mass(), t.Mf(), t.kF(), new_ver);
+    weight *= ratio_rpa(e.qv(), e.q0() - _E_bind, nu.t - _E_bind, nu.pdg,
+                        lepton.mass(), t.Mf(), t.kF(), new_ver);
     break;
   }
 
