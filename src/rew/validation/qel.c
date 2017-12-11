@@ -61,9 +61,9 @@ void qel(const string prefix)
 
     tree->SetBranchAddress("e", &e);
 
-    TH1D* h_Q2 = new TH1D("hQ2", "Q2", 100, 0, 2);
-    TH1D* h_Tk = new TH1D("hTk", "Lepton kinetic energy", 100, 0, 2);
-    TH1D* h_ang = new TH1D("hang", "Scattering angle", 100, -1, 1);
+    TH1D* h_Q2 = new TH1D("hQ2", "Q2", 50, 0, 2);
+    TH1D* h_Tk = new TH1D("hTk", "Lepton kinetic energy", 50, 0, 2);
+    TH1D* h_ang = new TH1D("hang", "Scattering angle", 50, -1, 1);
     
     const unsigned int nEvents = tree->GetEntries();
 
