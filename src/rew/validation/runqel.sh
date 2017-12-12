@@ -108,45 +108,80 @@ mkdir -p $OUTDIR
 
 ##### COMBO TEST #####
 
+# ../../../bin/nuwro -i "parqel.txt" \
+#     -p "beam_particle = 14" \
+#     -p "beam_energy = 1000" \
+#     -p "qel_cc_axial_mass = 1000" \
+#     -p "qel_nc_axial_mass = 1000" \
+#     -p "qel_s_axial_mass = 1000" \
+#     -p "delta_s = 0" \
+#     -p "dyn_qel_cc = 1" \
+#     -p "dyn_qel_nc = 1" \
+#     -o "${OUTDIR}/numu1000.root"
+
+# ../../../bin/nuwro -i "parqel.txt" \
+#     -p "beam_particle = 14" \
+#     -p "beam_energy = 1000" \
+#     -p "qel_cc_axial_mass = 1200" \
+#     -p "qel_nc_axial_mass = 1200" \
+#     -p "qel_s_axial_mass = 1200" \
+#     -p "delta_s = -0.2" \
+#     -p "dyn_qel_cc = 1" \
+#     -p "dyn_qel_nc = 1" \
+#     -o "${OUTDIR}/numu1200.root"
+
+# ../../../bin/reweight_to \
+#     "${OUTDIR}/numu1200.root" \
+#     -o "${OUTDIR}/numu1000r.root" \
+#     -p qel_cc_axial_mass 1000 \
+#     -p qel_nc_axial_mass 1000 \
+#     -p qel_s_axial_mass 1000 \
+#     -p delta_s 0
+
+# ../../../bin/reweight_to \
+#     "${OUTDIR}/numu1000.root" \
+#     -o "${OUTDIR}/numu1200r.root" \
+#     -p qel_cc_axial_mass 1200 \
+#     -p qel_nc_axial_mass 1200 \
+#     -p qel_s_axial_mass 1200 \
+#     -p delta_s -0.2
+
+# ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000")' &
+# ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000r")' &
+# ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200")' &
+# ../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200r")' &
+
+##### STRANGE TEST #####
+
 ../../../bin/nuwro -i "parqel.txt" \
-    -p "beam_particle = 14" \
-    -p "beam_energy = 1000" \
-    -p "qel_cc_axial_mass = 1000" \
-    -p "qel_nc_axial_mass = 1000" \
-    -p "qel_s_axial_mass = 1000" \
+    -p "dyn_qel_cc = 0" \
+    -p "dyn_qel_nc = 1" \
     -p "delta_s = 0" \
-    -p "dyn_qel_cc = 1" \
-    -p "dyn_qel_nc = 1" \
-    -o "${OUTDIR}/numu1000.root"
+    -o "${OUTDIR}/numu_s0.root" &
 
 ../../../bin/nuwro -i "parqel.txt" \
-    -p "beam_particle = 14" \
-    -p "beam_energy = 1000" \
-    -p "qel_cc_axial_mass = 1200" \
-    -p "qel_nc_axial_mass = 1200" \
-    -p "qel_s_axial_mass = 1200" \
-    -p "delta_s = -0.2" \
-    -p "dyn_qel_cc = 1" \
+    -p "dyn_qel_cc = 0" \
     -p "dyn_qel_nc = 1" \
-    -o "${OUTDIR}/numu1200.root"
+    -p "delta_s = -0.2" \
+    -o "${OUTDIR}/numu_s-0.2.root" &
+
+../../../bin/nuwro -i "parqel.txt" \
+    -p "dyn_qel_cc = 0" \
+    -p "dyn_qel_nc = 1" \
+    -p "delta_s = 0.2" \
+    -o "${OUTDIR}/numu_s+0.2.root"
 
 ../../../bin/reweight_to \
-    "${OUTDIR}/numu1200.root" \
-    -o "${OUTDIR}/numu1000r.root" \
-    -p qel_cc_axial_mass 1000 \
-    -p qel_nc_axial_mass 1000 \
-    -p qel_s_axial_mass 1000 \
-    -p delta_s 0
-
-../../../bin/reweight_to \
-    "${OUTDIR}/numu1000.root" \
-    -o "${OUTDIR}/numu1200r.root" \
-    -p qel_cc_axial_mass 1200 \
-    -p qel_nc_axial_mass 1200 \
-    -p qel_s_axial_mass 1200 \
+    "${OUTDIR}/numu_s0.root" \
+    -o "${OUTDIR}/numu_s-0.2r.root" \
     -p delta_s -0.2
 
-../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000")' &
-../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1000r")' &
-../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200")' &
-../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu1200r")' &
+../../../bin/reweight_to \
+    "${OUTDIR}/numu_s0.root" \
+    -o "${OUTDIR}/numu_s+0.2r.root" \
+    -p delta_s 0.2
+
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu_s-0.2")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu_s+0.2")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu_s-0.2r")' &
+../../../bin/myroot -b -q 'qel.c("'${OUTDIR}'/numu_s+0.2r")' &
