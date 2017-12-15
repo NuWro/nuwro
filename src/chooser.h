@@ -198,8 +198,8 @@ inline double chooser<N>::count(int i)
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::ratio(int i)/// probability of choosing i-th bin
-    {
-       return W[i]/Wacc[N-1];
+    {  
+       return Wacc[N-1]>0 ? W[i]/Wacc[N-1] :0;
     }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
@@ -282,7 +282,7 @@ inline void chooser<N>::calculate_counts(int ilosc)
          ilosc-=Desired[k];
          total-=frac;
       }
-      Desired[N-1]=ilosc;
+      Desired[N-1]=ratio(N-1)>0?ilosc:0;
 	 }
 	 
 ////////////////////////////////////////////////////////////////////////
