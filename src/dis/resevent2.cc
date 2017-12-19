@@ -93,11 +93,11 @@ void resevent2(params &p, event &e, bool cc) {
   // a new parameter in the range from -1 to 1 that increases amount of nonresonant background
   double bkgr = p.bkgrscaling;
 
-  nuc0.t -= _E_bind;
   // subtract bing energy from nucleon energy insize nucleus
-  nu0.boost(-nuc0.v());
+  nuc0.t -= _E_bind;
+
   // boost to the bound nucleon rest frame
-  vec numom = vec(nu0.x, nu0.y, nu0.z);
+  nu0.boost(-nuc0.v());
 
   double cut = p.res_dis_cut;
 
@@ -166,13 +166,13 @@ void resevent2(params &p, event &e, bool cc) {
 
     vec kkprim;                     // the unit vector in the direction of scattered lepton
     if (abs(cth) > 1) return;       // e.weight=0 already
-    kinfinder(numom, kkprim, cth);  // produces kkprim
+    kinfinder(nu0.p(), kkprim, cth);  // produces kkprim
 
     kkprim = kprim * kkprim;  // multiplied by its length
 
     vect lepton_out = vect(E - nu, kkprim.x, kkprim.y, kkprim.z);
 
-    vec momtran = numom - kkprim;
+    vec momtran = nu0.p() - kkprim;
 
     vec hadrspeed = momtran / sqrt(W2 + q * q);  // parameter of boost to hadronic rest frame
 
