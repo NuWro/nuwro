@@ -99,14 +99,10 @@ void resevent2(params &p, event &e, bool cc) {
   // neutrino energy on the new frame
   double E = nu0.t;
 
-  double Mefff = sqrt(nuc0 * nuc0);
+	// effective nucleon mass = proton mass for proton or average for neutron
+  const double Meff = min(nuc0.mass(), M12);
+  const double Meff2 = Meff * Meff;
 
-  double Meff = min(Mefff, M12);
-
-  // effective mass works well
-  // cout<<"Meff=  "<<Meff<<"   ";
-
-  double Meff2 = Meff * Meff;
   if (E < ((1080 + m) * (1080 + m) - Meff2) / 2 / Meff) {
     e.weight = 0;
     return;
