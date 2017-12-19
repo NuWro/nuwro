@@ -62,8 +62,9 @@ void resevent2(params &p, event &e, bool cc) {
   particle nuc0 = e.in[1];  // target nucleon
   e.weight = 0;             // in case of error it is not changed
 
-  double m = lepton_mass(abs(nu0.pdg), cc);  // mass of the produced lepton (see pgd header file)
-  double m2 = m * m;
+  // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
+  const double m = cc * PDG::mass(abs(nu0.pdg) - 1);
+  const double m2 = m * m;
 
   double _E_bind = 0;  // binding energy
 
