@@ -1,12 +1,10 @@
+// clang-format off
 ////////////////This function calculates RES event
-////////////////RES region is defined in the hadronic mass from 1080 to the parameter res_dis_cut introduced in
-///params.txt
+////////////////RES region is defined in the hadronic mass from 1080 to the parameter res_dis_cut introduced in params.txt
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////The following model of the #Sect is postulated
-///////// XSect (nu + N -> mu + N' + pi)/dW d omega  = [XSect (nu + N -> mu + N' + pi)/dW d omega ]_Delta * alfadelta
-///(W) +
-//////////                                             [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_SPP* SPP(W) *
-///alfados(W) +
+///////// XSect (nu + N -> mu + N' + pi)/dW d omega  = [XSect (nu + N -> mu + N' + pi)/dW d omega ]_Delta * alfadelta (W) +
+//////////                                             [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_SPP* SPP(W) * alfados(W) +
 //////////                                             [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_nonSPP
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////// The main idea behind is that DIS contribution simulates non-resonant part
@@ -20,6 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/neutron    pi+/pi0/pi-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// clang-format on
 
 #include <TMCParticle.h>
 #include <TPythia6.h>
@@ -49,13 +48,13 @@ TPythia6 *pythia71 = new TPythia6();
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
 
-double pdd_red(double en) {
-  if (en >= 1000)
+double pdd_red(double energy) {
+  if (energy >= 1000)
     return 0.85;
-  else if (en > 750)
-    return 0.65 + en * 0.05 / 250.0;
+  else if (energy > 750)
+    return 0.65 + energy * 0.05 / 250.0;
   else  // if (en<=750)
-    return 0.2 + en * 0.2 / 250.0;
+    return 0.2 + energy * 0.2 / 250.0;
 }
 
 ///////////////////////////////////////////////////////////////////
