@@ -236,24 +236,24 @@ void resevent2(params &p, event &e, bool cc) {
       double adel2 = alfadelta(j, k, l, 2, W);
 
       if (finalcharge == 2) {
-        delta0 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 211, cc) * adel0;
+        delta0 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 211, cc) * adel0;
         delta1 = delta2 = 0;
       }
 
       if (finalcharge == 1) {
-        delta0 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 211, cc) * adel0;
-        delta1 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 111, cc) * adel1;
+        delta0 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 211, cc) * adel0;
+        delta1 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 111, cc) * adel1;
         delta2 = 0;
       }
 
       if (finalcharge == 0) {
-        delta1 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 111, cc) * adel1;
-        delta2 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, -211, cc) * adel2;
+        delta1 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 111, cc) * adel1;
+        delta2 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, -211, cc) * adel2;
         delta0 = 0;
       }
 
       if (finalcharge == -1) {
-        delta2 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, -211, cc) * adel2;
+        delta2 = cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, -211, cc) * adel2;
         delta0 = delta1 = 0;
       }
 
@@ -404,7 +404,7 @@ void resevent2(params &p, event &e, bool cc) {
         // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
         double delta_spp =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, nukleon2, pion, cc) /
+            cr_sec_delta(p.delta_FF_set, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, nukleon2, pion, cc) /
             SPPF(j, k, l, t, W) * alfadelta(j, k, l, t, W);
         // cout<<delta_spp<<endl;
 
