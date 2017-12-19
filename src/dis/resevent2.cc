@@ -90,17 +90,14 @@ void resevent2(params &p, event &e, bool cc) {
   // binding energy (based on nucleus_target)
   const double _E_bind = get_binding_energy(p, nuc0.p());
 
-  // a new parameter in the range from -1 to 1 that increases amount of nonresonant background
-  double bkgr = p.bkgrscaling;
-
   // subtract bing energy from nucleon energy insize nucleus
   nuc0.t -= _E_bind;
 
   // boost to the bound nucleon rest frame
   nu0.boost(-nuc0.v());
 
-  double E = nu0.t;
   // neutrino energy on the new frame
+  double E = nu0.t;
 
   double Mefff = sqrt(nuc0 * nuc0);
 
@@ -219,9 +216,9 @@ void resevent2(params &p, event &e, bool cc) {
       double spp1 = SPP[j][k][l][1][0];
       double spp2 = SPP[j][k][l][2][0];
 
-      double dis0 = fromdis * spp0 * betadis(j, k, l, 0, W, bkgr);
-      double dis1 = fromdis * spp1 * betadis(j, k, l, 1, W, bkgr);
-      double dis2 = fromdis * spp2 * betadis(j, k, l, 2, W, bkgr);  // can be made simpler !!!
+      double dis0 = fromdis * spp0 * betadis(j, k, l, 0, W, p.bkgrscaling);
+      double dis1 = fromdis * spp1 * betadis(j, k, l, 1, W, p.bkgrscaling);
+      double dis2 = fromdis * spp2 * betadis(j, k, l, 2, W, p.bkgrscaling);  // can be made simpler !!!
 
       double delta0 = 0, delta1 = 0, delta2 = 0;
 
@@ -381,7 +378,7 @@ void resevent2(params &p, event &e, bool cc) {
           pion = -211;
         }
         // cout<<pythiaParticle->K[1][3]<<" "<< pythiaParticle->K[1][4]<<endl;
-        double dis_spp = fromdis * betadis(j, k, l, t, W, bkgr);  // dis contribution
+        double dis_spp = fromdis * betadis(j, k, l, t, W, p.bkgrscaling);  // dis contribution
 
         int nukleoncharge = finalcharge + t - 1;  // the charge of final nucleon
 
