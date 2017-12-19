@@ -57,6 +57,27 @@ double pdd_red(double energy) {
     return 0.2 + energy * 0.2 / 250.0;
 }
 
+double get_binding_energy(const params &p, const vec &momentum) {
+  switch (p.nucleus_target) {
+    case 0:
+      return 0;  // free nucleon
+    case 1:
+      return p.nucleus_E_b;  // (global) Fermi gas
+    case 2:
+      return 0;  // local Fermi gas TODO: why 0?
+    case 3:
+      return 0;  // Bodek-Ritchie
+    case 4:
+      return binen(momentum, p.nucleus_p, p.nucleus_n);  // effective spectral function
+    case 5:
+      return deuter_binen(momentum);  // deuterium
+    case 6:
+      return p.nucleus_E_b;  // deuterium with constant binding energy
+    default:
+      return 0;
+  }
+}
+
 void resevent2(params &p, event &e, bool cc) {
   particle nu0 = e.in[0];   // incoming neutrino
   particle nuc0 = e.in[1];  // target nucleon
@@ -66,49 +87,11 @@ void resevent2(params &p, event &e, bool cc) {
   const double m = cc * PDG::mass(abs(nu0.pdg) - 1);
   const double m2 = m * m;
 
-  double _E_bind = 0;  // binding energy
+  // binding energy (based on nucleus_target)
+  const double _E_bind = get_binding_energy(p, nuc0.p());
 
-  double pped = e.in[1].length();
-  vec ped = e.in[1].p();
-
-  int wybor = p.nucleus_target;
-  int numpro = p.nucleus_p;
-  int numneu = p.nucleus_n;
-  double bkgr =
-      p.bkgrscaling;  // a new parameter in the range from -1 to 1 that increases amount of nonresonant background
-
-  switch (wybor) {
-    case 0:
-      _E_bind = 0;  // free
-      break;
-    case 1:
-      _E_bind = p.nucleus_E_b;  // FG
-      break;
-    case 2:
-      _E_bind = 0;  // local FG
-      break;
-    case 3:
-      _E_bind = 0;  // Bodek
-      break;
-    case 4:
-      _E_bind = binen(ped, numpro, numneu);  // effective SF
-      break;
-    case 5:
-      _E_bind = deuter_binen(ped);  // deuterium
-      break;
-    case 6:
-      _E_bind = p.nucleus_E_b;  // deuterium like Fermi gas
-      break;
-
-    // in the future it is possible to add SF for other nuclei as well
-    default:
-      _E_bind = 0;
-  }
-
-  //_E_bind=N0.bin();
-
-  // if (p.target_FG)
-  //_E_bind= p.target_E_b;
+  // a new parameter in the range from -1 to 1 that increases amount of nonresonant background
+  double bkgr = p.bkgrscaling;
 
   nuc0.t -= _E_bind;
   // subtract bing energy from nucleon energy insize nucleus
