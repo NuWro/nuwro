@@ -99,8 +99,6 @@ void resevent2(params &p, event &e, bool cc) {
   // boost to the bound nucleon rest frame
   nu0.boost(-nuc0.v());
 
-  double cut = p.res_dis_cut;
-
   int FFset = p.delta_FF_set;
   double delta_axial_mass = p.pion_axial_mass;
   double delta_C5A = p.pion_C5A;
@@ -128,7 +126,7 @@ void resevent2(params &p, event &e, bool cc) {
     //      Selection of points in W, nu plane
     /////////////////////////////////////////////////////////////
 
-    double Wmax = min(cut, sqrt(Meff2 + 2 * Meff * E) - m);
+    double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - m);
 
     double W = 1080 + (Wmax - 1080) * frandom();
 
