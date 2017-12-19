@@ -1,6 +1,8 @@
 #ifndef _pdg_name_h_
 #define _pdg_name_h_
 
+namespace DIS_PDG {
+
 //quarks and diquark pdg from Big Book
 const    int quark_d = 1;
 const    int quark_u = 2;
@@ -69,5 +71,8 @@ const    double mc2=quark_c_mass*quark_c_mass*1000*1000;
 
 //masa leptonu powstalego 
 
+}
+
+using namespace DIS_PDG;
 
 #endif
