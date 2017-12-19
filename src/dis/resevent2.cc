@@ -57,17 +57,13 @@ double pdd_red(double energy) {
     return 0.2 + energy * 0.2 / 250.0;
 }
 
-void resevent2(params &p, event &e, bool cc)
-{
-  int nukleon = e.in[1].pdg;
-  int lepton = e.in[0].pdg;
+void resevent2(params &p, event &e, bool cc) {
+  particle nu0 = e.in[0];   // incoming neutrino
+  particle nuc0 = e.in[1];  // target nucleon
+  e.weight = 0;             // in case of error it is not changed
 
-  double m = lepton_mass(abs(lepton), cc);  // mass of the produced lepton (see pgd header file)
+  double m = lepton_mass(abs(nu0.pdg), cc);  // mass of the produced lepton (see pgd header file)
   double m2 = m * m;
-
-  vect nu0 = e.in[0];
-
-  e.weight = 0;  // in case of error it is not changed
 
   double _E_bind = 0;  // binding energy
 
@@ -112,7 +108,6 @@ void resevent2(params &p, event &e, bool cc)
 
   // if (p.target_FG)
   //_E_bind= p.target_E_b;
-  vect nuc0 = e.in[1];
 
   nuc0.t -= _E_bind;
   // subtract bing energy from nucleon energy insize nucleus
@@ -177,7 +172,7 @@ void resevent2(params &p, event &e, bool cc)
     //      End of selection of points in W, nu plane
     /////////////////////////////////////////////////////////////
 
-    double fromdis = cr_sec_dis(E, W, nu, lepton, nukleon, cc);
+    double fromdis = cr_sec_dis(E, W, nu, nu0.pdg, nuc0.pdg, cc);
     // cout<<"fromdis"<<fromdis<<endl;
     if (fromdis < 0) fromdis = 0;
     // cout<<"fromdis=  "<<fromdis<<endl;
@@ -206,21 +201,21 @@ void resevent2(params &p, event &e, bool cc)
 
     particle lept(par[0]);
 
-    if (cc == true && lepton > 0) {
-      lept.pdg = lepton - 1;
+    if (cc == true && nu0.pdg > 0) {
+      lept.pdg = nu0.pdg - 1;
     }
-    if (cc == true && lepton < 0) {
-      lept.pdg = lepton + 1;
+    if (cc == true && nu0.pdg < 0) {
+      lept.pdg = nu0.pdg + 1;
     }
     if (cc == false) {
-      lept.pdg = lepton;
+      lept.pdg = nu0.pdg;
     }
 
     e.out.push_back(lept);  // final lepton; ok
 
     int j, k, l, t;
 
-    if (lepton > 0)  // the first part of the translation of the event into "spp language"
+    if (nu0.pdg > 0)  // the first part of the translation of the event into "spp language"
       j = 0;
     else {
       j = 1;
@@ -232,7 +227,7 @@ void resevent2(params &p, event &e, bool cc)
       k = 1;
     }
 
-    if (nukleon == 2212)
+    if (nuc0.pdg == 2212)
       l = 0;
     else {
       l = 1;
@@ -240,7 +235,7 @@ void resevent2(params &p, event &e, bool cc)
 
     int pion;
 
-    int finalcharge = charge(nukleon) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
+    int finalcharge = charge(nuc0.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
 
     if (W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
     {
@@ -259,30 +254,24 @@ void resevent2(params &p, event &e, bool cc)
       double adel2 = alfadelta(j, k, l, 2, W);
 
       if (finalcharge == 2) {
-        delta0 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2212, 211, cc) * adel0;
+        delta0 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 211, cc) * adel0;
         delta1 = delta2 = 0;
       }
 
       if (finalcharge == 1) {
-        delta0 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2112, 211, cc) * adel0;
-        delta1 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2212, 111, cc) * adel1;
+        delta0 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 211, cc) * adel0;
+        delta1 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, 111, cc) * adel1;
         delta2 = 0;
       }
 
       if (finalcharge == 0) {
-        delta1 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2112, 111, cc) * adel1;
-        delta2 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2212, -211, cc) * adel2;
+        delta1 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, 111, cc) * adel1;
+        delta2 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2212, -211, cc) * adel2;
         delta0 = 0;
       }
 
       if (finalcharge == -1) {
-        delta2 =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, 2112, -211, cc) * adel2;
+        delta2 = cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, 2112, -211, cc) * adel2;
         delta0 = delta1 = 0;
       }
 
@@ -314,7 +303,7 @@ void resevent2(params &p, event &e, bool cc)
       if (channel == 1) pion = 111;
       if (channel == 2) pion = -211;
 
-      int nukleon2 = nukleon_out_(W, lepton, nukleon, pion, cc);  // which nucleon in the final state
+      int nukleon2 = nukleon_out_(W, nu0.pdg, nuc0.pdg, pion, cc);  // which nucleon in the final state
 
       vect finnuk, finpion;
 
@@ -383,7 +372,7 @@ void resevent2(params &p, event &e, bool cc)
       double W1 = W / GeV;       // W1 w GeV-ach potrzebne do Pythii
 
       while (NPar < 5) {
-        hadronization(E, W, nu, m, lepton, nukleon, cc);
+        hadronization(E, W, nu, m, nu0.pdg, nuc0.pdg, cc);
         pythiaParticle = pythia71->GetPyjets();
         NPar = pythia71->GetN();
       }
@@ -433,7 +422,7 @@ void resevent2(params &p, event &e, bool cc)
         // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
         double delta_spp =
-            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton, nukleon, nukleon2, pion, cc) /
+            cr_sec_delta(FFset, delta_axial_mass, delta_C5A, E, W, nu, nu0.pdg, nuc0.pdg, nukleon2, pion, cc) /
             SPPF(j, k, l, t, W) * alfadelta(j, k, l, t, W);
         // cout<<delta_spp<<endl;
 
