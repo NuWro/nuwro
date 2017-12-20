@@ -65,39 +65,17 @@ void resevent2(params &p, event &e, bool cc) {
   res_kinematics kin(e);  // kinematics variables
 
   // check threshold for pion production (otherwise left e.weight = 0)
-  if (not kin.is_possible()) return;
+  if (not kin.is_above_threshold()) return;
 
-  // determine max invariant mass (cannot be smaller than params::res_dis_cut)
-  const double Wmax = min(p.res_dis_cut, sqrt(kin.effective_mass2 + 2 * kin.effective_mass * kin.neutrino.E()) - kin.lepton_mass);
+  // generate random kinematics
+  kin.generate_kinematics(p.res_dis_cut);
 
-  // choose random invariant mass (uniformly from [Wmin, Wmax])
-  const double W = kin.Wmin + (Wmax - kin.Wmin) * frandom();
-  const double W2 = W * W;
-
-  // TODO: we integrate over z - what is its definition?
-  const double z = frandom();
-
-  // determine energy transfer
-  const double A = (kin.effective_mass + kin.neutrino.E()) * (W2 - kin.effective_mass2 - kin.lepton_mass2) + 2 * kin.effective_mass * kin.neutrino.E() * kin.neutrino.E();
-  const double B = kin.neutrino.E() * sqrt(kwad(W2 - kin.effective_mass2 - kin.lepton_mass2 - 2 * kin.effective_mass * kin.neutrino.E()) - 4 * kin.lepton_mass2 * kin.effective_mass * (kin.effective_mass + 2 * kin.neutrino.E()));
-  const double C = 2 * kin.effective_mass * (kin.effective_mass + 2 * kin.neutrino.E());
-
-  const double wminus = (A - B) / C;
-  const double wplus = (A + B) / C;
-
-  double numin = max(wminus, kin.lepton_mass);
-  double numax = min(wplus, kin.neutrino.E() - kin.lepton_mass);
-
-  double nu = numin + (numax - numin) * z * z;  // enhance low energy transfers are preferred
-
-  double przedzial = (numax - numin) * (Wmax - kin.Wmin) * 2 * z;  // but compesated by this jakobian
-
-  double fromdis = cr_sec_dis(kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg, cc);
+  double fromdis = cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc);
   // cout<<"fromdis"<<fromdis<<endl;
   if (fromdis < 0) fromdis = 0;
   // cout<<"fromdis=  "<<fromdis<<endl;
-  double q = sqrt(kwad(kin.effective_mass + nu) - W2);                      // momentum transfer
-  double kprim = sqrt(kwad(kin.neutrino.E() - nu) - kin.lepton_mass2);                     // final lepton
+  double q = sqrt(kwad(kin.effective_mass + kin.q.t) - kin.W2);                      // momentum transfer
+  double kprim = sqrt(kwad(kin.neutrino.E() - kin.q.t) - kin.lepton_mass2);                     // final lepton
   double cth = (kin.neutrino.E() * kin.neutrino.E() + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
 
   vec kkprim;                                // the unit vector in the direction of scattered lepton
@@ -106,11 +84,11 @@ void resevent2(params &p, event &e, bool cc) {
 
   kkprim = kprim * kkprim;  // multiplied by its length
 
-  vect lepton_out = vect(kin.neutrino.E() - nu, kkprim.x, kkprim.y, kkprim.z);
+  vect lepton_out = vect(kin.neutrino.E() - kin.q.t, kkprim.x, kkprim.y, kkprim.z);
 
   vec momtran = kin.neutrino.p() - kkprim;
 
-  vec hadrspeed = momtran / sqrt(W2 + q * q);  // parameter of boost to hadronic rest frame
+  vec hadrspeed = momtran / sqrt(kin.W2 + q * q);  // parameter of boost to hadronic rest frame
 
   vect par[100];
   double ks[100];  // int czy double ???
@@ -157,51 +135,51 @@ void resevent2(params &p, event &e, bool cc) {
 
   int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
 
-  if (W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
+  if (kin.W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
   {
     double spp0 = SPP[j][k][l][0][0];
     double spp1 = SPP[j][k][l][1][0];
     double spp2 = SPP[j][k][l][2][0];
 
-    double dis0 = fromdis * spp0 * betadis(j, k, l, 0, W, p.bkgrscaling);
-    double dis1 = fromdis * spp1 * betadis(j, k, l, 1, W, p.bkgrscaling);
-    double dis2 = fromdis * spp2 * betadis(j, k, l, 2, W, p.bkgrscaling);  // can be made simpler !!!
+    double dis0 = fromdis * spp0 * betadis(j, k, l, 0, kin.W, p.bkgrscaling);
+    double dis1 = fromdis * spp1 * betadis(j, k, l, 1, kin.W, p.bkgrscaling);
+    double dis2 = fromdis * spp2 * betadis(j, k, l, 2, kin.W, p.bkgrscaling);  // can be made simpler !!!
 
     double delta0 = 0, delta1 = 0, delta2 = 0;
 
-    double adel0 = alfadelta(j, k, l, 0, W);
-    double adel1 = alfadelta(j, k, l, 1, W);
-    double adel2 = alfadelta(j, k, l, 2, W);
+    double adel0 = alfadelta(j, k, l, 0, kin.W);
+    double adel1 = alfadelta(j, k, l, 1, kin.W);
+    double adel2 = alfadelta(j, k, l, 2, kin.W);
 
     if (finalcharge == 2) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2212, 211, cc) *
                adel0;
       delta1 = delta2 = 0;
     }
 
     if (finalcharge == 1) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2112, 211, cc) *
                adel0;
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2212, 111, cc) *
                adel1;
       delta2 = 0;
     }
 
     if (finalcharge == 0) {
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2112, 111, cc) *
                adel1;
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2212, -211, cc) *
                adel2;
       delta0 = 0;
     }
 
     if (finalcharge == -1) {
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
                             2112, -211, cc) *
                adel2;
       delta0 = delta1 = 0;
@@ -218,7 +196,7 @@ void resevent2(params &p, event &e, bool cc) {
     double reldelta2 = delta2 / wsumie;
 
     // cout<<" "<<W<<" "<<nu<<endl;
-    e.weight = wsumie * 1e-38 * przedzial;
+    e.weight = wsumie * 1e-38 * kin.jacobian;
 
     int channel;
     double los = frandom();
@@ -235,11 +213,11 @@ void resevent2(params &p, event &e, bool cc) {
     if (channel == 1) pion = 111;
     if (channel == 2) pion = -211;
 
-    int nukleon2 = nukleon_out_(W, kin.neutrino.pdg, kin.target.pdg, pion, cc);  // which nucleon in the final state
+    int nukleon2 = nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, pion, cc);  // which nucleon in the final state
 
     vect finnuk, finpion;
 
-    kin2part(W, nukleon2, pion, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
+    kin2part(kin.W, nukleon2, pion, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
 
     finnuk = finnuk.boost(hadrspeed);
     finnuk = finnuk.boost(kin.target.v());
@@ -301,10 +279,10 @@ void resevent2(params &p, event &e, bool cc) {
     int nCharged = 0;
     int NPar = 0;
     Pyjets_t *pythiaParticle;  // deklaracja event recordu
-    double W1 = W / GeV;       // W1 w GeV-ach potrzebne do Pythii
+    double W1 = kin.W / GeV;       // W1 w GeV-ach potrzebne do Pythii
 
     while (NPar < 5) {
-      hadronization(kin.neutrino.E(), W, nu, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
+      hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
       pythiaParticle = pythia71->GetPyjets();
       NPar = pythia71->GetN();
     }
@@ -337,7 +315,7 @@ void resevent2(params &p, event &e, bool cc) {
         pion = -211;
       }
       // cout<<pythiaParticle->K[1][3]<<" "<< pythiaParticle->K[1][4]<<endl;
-      double dis_spp = fromdis * betadis(j, k, l, t, W, p.bkgrscaling);  // dis contribution
+      double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);  // dis contribution
 
       int nukleoncharge = finalcharge + t - 1;  // the charge of final nucleon
 
@@ -353,9 +331,9 @@ void resevent2(params &p, event &e, bool cc) {
       // if (SPPF (j,k,l,t,W)<0.01)
       // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg,
+      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg,
                                       kin.target.pdg, nukleon2, pion, cc) /
-                         SPPF(j, k, l, t, W) * alfadelta(j, k, l, t, W);
+                         SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
       // cout<<delta_spp<<endl;
 
       // approximate implementation of pionless delta decays
@@ -369,7 +347,7 @@ void resevent2(params &p, event &e, bool cc) {
 
       double spp_strength = dis_spp + delta_spp;
       // cout<<"spp "<<W<<" "<<nu<<" "<<spp_strength<<endl;
-      e.weight = spp_strength * 1e-38 * przedzial;
+      e.weight = spp_strength * 1e-38 * kin.jacobian;
 
       double reldis = dis_spp / spp_strength;
       double reldelta = delta_spp / spp_strength;
@@ -406,7 +384,7 @@ void resevent2(params &p, event &e, bool cc) {
 
         kin.neutrino.boost(-hadrspeed);  // a boost from nu-N CMS to the hadronic CMS
         lepton_out.boost(-hadrspeed);    // a boost from nu-N CMS to the hadronic CMS
-        kin4part(kin.neutrino, lepton_out, W, nukleon2, pion, finnuk, finpion,
+        kin4part(kin.neutrino, lepton_out, kin.W, nukleon2, pion, finnuk, finpion,
                  p.delta_angular);  // produces 4-momenta of final pair: nucleon + pion with density matrix information
         e.weight *= angrew;         // reweight according to angular correlation
 
@@ -440,7 +418,7 @@ void resevent2(params &p, event &e, bool cc) {
     else  // more inelastic final state or single kaon production
 
     {  // cout<<"inel "<<W<<" "<<nu<<endl;
-      e.weight = fromdis * 1e-38 * przedzial;
+      e.weight = fromdis * 1e-38 * kin.jacobian;
 
       for (int i = 0; i < NPar; i++) {
         par[i].t = pythiaParticle->P[3][i] * GeV;

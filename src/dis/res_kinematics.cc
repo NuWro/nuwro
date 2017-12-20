@@ -4,6 +4,7 @@
 const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;
 
+// set all necessary variables so is_above_threshold may be called
 res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[1]) {
   // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
   lepton_mass = e.flag.cc * PDG::mass(abs(neutrino.pdg) - 1);
@@ -15,12 +16,46 @@ res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[
   // boost to the bound nucleon rest frame
   neutrino.boost(-target.v());
 
-  // effective nucleon mass depends on binding energy
+  // effective nucleon mass depends on binding energy (cannot be larger than avg mass of nucleon)
   effective_mass = min(sqrt(target.p4() * target.p4()), avg_nucleon_mass);
   effective_mass2 = effective_mass * effective_mass;
 }
 
-bool res_kinematics::is_possible() {
+void res_kinematics::generate_kinematics(const double &res_dis_cut) {
+  // common expression
+  const double ME2 = 2 * effective_mass * neutrino.E();
+
+  // determine max invariant mass (cannot be smaller than params::res_dis_cut)
+  const double Wmax = min(res_dis_cut, sqrt(effective_mass2 + ME2) - lepton_mass);
+
+  // choose random invariant mass (uniformly from [Wmin, Wmax])
+  W = Wmin + (Wmax - Wmin) * frandom();
+  W2 = W * W;
+
+  // TODO: we integrate over z - what is its definition?
+  const double z = frandom();
+
+  // common expression
+  const double W2_reduced = W2 - effective_mass2 - lepton_mass2;
+  const double Mplus = effective_mass + 2 * neutrino.E();
+
+  // aux variables
+  const double A = (effective_mass + neutrino.E()) * W2_reduced + ME2 * neutrino.E();
+  const double B = neutrino.E() * sqrt(pow2(W2_reduced - ME2) - 4 * lepton_mass2 * effective_mass * Mplus);
+  const double C = 2 * effective_mass * Mplus;
+
+  // energy transfer bounds
+  const double q0_min = max((A - B) / C, lepton_mass);
+  const double q0_max = min((A + B) / C, neutrino.E() - lepton_mass);
+
+  // get random energy transfer
+  q.t = q0_min + (q0_max - q0_min) * z * z;  // enhance low energy transfers are preferred
+
+  // calculate jacobian
+  jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
+}
+
+bool res_kinematics::is_above_threshold() {
   return neutrino.E() > ((Wmin + lepton_mass) * (Wmin + lepton_mass) - effective_mass2) / 2.0 / effective_mass;
 }
 
