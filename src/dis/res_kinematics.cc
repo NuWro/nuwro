@@ -21,7 +21,7 @@ res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[
   effective_mass2 = effective_mass * effective_mass;
 }
 
-void res_kinematics::generate_kinematics(const double &res_dis_cut) {
+bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
   // common expression
   const double ME2 = 2 * effective_mass * neutrino.E();
 
@@ -53,6 +53,27 @@ void res_kinematics::generate_kinematics(const double &res_dis_cut) {
 
   // calculate jacobian
   jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
+
+  // temp kinematics variables
+  const double q3 = sqrt(pow2(effective_mass + q.t) - W2);                                     // momentum transfer
+  const double mom = sqrt(pow2(neutrino.E() - q.t) - lepton_mass2);                            // final lepton momentum
+  const double cosine = (pow2(neutrino.E()) + pow2(mom) - pow2(q3)) / 2 / neutrino.E() / mom;  // scattering angle
+
+  if (abs(cosine) > 1) return false;  // impossible kinematics
+
+  vec mom_dir;                               // the unit vector in the direction of scattered lepton
+  kinfinder(neutrino.p(), mom_dir, cosine);  // TODO: change this function!!!
+
+  // final lepton kinematics done
+  lepton = vect(neutrino.E() - q.t, mom_dir * mom);
+
+  // update momentrum transfer
+  q = neutrino.p() - lepton.p();
+
+  // calculate the speed of hadronic system
+  hadron_speed = q / sqrt(W2 + q3 * q3);
+
+  return true;
 }
 
 bool res_kinematics::is_above_threshold() {

@@ -67,33 +67,18 @@ void resevent2(params &p, event &e, bool cc) {
   // check threshold for pion production (otherwise left e.weight = 0)
   if (not kin.is_above_threshold()) return;
 
-  // generate random kinematics
-  kin.generate_kinematics(p.res_dis_cut);
+  // generate random kinematics (return false in the case of impossible kinematics)
+  if (not kin.generate_kinematics(p.res_dis_cut)) return;
 
   double fromdis = cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc);
   // cout<<"fromdis"<<fromdis<<endl;
   if (fromdis < 0) fromdis = 0;
   // cout<<"fromdis=  "<<fromdis<<endl;
-  double q = sqrt(kwad(kin.effective_mass + kin.q.t) - kin.W2);                      // momentum transfer
-  double kprim = sqrt(kwad(kin.neutrino.E() - kin.q.t) - kin.lepton_mass2);                     // final lepton
-  double cth = (kin.neutrino.E() * kin.neutrino.E() + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
-
-  vec kkprim;                                // the unit vector in the direction of scattered lepton
-  if (abs(cth) > 1) return;                  // e.weight=0 already
-  kinfinder(kin.neutrino.p(), kkprim, cth);  // produces kkprim
-
-  kkprim = kprim * kkprim;  // multiplied by its length
-
-  vect lepton_out = vect(kin.neutrino.E() - kin.q.t, kkprim.x, kkprim.y, kkprim.z);
-
-  vec momtran = kin.neutrino.p() - kkprim;
-
-  vec hadrspeed = momtran / sqrt(kin.W2 + q * q);  // parameter of boost to hadronic rest frame
 
   vect par[100];
   double ks[100];  // int czy double ???
 
-  par[0] = lepton_out;
+  par[0] = kin.lepton;
   // powrot do ukladu spoczywajacej tarczy
   par[0] = par[0].boost(kin.target.v());  // ok
 
@@ -219,10 +204,10 @@ void resevent2(params &p, event &e, bool cc) {
 
     kin2part(kin.W, nukleon2, pion, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
 
-    finnuk = finnuk.boost(hadrspeed);
+    finnuk = finnuk.boost(kin.hadron_speed);
     finnuk = finnuk.boost(kin.target.v());
 
-    finpion = finpion.boost(hadrspeed);
+    finpion = finpion.boost(kin.hadron_speed);
     finpion = finpion.boost(kin.target.v());
 
     particle ppion(finpion);
@@ -361,10 +346,10 @@ void resevent2(params &p, event &e, bool cc) {
           par[i].x = pythiaParticle->P[0][i] * GeV;
           par[i].y = pythiaParticle->P[1][i] * GeV;
           par[i].z = pythiaParticle->P[2][i] * GeV;
-          rotation(par[i], momtran);
+          rotation(par[i], kin.q);
           ks[i] = pythiaParticle->K[0][i];
 
-          par[i] = par[i].boost(hadrspeed);  // correct direction ???
+          par[i] = par[i].boost(kin.hadron_speed);  // correct direction ???
           par[i] = par[i].boost(kin.target.v());
           particle part(par[i]);
 
@@ -382,24 +367,24 @@ void resevent2(params &p, event &e, bool cc) {
       {
         vect finnuk, finpion;
 
-        kin.neutrino.boost(-hadrspeed);  // a boost from nu-N CMS to the hadronic CMS
-        lepton_out.boost(-hadrspeed);    // a boost from nu-N CMS to the hadronic CMS
-        kin4part(kin.neutrino, lepton_out, kin.W, nukleon2, pion, finnuk, finpion,
+        kin.neutrino.boost(-kin.hadron_speed);  // a boost from nu-N CMS to the hadronic CMS
+        kin.lepton.boost(-kin.hadron_speed);    // a boost from nu-N CMS to the hadronic CMS
+        kin4part(kin.neutrino, kin.lepton, kin.W, nukleon2, pion, finnuk, finpion,
                  p.delta_angular);  // produces 4-momenta of final pair: nucleon + pion with density matrix information
         e.weight *= angrew;         // reweight according to angular correlation
 
         // kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion
 
-        kin.neutrino.boost(hadrspeed);       // a boost back to the nu-N CMS frame
+        kin.neutrino.boost(kin.hadron_speed);       // a boost back to the nu-N CMS frame
         kin.neutrino.boost(kin.target.v());  // a boost back to tha LAB frame
 
-        lepton_out.boost(hadrspeed);       // a boost back to the nu-N CMS frame
-        lepton_out.boost(kin.target.v());  // a boost back to tha LAB frame
+        kin.lepton.boost(kin.hadron_speed);       // a boost back to the nu-N CMS frame
+        kin.lepton.boost(kin.target.v());  // a boost back to tha LAB frame
 
-        finnuk = finnuk.boost(hadrspeed);
+        finnuk = finnuk.boost(kin.hadron_speed);
         finnuk = finnuk.boost(kin.target.v());
 
-        finpion = finpion.boost(hadrspeed);
+        finpion = finpion.boost(kin.hadron_speed);
         finpion = finpion.boost(kin.target.v());
 
         particle ppion(finpion);
@@ -425,10 +410,10 @@ void resevent2(params &p, event &e, bool cc) {
         par[i].x = pythiaParticle->P[0][i] * GeV;
         par[i].y = pythiaParticle->P[1][i] * GeV;
         par[i].z = pythiaParticle->P[2][i] * GeV;
-        rotation(par[i], momtran);
+        rotation(par[i], kin.q);
         ks[i] = pythiaParticle->K[0][i];
 
-        par[i] = par[i].boost(hadrspeed);  // correct direction ???
+        par[i] = par[i].boost(kin.hadron_speed);  // correct direction ???
         par[i] = par[i].boost(kin.target.v());
         particle part(par[i]);
 

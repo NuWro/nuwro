@@ -10,12 +10,13 @@ struct res_kinematics {
 
   res_kinematics(const event& e);  //!< initialize basic kinmatics
 
-  void generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
+  bool generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
 
   bool is_above_threshold();  //!< check it neutrino energy is above thresholds
 
   particle neutrino;  //!< initial neutrino
   particle target;    //!< target nucleon
+  particle lepton;    //!< outgoing lepton
 
   double lepton_mass;   //!< outgoing lepton mass
   double lepton_mass2;  //!< outgoing lepton mass squared
@@ -27,6 +28,8 @@ struct res_kinematics {
   double W2;  //!< invariant mass squared
 
   vect q;  //!< four-momentum transfer
+
+  vec hadron_speed;  //!< the speed of hadronic system
 
   double jacobian;  //!< integration over z
 };
