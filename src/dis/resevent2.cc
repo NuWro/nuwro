@@ -77,32 +77,14 @@ void resevent2(params &p, event &e, bool cc) {
 
   e.out.push_back(final_lepton);
 
-  double ks[100];  // int czy double ???
+  // determine indices for SPP table (see singlepion.cc)
+  const int j = kin.neutrino.pdg < 0;
+  const int k = not cc;
+  const int l = kin.target.pdg != PDG::pdg_proton;
 
-  int j, k, l, t;
+  const int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
 
-  if (kin.neutrino.pdg > 0)  // the first part of the translation of the event into "spp language"
-    j = 0;
-  else {
-    j = 1;
-  }
-
-  if (cc)
-    k = 0;
-  else {
-    k = 1;
-  }
-
-  if (kin.target.pdg == 2212)
-    l = 0;
-  else {
-    l = 1;
-  }
-
-  int pion;
-
-  int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
-
+  // the contribution to the cross section coming from DIS
   const double fromdis = max(0.0, cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc));
 
   if (kin.W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
@@ -179,15 +161,17 @@ void resevent2(params &p, event &e, bool cc) {
         channel = 2;
     }
 
-    if (channel == 0) pion = 211;
-    if (channel == 1) pion = 111;
-    if (channel == 2) pion = -211;
+    int pion_pdg; // to remove later
 
-    int nukleon2 = nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, pion, cc);  // which nucleon in the final state
+    if (channel == 0) pion_pdg = 211;
+    if (channel == 1) pion_pdg = 111;
+    if (channel == 2) pion_pdg = -211;
+
+    int nukleon2 = nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, pion_pdg, cc);  // which nucleon in the final state
 
     vect finnuk, finpion;
 
-    kin2part(kin.W, nukleon2, pion, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
+    kin2part(kin.W, nukleon2, pion_pdg, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
 
     finnuk = finnuk.boost(kin.hadron_speed);
     finnuk = finnuk.boost(kin.target.v());
@@ -198,7 +182,7 @@ void resevent2(params &p, event &e, bool cc) {
     particle ppion(finpion);
     particle nnukleon(finnuk);
 
-    ppion.pdg = pion;
+    ppion.pdg = pion_pdg;
     nnukleon.pdg = nukleon2;
 
     e.out.push_back(ppion);
@@ -269,20 +253,23 @@ void resevent2(params &p, event &e, bool cc) {
                       pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111 ||
                       pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211))  // spp condition
     {
+      int t;
+      int pion_pdg; 
+
       if (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211)  // the second part
       {
         t = 0;
-        pion = 211;
+        pion_pdg = 211;
       }
 
       if (pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111) {
         t = 1;
-        pion = 111;
+        pion_pdg = 111;
       }
 
       if (pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211) {
         t = 2;
-        pion = -211;
+        pion_pdg = -211;
       }
       // cout<<pythiaParticle->K[1][3]<<" "<< pythiaParticle->K[1][4]<<endl;
       double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);  // dis contribution
@@ -302,7 +289,7 @@ void resevent2(params &p, event &e, bool cc) {
       // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
       double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg,
-                                      kin.target.pdg, nukleon2, pion, cc) /
+                                      kin.target.pdg, nukleon2, pion_pdg, cc) /
                          SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
       // cout<<delta_spp<<endl;
 
@@ -333,7 +320,6 @@ void resevent2(params &p, event &e, bool cc) {
           part.y = pythiaParticle->P[1][i] * GeV;
           part.z = pythiaParticle->P[2][i] * GeV;
           rotation(part, kin.q);
-          ks[i] = pythiaParticle->K[0][i];
 
           part = part.boost(kin.hadron_speed);  // correct direction ???
           part = part.boost(kin.target.v());
@@ -343,7 +329,7 @@ void resevent2(params &p, event &e, bool cc) {
           part.orgin = pythiaParticle->K[2][i];
 
           e.temp.push_back(part);
-          if (ks[i] == 1)  // condition for a real particle in the final state
+          if (part.ks == 1)  // condition for a real particle in the final state
           {
             e.out.push_back(part);
           }
@@ -354,7 +340,7 @@ void resevent2(params &p, event &e, bool cc) {
 
         kin.neutrino.boost(-kin.hadron_speed);  // a boost from nu-N CMS to the hadronic CMS
         kin.lepton.boost(-kin.hadron_speed);    // a boost from nu-N CMS to the hadronic CMS
-        kin4part(kin.neutrino, kin.lepton, kin.W, nukleon2, pion, finnuk, finpion,
+        kin4part(kin.neutrino, kin.lepton, kin.W, nukleon2, pion_pdg, finnuk, finpion,
                  p.delta_angular);  // produces 4-momenta of final pair: nucleon + pion with density matrix information
         e.weight *= angrew;         // reweight according to angular correlation
 
@@ -375,7 +361,7 @@ void resevent2(params &p, event &e, bool cc) {
         particle ppion(finpion);
         particle nnukleon(finnuk);
 
-        ppion.pdg = pion;
+        ppion.pdg = pion_pdg;
         nnukleon.pdg = nukleon2;
 
         e.out.push_back(ppion);
@@ -397,7 +383,6 @@ void resevent2(params &p, event &e, bool cc) {
         part.y = pythiaParticle->P[1][i] * GeV;
         part.z = pythiaParticle->P[2][i] * GeV;
         rotation(part, kin.q);
-        ks[i] = pythiaParticle->K[0][i];
 
         part = part.boost(kin.hadron_speed);  // correct direction ???
         part = part.boost(kin.target.v());
@@ -407,7 +392,7 @@ void resevent2(params &p, event &e, bool cc) {
         part.orgin = pythiaParticle->K[2][i];
 
         e.temp.push_back(part);
-        if (ks[i] == 1)  // condition for a real particle in the final state
+        if (part.ks == 1)  // condition for a real particle in the final state
         {
           e.out.push_back(part);
         }
