@@ -95,8 +95,8 @@ void resevent2(params &p, event &e, bool cc) {
   const double E = kin.neutrino.t;
   const double E2 = E * E;
 
-  // effective nucleon mass = proton mass for proton or average for neutron (TODO: why?)
-  const double Meff = min(kin.target.mass(), M12);  // TODO: can one use particle::mass here?
+  // effective nucleon mass (depends on binding energy)
+  const double Meff = min(sqrt(kin.target.p4()*kin.target.p4()), M12);
   const double Meff2 = Meff * Meff;
 
   // check threshold for pion production (e.weight = 0)
