@@ -42,10 +42,9 @@
 #include "pauli.h"
 #include "pdg_name.h"
 #include "resevent2.h"
+#include "res_kinematics.h"
 #include "singlepion.h"
 #include "vect.h"
-
-const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 
 TPythia6 *pythia71 = new TPythia6();
 extern "C" int pycomp_(const int *);
@@ -82,9 +81,9 @@ double get_binding_energy(const params &p, const vec &momentum) {
 }
 
 void resevent2(params &p, event &e, bool cc) {
-  res_kinematics kin(e);  // kinematics variables
+  e.weight = 0;  // if kinmetically forbidden
 
-  e.weight = 0;  // in case of error it is not changed
+  res_kinematics kin(e);  // kinematics variables
 
   // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
   const double m = cc * PDG::mass(abs(kin.neutrino.pdg) - 1);

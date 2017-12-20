@@ -35,7 +35,7 @@ TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2ne
 
 DIS=    charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
 	dis_cc_proton.o fragmentation.o fragmentation_nc.o fragmentation_cc.o singlepion.o \
-	disevent.o resevent2.o singlepionhadr.o alfa.o
+	disevent.o resevent2.o singlepionhadr.o alfa.o res_kinematics.o
 
 SF_OBJS = $(patsubst %.cc,%.o,$(wildcard src/sf/*.cc))
 GUI_OBJS = $(patsubst %.cc,%.o,$(wildcard src/gui/*.cc))
