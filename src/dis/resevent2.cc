@@ -79,6 +79,10 @@ double get_binding_energy(const params &p, const vec &momentum) {
 }
 
 void resevent2(params &p, event &e, bool cc) {
+  // some constant extracted from the previous version of the code
+  // are kept here for now TODO: move them somewhere (dis_constant.h or something)
+  static const double Wmin = 1080; // TODO: it is not exactly pion mass + nucleon mass 
+
   particle nu0 = e.in[0];   // incoming neutrino
   particle nuc0 = e.in[1];  // target nucleon
   e.weight = 0;             // in case of error it is not changed
@@ -98,13 +102,14 @@ void resevent2(params &p, event &e, bool cc) {
 
   // neutrino energy on the new frame
   const double E = nu0.t;
+  const double E2 = E * E;
 
   // effective nucleon mass = proton mass for proton or average for neutron (TODO: why?)
   const double Meff = min(nuc0.mass(), M12);  // TODO: can one use particle::mass here?
   const double Meff2 = Meff * Meff;
 
   // check threshold for pion production (e.weight = 0)
-  if (E < ((1080 + m) * (1080 + m) - Meff2) / 2 / Meff) return;
+  if (E < ((Wmin + m) * (Wmin + m) - Meff2) / 2 / Meff) return;
 
   /////////////////////////////////////////////////////////////
   //      Selection of points in W, nu plane
@@ -112,10 +117,9 @@ void resevent2(params &p, event &e, bool cc) {
 
   double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - m);
 
-  double W = 1080 + (Wmax - 1080) * frandom();
+  double W = Wmin + (Wmax - Wmin) * frandom();
 
   double W2 = W * W;
-  double E2 = E * E;
 
   double wminus = ((Meff + E) * (W2 - Meff2 - m2) + 2 * Meff * E2 -
                    E * sqrt(kwad(W2 - Meff2 - m2 - 2 * Meff * E) - 4 * m2 * Meff * (Meff + 2 * E))) /
@@ -130,7 +134,7 @@ void resevent2(params &p, event &e, bool cc) {
   double z = frandom();
   double nu = numin + (numax - numin) * z * z;  // enhance low energy transfers are preferred
 
-  double przedzial = (numax - numin) * (Wmax - 1080) * 2 * z;  // but compesated by this jakobian
+  double przedzial = (numax - numin) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
 
   // cout<<W<<"   "<<nu<<endl;
 
