@@ -77,7 +77,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   e.out.push_back(final_lepton);
 
-  vect par[100];
   double ks[100];  // int czy double ???
 
   int j, k, l, t;
@@ -328,16 +327,16 @@ void resevent2(params &p, event &e, bool cc) {
       if (reldis > los)  // disevent
       {
         for (int i = 0; i < NPar; i++) {
-          par[i].t = pythiaParticle->P[3][i] * GeV;
-          par[i].x = pythiaParticle->P[0][i] * GeV;
-          par[i].y = pythiaParticle->P[1][i] * GeV;
-          par[i].z = pythiaParticle->P[2][i] * GeV;
-          rotation(par[i], kin.q);
+          particle part;
+          part.t = pythiaParticle->P[3][i] * GeV;
+          part.x = pythiaParticle->P[0][i] * GeV;
+          part.y = pythiaParticle->P[1][i] * GeV;
+          part.z = pythiaParticle->P[2][i] * GeV;
+          rotation(part, kin.q);
           ks[i] = pythiaParticle->K[0][i];
 
-          par[i] = par[i].boost(kin.hadron_speed);  // correct direction ???
-          par[i] = par[i].boost(kin.target.v());
-          particle part(par[i]);
+          part = part.boost(kin.hadron_speed);  // correct direction ???
+          part = part.boost(kin.target.v());
 
           part.ks = pythiaParticle->K[0][i];
           part.pdg = pythiaParticle->K[1][i];
@@ -392,16 +391,16 @@ void resevent2(params &p, event &e, bool cc) {
       e.weight = fromdis * 1e-38 * kin.jacobian;
 
       for (int i = 0; i < NPar; i++) {
-        par[i].t = pythiaParticle->P[3][i] * GeV;
-        par[i].x = pythiaParticle->P[0][i] * GeV;
-        par[i].y = pythiaParticle->P[1][i] * GeV;
-        par[i].z = pythiaParticle->P[2][i] * GeV;
-        rotation(par[i], kin.q);
+        particle part;
+        part.t = pythiaParticle->P[3][i] * GeV;
+        part.x = pythiaParticle->P[0][i] * GeV;
+        part.y = pythiaParticle->P[1][i] * GeV;
+        part.z = pythiaParticle->P[2][i] * GeV;
+        rotation(part, kin.q);
         ks[i] = pythiaParticle->K[0][i];
 
-        par[i] = par[i].boost(kin.hadron_speed);  // correct direction ???
-        par[i] = par[i].boost(kin.target.v());
-        particle part(par[i]);
+        part = part.boost(kin.hadron_speed);  // correct direction ???
+        part = part.boost(kin.target.v());
 
         part.ks = pythiaParticle->K[0][i];
         part.pdg = pythiaParticle->K[1][i];
