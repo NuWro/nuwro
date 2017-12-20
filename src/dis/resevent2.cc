@@ -64,10 +64,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   res_kinematics kin(e);  // kinematics variables
 
-  // neutrino energy on the new frame
-  // const double E = kin.neutrino.t;
-  const double E2 = kin.neutrino.E() * kin.neutrino.E();
-
   // effective nucleon mass (depends on binding energy)
   const double Meff = min(sqrt(kin.target.p4()*kin.target.p4()), M12);
   const double Meff2 = Meff * Meff;
@@ -86,7 +82,7 @@ void resevent2(params &p, event &e, bool cc) {
   const double z = frandom();
 
   // determine energy transfer
-  const double A = (Meff + kin.neutrino.E()) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * E2;
+  const double A = (Meff + kin.neutrino.E()) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * kin.neutrino.E() * kin.neutrino.E();
   const double B = kin.neutrino.E() * sqrt(kwad(W2 - Meff2 - kin.lepton_mass2 - 2 * Meff * kin.neutrino.E()) - 4 * kin.lepton_mass2 * Meff * (Meff + 2 * kin.neutrino.E()));
   const double C = 2 * Meff * (Meff + 2 * kin.neutrino.E());
 
@@ -106,7 +102,7 @@ void resevent2(params &p, event &e, bool cc) {
   // cout<<"fromdis=  "<<fromdis<<endl;
   double q = sqrt(kwad(Meff + nu) - W2);                      // momentum transfer
   double kprim = sqrt(kwad(kin.neutrino.E() - nu) - kin.lepton_mass2);                     // final lepton
-  double cth = (E2 + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
+  double cth = (kin.neutrino.E() * kin.neutrino.E() + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
 
   vec kkprim;                                // the unit vector in the direction of scattered lepton
   if (abs(cth) > 1) return;                  // e.weight=0 already
