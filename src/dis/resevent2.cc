@@ -64,15 +64,11 @@ void resevent2(params &p, event &e, bool cc) {
 
   res_kinematics kin(e);  // kinematics variables
 
-  // effective nucleon mass (depends on binding energy)
-  const double Meff = min(sqrt(kin.target.p4()*kin.target.p4()), M12);
-  const double Meff2 = Meff * Meff;
-
   // check threshold for pion production (e.weight = 0)
-  if (kin.neutrino.E() < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - Meff2) / 2 / Meff) return;
+  if (kin.neutrino.E() < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - kin.effective_mass2) / 2 / kin.effective_mass) return;
 
   // determine max invariant mass (cannot be smaller than params::res_dis_cut)
-  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * kin.neutrino.E()) - kin.lepton_mass);
+  const double Wmax = min(p.res_dis_cut, sqrt(kin.effective_mass2 + 2 * kin.effective_mass * kin.neutrino.E()) - kin.lepton_mass);
 
   // choose random invariant mass (uniformly from [Wmin, Wmax])
   const double W = kin.Wmin + (Wmax - kin.Wmin) * frandom();
@@ -82,9 +78,9 @@ void resevent2(params &p, event &e, bool cc) {
   const double z = frandom();
 
   // determine energy transfer
-  const double A = (Meff + kin.neutrino.E()) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * kin.neutrino.E() * kin.neutrino.E();
-  const double B = kin.neutrino.E() * sqrt(kwad(W2 - Meff2 - kin.lepton_mass2 - 2 * Meff * kin.neutrino.E()) - 4 * kin.lepton_mass2 * Meff * (Meff + 2 * kin.neutrino.E()));
-  const double C = 2 * Meff * (Meff + 2 * kin.neutrino.E());
+  const double A = (kin.effective_mass + kin.neutrino.E()) * (W2 - kin.effective_mass2 - kin.lepton_mass2) + 2 * kin.effective_mass * kin.neutrino.E() * kin.neutrino.E();
+  const double B = kin.neutrino.E() * sqrt(kwad(W2 - kin.effective_mass2 - kin.lepton_mass2 - 2 * kin.effective_mass * kin.neutrino.E()) - 4 * kin.lepton_mass2 * kin.effective_mass * (kin.effective_mass + 2 * kin.neutrino.E()));
+  const double C = 2 * kin.effective_mass * (kin.effective_mass + 2 * kin.neutrino.E());
 
   const double wminus = (A - B) / C;
   const double wplus = (A + B) / C;
@@ -100,7 +96,7 @@ void resevent2(params &p, event &e, bool cc) {
   // cout<<"fromdis"<<fromdis<<endl;
   if (fromdis < 0) fromdis = 0;
   // cout<<"fromdis=  "<<fromdis<<endl;
-  double q = sqrt(kwad(Meff + nu) - W2);                      // momentum transfer
+  double q = sqrt(kwad(kin.effective_mass + nu) - W2);                      // momentum transfer
   double kprim = sqrt(kwad(kin.neutrino.E() - nu) - kin.lepton_mass2);                     // final lepton
   double cth = (kin.neutrino.E() * kin.neutrino.E() + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
 

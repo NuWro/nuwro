@@ -1,6 +1,8 @@
 #include "res_kinematics.h"
+#include "jednostki.h"
 
 const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
+const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;
 
 res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[1]) {
   // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
@@ -12,6 +14,10 @@ res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[
 
   // boost to the bound nucleon rest frame
   neutrino.boost(-target.v());
+
+  // effective nucleon mass depends on binding energy
+  effective_mass = min(sqrt(target.p4() * target.p4()), avg_nucleon_mass);
+  effective_mass2 = effective_mass * effective_mass;
 }
 
 double get_binding_energy(const params &p, const vec &momentum) {
