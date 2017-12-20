@@ -41,8 +41,11 @@
 #include "params.h"
 #include "pauli.h"
 #include "pdg_name.h"
+#include "resevent2.h"
 #include "singlepion.h"
 #include "vect.h"
+
+const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 
 TPythia6 *pythia71 = new TPythia6();
 extern "C" int pycomp_(const int *);
@@ -79,9 +82,7 @@ double get_binding_energy(const params &p, const vec &momentum) {
 }
 
 void resevent2(params &p, event &e, bool cc) {
-  // some constant extracted from the previous version of the code
-  // are kept here for now TODO: move them somewhere (dis_constant.h or something)
-  static const double Wmin = 1080; // TODO: it is not exactly pion mass + nucleon mass 
+  res_kinematics kin;  // kinematics variables
 
   particle nu0 = e.in[0];   // incoming neutrino
   particle nuc0 = e.in[1];  // target nucleon
@@ -91,11 +92,8 @@ void resevent2(params &p, event &e, bool cc) {
   const double m = cc * PDG::mass(abs(nu0.pdg) - 1);
   const double m2 = m * m;
 
-  // binding energy (based on nucleus_target)
-  const double _E_bind = get_binding_energy(p, nuc0.p());
-
-  // subtract bing energy from nucleon energy insize nucleus
-  nuc0.t -= _E_bind;
+  // subtract binding energy from nucleon energy inside nucleus
+  nuc0.t -= get_binding_energy(p, nuc0.p());
 
   // boost to the bound nucleon rest frame
   nu0.boost(-nuc0.v());
@@ -109,38 +107,32 @@ void resevent2(params &p, event &e, bool cc) {
   const double Meff2 = Meff * Meff;
 
   // check threshold for pion production (e.weight = 0)
-  if (E < ((Wmin + m) * (Wmin + m) - Meff2) / 2 / Meff) return;
+  if (E < ((kin.Wmin + m) * (kin.Wmin + m) - Meff2) / 2 / Meff) return;
 
-  /////////////////////////////////////////////////////////////
-  //      Selection of points in W, nu plane
-  /////////////////////////////////////////////////////////////
+  // determine max invariant mass (cannot be smaller than params::res_dis_cut)
+  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - m);
 
-  double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - m);
+  // choose random invariant mass (uniformly from [Wmin, Wmax])
+  const double W = kin.Wmin + (Wmax - kin.Wmin) * frandom();
+  const double W2 = W * W;
 
-  double W = Wmin + (Wmax - Wmin) * frandom();
+  // TODO: we integrate over z - what is its definition?
+  const double z = frandom();
 
-  double W2 = W * W;
+  // determine energy transfer
+  const double A = (Meff + E) * (W2 - Meff2 - m2) + 2 * Meff * E2;
+  const double B = E * sqrt(kwad(W2 - Meff2 - m2 - 2 * Meff * E) - 4 * m2 * Meff * (Meff + 2 * E));
+  const double C = 2 * Meff * (Meff + 2 * E);
 
-  double wminus = ((Meff + E) * (W2 - Meff2 - m2) + 2 * Meff * E2 -
-                   E * sqrt(kwad(W2 - Meff2 - m2 - 2 * Meff * E) - 4 * m2 * Meff * (Meff + 2 * E))) /
-                  2 / Meff / (Meff + 2 * E);
-
-  double wplus = ((Meff + E) * (W2 - Meff2 - m2) + 2 * Meff * E2 +
-                  E * sqrt(kwad(W2 - Meff2 - m2 - 2 * Meff * E) - 4 * m2 * Meff * (Meff + 2 * E))) /
-                 2 / Meff / (Meff + 2 * E);
+  const double wminus = (A - B) / C;
+  const double wplus = (A + B) / C;
 
   double numin = max(wminus, m);
   double numax = min(wplus, E - m);
-  double z = frandom();
+
   double nu = numin + (numax - numin) * z * z;  // enhance low energy transfers are preferred
 
-  double przedzial = (numax - numin) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
-
-  // cout<<W<<"   "<<nu<<endl;
-
-  ///////////////////////////////////////////////////////////////
-  //      End of selection of points in W, nu plane
-  /////////////////////////////////////////////////////////////
+  double przedzial = (numax - numin) * (Wmax - kin.Wmin) * 2 * z;  // but compesated by this jakobian
 
   double fromdis = cr_sec_dis(E, W, nu, nu0.pdg, nuc0.pdg, cc);
   // cout<<"fromdis"<<fromdis<<endl;
