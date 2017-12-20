@@ -59,51 +59,24 @@ double pdd_red(double energy) {
     return 0.2 + energy * 0.2 / 250.0;
 }
 
-double get_binding_energy(const params &p, const vec &momentum) {
-  switch (p.nucleus_target) {
-    case 0:
-      return 0;  // free nucleon
-    case 1:
-      return p.nucleus_E_b;  // (global) Fermi gas
-    case 2:
-      return 0;  // local Fermi gas TODO: why 0?
-    case 3:
-      return 0;  // Bodek-Ritchie
-    case 4:
-      return binen(momentum, p.nucleus_p, p.nucleus_n);  // effective spectral function
-    case 5:
-      return deuter_binen(momentum);  // deuterium
-    case 6:
-      return p.nucleus_E_b;  // deuterium with constant binding energy
-    default:
-      return 0;
-  }
-}
-
 void resevent2(params &p, event &e, bool cc) {
   e.weight = 0;  // if kinmetically forbidden
 
   res_kinematics kin(e);  // kinematics variables
 
-  // subtract binding energy from nucleon energy inside nucleus
-  kin.target.t -= get_binding_energy(p, kin.target.p());
-
-  // boost to the bound nucleon rest frame
-  kin.neutrino.boost(-kin.target.v());
-
   // neutrino energy on the new frame
-  const double E = kin.neutrino.t;
-  const double E2 = E * E;
+  // const double E = kin.neutrino.t;
+  const double E2 = kin.neutrino.E() * kin.neutrino.E();
 
   // effective nucleon mass (depends on binding energy)
   const double Meff = min(sqrt(kin.target.p4()*kin.target.p4()), M12);
   const double Meff2 = Meff * Meff;
 
   // check threshold for pion production (e.weight = 0)
-  if (E < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - Meff2) / 2 / Meff) return;
+  if (kin.neutrino.E() < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - Meff2) / 2 / Meff) return;
 
   // determine max invariant mass (cannot be smaller than params::res_dis_cut)
-  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - kin.lepton_mass);
+  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * kin.neutrino.E()) - kin.lepton_mass);
 
   // choose random invariant mass (uniformly from [Wmin, Wmax])
   const double W = kin.Wmin + (Wmax - kin.Wmin) * frandom();
@@ -113,27 +86,27 @@ void resevent2(params &p, event &e, bool cc) {
   const double z = frandom();
 
   // determine energy transfer
-  const double A = (Meff + E) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * E2;
-  const double B = E * sqrt(kwad(W2 - Meff2 - kin.lepton_mass2 - 2 * Meff * E) - 4 * kin.lepton_mass2 * Meff * (Meff + 2 * E));
-  const double C = 2 * Meff * (Meff + 2 * E);
+  const double A = (Meff + kin.neutrino.E()) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * E2;
+  const double B = kin.neutrino.E() * sqrt(kwad(W2 - Meff2 - kin.lepton_mass2 - 2 * Meff * kin.neutrino.E()) - 4 * kin.lepton_mass2 * Meff * (Meff + 2 * kin.neutrino.E()));
+  const double C = 2 * Meff * (Meff + 2 * kin.neutrino.E());
 
   const double wminus = (A - B) / C;
   const double wplus = (A + B) / C;
 
   double numin = max(wminus, kin.lepton_mass);
-  double numax = min(wplus, E - kin.lepton_mass);
+  double numax = min(wplus, kin.neutrino.E() - kin.lepton_mass);
 
   double nu = numin + (numax - numin) * z * z;  // enhance low energy transfers are preferred
 
   double przedzial = (numax - numin) * (Wmax - kin.Wmin) * 2 * z;  // but compesated by this jakobian
 
-  double fromdis = cr_sec_dis(E, W, nu, kin.neutrino.pdg, kin.target.pdg, cc);
+  double fromdis = cr_sec_dis(kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg, cc);
   // cout<<"fromdis"<<fromdis<<endl;
   if (fromdis < 0) fromdis = 0;
   // cout<<"fromdis=  "<<fromdis<<endl;
   double q = sqrt(kwad(Meff + nu) - W2);                      // momentum transfer
-  double kprim = sqrt(kwad(E - nu) - kin.lepton_mass2);                     // final lepton
-  double cth = (E2 + kprim * kprim - q * q) / 2 / E / kprim;  // final lepton
+  double kprim = sqrt(kwad(kin.neutrino.E() - nu) - kin.lepton_mass2);                     // final lepton
+  double cth = (E2 + kprim * kprim - q * q) / 2 / kin.neutrino.E() / kprim;  // final lepton
 
   vec kkprim;                                // the unit vector in the direction of scattered lepton
   if (abs(cth) > 1) return;                  // e.weight=0 already
@@ -141,7 +114,7 @@ void resevent2(params &p, event &e, bool cc) {
 
   kkprim = kprim * kkprim;  // multiplied by its length
 
-  vect lepton_out = vect(E - nu, kkprim.x, kkprim.y, kkprim.z);
+  vect lepton_out = vect(kin.neutrino.E() - nu, kkprim.x, kkprim.y, kkprim.z);
 
   vec momtran = kin.neutrino.p() - kkprim;
 
@@ -209,34 +182,34 @@ void resevent2(params &p, event &e, bool cc) {
     double adel2 = alfadelta(j, k, l, 2, W);
 
     if (finalcharge == 2) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2212, 211, cc) *
                adel0;
       delta1 = delta2 = 0;
     }
 
     if (finalcharge == 1) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2112, 211, cc) *
                adel0;
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2212, 111, cc) *
                adel1;
       delta2 = 0;
     }
 
     if (finalcharge == 0) {
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2112, 111, cc) *
                adel1;
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2212, -211, cc) *
                adel2;
       delta0 = 0;
     }
 
     if (finalcharge == -1) {
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg, kin.target.pdg,
+      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg, kin.target.pdg,
                             2112, -211, cc) *
                adel2;
       delta0 = delta1 = 0;
@@ -339,7 +312,7 @@ void resevent2(params &p, event &e, bool cc) {
     double W1 = W / GeV;       // W1 w GeV-ach potrzebne do Pythii
 
     while (NPar < 5) {
-      hadronization(E, W, nu, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
+      hadronization(kin.neutrino.E(), W, nu, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
       pythiaParticle = pythia71->GetPyjets();
       NPar = pythia71->GetN();
     }
@@ -388,7 +361,7 @@ void resevent2(params &p, event &e, bool cc) {
       // if (SPPF (j,k,l,t,W)<0.01)
       // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, E, W, nu, kin.neutrino.pdg,
+      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), W, nu, kin.neutrino.pdg,
                                       kin.target.pdg, nukleon2, pion, cc) /
                          SPPF(j, k, l, t, W) * alfadelta(j, k, l, t, W);
       // cout<<delta_spp<<endl;

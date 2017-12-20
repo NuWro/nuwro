@@ -16,4 +16,7 @@ struct res_kinematics {
   double lepton_mass2; //!< outgoing lepton mass squared
 };
 
+//! get the value of binding energy according to setting from params
+double get_binding_energy(const params& p, const vec& momentum);
+
 #endif
