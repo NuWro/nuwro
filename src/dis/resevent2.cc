@@ -70,26 +70,15 @@ void resevent2(params &p, event &e, bool cc) {
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(p.res_dis_cut)) return;
 
+  // save final lepton (kin.lepton is in target rest frame so boost it first)
+  particle final_lepton = kin.lepton;
+  final_lepton.boost(kin.target.v());
+  final_lepton.pdg = kin.neutrino.pdg + cc * (1 - 2.0 * (kin.neutrino.pdg > 0));
+
+  e.out.push_back(final_lepton);
+
   vect par[100];
   double ks[100];  // int czy double ???
-
-  par[0] = kin.lepton;
-  // powrot do ukladu spoczywajacej tarczy
-  par[0] = par[0].boost(kin.target.v());  // ok
-
-  particle lept(par[0]);
-
-  if (cc == true && kin.neutrino.pdg > 0) {
-    lept.pdg = kin.neutrino.pdg - 1;
-  }
-  if (cc == true && kin.neutrino.pdg < 0) {
-    lept.pdg = kin.neutrino.pdg + 1;
-  }
-  if (cc == false) {
-    lept.pdg = kin.neutrino.pdg;
-  }
-
-  e.out.push_back(lept);  // final lepton; ok
 
   int j, k, l, t;
 
@@ -431,4 +420,5 @@ void resevent2(params &p, event &e, bool cc) {
 
   // E above threshold
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
+  for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
 }

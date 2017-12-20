@@ -16,7 +16,7 @@ struct res_kinematics {
 
   particle neutrino;  //!< initial neutrino
   particle target;    //!< target nucleon
-  particle lepton;    //!< outgoing lepton
+  particle lepton;    //!< outgoing lepton (note: not in LAB frame)
 
   double lepton_mass;   //!< outgoing lepton mass
   double lepton_mass2;  //!< outgoing lepton mass squared
