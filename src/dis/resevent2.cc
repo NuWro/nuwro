@@ -70,11 +70,6 @@ void resevent2(params &p, event &e, bool cc) {
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(p.res_dis_cut)) return;
 
-  double fromdis = cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc);
-  // cout<<"fromdis"<<fromdis<<endl;
-  if (fromdis < 0) fromdis = 0;
-  // cout<<"fromdis=  "<<fromdis<<endl;
-
   vect par[100];
   double ks[100];  // int czy double ???
 
@@ -119,6 +114,8 @@ void resevent2(params &p, event &e, bool cc) {
   int pion;
 
   int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
+
+  const double fromdis = max(0.0, cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc));
 
   if (kin.W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
   {
