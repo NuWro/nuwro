@@ -85,10 +85,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   res_kinematics kin(e);  // kinematics variables
 
-  // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
-  const double m = cc * PDG::mass(abs(kin.neutrino.pdg) - 1);
-  const double m2 = m * m;
-
   // subtract binding energy from nucleon energy inside nucleus
   kin.target.t -= get_binding_energy(p, kin.target.p());
 
@@ -104,10 +100,10 @@ void resevent2(params &p, event &e, bool cc) {
   const double Meff2 = Meff * Meff;
 
   // check threshold for pion production (e.weight = 0)
-  if (E < ((kin.Wmin + m) * (kin.Wmin + m) - Meff2) / 2 / Meff) return;
+  if (E < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - Meff2) / 2 / Meff) return;
 
   // determine max invariant mass (cannot be smaller than params::res_dis_cut)
-  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - m);
+  const double Wmax = min(p.res_dis_cut, sqrt(Meff2 + 2 * Meff * E) - kin.lepton_mass);
 
   // choose random invariant mass (uniformly from [Wmin, Wmax])
   const double W = kin.Wmin + (Wmax - kin.Wmin) * frandom();
@@ -117,15 +113,15 @@ void resevent2(params &p, event &e, bool cc) {
   const double z = frandom();
 
   // determine energy transfer
-  const double A = (Meff + E) * (W2 - Meff2 - m2) + 2 * Meff * E2;
-  const double B = E * sqrt(kwad(W2 - Meff2 - m2 - 2 * Meff * E) - 4 * m2 * Meff * (Meff + 2 * E));
+  const double A = (Meff + E) * (W2 - Meff2 - kin.lepton_mass2) + 2 * Meff * E2;
+  const double B = E * sqrt(kwad(W2 - Meff2 - kin.lepton_mass2 - 2 * Meff * E) - 4 * kin.lepton_mass2 * Meff * (Meff + 2 * E));
   const double C = 2 * Meff * (Meff + 2 * E);
 
   const double wminus = (A - B) / C;
   const double wplus = (A + B) / C;
 
-  double numin = max(wminus, m);
-  double numax = min(wplus, E - m);
+  double numin = max(wminus, kin.lepton_mass);
+  double numax = min(wplus, E - kin.lepton_mass);
 
   double nu = numin + (numax - numin) * z * z;  // enhance low energy transfers are preferred
 
@@ -136,7 +132,7 @@ void resevent2(params &p, event &e, bool cc) {
   if (fromdis < 0) fromdis = 0;
   // cout<<"fromdis=  "<<fromdis<<endl;
   double q = sqrt(kwad(Meff + nu) - W2);                      // momentum transfer
-  double kprim = sqrt(kwad(E - nu) - m2);                     // final lepton
+  double kprim = sqrt(kwad(E - nu) - kin.lepton_mass2);                     // final lepton
   double cth = (E2 + kprim * kprim - q * q) / 2 / E / kprim;  // final lepton
 
   vec kkprim;                                // the unit vector in the direction of scattered lepton
@@ -343,7 +339,7 @@ void resevent2(params &p, event &e, bool cc) {
     double W1 = W / GeV;       // W1 w GeV-ach potrzebne do Pythii
 
     while (NPar < 5) {
-      hadronization(E, W, nu, m, kin.neutrino.pdg, kin.target.pdg, cc);
+      hadronization(E, W, nu, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
       pythiaParticle = pythia71->GetPyjets();
       NPar = pythia71->GetN();
     }
