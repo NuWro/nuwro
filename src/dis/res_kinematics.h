@@ -10,6 +10,8 @@ struct res_kinematics {
 
   res_kinematics(const event& e);  //!< initialize basic kinmatics
 
+  bool is_possible();  //!< check it neutrino energy is above thresholds
+
   particle neutrino;  //!< initial neutrino
   particle target;    //!< target nucleon
 

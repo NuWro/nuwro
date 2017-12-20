@@ -20,6 +20,10 @@ res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[
   effective_mass2 = effective_mass * effective_mass;
 }
 
+bool res_kinematics::is_possible() {
+  return neutrino.E() > ((Wmin + lepton_mass) * (Wmin + lepton_mass) - effective_mass2) / 2.0 / effective_mass;
+}
+
 double get_binding_energy(const params &p, const vec &momentum) {
   switch (p.nucleus_target) {
     case 0:  // free nucleon

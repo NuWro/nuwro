@@ -64,8 +64,8 @@ void resevent2(params &p, event &e, bool cc) {
 
   res_kinematics kin(e);  // kinematics variables
 
-  // check threshold for pion production (e.weight = 0)
-  if (kin.neutrino.E() < ((kin.Wmin + kin.lepton_mass) * (kin.Wmin + kin.lepton_mass) - kin.effective_mass2) / 2 / kin.effective_mass) return;
+  // check threshold for pion production (otherwise left e.weight = 0)
+  if (not kin.is_possible()) return;
 
   // determine max invariant mass (cannot be smaller than params::res_dis_cut)
   const double Wmax = min(p.res_dis_cut, sqrt(kin.effective_mass2 + 2 * kin.effective_mass * kin.neutrino.E()) - kin.lepton_mass);
