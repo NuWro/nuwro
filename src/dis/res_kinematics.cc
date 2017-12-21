@@ -3,6 +3,7 @@
 
 const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;
+const double res_kinematics::pythia_threshold = 1210;
 
 // set all necessary variables so is_above_threshold may be called
 res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[1]) {
@@ -74,10 +75,6 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
   hadron_speed = q / sqrt(W2 + q3 * q3);
 
   return true;
-}
-
-bool res_kinematics::is_above_threshold() {
-  return neutrino.E() > ((Wmin + lepton_mass) * (Wmin + lepton_mass) - effective_mass2) / 2.0 / effective_mass;
 }
 
 double get_binding_energy(const params &p, const vec &momentum) {

@@ -7,12 +7,22 @@
 struct res_kinematics {
   static const double Wmin;              //!< invariant mass threshold
   static const double avg_nucleon_mass;  //!< average nucleon mass
+  static const double pythia_threshold;  //!< do not use PYTHIA below this W
 
   res_kinematics(const event& e);  //!< initialize basic kinmatics
 
   bool generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
 
-  bool is_above_threshold();  //!< check it neutrino energy is above thresholds
+  //! check it neutrino energy is above thresholds
+  inline bool is_above_threshold() {
+    return neutrino.E() > ((Wmin + lepton_mass) * (Wmin + lepton_mass) - effective_mass2) / 2.0 / effective_mass;
+  }
+
+  //! check if W is above PYTHIA threshold
+  inline bool is_above_pythia_threshold() {
+    // PYTHIA does not work in this region and special treatment is required
+    return W > pythia_threshold;
+  }
 
   particle neutrino;  //!< initial neutrino
   particle target;    //!< target nucleon

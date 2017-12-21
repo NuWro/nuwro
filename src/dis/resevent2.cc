@@ -87,7 +87,7 @@ void resevent2(params &p, event &e, bool cc) {
   // the contribution to the cross section coming from DIS
   const double fromdis = max(0.0, cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc));
 
-  if (kin.W < 1210 || fromdis == 0)  // PYTHIA does not work in this region and special treatment is required
+  if (not kin.is_above_pythia_threshold() || fromdis == 0)
   {
     double spp0 = SPP[j][k][l][0][0];
     double spp1 = SPP[j][k][l][1][0];
