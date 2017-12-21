@@ -4,6 +4,9 @@
 #include "event1.h"
 #include "params.h"
 
+// in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
+enum { pip, pi0, pim } spp_code;
+
 //! cross section reduction to remove contribution from pion-less delta decay
 double pdd_red(double energy);
 

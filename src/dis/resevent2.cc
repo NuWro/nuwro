@@ -89,19 +89,16 @@ void resevent2(params &p, event &e, bool cc) {
 
   if (not kin.is_above_pythia_threshold() || fromdis == 0)
   {
-    double spp0 = SPP[j][k][l][0][0];
-    double spp1 = SPP[j][k][l][1][0];
-    double spp2 = SPP[j][k][l][2][0];
+    // contribution from DIS
+    const double dis_pip = fromdis * SPP[j][k][l][pip][0] * betadis(j, k, l, pip, kin.W, p.bkgrscaling);
+    const double dis_pi0 = fromdis * SPP[j][k][l][pi0][0] * betadis(j, k, l, pi0, kin.W, p.bkgrscaling);
+    const double dis_pim = fromdis * SPP[j][k][l][pim][0] * betadis(j, k, l, pim, kin.W, p.bkgrscaling);
 
-    double dis0 = fromdis * spp0 * betadis(j, k, l, 0, kin.W, p.bkgrscaling);
-    double dis1 = fromdis * spp1 * betadis(j, k, l, 1, kin.W, p.bkgrscaling);
-    double dis2 = fromdis * spp2 * betadis(j, k, l, 2, kin.W, p.bkgrscaling);  // can be made simpler !!!
+    const double adel0 = alfadelta(j, k, l, 0, kin.W);
+    const double adel1 = alfadelta(j, k, l, 1, kin.W);
+    const double adel2 = alfadelta(j, k, l, 2, kin.W);
 
     double delta0 = 0, delta1 = 0, delta2 = 0;
-
-    double adel0 = alfadelta(j, k, l, 0, kin.W);
-    double adel1 = alfadelta(j, k, l, 1, kin.W);
-    double adel2 = alfadelta(j, k, l, 2, kin.W);
 
     if (finalcharge == 2) {
       delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
@@ -138,11 +135,11 @@ void resevent2(params &p, event &e, bool cc) {
     }
 
     // we arrived at the overall strength !!!
-    double wsumie = dis0 + dis1 + dis2 + delta0 + delta1 + delta2;
+    double wsumie = dis_pip + dis_pi0 + dis_pim + delta0 + delta1 + delta2;
 
-    double reldis0 = dis0 / wsumie;
-    double reldis1 = dis1 / wsumie;
-    double reldis2 = dis2 / wsumie;
+    double reldis0 = dis_pip / wsumie;
+    double reldis1 = dis_pi0 / wsumie;
+    double reldis2 = dis_pim / wsumie;
     double reldelta0 = delta0 / wsumie;
     double reldelta1 = delta1 / wsumie;
     double reldelta2 = delta2 / wsumie;
