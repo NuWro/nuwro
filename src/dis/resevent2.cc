@@ -89,59 +89,53 @@ void resevent2(params &p, event &e, bool cc) {
 
   if (not kin.is_above_pythia_threshold() || fromdis == 0)
   {
-    // contribution from DIS
+    // contributions from DIS
     const double dis_pip = fromdis * SPP[j][k][l][pip][0] * betadis(j, k, l, pip, kin.W, p.bkgrscaling);
     const double dis_pi0 = fromdis * SPP[j][k][l][pi0][0] * betadis(j, k, l, pi0, kin.W, p.bkgrscaling);
     const double dis_pim = fromdis * SPP[j][k][l][pim][0] * betadis(j, k, l, pim, kin.W, p.bkgrscaling);
 
-    const double adel0 = alfadelta(j, k, l, 0, kin.W);
-    const double adel1 = alfadelta(j, k, l, 1, kin.W);
-    const double adel2 = alfadelta(j, k, l, 2, kin.W);
+    // contributions from Delta
+    double delta_pip = 0, delta_pi0 = 0, delta_pim = 0;
 
-    double delta0 = 0, delta1 = 0, delta2 = 0;
-
-    if (finalcharge == 2) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_proton, PDG::pdg_piP, cc) *
-               adel0;
-      delta1 = delta2 = 0;
-    }
-
-    if (finalcharge == 1) {
-      delta0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_neutron, PDG::pdg_piP, cc) *
-               adel0;
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_proton, PDG::pdg_pi, cc) *
-               adel1;
-      delta2 = 0;
-    }
-
-    if (finalcharge == 0) {
-      delta1 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_neutron, PDG::pdg_pi, cc) *
-               adel1;
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_proton, -PDG::pdg_piP, cc) *
-               adel2;
-      delta0 = 0;
-    }
-
-    if (finalcharge == -1) {
-      delta2 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg,
-                            PDG::pdg_neutron, -PDG::pdg_piP, cc) *
-               adel2;
-      delta0 = delta1 = 0;
-    }
+    switch (finalcharge) {
+      case 2:  // pi+ + proton
+        delta_pip = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, PDG::pdg_piP, cc) *
+                    alfadelta(j, k, l, pip, kin.W);
+        break;
+      case 1:  // pi+ + neutron or pi0 + proton
+        delta_pip = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, PDG::pdg_piP, cc) *
+                    alfadelta(j, k, l, pip, kin.W);
+        delta_pi0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, PDG::pdg_pi, cc) *
+                    alfadelta(j, k, l, pi0, kin.W);
+        break;
+      case 0:  // pi0 + neutron or pi- + proton
+        delta_pi0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, PDG::pdg_pi, cc) *
+                    alfadelta(j, k, l, pi0, kin.W);
+        delta_pim = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, -PDG::pdg_piP, cc) *
+                    alfadelta(j, k, l, pim, kin.W);
+        break;
+      case -1:  // pi- + neutron
+        delta_pim = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, -PDG::pdg_piP, cc) *
+                    alfadelta(j, k, l, pim, kin.W);
+        break;
+      default:
+        cerr << "[WARNING]: charge out of rangen\n";
+    };
 
     // we arrived at the overall strength !!!
-    double wsumie = dis_pip + dis_pi0 + dis_pim + delta0 + delta1 + delta2;
+    double total = dis_pip + dis_pi0 + dis_pim + delta_pip + delta_pi0 + delta_pim;
 
-    const double pip_fraction = (dis_pip  + delta0) / wsumie;
-    const double pi0_fraction = (dis_pi0  + delta1) / wsumie;
-    const double pim_fraction = (dis_pim  + delta2) / wsumie;
+    const double pip_fraction = (dis_pip  + delta_pip) / total;
+    const double pi0_fraction = (dis_pi0  + delta_pi0) / total;
+    const double pim_fraction = (dis_pim  + delta_pim) / total;
 
-    e.weight = wsumie * 1e-38 * kin.jacobian;
+    e.weight = total * 1e-38 * kin.jacobian;
 
     int channel;
     double los = frandom();
