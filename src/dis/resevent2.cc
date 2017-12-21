@@ -137,26 +137,21 @@ void resevent2(params &p, event &e, bool cc) {
     // we arrived at the overall strength !!!
     double wsumie = dis_pip + dis_pi0 + dis_pim + delta0 + delta1 + delta2;
 
-    double reldis0 = dis_pip / wsumie;
-    double reldis1 = dis_pi0 / wsumie;
-    double reldis2 = dis_pim / wsumie;
-    double reldelta0 = delta0 / wsumie;
-    double reldelta1 = delta1 / wsumie;
-    double reldelta2 = delta2 / wsumie;
+    const double pip_fraction = (dis_pip  + delta0) / wsumie;
+    const double pi0_fraction = (dis_pi0  + delta1) / wsumie;
+    const double pim_fraction = (dis_pim  + delta2) / wsumie;
 
-    // cout<<" "<<W<<" "<<nu<<endl;
     e.weight = wsumie * 1e-38 * kin.jacobian;
 
     int channel;
     double los = frandom();
-    if ((reldelta0 + reldis0) > los)
+
+    if (pip_fraction > los)
       channel = 0;
-    else {
-      if ((reldelta0 + reldelta1 + reldis0 + reldis1) > los)
+    else if (pip_fraction + pi0_fraction > los)
         channel = 1;
-      else
+    else
         channel = 2;
-    }
 
     int pion_pdg; // to remove later
 
