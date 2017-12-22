@@ -1,25 +1,27 @@
-// clang-format off
-////////////////This function calculates RES event
-////////////////RES region is defined in the hadronic mass from 1080 to the parameter res_dis_cut introduced in params.txt
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////The following model of the #Sect is postulated
-///////// XSect (nu + N -> mu + N' + pi)/dW d omega  = [XSect (nu + N -> mu + N' + pi)/dW d omega ]_Delta * alfadelta (W) +
-//////////                                             [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_SPP* SPP(W) * alfados(W) +
-//////////                                             [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_nonSPP
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////// The main idea behind is that DIS contribution simulates non-resonant part
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////// The functions alfa and beta are a priori arbitrary but they have to satisfy the conditions
-/////////// alfadis(res_dis_cut)=1, ....alfadelta(res_dis_cut=0,............alfadis (1080)=0
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////alfadis and alfadelta are defined in alfa.cc
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////In principle for each channel the functions should be different. They should be fitted to experimental data
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/neutron    pi+/pi0/pi-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// clang-format on
+/*
+This function calculates RES event
+RES region is defined in the hadronic mass from 1080 to the parameter res_dis_cut introduced in params.txt
 
+The following model of the #Sect is postulated
+
+XSect (nu + N -> mu + N' + pi)/dW d omega = [XSect (nu + N -> mu + N' + pi)/dW d omega ]_Delta * alfadelta (W) +
+                                            [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_SPP* SPP(W) * alfados(W) +
+                                            [XSect (nu + N -> mu + N' + pi)/dW d omega ]_DIS_nonSPP
+
+The main idea behind is that DIS contribution simulates non-resonant part
+
+The functions alfa and beta are a priori arbitrary but they have to satisfy the conditions
+
+  alfadis(res_dis_cut)=1, ....alfadelta(res_dis_cut=0,............alfadis (1080)=0
+
+alfadis and alfadelta are defined in alfa.cc
+
+In principle for each channel the functions should be different. They should be fitted to experimental data
+
+Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/neutron    pi+/pi0/pi-
+*/
+
+#include "resevent2.h"
 #include <TMCParticle.h>
 #include <cmath>
 #include <cstdlib>
@@ -40,61 +42,12 @@
 #include "params.h"
 #include "pauli.h"
 #include "pdg_name.h"
-#include "resevent2.h"
 #include "res_kinematics.h"
 #include "singlepion.h"
 #include "vect.h"
 
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
-
-double pdd_red(double energy) {
-  if (energy >= 1000)
-    return 0.85;
-  else if (energy > 750)
-    return 0.65 + energy * 0.05 / 250.0;
-  else  // if (en<=750)
-    return 0.2 + energy * 0.2 / 250.0;
-}
-
-TPythia6 *get_pythia() {
-  TPythia6 *pythia71 = new TPythia6();
-
-  //////////////////////////////////////////////
-  //      Setting Pythia parameters
-  //      Done by Jaroslaw Nowak
-  //////////////////////////////////////////////
-
-  // stable pi0
-  pythia71->SetMDCY(pycomp_(&pizero), 1, 0);
-
-  pythia71->SetMSTU(20, 1);  // advirsory warning for unphysical flavour switch off
-  pythia71->SetMSTU(23, 1);  // It sets counter of errors at 0
-  pythia71->SetMSTU(26, 0);  // no warnings printed
-
-  // PARJ(32)(D=1GeV) is, with quark masses added, used to define the minimum allowable enrgy of a colour singlet
-  // parton system
-  pythia71->SetPARJ(33, 0.1);
-
-  // PARJ(33)-PARJ(34)(D=0.8GeV, 1.5GeV) are, with quark masses added, used to define the remaining energy below
-  // which the fragmentation of a parton system is stopped and two final hadrons formed.
-  pythia71->SetPARJ(34, 0.5);
-  pythia71->SetPARJ(35, 1.0);
-
-  // PARJ(36) (D=2.0GeV) represents the dependence of the mass of final quark pair for defining the stopping point
-  // of the fragmentation. Strongly corlated with PARJ(33-35)
-  pythia71->SetPARJ(37, 1.);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-  // MSTJ(17) (D=2) number of attemps made to find two hadrons that have a combined mass below the cluster mass and
-  // thus allow a cluster to decay rather than collaps
-  pythia71->SetMSTJ(18, 3);  // do not change
-
-  //////////////////////////////////////////////
-  //      End of setting Pythia parameters
-  //////////////////////////////////////////////
-
-  return pythia71;
-}
 
 void resevent2(params &p, event &e, bool cc) {
   e.weight = 0;  // if kinmetically forbidden
@@ -215,20 +168,20 @@ void resevent2(params &p, event &e, bool cc) {
     int nof_particles = 0;     // number of particles in the final state
     Pyjets_t *pythiaParticle;  // pythia particles placeholder
 
-    // force less than 5 particles in the final state (lepton, target, nucleon, pion?)
+    // force at least 5 particles in the final state
+    // TODO: including initial particles?
     while (nof_particles < 5) {
       hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
       pythiaParticle = pythia71->GetPyjets();
       nof_particles = pythia71->GetN();
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////There are three different possible outcomes:
-    ///////////     a) spp event nof_particles=5
-    ///////////     b) more inelastic event nof_particles>5, typically 7
-    ///////////     c) single kaon production; this causes technical complications because nof_particles=5 also in this
-    /// case
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    There are three different possible outcomes:
+      a) spp event nof_particles = 5
+      b) more inelastic event nof_particles > 5, typically 7
+      c) single kaon production; this causes technical complications because nof_particles = 5 also in this case
+    */
 
     if (nof_particles == 5 && (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211 ||
                                pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111 ||
@@ -387,4 +340,45 @@ void resevent2(params &p, event &e, bool cc) {
   // E above threshold
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
   for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
+}
+
+double pdd_red(double energy) {
+  if (energy >= 1000)
+    return 0.85;
+  else if (energy > 750)
+    return 0.65 + energy * 0.05 / 250.0;
+  else  // if (en<=750)
+    return 0.2 + energy * 0.2 / 250.0;
+}
+
+TPythia6 *get_pythia() {
+  TPythia6 *pythia71 = new TPythia6();
+
+  // Setting Pythia parameters - done by Jaroslaw Nowak
+
+  // stable pi0
+  pythia71->SetMDCY(pycomp_(&pizero), 1, 0);
+
+  pythia71->SetMSTU(20, 1);  // advirsory warning for unphysical flavour switch off
+  pythia71->SetMSTU(23, 1);  // It sets counter of errors at 0
+  pythia71->SetMSTU(26, 0);  // no warnings printed
+
+  // PARJ(32)(D=1GeV)
+  // is, with quark masses added, used to define the minimum allowable enrgy of a colour singlet parton system
+  pythia71->SetPARJ(33, 0.1);
+
+  // PARJ(33)-PARJ(34)(D=0.8GeV, 1.5GeV) are, with quark masses added, used to define the remaining energy below which
+  // the fragmentation of a parton system is stopped and two final hadrons formed.
+  pythia71->SetPARJ(34, 0.5);
+  pythia71->SetPARJ(35, 1.0);
+
+  // PARJ(36) (D=2.0GeV) represents the dependence of the mass of final quark pair for defining the stopping point of
+  // the fragmentation. Strongly corlated with PARJ(33-35)
+  pythia71->SetPARJ(37, 1.);
+
+  // MSTJ(17) (D=2) number of attemps made to find two hadrons that have a combined mass below the cluster mass and thus
+  // allow a cluster to decay rather than collaps
+  pythia71->SetMSTJ(18, 3);
+
+  return pythia71;
 }
