@@ -161,18 +161,19 @@ void resevent2(params &p, event &e, bool cc) {
     // save final state hadrons
     e.out.push_back(final_pion);
     e.out.push_back(final_nucleon);
-  } else  // the algorithm starts from the production of PYTHIA event
+  } else // W above pythia threshold and fromdis > 0
   {
+    // the algorithm starts from the production of PYTHIA event
     TPythia6 *pythia71 = get_pythia();
 
     int nof_particles = 0;     // number of particles in the final state
-    Pyjets_t *pythiaParticle;  // pythia particles placeholder
+    Pyjets_t *pythia_particle;  // pythia particles placeholder
 
     // force at least 5 particles in the final state
     // TODO: including initial particles?
     while (nof_particles < 5) {
       hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
-      pythiaParticle = pythia71->GetPyjets();
+      pythia_particle = pythia71->GetPyjets();
       nof_particles = pythia71->GetN();
     }
 
@@ -183,29 +184,29 @@ void resevent2(params &p, event &e, bool cc) {
       c) single kaon production; this causes technical complications because nof_particles = 5 also in this case
     */
 
-    if (nof_particles == 5 && (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211 ||
-                               pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111 ||
-                               pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211))  // spp condition
+    if (nof_particles == 5 && (pythia_particle->K[1][3] == 211 || pythia_particle->K[1][4] == 211 ||
+                               pythia_particle->K[1][3] == 111 || pythia_particle->K[1][4] == 111 ||
+                               pythia_particle->K[1][3] == -211 || pythia_particle->K[1][4] == -211))  // spp condition
     {
       int t;
       int pion_pdg;
 
-      if (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211)  // the second part
+      if (pythia_particle->K[1][3] == 211 || pythia_particle->K[1][4] == 211)  // the second part
       {
         t = 0;
         pion_pdg = 211;
       }
 
-      if (pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111) {
+      if (pythia_particle->K[1][3] == 111 || pythia_particle->K[1][4] == 111) {
         t = 1;
         pion_pdg = 111;
       }
 
-      if (pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211) {
+      if (pythia_particle->K[1][3] == -211 || pythia_particle->K[1][4] == -211) {
         t = 2;
         pion_pdg = -211;
       }
-      // cout<<pythiaParticle->K[1][3]<<" "<< pythiaParticle->K[1][4]<<endl;
+      // cout<<pythia_particle->K[1][3]<<" "<< pythia_particle->K[1][4]<<endl;
       double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);  // dis contribution
 
       int nukleoncharge = finalcharge + t - 1;  // the charge of final nucleon
@@ -249,18 +250,18 @@ void resevent2(params &p, event &e, bool cc) {
       {
         for (int i = 0; i < nof_particles; i++) {
           particle part;
-          part.t = pythiaParticle->P[3][i] * GeV;
-          part.x = pythiaParticle->P[0][i] * GeV;
-          part.y = pythiaParticle->P[1][i] * GeV;
-          part.z = pythiaParticle->P[2][i] * GeV;
+          part.t = pythia_particle->P[3][i] * GeV;
+          part.x = pythia_particle->P[0][i] * GeV;
+          part.y = pythia_particle->P[1][i] * GeV;
+          part.z = pythia_particle->P[2][i] * GeV;
           rotation(part, kin.q);
 
           part = part.boost(kin.hadron_speed);  // correct direction ???
           part = part.boost(kin.target.v());
 
-          part.ks = pythiaParticle->K[0][i];
-          part.pdg = pythiaParticle->K[1][i];
-          part.orgin = pythiaParticle->K[2][i];
+          part.ks = pythia_particle->K[0][i];
+          part.pdg = pythia_particle->K[1][i];
+          part.orgin = pythia_particle->K[2][i];
 
           e.temp.push_back(part);
           if (part.ks == 1)  // condition for a real particle in the final state
@@ -312,18 +313,18 @@ void resevent2(params &p, event &e, bool cc) {
 
       for (int i = 0; i < nof_particles; i++) {
         particle part;
-        part.t = pythiaParticle->P[3][i] * GeV;
-        part.x = pythiaParticle->P[0][i] * GeV;
-        part.y = pythiaParticle->P[1][i] * GeV;
-        part.z = pythiaParticle->P[2][i] * GeV;
+        part.t = pythia_particle->P[3][i] * GeV;
+        part.x = pythia_particle->P[0][i] * GeV;
+        part.y = pythia_particle->P[1][i] * GeV;
+        part.z = pythia_particle->P[2][i] * GeV;
         rotation(part, kin.q);
 
         part = part.boost(kin.hadron_speed);  // correct direction ???
         part = part.boost(kin.target.v());
 
-        part.ks = pythiaParticle->K[0][i];
-        part.pdg = pythiaParticle->K[1][i];
-        part.orgin = pythiaParticle->K[2][i];
+        part.ks = pythia_particle->K[0][i];
+        part.pdg = pythia_particle->K[1][i];
+        part.orgin = pythia_particle->K[2][i];
 
         e.temp.push_back(part);
         if (part.ks == 1)  // condition for a real particle in the final state
