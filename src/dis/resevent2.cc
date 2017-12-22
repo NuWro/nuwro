@@ -82,13 +82,13 @@ void resevent2(params &p, event &e, bool cc) {
   const int k = not cc;
   const int l = kin.target.pdg != PDG::pdg_proton;
 
-  const int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);  // total electric charge of the pion-nucleon system
+  // total electric charge of the pion-nucleon system
+  const int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);
 
   // the contribution to the cross section coming from DIS
   const double fromdis = max(0.0, cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc));
 
-  if (not kin.is_above_pythia_threshold() || fromdis == 0)
-  {
+  if (not kin.is_above_pythia_threshold() || fromdis == 0) {
     // contributions from DIS
     const double dis_pip = fromdis * SPP[j][k][l][pip][0] * betadis(j, k, l, pip, kin.W, p.bkgrscaling);
     const double dis_pi0 = fromdis * SPP[j][k][l][pi0][0] * betadis(j, k, l, pi0, kin.W, p.bkgrscaling);
@@ -131,27 +131,32 @@ void resevent2(params &p, event &e, bool cc) {
     // we arrived at the overall strength !!!
     double total = dis_pip + dis_pi0 + dis_pim + delta_pip + delta_pi0 + delta_pim;
 
-    // save cross section in appropriate units 
+    // save cross section in appropriate units
     e.weight = total * 1e-38 * kin.jacobian;
 
     // final state particles
     particle final_pion, final_nucleon;
 
     // contributions from different pions to xsec
-    const double pip_fraction = (dis_pip  + delta_pip) / total;
-    const double pi0_fraction = (dis_pi0  + delta_pi0) / total;
-    const double pim_fraction = (dis_pim  + delta_pim) / total;
+    const double pip_fraction = (dis_pip + delta_pip) / total;
+    const double pi0_fraction = (dis_pi0 + delta_pi0) / total;
+    const double pim_fraction = (dis_pim + delta_pim) / total;
 
     // randomly select final state pion
     double rand01 = frandom();
 
-    if (pip_fraction > rand01) final_pion.set_piP();
-    else if (pip_fraction + pi0_fraction > rand01) final_pion.set_pi();
-    else final_pion.set_piM();
+    if (pip_fraction > rand01)
+      final_pion.set_piP();
+    else if (pip_fraction + pi0_fraction > rand01)
+      final_pion.set_pi();
+    else
+      final_pion.set_piM();
 
     // determine isospin of a final nucleon
-    if (nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, final_pion.pdg, cc) == PDG::pdg_proton) final_nucleon.set_proton();
-    else final_nucleon.set_neutron();
+    if (nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, final_pion.pdg, cc) == PDG::pdg_proton)
+      final_nucleon.set_proton();
+    else
+      final_nucleon.set_neutron();
 
     // produces 4-momenta of final pair: nucleon + pion
     kin2part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion);
@@ -166,10 +171,7 @@ void resevent2(params &p, event &e, bool cc) {
     // save final state hadrons
     e.out.push_back(final_pion);
     e.out.push_back(final_nucleon);
-  }
-  // end of W<1210 ||fromdis==0
-
-  else  // the algorithm starts from the production of PYTHIA event
+  } else  // the algorithm starts from the production of PYTHIA event
   {
     ////////////////////////////////////////////////////
     //      Setting Pythia parameters
@@ -212,7 +214,7 @@ void resevent2(params &p, event &e, bool cc) {
     int nCharged = 0;
     int NPar = 0;
     Pyjets_t *pythiaParticle;  // deklaracja event recordu
-    double W1 = kin.W / GeV;       // W1 w GeV-ach potrzebne do Pythii
+    double W1 = kin.W / GeV;   // W1 w GeV-ach potrzebne do Pythii
 
     while (NPar < 5) {
       hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
@@ -233,7 +235,7 @@ void resevent2(params &p, event &e, bool cc) {
                       pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211))  // spp condition
     {
       int t;
-      int pion_pdg; 
+      int pion_pdg;
 
       if (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211)  // the second part
       {
@@ -267,8 +269,8 @@ void resevent2(params &p, event &e, bool cc) {
       // if (SPPF (j,k,l,t,W)<0.01)
       // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg,
-                                      kin.target.pdg, nukleon2, pion_pdg, cc) /
+      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                      kin.neutrino.pdg, kin.target.pdg, nukleon2, pion_pdg, cc) /
                          SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
       // cout<<delta_spp<<endl;
 
@@ -325,11 +327,11 @@ void resevent2(params &p, event &e, bool cc) {
 
         // kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion
 
-        kin.neutrino.boost(kin.hadron_speed);       // a boost back to the nu-N CMS frame
-        kin.neutrino.boost(kin.target.v());  // a boost back to tha LAB frame
+        kin.neutrino.boost(kin.hadron_speed);  // a boost back to the nu-N CMS frame
+        kin.neutrino.boost(kin.target.v());    // a boost back to tha LAB frame
 
-        kin.lepton.boost(kin.hadron_speed);       // a boost back to the nu-N CMS frame
-        kin.lepton.boost(kin.target.v());  // a boost back to tha LAB frame
+        kin.lepton.boost(kin.hadron_speed);  // a boost back to the nu-N CMS frame
+        kin.lepton.boost(kin.target.v());    // a boost back to tha LAB frame
 
         finnuk = finnuk.boost(kin.hadron_speed);
         finnuk = finnuk.boost(kin.target.v());
