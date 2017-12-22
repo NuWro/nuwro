@@ -191,25 +191,33 @@ void resevent2(params &p, event &e, bool cc) {
       // PDG to SPP code
       const int t = pdg2spp(pion_pdg);
 
-      // cout<<pythia_particle->K[1][3]<<" "<< pythia_particle->K[1][4]<<endl;
-      double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);  // dis contribution
+      /*
+        t:
+          0 for pi+
+          1 for pi0
+          2 for pi-
 
-      int nukleoncharge = finalcharge + t - 1;  // the charge of final nucleon
+        finalcharge:
+          2 for proton + pi+
+          1 for proton + pi0 or neutron + pi+
+          0 for proton + pi- or neutron + pi0
+         -1 for neutron + pi-
+        
+        finalcharge + t:
+          1 -> neutron + pi- or neutron + pi0 or neutron + pi+
+          2 -> proton + pi- or proton + pi+ or proton + pi0        
+      */
+      const int nucleon_pdg = finalcharge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
-      int nukleon2;
-
-      if (nukleoncharge == 1) {
-        nukleon2 = 2212;
-      } else {
-        nukleon2 = 2112;
-      }
+      // dis contribution to single pion production
+      const double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);
 
       // delta contribution
       // if (SPPF (j,k,l,t,W)<0.01)
       // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
 
       double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                      kin.neutrino.pdg, kin.target.pdg, nukleon2, pion_pdg, cc) /
+                                      kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
                          SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
       // cout<<delta_spp<<endl;
 
@@ -260,7 +268,7 @@ void resevent2(params &p, event &e, bool cc) {
 
         kin.neutrino.boost(-kin.hadron_speed);  // a boost from nu-N CMS to the hadronic CMS
         kin.lepton.boost(-kin.hadron_speed);    // a boost from nu-N CMS to the hadronic CMS
-        kin4part(kin.neutrino, kin.lepton, kin.W, nukleon2, pion_pdg, finnuk, finpion,
+        kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, finnuk, finpion,
                  p.delta_angular);  // produces 4-momenta of final pair: nucleon + pion with density matrix information
         e.weight *= angrew;         // reweight according to angular correlation
 
@@ -282,7 +290,7 @@ void resevent2(params &p, event &e, bool cc) {
         particle nnukleon(finnuk);
 
         ppion.pdg = pion_pdg;
-        nnukleon.pdg = nukleon2;
+        nnukleon.pdg = nucleon_pdg;
 
         e.out.push_back(ppion);
         e.out.push_back(nnukleon);
