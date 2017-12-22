@@ -186,24 +186,11 @@ void resevent2(params &p, event &e, bool cc) {
 
     // single pion production -> 5 particles including a pion
     if (nof_particles == 5 and (PDG::pion(pythia_particle->K[1][3]) or PDG::pion(pythia_particle->K[1][4]))) {
-      int t;
-      int pion_pdg;
+      // K[1][3] or K[1][4] is a pion
+      const int pion_pdg = PDG::pion(pythia_particle->K[1][3]) ? pythia_particle->K[1][3] : pythia_particle->K[1][4];
+      // PDG to SPP code
+      const int t = pdg2spp(pion_pdg);
 
-      if (pythia_particle->K[1][3] == 211 || pythia_particle->K[1][4] == 211)  // the second part
-      {
-        t = 0;
-        pion_pdg = 211;
-      }
-
-      if (pythia_particle->K[1][3] == 111 || pythia_particle->K[1][4] == 111) {
-        t = 1;
-        pion_pdg = 111;
-      }
-
-      if (pythia_particle->K[1][3] == -211 || pythia_particle->K[1][4] == -211) {
-        t = 2;
-        pion_pdg = -211;
-      }
       // cout<<pythia_particle->K[1][3]<<" "<< pythia_particle->K[1][4]<<endl;
       double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);  // dis contribution
 
