@@ -161,12 +161,12 @@ void resevent2(params &p, event &e, bool cc) {
     // save final state hadrons
     e.out.push_back(final_pion);
     e.out.push_back(final_nucleon);
-  } else // W above pythia threshold and fromdis > 0
+  } else  // W above pythia threshold and fromdis > 0
   {
     // the algorithm starts from the production of PYTHIA event
     TPythia6 *pythia71 = get_pythia();
 
-    int nof_particles = 0;     // number of particles in the final state
+    int nof_particles = 0;      // number of particles in the final state
     Pyjets_t *pythia_particle;  // pythia particles placeholder
 
     // force at least 5 particles in the final state
@@ -184,10 +184,8 @@ void resevent2(params &p, event &e, bool cc) {
       c) single kaon production; this causes technical complications because nof_particles = 5 also in this case
     */
 
-    if (nof_particles == 5 && (pythia_particle->K[1][3] == 211 || pythia_particle->K[1][4] == 211 ||
-                               pythia_particle->K[1][3] == 111 || pythia_particle->K[1][4] == 111 ||
-                               pythia_particle->K[1][3] == -211 || pythia_particle->K[1][4] == -211))  // spp condition
-    {
+    // single pion production -> 5 particles including a pion
+    if (nof_particles == 5 and (PDG::pion(pythia_particle->K[1][3]) or PDG::pion(pythia_particle->K[1][4]))) {
       int t;
       int pion_pdg;
 
