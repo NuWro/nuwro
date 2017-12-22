@@ -21,7 +21,6 @@
 // clang-format on
 
 #include <TMCParticle.h>
-#include <TPythia6.h>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -56,6 +55,45 @@ double pdd_red(double energy) {
     return 0.65 + energy * 0.05 / 250.0;
   else  // if (en<=750)
     return 0.2 + energy * 0.2 / 250.0;
+}
+
+TPythia6 *get_pythia() {
+  TPythia6 *pythia71 = new TPythia6();
+
+  //////////////////////////////////////////////
+  //      Setting Pythia parameters
+  //      Done by Jaroslaw Nowak
+  //////////////////////////////////////////////
+
+  // stable pi0
+  pythia71->SetMDCY(pycomp_(&pizero), 1, 0);
+
+  pythia71->SetMSTU(20, 1);  // advirsory warning for unphysical flavour switch off
+  pythia71->SetMSTU(23, 1);  // It sets counter of errors at 0
+  pythia71->SetMSTU(26, 0);  // no warnings printed
+
+  // PARJ(32)(D=1GeV) is, with quark masses added, used to define the minimum allowable enrgy of a colour singlet
+  // parton system
+  pythia71->SetPARJ(33, 0.1);
+
+  // PARJ(33)-PARJ(34)(D=0.8GeV, 1.5GeV) are, with quark masses added, used to define the remaining energy below
+  // which the fragmentation of a parton system is stopped and two final hadrons formed.
+  pythia71->SetPARJ(34, 0.5);
+  pythia71->SetPARJ(35, 1.0);
+
+  // PARJ(36) (D=2.0GeV) represents the dependence of the mass of final quark pair for defining the stopping point
+  // of the fragmentation. Strongly corlated with PARJ(33-35)
+  pythia71->SetPARJ(37, 1.);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
+  // MSTJ(17) (D=2) number of attemps made to find two hadrons that have a combined mass below the cluster mass and
+  // thus allow a cluster to decay rather than collaps
+  pythia71->SetMSTJ(18, 3);  // do not change
+
+  //////////////////////////////////////////////
+  //      End of setting Pythia parameters
+  //////////////////////////////////////////////
+
+  return pythia71;
 }
 
 void resevent2(params &p, event &e, bool cc) {
@@ -172,40 +210,7 @@ void resevent2(params &p, event &e, bool cc) {
     e.out.push_back(final_nucleon);
   } else  // the algorithm starts from the production of PYTHIA event
   {
-    TPythia6 *pythia71 = new TPythia6();
-
-    //////////////////////////////////////////////
-    //      Setting Pythia parameters
-    //      Done by Jaroslaw Nowak
-    //////////////////////////////////////////////
-
-    // stable pi0
-    pythia71->SetMDCY(pycomp_(&pizero), 1, 0);
-
-    pythia71->SetMSTU(20, 1);  // advirsory warning for unphysical flavour switch off
-    pythia71->SetMSTU(23, 1);  // It sets counter of errors at 0
-    pythia71->SetMSTU(26, 0);  // no warnings printed
-
-    // PARJ(32)(D=1GeV) is, with quark masses added, used to define the minimum allowable enrgy of a colour singlet
-    // parton system
-    pythia71->SetPARJ(33, 0.1);
-
-    // PARJ(33)-PARJ(34)(D=0.8GeV, 1.5GeV) are, with quark masses added, used to define the remaining energy below
-    // which the fragmentation of a parton system is stopped and two final hadrons formed.
-    pythia71->SetPARJ(34, 0.5);
-    pythia71->SetPARJ(35, 1.0);
-
-    // PARJ(36) (D=2.0GeV) represents the dependence of the mass of final quark pair for defining the stopping point
-    // of the fragmentation. Strongly corlated with PARJ(33-35)
-    pythia71->SetPARJ(37, 1.);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-    // MSTJ(17) (D=2) number of attemps made to find two hadrons that have a combined mass below the cluster mass and
-    // thus allow a cluster to decay rather than collaps
-    pythia71->SetMSTJ(18, 3);  // do not change
-
-    //////////////////////////////////////////////
-    //      End of setting Pythia parameters
-    //////////////////////////////////////////////
+    TPythia6 *pythia71 = get_pythia();
 
     int NPar = 0;
     Pyjets_t *pythiaParticle;  // deklaracja event recordu
