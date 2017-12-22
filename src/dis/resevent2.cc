@@ -212,27 +212,27 @@ void resevent2(params &p, event &e, bool cc) {
   {
     TPythia6 *pythia71 = get_pythia();
 
-    int NPar = 0;
-    Pyjets_t *pythiaParticle;  // deklaracja event recordu
-    double W1 = kin.W / GeV;   // W1 w GeV-ach potrzebne do Pythii
+    int nof_particles = 0;     // number of particles in the final state
+    Pyjets_t *pythiaParticle;  // pythia particles placeholder
 
-    while (NPar < 5) {
+    // force less than 5 particles in the final state (lepton, target, nucleon, pion?)
+    while (nof_particles < 5) {
       hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
       pythiaParticle = pythia71->GetPyjets();
-      NPar = pythia71->GetN();
+      nof_particles = pythia71->GetN();
     }
-    // cout<<NPar<<endl;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////There are three different possible outcomes:
-    ///////////     a) spp event NPar=5
-    ///////////     b) more inelastic event NPar>5, typically 7
-    ///////////     c) single kaon production; this causes technical complications because NPar=5 also in this case
+    ///////////     a) spp event nof_particles=5
+    ///////////     b) more inelastic event nof_particles>5, typically 7
+    ///////////     c) single kaon production; this causes technical complications because nof_particles=5 also in this
+    /// case
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (NPar == 5 && (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211 ||
-                      pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111 ||
-                      pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211))  // spp condition
+    if (nof_particles == 5 && (pythiaParticle->K[1][3] == 211 || pythiaParticle->K[1][4] == 211 ||
+                               pythiaParticle->K[1][3] == 111 || pythiaParticle->K[1][4] == 111 ||
+                               pythiaParticle->K[1][3] == -211 || pythiaParticle->K[1][4] == -211))  // spp condition
     {
       int t;
       int pion_pdg;
@@ -294,7 +294,7 @@ void resevent2(params &p, event &e, bool cc) {
 
       if (reldis > los)  // disevent
       {
-        for (int i = 0; i < NPar; i++) {
+        for (int i = 0; i < nof_particles; i++) {
           particle part;
           part.t = pythiaParticle->P[3][i] * GeV;
           part.x = pythiaParticle->P[0][i] * GeV;
@@ -357,7 +357,7 @@ void resevent2(params &p, event &e, bool cc) {
     {  // cout<<"inel "<<W<<" "<<nu<<endl;
       e.weight = fromdis * 1e-38 * kin.jacobian;
 
-      for (int i = 0; i < NPar; i++) {
+      for (int i = 0; i < nof_particles; i++) {
         particle part;
         part.t = pythiaParticle->P[3][i] * GeV;
         part.x = pythiaParticle->P[0][i] * GeV;
