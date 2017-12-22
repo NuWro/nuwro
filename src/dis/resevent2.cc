@@ -174,12 +174,12 @@ void resevent2(params &p, event &e, bool cc) {
   {
     TPythia6 *pythia71 = new TPythia6();
 
-    ////////////////////////////////////////////////////
+    //////////////////////////////////////////////
     //      Setting Pythia parameters
     //      Done by Jaroslaw Nowak
     //////////////////////////////////////////////
 
-    // stabilne pi0
+    // stable pi0
     pythia71->SetMDCY(pycomp_(&pizero), 1, 0);
 
     pythia71->SetMSTU(20, 1);  // advirsory warning for unphysical flavour switch off
@@ -191,28 +191,22 @@ void resevent2(params &p, event &e, bool cc) {
     pythia71->SetPARJ(33, 0.1);
 
     // PARJ(33)-PARJ(34)(D=0.8GeV, 1.5GeV) are, with quark masses added, used to define the remaining energy below
-    // which
-    // the fragmentation of a parton system is stopped and two final hadrons formed.
+    // which the fragmentation of a parton system is stopped and two final hadrons formed.
     pythia71->SetPARJ(34, 0.5);
     pythia71->SetPARJ(35, 1.0);
 
     // PARJ(36) (D=2.0GeV) represents the dependence of the mass of final quark pair for defining the stopping point
-    // of the
-    // fragmentation. Strongly corlated with PARJ(33-35)
-
+    // of the fragmentation. Strongly corlated with PARJ(33-35)
     pythia71->SetPARJ(37, 1.);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
     // MSTJ(17) (D=2) number of attemps made to find two hadrons that have a combined mass below the cluster mass and
-    // thus allow
-    // a cluster to decay rather than collaps
+    // thus allow a cluster to decay rather than collaps
     pythia71->SetMSTJ(18, 3);  // do not change
 
-    /////////////////////////////////////////////////
-    //              End of setting Pythia parameters
-    ////////////////////////////////////////////////
+    //////////////////////////////////////////////
+    //      End of setting Pythia parameters
+    //////////////////////////////////////////////
 
-    int nParticle = 0;
-    int nCharged = 0;
     int NPar = 0;
     Pyjets_t *pythiaParticle;  // deklaracja event recordu
     double W1 = kin.W / GeV;   // W1 w GeV-ach potrzebne do Pythii
