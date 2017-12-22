@@ -46,7 +46,6 @@
 #include "singlepion.h"
 #include "vect.h"
 
-TPythia6 *pythia71 = new TPythia6();
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
 
@@ -173,6 +172,8 @@ void resevent2(params &p, event &e, bool cc) {
     e.out.push_back(final_nucleon);
   } else  // the algorithm starts from the production of PYTHIA event
   {
+    TPythia6 *pythia71 = new TPythia6();
+
     ////////////////////////////////////////////////////
     //      Setting Pythia parameters
     //      Done by Jaroslaw Nowak
@@ -381,6 +382,7 @@ void resevent2(params &p, event &e, bool cc) {
     }
     // end of more inelastic part or single kaon production
 
+    delete pythia71;
   }  // end of W>1210 &&  !fromdis==0
 
   // E above threshold
