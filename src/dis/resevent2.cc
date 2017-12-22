@@ -131,48 +131,41 @@ void resevent2(params &p, event &e, bool cc) {
     // we arrived at the overall strength !!!
     double total = dis_pip + dis_pi0 + dis_pim + delta_pip + delta_pi0 + delta_pim;
 
+    // save cross section in appropriate units 
+    e.weight = total * 1e-38 * kin.jacobian;
+
+    // final state particles
+    particle final_pion, final_nucleon;
+
+    // contributions from different pions to xsec
     const double pip_fraction = (dis_pip  + delta_pip) / total;
     const double pi0_fraction = (dis_pi0  + delta_pi0) / total;
     const double pim_fraction = (dis_pim  + delta_pim) / total;
 
-    e.weight = total * 1e-38 * kin.jacobian;
+    // randomly select final state pion
+    double rand01 = frandom();
 
-    int channel;
-    double los = frandom();
+    if (pip_fraction > rand01) final_pion.set_piP();
+    else if (pip_fraction + pi0_fraction > rand01) final_pion.set_pi();
+    else final_pion.set_piM();
 
-    if (pip_fraction > los)
-      channel = 0;
-    else if (pip_fraction + pi0_fraction > los)
-        channel = 1;
-    else
-        channel = 2;
+    // determine isospin of a final nucleon
+    if (nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, final_pion.pdg, cc) == PDG::pdg_proton) final_nucleon.set_proton();
+    else final_nucleon.set_neutron();
 
-    int pion_pdg; // to remove later
+    // produces 4-momenta of final pair: nucleon + pion
+    kin2part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion);
 
-    if (channel == 0) pion_pdg = 211;
-    if (channel == 1) pion_pdg = 111;
-    if (channel == 2) pion_pdg = -211;
+    // boost back to LAB frame
+    final_nucleon.p4() = final_nucleon.boost(kin.hadron_speed);
+    final_nucleon.p4() = final_nucleon.boost(kin.target.v());
 
-    int nukleon2 = nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, pion_pdg, cc);  // which nucleon in the final state
+    final_pion.p4() = final_pion.boost(kin.hadron_speed);
+    final_pion.p4() = final_pion.boost(kin.target.v());
 
-    vect finnuk, finpion;
-
-    kin2part(kin.W, nukleon2, pion_pdg, finnuk, finpion);  // produces 4-momenta of final pair: nucleon + pion
-
-    finnuk = finnuk.boost(kin.hadron_speed);
-    finnuk = finnuk.boost(kin.target.v());
-
-    finpion = finpion.boost(kin.hadron_speed);
-    finpion = finpion.boost(kin.target.v());
-
-    particle ppion(finpion);
-    particle nnukleon(finnuk);
-
-    ppion.pdg = pion_pdg;
-    nnukleon.pdg = nukleon2;
-
-    e.out.push_back(ppion);
-    e.out.push_back(nnukleon);
+    // save final state hadrons
+    e.out.push_back(final_pion);
+    e.out.push_back(final_nucleon);
   }
   // end of W<1210 ||fromdis==0
 
