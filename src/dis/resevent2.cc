@@ -129,7 +129,6 @@ void resevent2(params &p, event &e, bool cc) {
     // contributions from different pions to xsec
     const double pip_fraction = (dis_pip + delta_pip) / total;
     const double pi0_fraction = (dis_pi0 + delta_pi0) / total;
-    const double pim_fraction = (dis_pim + delta_pim) / total;
 
     // randomly select final state pion
     double rand01 = frandom();
