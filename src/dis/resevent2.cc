@@ -165,7 +165,7 @@ void resevent2(params &p, event &e, bool cc) {
     // the algorithm starts from the production of PYTHIA event
     TPythia6 *pythia71 = get_pythia();
 
-    int nof_particles = 0;      // number of particles in the final state
+    int nof_particles = 0;       // number of particles in the final state
     Pyjets_t *pythia_particles;  // pythia particles placeholder
 
     // force at least 5 particles in the final state
@@ -201,10 +201,10 @@ void resevent2(params &p, event &e, bool cc) {
           1 for proton + pi0 or neutron + pi+
           0 for proton + pi- or neutron + pi0
          -1 for neutron + pi-
-        
+
         finalcharge + t:
           1 -> neutron + pi- or neutron + pi0 or neutron + pi+
-          2 -> proton + pi- or proton + pi+ or proton + pi0        
+          2 -> proton + pi- or proton + pi+ or proton + pi0
       */
       const int nucleon_pdg = finalcharge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
@@ -212,24 +212,24 @@ void resevent2(params &p, event &e, bool cc) {
       const double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);
 
       // delta contribution to single pion production
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W,
-                                            kin.q.t, kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
-                               SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
+      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                                      kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
+                         SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
 
-			// reduce cross section by removing the contribution from pionless delta decay
-			// more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
+      // reduce cross section by removing the contribution from pionless delta decay
+      // more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
       if ((p.nucleus_p + p.nucleus_n) > 7) delta_spp *= pdd_red(e.in[0].t);
 
-			const double total_spp = dis_spp + delta_spp;  // total single pion production
+      const double total_spp = dis_spp + delta_spp;  // total single pion production
 
       e.weight = total_spp * 1e-38 * kin.jacobian;  // update weights with correct normalization
-			
-			// randomly decide if SPP comes from Delta or DIS
+
+      // randomly decide if SPP comes from Delta or DIS
       if (dis_spp > total_spp * frandom())  // SPP from DIS
       {
-				// loop over Pythia particles
+        // loop over Pythia particles
         for (int i = 0; i < nof_particles; i++) {
-					// i-th Pythia particle converted to NuWro format
+          // i-th Pythia particle converted to NuWro format
           particle p = get_pythia_particle(pythia_particles, i, kin);
 
           e.temp.push_back(p);  // all particles are stored in temp vector
@@ -239,9 +239,9 @@ void resevent2(params &p, event &e, bool cc) {
         }
       } else  // SPP from Delta
       {
-        particle final_nucleon, final_pion; // final particles placeholders
+        particle final_nucleon, final_pion;  // final particles placeholders
 
-				// boost leptons from nu-N CMS to the hadronic CMS
+        // boost leptons from nu-N CMS to the hadronic CMS
         kin.neutrino.boost(-kin.hadron_speed);
         kin.lepton.boost(-kin.hadron_speed);
 
@@ -250,7 +250,7 @@ void resevent2(params &p, event &e, bool cc) {
 
         e.weight *= angrew;  // reweight according to angular correlation (angrew defined in LeptonMass...)
 
-				// boost back to nu-N CMS frame and then to LAB frame
+        // boost back to nu-N CMS frame and then to LAB frame
         kin.neutrino.boost(kin.hadron_speed);
         kin.neutrino.boost(kin.target.v());
 
@@ -263,11 +263,11 @@ void resevent2(params &p, event &e, bool cc) {
         final_pion = final_pion.boost(kin.hadron_speed);
         final_pion = final_pion.boost(kin.target.v());
 
-				// set final hadrons PDG codes
-				final_nucleon.pdg = nucleon_pdg;
-				final_pion.pdg = pion_pdg;
+        // set final hadrons PDG codes
+        final_nucleon.pdg = nucleon_pdg;
+        final_pion.pdg = pion_pdg;
 
-				// save final hadrons in out vector
+        // save final hadrons in out vector
         e.out.push_back(final_pion);
         e.out.push_back(final_nucleon);
       }
@@ -290,10 +290,10 @@ void resevent2(params &p, event &e, bool cc) {
     delete pythia71;
   }
 
-	// set all outgoing particles position to target nucleon position
+  // set all outgoing particles position to target nucleon position
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
 
-	// for debugging - to remove when I am done
+  // for debugging - to remove when I am done
   for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
 }
 
