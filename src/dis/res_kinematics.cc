@@ -5,6 +5,8 @@ const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass 
 const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;
 const double res_kinematics::pythia_threshold = 1210;
 
+inline double pow2(double x) { return x * x; }
+
 // set all necessary variables so is_above_threshold may be called
 res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[1]) {
   // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)

@@ -4,6 +4,7 @@
 #include <TPythia6.h>
 #include "event1.h"
 #include "params.h"
+#include "res_kinematics.h"
 
 //! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
 enum { pip, pi0, pim } spp_code;
@@ -28,6 +29,9 @@ double pdd_red(double energy);
 
 //! set up PYTHIA6 parameters
 TPythia6* get_pythia();
+
+//! get id-th particle from pythia's particle list
+particle get_pythia_particle(Pyjets_t* pythia_partricles, const int particle_id, res_kinematics kin);
 
 void resevent2(params& p, event& e, bool cc);
 

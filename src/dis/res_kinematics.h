@@ -47,6 +47,4 @@ struct res_kinematics {
 //! get the value of binding energy according to setting from params
 double get_binding_energy(const params& p, const vec& momentum);
 
-inline double pow2(double x) { return x * x; }
-
 #endif

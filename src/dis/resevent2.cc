@@ -42,7 +42,6 @@ Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/ne
 #include "params.h"
 #include "pauli.h"
 #include "pdg_name.h"
-#include "res_kinematics.h"
 #include "singlepion.h"
 #include "vect.h"
 
@@ -167,13 +166,13 @@ void resevent2(params &p, event &e, bool cc) {
     TPythia6 *pythia71 = get_pythia();
 
     int nof_particles = 0;      // number of particles in the final state
-    Pyjets_t *pythia_particle;  // pythia particles placeholder
+    Pyjets_t *pythia_particles;  // pythia particles placeholder
 
     // force at least 5 particles in the final state
     // TODO: including initial particles?
     while (nof_particles < 5) {
       hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass, kin.neutrino.pdg, kin.target.pdg, cc);
-      pythia_particle = pythia71->GetPyjets();
+      pythia_particles = pythia71->GetPyjets();
       nof_particles = pythia71->GetN();
     }
 
@@ -185,9 +184,9 @@ void resevent2(params &p, event &e, bool cc) {
     */
 
     // single pion production -> 5 particles including a pion
-    if (nof_particles == 5 and (PDG::pion(pythia_particle->K[1][3]) or PDG::pion(pythia_particle->K[1][4]))) {
+    if (nof_particles == 5 and (PDG::pion(pythia_particles->K[1][3]) or PDG::pion(pythia_particles->K[1][4]))) {
       // K[1][3] or K[1][4] is a pion
-      const int pion_pdg = PDG::pion(pythia_particle->K[1][3]) ? pythia_particle->K[1][3] : pythia_particle->K[1][4];
+      const int pion_pdg = PDG::pion(pythia_particles->K[1][3]) ? pythia_particles->K[1][3] : pythia_particles->K[1][4];
       // PDG to SPP code
       const int t = pdg2spp(pion_pdg);
 
@@ -212,57 +211,33 @@ void resevent2(params &p, event &e, bool cc) {
       // dis contribution to single pion production
       const double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);
 
-      // delta contribution
-      // if (SPPF (j,k,l,t,W)<0.01)
-      // cout<<SPPF (j,k,l,t,W)<<" "<<j<<" "<<k<<" "<<l<<" "<<t<<" "<<W<<" "<<endl;
+      // delta contribution to single pion production
+      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W,
+                                            kin.q.t, kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
+                               SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
 
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                      kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
-                         SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
-      // cout<<delta_spp<<endl;
+			// reduce cross section by removing the contribution from pionless delta decay
+			// more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
+      if ((p.nucleus_p + p.nucleus_n) > 7) delta_spp *= pdd_red(e.in[0].t);
 
-      // approximate implementation of pionless delta decays
-      if ((p.nucleus_p + p.nucleus_n) > 7) {  // cout<<delta_spp<<"  ";
-        // double ennergy = e.in[0].t;
-        // double rescale = pdd_red (ennergy);
-        delta_spp *= pdd_red(e.in[0].t);
-        // cout<<ennergy<<"  "<<rescale<<"  "<<delta_spp<<endl;
-      }
-      // approximate implementation of pionless delta decays
+			const double total_spp = dis_spp + delta_spp;  // total single pion production
 
-      double spp_strength = dis_spp + delta_spp;
-      // cout<<"spp "<<W<<" "<<nu<<" "<<spp_strength<<endl;
-      e.weight = spp_strength * 1e-38 * kin.jacobian;
-
-      double reldis = dis_spp / spp_strength;
-      double reldelta = delta_spp / spp_strength;
-
-      double los = frandom();
-
-      if (reldis > los)  // disevent
+      e.weight = total_spp * 1e-38 * kin.jacobian;  // update weights with correct normalization
+			
+			// randomly decide if SPP comes from Delta or DIS
+      if (dis_spp > total_spp * frandom())  // SPP from DIS
       {
+				// loop over Pythia particles
         for (int i = 0; i < nof_particles; i++) {
-          particle part;
-          part.t = pythia_particle->P[3][i] * GeV;
-          part.x = pythia_particle->P[0][i] * GeV;
-          part.y = pythia_particle->P[1][i] * GeV;
-          part.z = pythia_particle->P[2][i] * GeV;
-          rotation(part, kin.q);
+					// i-th Pythia particle converted to NuWro format
+          particle p = get_pythia_particle(pythia_particles, i, kin);
 
-          part = part.boost(kin.hadron_speed);  // correct direction ???
-          part = part.boost(kin.target.v());
+          e.temp.push_back(p);  // all particles are stored in temp vector
 
-          part.ks = pythia_particle->K[0][i];
-          part.pdg = pythia_particle->K[1][i];
-          part.orgin = pythia_particle->K[2][i];
-
-          e.temp.push_back(part);
-          if (part.ks == 1)  // condition for a real particle in the final state
-          {
-            e.out.push_back(part);
-          }
+          // only stable (ks == 1) particles are stored in out vector
+          if (p.ks == 1) e.out.push_back(p);
         }
-      } else  // deltaevent
+      } else  // SPP from Delta
       {
         vect finnuk, finpion;
 
@@ -305,24 +280,12 @@ void resevent2(params &p, event &e, bool cc) {
       e.weight = fromdis * 1e-38 * kin.jacobian;
 
       for (int i = 0; i < nof_particles; i++) {
-        particle part;
-        part.t = pythia_particle->P[3][i] * GeV;
-        part.x = pythia_particle->P[0][i] * GeV;
-        part.y = pythia_particle->P[1][i] * GeV;
-        part.z = pythia_particle->P[2][i] * GeV;
-        rotation(part, kin.q);
+        particle p = get_pythia_particle(pythia_particles, i, kin);
 
-        part = part.boost(kin.hadron_speed);  // correct direction ???
-        part = part.boost(kin.target.v());
-
-        part.ks = pythia_particle->K[0][i];
-        part.pdg = pythia_particle->K[1][i];
-        part.orgin = pythia_particle->K[2][i];
-
-        e.temp.push_back(part);
-        if (part.ks == 1)  // condition for a real particle in the final state
+        e.temp.push_back(p);
+        if (p.ks == 1)  // condition for a real particle in the final state
         {
-          e.out.push_back(part);
+          e.out.push_back(p);
         }
       }
     }
@@ -375,4 +338,27 @@ TPythia6 *get_pythia() {
   pythia71->SetMSTJ(18, 3);
 
   return pythia71;
+}
+
+particle get_pythia_particle(Pyjets_t *pythia_particles, const int particle_id, res_kinematics kin) {
+  particle p;
+
+  // assign particle's four-momentum
+  p.t = pythia_particles->P[3][particle_id] * GeV;
+  p.x = pythia_particles->P[0][particle_id] * GeV;
+  p.y = pythia_particles->P[1][particle_id] * GeV;
+  p.z = pythia_particles->P[2][particle_id] * GeV;
+
+  // rotate the particle produced by PYTHIA acoording to the direction of the momentum transfer
+  // in PYTHIA it is assumed that this direction is the Z axis
+  rotation(p, kin.q);
+
+  p = p.boost(kin.hadron_speed);  // boost back to the nu-N CMS frame
+  p = p.boost(kin.target.v());    // boost back to tha LAB frame
+
+  p.ks = pythia_particles->K[0][particle_id];     // HEP particle status
+  p.pdg = pythia_particles->K[1][particle_id];    // particle pdf
+  p.orgin = pythia_particles->K[2][particle_id];  // HEP particle origin
+
+  return p;
 }
