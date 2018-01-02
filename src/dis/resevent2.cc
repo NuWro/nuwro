@@ -271,32 +271,29 @@ void resevent2(params &p, event &e, bool cc) {
         e.out.push_back(final_pion);
         e.out.push_back(final_nucleon);
       }
-
-    }
-    // end of spp case
-
-    else  // more inelastic final state or single kaon production
-
-    {  // cout<<"inel "<<W<<" "<<nu<<endl;
+    } else  // more inelastic final state or single kaon production
+    {
       e.weight = fromdis * 1e-38 * kin.jacobian;
 
+      // loop over Pythia particles
       for (int i = 0; i < nof_particles; i++) {
+        // i-th Pythia particle converted to NuWro format
         particle p = get_pythia_particle(pythia_particles, i, kin);
 
-        e.temp.push_back(p);
-        if (p.ks == 1)  // condition for a real particle in the final state
-        {
-          e.out.push_back(p);
-        }
+        e.temp.push_back(p);  // all particles are stored in temp vector
+
+        // only stable (ks == 1) particles are stored in out vector
+        if (p.ks == 1) e.out.push_back(p);
       }
     }
-    // end of more inelastic part or single kaon production
 
     delete pythia71;
-  }  // end of W>1210 &&  !fromdis==0
+  }
 
-  // E above threshold
+	// set all outgoing particles position to target nucleon position
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
+
+	// for debugging - to remove when I am done
   for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
 }
 
