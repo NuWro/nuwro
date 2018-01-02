@@ -33,6 +33,7 @@ TPythia6* get_pythia();
 //! get id-th particle from pythia's particle list
 particle get_pythia_particle(Pyjets_t* pythia_partricles, const int particle_id, res_kinematics kin);
 
+//! generate RES event
 void resevent2(params& p, event& e, bool cc);
 
 #endif

@@ -79,39 +79,37 @@ void resevent2(params &p, event &e, bool cc) {
 
   if (not kin.is_above_pythia_threshold() || fromdis == 0) {
     // contributions from DIS
-    const double dis_pip = fromdis * SPP[j][k][l][pip][0] * betadis(j, k, l, pip, kin.W, p.bkgrscaling);
-    const double dis_pi0 = fromdis * SPP[j][k][l][pi0][0] * betadis(j, k, l, pi0, kin.W, p.bkgrscaling);
-    const double dis_pim = fromdis * SPP[j][k][l][pim][0] * betadis(j, k, l, pim, kin.W, p.bkgrscaling);
+    auto dis_spp = [j, k, l, fromdis, kin, p](const int pion_code) {
+      return fromdis * SPP[j][k][l][pion_code][0] * betadis(j, k, l, pion_code, kin.W, p.bkgrscaling);
+    };
+
+    const double dis_pip = dis_spp(pip);
+    const double dis_pi0 = dis_spp(pi0);
+    const double dis_pim = dis_spp(pim);
 
     // contributions from Delta
+    auto delta_spp = [j, k, l, kin, p, cc](const int pion_pdg, const int nucleon_pdg) {
+      return cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.t, kin.W, kin.q.t,
+                          kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) *
+             alfadelta(j, k, l, pdg2spp(pion_pdg), kin.W);
+    };
+
     double delta_pip = 0, delta_pi0 = 0, delta_pim = 0;
 
     switch (finalcharge) {
       case 2:  // pi+ + proton
-        delta_pip = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, PDG::pdg_piP, cc) *
-                    alfadelta(j, k, l, pip, kin.W);
+        delta_pip = delta_spp(PDG::pdg_piP, PDG::pdg_proton);
         break;
       case 1:  // pi+ + neutron or pi0 + proton
-        delta_pip = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, PDG::pdg_piP, cc) *
-                    alfadelta(j, k, l, pip, kin.W);
-        delta_pi0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, PDG::pdg_pi, cc) *
-                    alfadelta(j, k, l, pi0, kin.W);
+        delta_pip = delta_spp(PDG::pdg_piP, PDG::pdg_neutron);
+        delta_pi0 = delta_spp(PDG::pdg_pi, PDG::pdg_proton);
         break;
       case 0:  // pi0 + neutron or pi- + proton
-        delta_pi0 = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, PDG::pdg_pi, cc) *
-                    alfadelta(j, k, l, pi0, kin.W);
-        delta_pim = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_proton, -PDG::pdg_piP, cc) *
-                    alfadelta(j, k, l, pim, kin.W);
+        delta_pi0 = delta_spp(PDG::pdg_pi, PDG::pdg_neutron);
+        delta_pim = delta_spp(-PDG::pdg_piP, PDG::pdg_proton);
         break;
       case -1:  // pi- + neutron
-        delta_pim = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                 kin.neutrino.pdg, kin.target.pdg, PDG::pdg_neutron, -PDG::pdg_piP, cc) *
-                    alfadelta(j, k, l, pim, kin.W);
+        delta_pim = delta_spp(-PDG::pdg_piP, PDG::pdg_neutron);
         break;
       default:
         cerr << "[WARNING]: charge out of rangen\n";
