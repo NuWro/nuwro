@@ -239,36 +239,37 @@ void resevent2(params &p, event &e, bool cc) {
         }
       } else  // SPP from Delta
       {
-        vect finnuk, finpion;
+        particle final_nucleon, final_pion; // final particles placeholders
 
-        kin.neutrino.boost(-kin.hadron_speed);  // a boost from nu-N CMS to the hadronic CMS
-        kin.lepton.boost(-kin.hadron_speed);    // a boost from nu-N CMS to the hadronic CMS
-        kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, finnuk, finpion,
-                 p.delta_angular);  // produces 4-momenta of final pair: nucleon + pion with density matrix information
-        e.weight *= angrew;         // reweight according to angular correlation
+				// boost leptons from nu-N CMS to the hadronic CMS
+        kin.neutrino.boost(-kin.hadron_speed);
+        kin.lepton.boost(-kin.hadron_speed);
 
-        // kin2part (W, nukleon2, pion, finnuk, finpion);	//produces 4-momenta of the final pair: nucleon + pion
+        // produces 4-momenta of final pair: nucleon + pion with density matrix information
+        kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, final_nucleon, final_pion, p.delta_angular);
 
-        kin.neutrino.boost(kin.hadron_speed);  // a boost back to the nu-N CMS frame
-        kin.neutrino.boost(kin.target.v());    // a boost back to tha LAB frame
+        e.weight *= angrew;  // reweight according to angular correlation (angrew defined in LeptonMass...)
 
-        kin.lepton.boost(kin.hadron_speed);  // a boost back to the nu-N CMS frame
-        kin.lepton.boost(kin.target.v());    // a boost back to tha LAB frame
+				// boost back to nu-N CMS frame and then to LAB frame
+        kin.neutrino.boost(kin.hadron_speed);
+        kin.neutrino.boost(kin.target.v());
 
-        finnuk = finnuk.boost(kin.hadron_speed);
-        finnuk = finnuk.boost(kin.target.v());
+        kin.lepton.boost(kin.hadron_speed);
+        kin.lepton.boost(kin.target.v());
 
-        finpion = finpion.boost(kin.hadron_speed);
-        finpion = finpion.boost(kin.target.v());
+        final_nucleon = final_nucleon.boost(kin.hadron_speed);
+        final_nucleon = final_nucleon.boost(kin.target.v());
 
-        particle ppion(finpion);
-        particle nnukleon(finnuk);
+        final_pion = final_pion.boost(kin.hadron_speed);
+        final_pion = final_pion.boost(kin.target.v());
 
-        ppion.pdg = pion_pdg;
-        nnukleon.pdg = nucleon_pdg;
+				// set final hadrons PDG codes
+				final_nucleon.pdg = nucleon_pdg;
+				final_pion.pdg = pion_pdg;
 
-        e.out.push_back(ppion);
-        e.out.push_back(nnukleon);
+				// save final hadrons in out vector
+        e.out.push_back(final_pion);
+        e.out.push_back(final_nucleon);
       }
 
     }
