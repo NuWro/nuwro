@@ -264,7 +264,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ekeff<40)
+      if (X.Ek<40)
         X.xsec_p*=0.9;                 // effective Pauli blocking 
       //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       break;
@@ -274,7 +274,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ekeff<40)
+      if (X.Ek<40)
         X.xsec_n*=0.9;                 // effective Pauli blocking 
       //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       break;
@@ -282,7 +282,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
     default:
     { 
       PD.set_density(X.dens);
-      PD.set_Ek(X.Ekeff);
+      PD.set_Ek(X.Ek);
       double rii=PD.sij(0)*millibarn;
       double rij=PD.sij(1)*millibarn;
       double rabs=PD.sij(2)*millibarn;
