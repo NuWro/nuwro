@@ -79,7 +79,7 @@ void resevent2(params &p, event &e, bool cc) {
 
   if (not kin.is_above_pythia_threshold() || fromdis == 0) {
     // contributions from DIS
-    auto dis_spp = [j, k, l, fromdis, kin, p](const int pion_code) {
+    auto dis_spp = [&](const int pion_code) {
       return fromdis * SPP[j][k][l][pion_code][0] * betadis(j, k, l, pion_code, kin.W, p.bkgrscaling);
     };
 
@@ -88,7 +88,7 @@ void resevent2(params &p, event &e, bool cc) {
     const double dis_pim = dis_spp(pim);
 
     // contributions from Delta
-    auto delta_spp = [j, k, l, kin, p, cc](const int pion_pdg, const int nucleon_pdg) {
+    auto delta_spp = [&](const int pion_pdg, const int nucleon_pdg) {
       return cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.t, kin.W, kin.q.t,
                           kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) *
              alfadelta(j, k, l, pdg2spp(pion_pdg), kin.W);
