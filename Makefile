@@ -156,11 +156,11 @@ $(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
 		$(LINK.cc) $^ -o $@
 
 clean:;         @rm -f          *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
-		src/gui/*.o src/gui/*.d src/gui/moc_*
+		src/gui/*.o src/gui/*.d src/gui/moc_* src/rew/*.o
 
 
 distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
-		src/gui/*.o src/gui/*.d src/gui/moc_*  *.root *.root.txt
+		src/gui/*.o src/gui/*.d src/gui/moc_*  src/rew/*.o *.root *.root.txt
 
 
 src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
