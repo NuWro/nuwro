@@ -7,10 +7,10 @@
 #include "res_kinematics.h"
 
 //! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
-enum { pip, pi0, pim } spp_code; // to be removed later
+enum { pip, pi0, pim } spp_code;  // to be removed later
 
 //! map PDG code to SPP code
-inline int pdg2spp(const int pdg) { // to be removed later
+inline int pdg2spp(const int pdg) {  // to be removed later
   switch (pdg) {
     case PDG::pdg_piP:
       return pip;
@@ -28,7 +28,10 @@ inline int pdg2spp(const int pdg) { // to be removed later
 TPythia6* get_pythia();
 
 //! get id-th particle from pythia's particle list
-particle get_pythia_particle(Pyjets_t* pythia_partricles, const int particle_id, res_kinematics kin);
+particle get_pythia_particle(Pyjets_t* pythia_particles, const int particle_id, res_kinematics kin);
+
+//! save Pythia particles
+void save_pythia_particles(event& e, Pyjets_t* pythia_particles, const int nof_particles, const res_kinematics& kin);
 
 //! generate RES event
 void resevent2(params& p, event& e, bool cc);

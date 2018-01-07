@@ -148,26 +148,15 @@ void resevent2(params &p, event &e, bool cc) {
       */
       const int nucleon_pdg = finalcharge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
+      // initialize xsec struct according to Pythia result
       xsec.set_xsec(kin, p, pion_pdg, nucleon_pdg, e.in[0].t);
 
-      const double total_spp = xsec.dis_total + xsec.delta_total;  // total single pion production
-
-      e.weight = total_spp * 1e-38 * kin.jacobian;  // update weights with correct normalization
+      e.weight = xsec.get_total(kin.jacobian);  // save total cross sections
 
       // randomly decide if SPP comes from Delta or DIS
-      if (xsec.dis_total > total_spp * frandom())  // SPP from DIS
-      {
-        // loop over Pythia particles
-        for (int i = 0; i < nof_particles; i++) {
-          // i-th Pythia particle converted to NuWro format
-          particle p = get_pythia_particle(pythia_particles, i, kin);
-
-          e.temp.push_back(p);  // all particles are stored in temp vector
-
-          // only stable (ks == 1) particles are stored in out vector
-          if (p.ks == 1) e.out.push_back(p);
-        }
-      } else  // SPP from Delta
+      if (xsec.get_dis_fraction() > frandom())  // SPP from DIS
+        save_pythia_particles(e, pythia_particles, nof_particles, kin);
+      else  // SPP from Delta
       {
         particle final_nucleon, final_pion;  // final particles placeholders
 
@@ -203,18 +192,8 @@ void resevent2(params &p, event &e, bool cc) {
       }
     } else  // more inelastic final state or single kaon production
     {
-      e.weight = fromdis * 1e-38 * kin.jacobian;
-
-      // loop over Pythia particles
-      for (int i = 0; i < nof_particles; i++) {
-        // i-th Pythia particle converted to NuWro format
-        particle p = get_pythia_particle(pythia_particles, i, kin);
-
-        e.temp.push_back(p);  // all particles are stored in temp vector
-
-        // only stable (ks == 1) particles are stored in out vector
-        if (p.ks == 1) e.out.push_back(p);
-      }
+      e.weight = xsec.get_total(kin.jacobian);
+      save_pythia_particles(e, pythia_particles, nof_particles, kin);
     }
 
     delete pythia71;
@@ -257,6 +236,19 @@ TPythia6 *get_pythia() {
   pythia71->SetMSTJ(18, 3);
 
   return pythia71;
+}
+
+void save_pythia_particles(event &e, Pyjets_t *pythia_particles, const int nof_particles, const res_kinematics &kin) {
+  // loop over Pythia particles
+  for (int i = 0; i < nof_particles; i++) {
+    // i-th Pythia particle converted to NuWro format
+    particle p = get_pythia_particle(pythia_particles, i, kin);
+
+    e.temp.push_back(p);  // all particles are stored in temp vector
+
+    // only stable (ks == 1) particles are stored in out vector
+    if (p.ks == 1) e.out.push_back(p);
+  }
 }
 
 particle get_pythia_particle(Pyjets_t *pythia_particles, const int particle_id, res_kinematics kin) {

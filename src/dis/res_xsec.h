@@ -42,6 +42,9 @@ struct res_xsec {
 
   //! return random (xsec based) final pion pdg
   int get_pion_pdg();
+
+  //! in the case Pythia is involved in SPP - return fraction coming from background
+  double get_dis_fraction() { return dis_total / (delta_total + dis_total); }
 };
 
 //! cross section reduction to remove contribution from pion-less delta decay
