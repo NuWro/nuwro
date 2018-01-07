@@ -42,6 +42,7 @@ Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/ne
 #include "params.h"
 #include "pauli.h"
 #include "pdg_name.h"
+// #include "res_xsec.h"
 #include "singlepion.h"
 #include "vect.h"
 
@@ -65,6 +66,15 @@ void resevent2(params &p, event &e, bool cc) {
   final_lepton.pdg = kin.neutrino.pdg + cc * (1 - 2.0 * (kin.neutrino.pdg > 0));
 
   e.out.push_back(final_lepton);
+
+  // res_xsec xsec(kin, cc);  // cross section handler initialize SPP indices and DIS constribution
+
+  // temporary variables
+  // int j = xsec.j;
+  // int k = xsec.k;
+  // int l = xsec.l;
+  // int finalcharge = xsec.final_charge;
+  // double fromdis = xsec.from_dis;
 
   // determine indices for SPP table (see singlepion.cc)
   const int j = kin.neutrino.pdg < 0;
@@ -147,7 +157,7 @@ void resevent2(params &p, event &e, bool cc) {
     // produces 4-momenta of final pair: nucleon + pion
     kin2part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion);
 
-    // boost back to LAB frame
+    // boost back to LAB frame; TODO: apply rewangle corection
     final_nucleon.p4() = final_nucleon.boost(kin.hadron_speed);
     final_nucleon.p4() = final_nucleon.boost(kin.target.v());
 
