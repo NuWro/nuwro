@@ -42,7 +42,7 @@ Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/ne
 #include "params.h"
 #include "pauli.h"
 #include "pdg_name.h"
-// #include "res_xsec.h"
+#include "res_xsec.h"
 #include "singlepion.h"
 #include "vect.h"
 
@@ -67,25 +67,14 @@ void resevent2(params &p, event &e, bool cc) {
 
   e.out.push_back(final_lepton);
 
-  // res_xsec xsec(kin, cc);  // cross section handler initialize SPP indices and DIS constribution
+  res_xsec xsec(kin, cc);  // cross section handler - initialize SPP indices and DIS constribution
 
-  // temporary variables
-  // int j = xsec.j;
-  // int k = xsec.k;
-  // int l = xsec.l;
-  // int finalcharge = xsec.final_charge;
-  // double fromdis = xsec.from_dis;
-
-  // determine indices for SPP table (see singlepion.cc)
-  const int j = kin.neutrino.pdg < 0;
-  const int k = not cc;
-  const int l = kin.target.pdg != PDG::pdg_proton;
-
-  // total electric charge of the pion-nucleon system
-  const int finalcharge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);
-
-  // the contribution to the cross section coming from DIS
-  const double fromdis = max(0.0, cr_sec_dis(kin.neutrino.E(), kin.W, kin.q.t, kin.neutrino.pdg, kin.target.pdg, cc));
+  // temporary variables (to remove once everything is moved to res_xsec)
+  int j = xsec.j;
+  int k = xsec.k;
+  int l = xsec.l;
+  int finalcharge = xsec.final_charge;
+  double fromdis = xsec.from_dis;
 
   if (not kin.is_above_pythia_threshold() || fromdis == 0) {
     // contributions from DIS

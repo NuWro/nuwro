@@ -11,6 +11,8 @@ struct res_xsec {
   double dis_pip, dis_pi0, dis_pim;        //!< contribution to RES from DIS
   double delta_pip, delta_pi0, delta_pim;  //!< contribution to RES from Delta
 
+  double dis_spp, delta_spp;  //!< total contribution from RES and DIS
+
   double from_dis;  //!< the strength of DIS background
 
   res_xsec(res_kinematics &kin, const bool cc);
