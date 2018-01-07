@@ -387,8 +387,8 @@ bool kaskada::finalize_interaction()
     else
     {
       parts.push (X.p[i]);
-      double fz = formation_zone(X.p[i], par);
-      X.p[i].krok(fz);
+      //double fz = formation_zone(X.p[i], par);
+      //X.p[i].krok(fz);
     }
 
     //procinfo(*p,X.p2,X.n,X.p);

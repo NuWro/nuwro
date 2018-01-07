@@ -260,7 +260,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   switch (X.pdg)
   {
     case pdg_neutron:
-      ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
+      ND.get_sij (X.Ekeff,X.xsec_n,X.xsec_p);
       //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
@@ -270,7 +270,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       break;
 
     case pdg_proton:
-      ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
+      ND.get_sij (X.Ekeff,X.xsec_p,X.xsec_n);
       //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
