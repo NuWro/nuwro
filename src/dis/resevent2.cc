@@ -50,7 +50,8 @@ extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
 
 void resevent2(params &p, event &e, bool cc) {
-  e.weight = 0;  // if kinmetically forbidden
+  e.weight = 0;              // if kinmetically forbidden
+  e.flag.res_delta = false;  // pion from background by default
 
   res_kinematics kin(e);  // kinematics variables
 
@@ -151,6 +152,7 @@ void resevent2(params &p, event &e, bool cc) {
         save_pythia_particles(e, pythia_particles, nof_particles, kin);
       else  // SPP from Delta
       {
+        e.flag.res_delta = true;             // mark pion as comming from Delta
         particle final_nucleon, final_pion;  // final particles placeholders
 
         // boost leptons from nu-N CMS to the hadronic CMS
@@ -194,9 +196,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   // set all outgoing particles position to target nucleon position
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
-
-  // for debugging - to remove when I am done
-  for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
 }
 
 TPythia6 *get_pythia() {

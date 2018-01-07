@@ -22,6 +22,8 @@ class flags
 		bool cc;         ///< charged current       (cc == !nc)
 
 		bool anty;       ///< true if antineutrino (anty==in[0].pdg<0)
+
+		bool res_delta;  ///< true if RES pion comes from Delta
 };
 
 using namespace std;
