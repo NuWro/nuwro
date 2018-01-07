@@ -79,6 +79,13 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
   return true;
 }
 
+void res_kinematics::set_kinematics(event &e) {
+  // set kinematics necessary to calculate cross section
+  W = e.W();
+  W2 = W * W;
+  q = e.q();
+}
+
 double get_binding_energy(const params &p, const vec &momentum) {
   switch (p.nucleus_target) {
     case 0:  // free nucleon

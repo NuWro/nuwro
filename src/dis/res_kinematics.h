@@ -13,6 +13,8 @@ struct res_kinematics {
 
   bool generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
 
+  void set_kinematics(event& e);  //!< set kinematics based on already generated event
+
   //! check it neutrino energy is above thresholds
   inline bool is_above_threshold() {
     return neutrino.E() > ((Wmin + lepton_mass) * (Wmin + lepton_mass) - effective_mass2) / 2.0 / effective_mass;
