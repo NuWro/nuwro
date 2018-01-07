@@ -76,77 +76,22 @@ void resevent2(params &p, event &e, bool cc) {
   int finalcharge = xsec.final_charge;
   double fromdis = xsec.from_dis;
 
-  if (not kin.is_above_pythia_threshold() || fromdis == 0) {
-    // contributions from DIS
-    auto dis_spp = [&](const int pion_code) {
-      return fromdis * SPP[j][k][l][pion_code][0] * betadis(j, k, l, pion_code, kin.W, p.bkgrscaling);
-    };
-
-    const double dis_pip = dis_spp(pip);
-    const double dis_pi0 = dis_spp(pi0);
-    const double dis_pim = dis_spp(pim);
-
-    // contributions from Delta
-    auto delta_spp = [&](const int pion_pdg, const int nucleon_pdg) {
-      return cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.t, kin.W, kin.q.t,
-                          kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) *
-             alfadelta(j, k, l, pdg2spp(pion_pdg), kin.W);
-    };
-
-    double delta_pip = 0, delta_pi0 = 0, delta_pim = 0;
-
-    switch (finalcharge) {
-      case 2:  // pi+ + proton
-        delta_pip = delta_spp(PDG::pdg_piP, PDG::pdg_proton);
-        break;
-      case 1:  // pi+ + neutron or pi0 + proton
-        delta_pip = delta_spp(PDG::pdg_piP, PDG::pdg_neutron);
-        delta_pi0 = delta_spp(PDG::pdg_pi, PDG::pdg_proton);
-        break;
-      case 0:  // pi0 + neutron or pi- + proton
-        delta_pi0 = delta_spp(PDG::pdg_pi, PDG::pdg_neutron);
-        delta_pim = delta_spp(-PDG::pdg_piP, PDG::pdg_proton);
-        break;
-      case -1:  // pi- + neutron
-        delta_pim = delta_spp(-PDG::pdg_piP, PDG::pdg_neutron);
-        break;
-      default:
-        cerr << "[WARNING]: charge out of rangen\n";
-    };
-
-    // we arrived at the overall strength !!!
-    double total = dis_pip + dis_pi0 + dis_pim + delta_pip + delta_pi0 + delta_pim;
-
-    // save cross section in appropriate units
-    e.weight = total * 1e-38 * kin.jacobian;
+  if (not kin.is_above_pythia_threshold() || xsec.is_no_dis()) {
+    xsec.set_xsec_nopythia(kin, p);           // initialize xsec struct with SPP parameters
+    e.weight = xsec.get_total(kin.jacobian);  // save total cross section
 
     // final state particles
     particle final_pion, final_nucleon;
 
-    // contributions from different pions to xsec
-    const double pip_fraction = (dis_pip + delta_pip) / total;
-    const double pi0_fraction = (dis_pi0 + delta_pi0) / total;
-
-    // randomly select final state pion
-    double rand01 = frandom();
-
-    if (pip_fraction > rand01)
-      final_pion.set_piP();
-    else if (pip_fraction + pi0_fraction > rand01)
-      final_pion.set_pi();
-    else
-      final_pion.set_piM();
-
-    // determine isospin of a final nucleon
-    if (nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, final_pion.pdg, cc) == PDG::pdg_proton)
-      final_nucleon.set_proton();
-    else
-      final_nucleon.set_neutron();
+    final_pion.set_pdg_and_mass(xsec.get_pion_pdg());
+    final_nucleon.set_pdg_and_mass(nukleon_out_(kin.W, kin.neutrino.pdg, kin.target.pdg, final_pion.pdg, cc));
 
     // produces 4-momenta of final pair: nucleon + pion
     kin2part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion);
 
-    // boost back to LAB frame; TODO: apply rewangle corection
+    // TODO: apply rewangle corection
+
+    // boost back to LAB frame
     final_nucleon.p4() = final_nucleon.boost(kin.hadron_speed);
     final_nucleon.p4() = final_nucleon.boost(kin.target.v());
 

@@ -45,6 +45,7 @@ public:
 	inline int charge();                         ///< particle charge
 	inline double mass2 ();                      ///< mass squared
 	inline void set_mass (double mass);          ///< set particle mass and adjust energy
+	inline void set_pdg_and_mass (int pdg);      ///< set particle pdg and mass (based on pdg)
 	inline void set_pdg_and_mass (int pdg, double mass); ///< set particle pdg and mass
 	inline void set_proton (){set_pdg_and_mass(pdg_proton,mass_proton);}    ///< set particle pdg and mass
 	inline void set_neutron (){set_pdg_and_mass(pdg_neutron,mass_neutron);} ///< set particle pdg and mass
@@ -200,6 +201,11 @@ void particle::set_pdg_and_mass (int pdg, double mass)
     t=sqrt(x*x+y*y+z*z+_mass*_mass);
   }
 
+void particle::set_pdg_and_mass (int pdg)
+  { this->pdg=pdg;
+    _mass = PDG::mass(pdg);
+    t=sqrt(x*x+y*y+z*z+_mass*_mass);
+  }
 
 void particle::set_momentum (vec p)
   {

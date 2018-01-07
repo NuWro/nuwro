@@ -7,10 +7,10 @@
 #include "res_kinematics.h"
 
 //! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
-enum { pip, pi0, pim } spp_code;
+enum { pip, pi0, pim } spp_code; // to be removed later
 
 //! map PDG code to SPP code
-inline int pdg2spp(const int pdg) {
+inline int pdg2spp(const int pdg) { // to be removed later
   switch (pdg) {
     case PDG::pdg_piP:
       return pip;
