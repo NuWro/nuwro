@@ -3,13 +3,11 @@
 #include "delta.h"
 #include "dis2res.h"
 #include "dis_cr_sec.h"
+#include "resevent2.h"
 #include "singlepion.h"
 
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
-
-//! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
-enum { pip, pi0, pim } spp_code;
 
 double pdd_red(double energy) {
   if (energy >= 1000)
@@ -18,21 +16,6 @@ double pdd_red(double energy) {
     return 0.65 + energy * 0.05 / 250.0;
   else  // if (en<=750)
     return 0.2 + energy * 0.2 / 250.0;
-}
-
-//! map PDG code to SPP code
-inline int pdg2spp(const int pdg) {
-  switch (pdg) {
-    case PDG::pdg_piP:
-      return pip;
-    case PDG::pdg_pi:
-      return pi0;
-    case -PDG::pdg_piP:
-      return pim;
-    default:
-      cerr << "[ERROR] not valid pion pdg";
-      return -1;
-  };
 }
 
 res_xsec::res_xsec(res_kinematics &kin, const bool cc)

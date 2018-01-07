@@ -69,13 +69,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   res_xsec xsec(kin, cc);  // cross section handler - initialize SPP indices and DIS constribution
 
-  // temporary variables (to remove once everything is moved to res_xsec)
-  int j = xsec.j;
-  int k = xsec.k;
-  int l = xsec.l;
-  int finalcharge = xsec.final_charge;
-  double fromdis = xsec.from_dis;
-
   if (not kin.is_above_pythia_threshold() || xsec.is_no_dis()) {
     xsec.set_xsec_nopythia(kin, p);           // initialize xsec struct with SPP parameters
     e.weight = xsec.get_total(kin.jacobian);  // save total cross section
@@ -146,7 +139,7 @@ void resevent2(params &p, event &e, bool cc) {
           1 -> neutron + pi- or neutron + pi0 or neutron + pi+
           2 -> proton + pi- or proton + pi+ or proton + pi0
       */
-      const int nucleon_pdg = finalcharge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
+      const int nucleon_pdg = xsec.final_charge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
       // initialize xsec struct according to Pythia result
       xsec.set_xsec(kin, p, pion_pdg, nucleon_pdg, e.in[0].t);
