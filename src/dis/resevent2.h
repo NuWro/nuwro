@@ -24,9 +24,6 @@ inline int pdg2spp(const int pdg) { // to be removed later
   };
 }
 
-//! cross section reduction to remove contribution from pion-less delta decay
-double pdd_red(double energy);
-
 //! set up PYTHIA6 parameters
 TPythia6* get_pythia();
 

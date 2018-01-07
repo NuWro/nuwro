@@ -11,6 +11,15 @@ extern double SPP[2][2][2][3][40];
 //! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
 enum { pip, pi0, pim } spp_code;
 
+double pdd_red(double energy) {
+  if (energy >= 1000)
+    return 0.85;
+  else if (energy > 750)
+    return 0.65 + energy * 0.05 / 250.0;
+  else  // if (en<=750)
+    return 0.2 + energy * 0.2 / 250.0;
+}
+
 //! map PDG code to SPP code
 inline int pdg2spp(const int pdg) {
   switch (pdg) {
@@ -108,4 +117,23 @@ void res_xsec::set_xsec_nopythia(const res_kinematics &kin, const params &p) {
   };
 
   delta_total = delta_pip + delta_pi0 + delta_pim;
+}
+
+// cross section calculated based on generated final states from Pythia
+void res_xsec::set_xsec(res_kinematics &kin, const params &p, const int pion_pdg, const int nucleon_pdg,
+                        const double neutrino_energy) {
+  // PDG to SPP code
+  const int t = pdg2spp(pion_pdg);
+
+  // dis contribution to single pion production
+  dis_total = from_dis * betadis(j, k, l, t, kin.W, p.bkgrscaling);
+
+  // delta contribution to single pion production
+  delta_total = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
+                             kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, is_cc) /
+                SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
+
+  // reduce cross section by removing the contribution from pionless delta decay
+  // more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
+  if ((p.nucleus_p + p.nucleus_n) > 7) delta_total *= pdd_red(neutrino_energy);
 }

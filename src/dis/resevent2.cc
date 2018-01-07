@@ -130,7 +130,6 @@ void resevent2(params &p, event &e, bool cc) {
       const int pion_pdg = PDG::pion(pythia_particles->K[1][3]) ? pythia_particles->K[1][3] : pythia_particles->K[1][4];
       // PDG to SPP code
       const int t = pdg2spp(pion_pdg);
-
       /*
         t:
           0 for pi+
@@ -149,24 +148,14 @@ void resevent2(params &p, event &e, bool cc) {
       */
       const int nucleon_pdg = finalcharge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
-      // dis contribution to single pion production
-      const double dis_spp = fromdis * betadis(j, k, l, t, kin.W, p.bkgrscaling);
+      xsec.set_xsec(kin, p, pion_pdg, nucleon_pdg, e.in[0].t);
 
-      // delta contribution to single pion production
-      double delta_spp = cr_sec_delta(p.delta_FF_set, p.pion_axial_mass, p.pion_C5A, kin.neutrino.E(), kin.W, kin.q.t,
-                                      kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, cc) /
-                         SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
-
-      // reduce cross section by removing the contribution from pionless delta decay
-      // more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
-      if ((p.nucleus_p + p.nucleus_n) > 7) delta_spp *= pdd_red(e.in[0].t);
-
-      const double total_spp = dis_spp + delta_spp;  // total single pion production
+      const double total_spp = xsec.dis_total + xsec.delta_total;  // total single pion production
 
       e.weight = total_spp * 1e-38 * kin.jacobian;  // update weights with correct normalization
 
       // randomly decide if SPP comes from Delta or DIS
-      if (dis_spp > total_spp * frandom())  // SPP from DIS
+      if (xsec.dis_total > total_spp * frandom())  // SPP from DIS
       {
         // loop over Pythia particles
         for (int i = 0; i < nof_particles; i++) {
@@ -236,15 +225,6 @@ void resevent2(params &p, event &e, bool cc) {
 
   // for debugging - to remove when I am done
   for (int j = 0; j < e.out.size(); j++) cout << e.out[j] << "\n";
-}
-
-double pdd_red(double energy) {
-  if (energy >= 1000)
-    return 0.85;
-  else if (energy > 750)
-    return 0.65 + energy * 0.05 / 250.0;
-  else  // if (en<=750)
-    return 0.2 + energy * 0.2 / 250.0;
 }
 
 TPythia6 *get_pythia() {

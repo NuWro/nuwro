@@ -36,8 +36,15 @@ struct res_xsec {
   //! calculate cross sections for the no-Pythia scenario
   void set_xsec_nopythia(const res_kinematics &kin, const params &p);
 
+  //! calcaulte cross sections for SPP with Pythia contribution
+  void set_xsec(res_kinematics &kin, const params &p, const int pion_pdg, const int nucleon_pdg,
+                const double neutrino_energy);
+
   //! return random (xsec based) final pion pdg
   int get_pion_pdg();
 };
+
+//! cross section reduction to remove contribution from pion-less delta decay
+double pdd_red(double energy);
 
 #endif
