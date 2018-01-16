@@ -861,13 +861,18 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 
 class Interaction
 {
-  data_container* xsec_NN;                    //!< Storage of nucleon experimental cross sections.
+  data_container* NN_xsec;                    //!< Storage of nucleon-nucleon cross sections.
+  data_container* NN_inel;                    //!< Storage of nucleon-nucleon inelasticity coefficients.
+  data_container* NN_angle;                   //!< Storage of nucleon-nucleon angle distributions.
   int k1;                                     //!< Type of particle that interacted: nucleon_ or pion_.
   NData ND;                                   //!< Storage of nucleon experimental cross sections.
   PiData PD;                                  //!< Storage of pion experimental cross sections.
 
   public: 
-    Interaction(data_container* _xsec_NN, int xsec2_NN, int xsec_piN):xsec_NN(_xsec_NN),ND(xsec2_NN),PD(xsec_piN){}
+    Interaction(data_container* _NN_xsec, data_container* _NN_inel, data_container* _NN_angle,
+                int xsec2_NN, int xsec_piN):
+                NN_xsec(_NN_xsec), NN_inel(_NN_inel), NN_angle(_NN_angle),
+                ND(xsec2_NN),PD(xsec_piN){}
                                               //!< The default constructor.
                                               /*!< Takes the params options "kaskada_xsec_NN" and "kaskada_xsec_piN"
                                                    for the chosen set of data of NN and piN cross sections.
