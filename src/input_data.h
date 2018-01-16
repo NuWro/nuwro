@@ -15,7 +15,7 @@
 
 class input_data
 {
-  params                  par;                    //!< Params of the simulation.
+  params                 par;                     //!< Params of the simulation.
   vector<data_container> containers;              //!< Containers for data.
   string                 input_path;              //!< Path to the folder with input data.
 
@@ -30,7 +30,6 @@ class input_data
   private:
     void initialize_input_path();                 //!< Creates the input_path and checks if it exists.
     void initialize_data_containers();            //!< Prepares data containers for reading files.
-    string generate_file_name( string parameter_name, int parameter_option ); //!< Generates file name.
 };
 
 #endif

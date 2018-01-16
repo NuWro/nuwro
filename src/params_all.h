@@ -90,8 +90,10 @@ PARAM(double,tau,8)\
 PARAM(double,formation_length,1)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
-PARAM(int,kaskada_xsec_NN,1)\
-PARAM(int,kaskada_xsec_piN,1)\
+PARAM(int,kaskada_NN_xsec,0)\
+PARAM(int,kaskada_NN_inel,1)\
+PARAM(int,kaskada_NN_angle,0)\
+PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
 

@@ -257,8 +257,6 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
 
   //cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
 
-  double resc=1;                                        // KN: is that ever used?
-
   switch (X.pdg)
   {
     case pdg_neutron:
@@ -266,8 +264,6 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      X.xsec_n*=resc;
-      X.xsec_p*=resc;
       if (X.Ek<40)
         X.xsec_p*=0.9;                 // effective Pauli blocking 
       //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
@@ -278,8 +274,6 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      X.xsec_n*=resc;
-      X.xsec_p*=resc;
       if (X.Ek<40)
         X.xsec_n*=0.9;                 // effective Pauli blocking 
       //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;

@@ -25,9 +25,13 @@ class data_container
   float          input_mid_point;                 //!< Fraction between the data-taking bins.
 
   public:
-    data_container( string _file_name, int _number_of_fields,
-                    string *_data_fields, int *_interpolate_fields,
-                    double *_unit_fields );
+    string            param_name;                 //!< Name of the parameter governing the data.
+    int              param_value;                 //!< Value of the parameter governing the data.
+
+    data_container( string _input_path,
+                    string _param_name,       int _param_value,
+                    int _number_of_fields,    string *_data_fields,
+                    int *_interpolate_fields, double *_unit_fields );
                                                   //!< The default constructor.
     ~data_container();                            //!< The default destructor.
     void read_data_file();                        //!< Read and store the data.
@@ -36,6 +40,7 @@ class data_container
     double get_value( int field );                //!< Get a value (interpolated) for a given field.
 
   private:
+    void generate_file_name( string input_path ); //!< Generates file name.
     void copy_fields_information( string *_data_fields, int *_interpolate_fields,
                                   double *_unit_fields );
                                                   //!< Copy information about the fields.

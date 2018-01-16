@@ -4,110 +4,60 @@
 
 -
     energy: 0
-#    xsec_ii: 24.5
-#    xsec_ij: 33.0
-    inel_ii: 0.07
-    inel_ij: 0.04
-    inel_1pi: 1.0
     angle_A_ii: 0.1
     angle_A_ij: 2.2
     angle_B_ii: 0
     angle_B_ij: -1.0
 -
     energy: 335
-    xsec_ii: 24.5
-#    xsec_ij: 33.0
-    inel_ii: 0.07
-    inel_ij: 0.04
-    inel_1pi: 1.0
     angle_A_ii: 0.1
     angle_A_ij: 2.2
     angle_B_ii: 0
     angle_B_ij: -1.0
 -
     energy: 410
-    xsec_ii: 26.4
-    xsec_ij: 34.0
-    inel_ii: 0.2
-    inel_ij: 0.07
-    inel_1pi: 1.0
     angle_A_ii: 0.9
     angle_A_ij: 1.8
     angle_B_ii: 0
     angle_B_ij: -1.1
 -
     energy: 510
-    xsec_ii: 30.4
-#    xsec_ij: 35.1
-    inel_ii: 0.31
-    inel_ij: 0.15
-    inel_1pi: 1.0
     angle_A_ii: 2.7
     angle_A_ij: 2.3
     angle_B_ii: 0
     angle_B_ij: -0.7
 -
     energy: 660
-    xsec_ii: 41.2
-#    xsec_ij: 36.5
-    inel_ii: 0.43
-    inel_ij: 0.27
-    inel_1pi: 1.0
     angle_A_ii: 9.0
     angle_A_ij: 8.8
     angle_B_ii: 0
     angle_B_ij: -0.2
 -
     energy: 840
-    xsec_ii: 47.2
-#    xsec_ij: 37.9
-    inel_ii: 0.58
-#    inel_ij: 0.37
-    inel_1pi: 0.97
     angle_A_ii: 14.3
     angle_A_ij: 15.0
     angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1160
-    xsec_ii: 48.0
-#    xsec_ij: 40.2
-    inel_ii: 0.65
-    inel_ij: 0.36
-    inel_1pi: 0.8
     angle_A_ii: 19.2
     angle_A_ij: 29.4
     angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1780
-    xsec_ii: 44.2
-    xsec_ij: 42.7
-    inel_ii: 0.69
-    inel_ij: 0.35
-    inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
     angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 3900
-    xsec_ii: 41.0
-    xsec_ij: 42.0
-    inel_ii: 0.69
-    inel_ij: 0.35
-    inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
     angle_B_ii: 0
     angle_B_ij: 0.0
 -
     energy: 1e+300
-    xsec_ii: 41.0
-    xsec_ij: 42.0
-    inel_ii: 0.69
-    inel_ij: 0.35
-    inel_1pi: 0.44
     angle_A_ii: 1e+99
     angle_A_ij: 1e+99
     angle_B_ii: 0

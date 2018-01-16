@@ -10,12 +10,14 @@
 // Public methods
 ////////////////////////////////////////
 
-data_container::data_container( string _file_name, int _number_of_fields,
-                                string *_data_fields, int *_interpolate_fields,
-                                double *_unit_fields ):
-                                file_name(_file_name),
+data_container::data_container( string _input_path,
+                                string _param_name,       int _param_value,
+                                int _number_of_fields,    string *_data_fields,
+                                int *_interpolate_fields, double *_unit_fields ):
+                                param_name(_param_name), param_value(_param_value),
                                 number_of_fields(_number_of_fields)
 {
+  generate_file_name( _input_path );          // generate file name using the provided params and the input path
   copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
 }
 
@@ -106,6 +108,15 @@ double data_container::get_value( int field )
 
 ////////////////////////////////////////
 // Private methods
+////////////////////////////////////////
+
+void data_container::generate_file_name( string input_path )
+{
+  stringstream name_sstream;
+  name_sstream << input_path << param_name << "_" << param_value << ".dat"; // path + name + extension
+  file_name = name_sstream.str();
+}
+
 ////////////////////////////////////////
 
 void data_container::copy_fields_information( string *_data_fields, int *_interpolate_fields, double *_unit_fields)

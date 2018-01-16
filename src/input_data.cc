@@ -81,24 +81,27 @@ void input_data::initialize_data_containers()
   //  1 is linear interpolation,
   // -1 means it is the input axis.
 
-    string cascade_xsec_NN_file_name            = generate_file_name( "kaskada_xsec_NN", par.kaskada_xsec_NN );
-    int    cascade_xsec_NN_number_of_fields     = 10;
-    string cascade_xsec_NN_data_fields[]        = {"energy",
-                                                   "xsec_ii", "xsec_ij",
-                                                   "inel_ii", "inel_ij", "inel_1pi",
-                                                   "angle_A_ii", "angle_A_ij", "angle_B_ii","angle_B_ij"};
-    int    cascade_xsec_NN_interpolate_fields[] = {-1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
-    double cascade_xsec_NN_unit_fields[]              = {1, fermi, fermi, 1, 1, 1, 1, 1, 1, 1};
-    containers.push_back( data_container( cascade_xsec_NN_file_name,   cascade_xsec_NN_number_of_fields,
-                                          cascade_xsec_NN_data_fields, cascade_xsec_NN_interpolate_fields,
-                                          cascade_xsec_NN_unit_fields ));
-}
+    int    cascade_NN_xsec_number_of_fields     = 3;
+    string cascade_NN_xsec_data_fields[]        = {"energy", "xsec_ii", "xsec_ij"};
+    int    cascade_NN_xsec_interpolate_fields[] = {-1, 1, 1};
+    double cascade_NN_xsec_unit_fields[]        = { 1, fermi, fermi};
+    containers.push_back( data_container( input_path, "kaskada_NN_xsec", par.kaskada_NN_xsec,
+                                          cascade_NN_xsec_number_of_fields, cascade_NN_xsec_data_fields,
+                                          cascade_NN_xsec_interpolate_fields, cascade_NN_xsec_unit_fields ));
 
-////////////////////////////////////////
+    int    cascade_NN_inel_number_of_fields     = 4;
+    string cascade_NN_inel_data_fields[]        = {"energy", "inel_ii", "inel_ij", "inel_1pi"};
+    int    cascade_NN_inel_interpolate_fields[] = {-1, 0, 0, 0};
+    double cascade_NN_inel_unit_fields[]        = { 1, 1, 1, 1};
+    containers.push_back( data_container( input_path, "kaskada_NN_inel", par.kaskada_NN_inel,
+                                          cascade_NN_inel_number_of_fields, cascade_NN_inel_data_fields,
+                                          cascade_NN_inel_interpolate_fields, cascade_NN_inel_unit_fields ));
 
-string input_data::generate_file_name( string parameter_name, int parameter_option )
-{
-  stringstream name_sstream;
-  name_sstream << input_path << parameter_name << "_" << parameter_option << ".dat"; // path + name + extension
-  return name_sstream.str();
+    int    cascade_NN_angle_number_of_fields    = 5;
+    string cascade_NN_angle_data_fields[]       = {"energy", "angle_A_ii", "angle_A_ij", "angle_B_ii","angle_B_ij"};
+    int    cascade_NN_angle_interpolate_fields[]= {-1, 0, 0, 0, 0};
+    double cascade_NN_angle_unit_fields[]       = { 1, 1, 1, 1, 1};
+    containers.push_back( data_container( input_path, "kaskada_NN_angle", par.kaskada_NN_angle,
+                                          cascade_NN_angle_number_of_fields, cascade_NN_angle_data_fields,
+                                          cascade_NN_angle_interpolate_fields, cascade_NN_angle_unit_fields ));
 }
