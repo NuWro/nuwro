@@ -21,9 +21,9 @@ class input_data
 
   public:
     input_data();                                 //!< The default constructor.
-                                                  /*!< Receives the params provided. */
     ~input_data();                                //!< The default destructor.
-    void initialize( params _par );               //!< Initializes objects, checks essential things.
+    void initialize( params _par );               //!< Initializes objects.
+                                                  /*!< Receives the params provided, checks essential things. */
     void load_data();                             //!< Loads the data needed for given simulation.
     data_container* get_data_container( int i );  //!< Provides with a specific data_container.
 

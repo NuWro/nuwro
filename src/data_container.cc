@@ -185,7 +185,7 @@ void data_container::read_data( ifstream &file_ifstream )
     char_position = file_line.find( ':' );        // ":" means data
     if( char_position != string::npos )           // we found ":"
     {
-      field = file_line.substr(0, char_position);           // erase everything up to ":"
+      field = file_line.substr(0, char_position);           // take everything up to ":"
       field.erase(0, field.find_first_not_of(" \n\r\t") );  // trim from left
 
       value = stod( file_line.substr(char_position+1) );    // everything after ":", convert to double
@@ -194,7 +194,7 @@ void data_container::read_data( ifstream &file_ifstream )
       {
         if( data_fields[i] == field )
         {
-          data[point][i] = value * unit_fields[i];
+          data[point][i] = value * unit_fields[i];          // save the value and convert to natural units
           break;
         }
 

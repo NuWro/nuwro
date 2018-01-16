@@ -49,7 +49,8 @@ class kaskada
     double radius;                                //!< Radius of the nucleus.
 
   public:
-    kaskada(params &p, event &e1, input_data *input);  //!< The default constructor.
+    kaskada(params &p, event &e1, input_data *input);
+                                                  //!< The default constructor.
                                                   /*!< Takes the params file and the current event.
                                                        Generates a new nucleus for the cascade. */
     ~kaskada();                                   //!< The default destructor.
