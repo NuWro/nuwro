@@ -131,12 +131,16 @@ void NuWro::init (int argc, char **argv)
 	a.read (argc, argv);
 	p.read (a.input);
 	p.read (a.params, "command line");
-	
 	p.list (cout);
 	p.list (string(a.output)+".par");
 	p1=&p;
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
+
+  // load the input data
+  input.initialize( p );
+  input.load_data();
+
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
 	{
@@ -431,7 +435,7 @@ void NuWro::finishevent(event* e, params &p)
 	
 	if (!e->flag.coh )
 	{
-		kaskada k(p, *e);
+		kaskada k(p, *e, &input);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true
 	}
 	else

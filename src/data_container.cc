@@ -5,16 +5,18 @@
 #include <dirent.h>
 #include <math.h>
 
+
 ////////////////////////////////////////
 // Public methods
 ////////////////////////////////////////
 
 data_container::data_container( string _file_name, int _number_of_fields,
-                                string *_data_fields, int *_interpolate_fields ):
+                                string *_data_fields, int *_interpolate_fields,
+                                double *_unit_fields ):
                                 file_name(_file_name),
                                 number_of_fields(_number_of_fields)
 {
-  copy_fields_information( _data_fields, _interpolate_fields ); // copy the information to vectors
+  copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
 }
 
 ////////////////////////////////////////
@@ -106,10 +108,11 @@ double data_container::get_value( int field )
 // Private methods
 ////////////////////////////////////////
 
-void data_container::copy_fields_information( string *_data_fields, int *_interpolate_fields)
+void data_container::copy_fields_information( string *_data_fields, int *_interpolate_fields, double *_unit_fields)
 {
   data_fields        = vector<string> (_data_fields, _data_fields + number_of_fields);
   interpolate_fields = vector<int> (_interpolate_fields, _interpolate_fields + number_of_fields);
+  unit_fields        = vector<double> (_unit_fields, _unit_fields + number_of_fields);
 
   int check_minus = 0;                               // find the input axis and check if there is only one
   for( int i=0; i<interpolate_fields.size(); i++)
@@ -191,7 +194,7 @@ void data_container::read_data( ifstream &file_ifstream )
       {
         if( data_fields[i] == field )
         {
-          data[point][i] = value;
+          data[point][i] = value * unit_fields[i];
           break;
         }
 

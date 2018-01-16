@@ -18,6 +18,7 @@ class data_container
   int           number_of_fields;                 //!< Number of fields within data file.
   vector<string>     data_fields;                 //!< Names of the fields.
   vector<int> interpolate_fields;                 //!< Interpolation type for the fields.
+  vector<double>     unit_fields;                 //!< Conversion to natural units.
   vector< vector<double> >  data;                 //!< 2d vector with data.
   int                 input_axis;                 //!< An input axis.
   int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
@@ -25,7 +26,8 @@ class data_container
 
   public:
     data_container( string _file_name, int _number_of_fields,
-                  string *_data_fields, int *_interpolate_fields );
+                    string *_data_fields, int *_interpolate_fields,
+                    double *_unit_fields );
                                                   //!< The default constructor.
     ~data_container();                            //!< The default destructor.
     void read_data_file();                        //!< Read and store the data.
@@ -34,7 +36,8 @@ class data_container
     double get_value( int field );                //!< Get a value (interpolated) for a given field.
 
   private:
-    void copy_fields_information( string *_data_fields, int *_interpolate_fields );
+    void copy_fields_information( string *_data_fields, int *_interpolate_fields,
+                                  double *_unit_fields );
                                                   //!< Copy information about the fields.
     void count_data_points( ifstream &file_ifstream );
                                                   //!< Count number of points in the data file.

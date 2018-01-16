@@ -17,6 +17,7 @@
 #include "Interaction.h"
 #include "proctable.h"
 #include "nucleusmaker.h"
+#include "input_data.h"
 
 using namespace std;
 using namespace PDG;
@@ -48,7 +49,7 @@ class kaskada
     double radius;                                //!< Radius of the nucleus.
 
   public:
-    kaskada(params &p, event &e1);                //!< The default constructor.
+    kaskada(params &p, event &e1, input_data *input);  //!< The default constructor.
                                                   /*!< Takes the params file and the current event.
                                                        Generates a new nucleus for the cascade. */
     ~kaskada();                                   //!< The default destructor.

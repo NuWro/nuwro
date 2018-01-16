@@ -6,28 +6,28 @@
 #include <math.h>
 
 #include "dirs.h"
+#include "jednostki.h"
 
 
 ////////////////////////////////////////
 // Public methods
 ////////////////////////////////////////
 
-input_data::input_data( params _par )
+input_data::input_data()
 {
-  par = _par;
 }
 
 ////////////////////////////////////////
 
 input_data::~input_data()
 {
-  delete cascade_xsec_NN;
 }
 
 ////////////////////////////////////////
 
-void input_data::initialize()
+void input_data::initialize( params _par )
 {
+  par = _par;
   initialize_input_path();
   initialize_data_containers();
 }
@@ -36,14 +36,15 @@ void input_data::initialize()
 
 void input_data::load_data()
 {
-  cascade_xsec_NN->read_data_file();
+  for( int i = 0; i < containers.size(); i++ )
+    containers[i].read_data_file();
 }
 
 ////////////////////////////////////////
 
-data_container* input_data::get_data_container()
+data_container* input_data::get_data_container( int i )
 {
-  return cascade_xsec_NN;
+  return &containers[i];
 }
 
 
@@ -87,8 +88,10 @@ void input_data::initialize_data_containers()
                                                    "inel_ii", "inel_ij", "inel_1pi",
                                                    "angle_A_ii", "angle_A_ij", "angle_B_ii","angle_B_ij"};
     int    cascade_xsec_NN_interpolate_fields[] = {-1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
-    cascade_xsec_NN = new data_container( cascade_xsec_NN_file_name,   cascade_xsec_NN_number_of_fields,
-                                          cascade_xsec_NN_data_fields, cascade_xsec_NN_interpolate_fields );
+    double cascade_xsec_NN_unit_fields[]              = {1, fermi, fermi, 1, 1, 1, 1, 1, 1, 1};
+    containers.push_back( data_container( cascade_xsec_NN_file_name,   cascade_xsec_NN_number_of_fields,
+                                          cascade_xsec_NN_data_fields, cascade_xsec_NN_interpolate_fields,
+                                          cascade_xsec_NN_unit_fields ));
 }
 
 ////////////////////////////////////////

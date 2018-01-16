@@ -829,6 +829,10 @@ void pattern :: startfsi ()
 
 	P.read("data/kaskada.txt");
 	set_params ();
+
+  // load the input data
+  input.initialize( P );
+  input.load_data();
 	
 	nucleus* nucl= make_nucleus(P);
 	
@@ -846,7 +850,7 @@ void pattern :: startfsi ()
 			e->out.push_back(p0);
 			e->in.push_back(p0);
 			
-			k = new kaskada(P,*e);
+			k = new kaskada(P,*e,&input);
 			k -> kaskadaevent();
 			
 			calculate(e);

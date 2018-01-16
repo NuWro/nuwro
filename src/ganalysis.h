@@ -4,6 +4,7 @@
 #include "ff.h"
 #include <string>
 #include "kaskada7.h"
+#include "input_data.h"
 
 const int nof_dyn = 10; //number of dynamics in NuWro
 const int nof_class = 60;
@@ -208,6 +209,7 @@ class pattern
 		NuWro *N;
 		kaskada *k;
 		params P;
+		input_data input;
 		int events;
 
 		void run ();

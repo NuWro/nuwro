@@ -5,14 +5,14 @@
 // Public methods
 ////////////////////////////////////////
 
-kaskada::kaskada(params &p, event &e1)
+kaskada::kaskada(params &p, event &e1, input_data *input)
 {
   par = p;
   e = &e1;
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
-  I = new Interaction(par.kaskada_xsec_NN,par.kaskada_xsec_piN);
+  I = new Interaction(input->get_data_container(0), par.kaskada_xsec_NN,par.kaskada_xsec_piN);
 }
 
 ////////////////////////////////////////

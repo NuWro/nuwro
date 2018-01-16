@@ -10,6 +10,7 @@
 #include "seek.h"
 //#define echo(x)
 #include "piangle.h"
+#include "input_data.h"
 
 enum {nucleon_=10,pion_=20};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
@@ -860,12 +861,13 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 
 class Interaction
 {
+  data_container* xsec_NN;                    //!< Storage of nucleon experimental cross sections.
   int k1;                                     //!< Type of particle that interacted: nucleon_ or pion_.
   NData ND;                                   //!< Storage of nucleon experimental cross sections.
   PiData PD;                                  //!< Storage of pion experimental cross sections.
 
   public: 
-    Interaction(int xsec_NN, int xsec_piN):ND(xsec_NN),PD(xsec_piN){}
+    Interaction(data_container* _xsec_NN, int xsec2_NN, int xsec_piN):xsec_NN(_xsec_NN),ND(xsec2_NN),PD(xsec_piN){}
                                               //!< The default constructor.
                                               /*!< Takes the params options "kaskada_xsec_NN" and "kaskada_xsec_piN"
                                                    for the chosen set of data of NN and piN cross sections.

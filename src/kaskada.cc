@@ -19,14 +19,12 @@ int main(int argc,  char** argv)
   p.list();
   frandom_init(p.random_seed);
   
+  // load the input data
+  input_data input;
   try
   {
-    input_data input_test( p );
-    input_test.initialize();
-    input_test.load_data();
-    data_container *test = input_test.get_data_container();
-    for(int i=0;i<20000000;i++)
-      test->set_input_point(i);
+    input.initialize( p );
+    input.load_data();
   }
   catch( char const* ex )
   {
@@ -37,42 +35,43 @@ int main(int argc,  char** argv)
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
   TTree * t2=new TTree("treeout","Tree of events");
-  t2->Branch("e","event",&e); ///< tree1 has only one branch (branch of events)
+  t2->Branch("e","event",&e);   // tree1 has only one branch (branch of events)
 
   try
   {
-	  nucleus* nucl= make_nucleus(p);
-	  beam_uniform b(p);
-	  b.check_energy();         
+    nucleus* nucl= make_nucleus(p);
+    beam_uniform b(p);
+    b.check_energy();
   }
   catch(const char* w)
   {
-	  cout<<endl<<"Exception:     "<<w<<endl<<endl;
-	  return 1;
+    cout<<endl<<"Exception:     "<<w<<endl<<endl;
+    return 1;
   }
 
   beam_uniform b(p);
   nucleus* nucl= make_nucleus(p); 
 
   for(int i=0;i<p.number_of_events;i++)
-  {  cout<<"event="<<i<<" begin      \r"; 
-     e=new event;
-     e->weight = 1;
-     e->par = p;
-     particle p0=b.shoot();
-     p0.r=start_point(nucl,p);
-     e->out.push_back(p0);
-     e->flag.qel = 0;
-     e->flag.res = 0;
-	 particle pi = nucl->get_nucleon(p0.r);
-	 e->in.push_back(pi);
-	 e->in.push_back(pi);
-	 //e->in[1].p4().t = 0;
-	 kaskada k(p,*e);
-     k.kaskadaevent();
-     t2->Fill();
-     delete e;
-     cout<<"event "<<i<<": completed.\r";
+  {
+    cout<<"event="<<i<<" begin      \r"; 
+    e=new event;
+    e->weight = 1;
+    e->par = p;
+    particle p0=b.shoot();
+    p0.r=start_point(nucl,p);
+    e->out.push_back(p0);
+    e->flag.qel = 0;
+    e->flag.res = 0;
+    particle pi = nucl->get_nucleon(p0.r);
+    e->in.push_back(pi);
+    e->in.push_back(pi);
+    //e->in[1].p4().t = 0;
+    kaskada k(p,*e,&input);
+    k.kaskadaevent();
+    t2->Fill();
+    delete e;
+    cout<<"event "<<i<<": completed.\r";
   }
 
   f->Write();
