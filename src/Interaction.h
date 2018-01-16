@@ -896,6 +896,9 @@ class Interaction
       return k1==nucleon_ ? ND.process_name() : PD.process_name();
     }
     void test ();                             //!< Test function.
+
+  private:
+
 };
 
 ////////////////////////////////////////

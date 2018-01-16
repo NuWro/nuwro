@@ -84,7 +84,7 @@ void input_data::initialize_data_containers()
     int    cascade_NN_xsec_number_of_fields     = 3;
     string cascade_NN_xsec_data_fields[]        = {"energy", "xsec_ii", "xsec_ij"};
     int    cascade_NN_xsec_interpolate_fields[] = {-1, 1, 1};
-    double cascade_NN_xsec_unit_fields[]        = { 1, fermi, fermi};
+    double cascade_NN_xsec_unit_fields[]        = { 1, millibarn, millibarn};
     containers.push_back( data_container( input_path, "kaskada_NN_xsec", par.kaskada_NN_xsec,
                                           cascade_NN_xsec_number_of_fields, cascade_NN_xsec_data_fields,
                                           cascade_NN_xsec_interpolate_fields, cascade_NN_xsec_unit_fields ));

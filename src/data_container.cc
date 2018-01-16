@@ -45,6 +45,9 @@ void data_container::read_data_file()
 
     fill_nan_data();                              // fill in the points with no data
 
+    input_point = data[0][input_axis];            // reset input points
+    input_mid_point = 0;
+
     file_ifstream.close();                        // close the file
   }
   else
@@ -57,19 +60,23 @@ void data_container::read_data_file()
 
 void data_container::set_input_point( double input_value )
 {
-  if( input_value < data[0][input_axis] || input_value > data[number_of_points-1][input_axis] )
+  if( fabs(input_value - input_point) > 1e-10 ) // do it if the input value changed, fixed epsilon 1e-10
   {
-    throw "input_data error: Cannot set the data-taking point, out of bounds.";
-  }
+    if( input_value < data[0][input_axis] || input_value > data[number_of_points-1][input_axis] )
+    {
+      throw "input_data error: Cannot set the data-taking point, out of bounds.";
+    }
 
-  input_prev_bin = 0;
-  while( input_value >= data[input_prev_bin+1][input_axis] )
-  {
-        input_prev_bin++;
-  }
+    input_prev_bin = 0;
+    while( input_value >= data[input_prev_bin+1][input_axis] )
+    {
+          input_prev_bin++;
+    }
 
-  input_mid_point = (input_value - data[input_prev_bin][input_axis])
-                  / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
+    input_point = input_value;
+    input_mid_point = (input_value - data[input_prev_bin][input_axis])
+                    / (data[input_prev_bin+1][input_axis] - data[input_prev_bin][input_axis]);
+  }
 }
 
 ////////////////////////////////////////
@@ -301,15 +308,5 @@ void data_container::fill_nan_data()
         }
       }
     }
-  }
-
-  // just testing
-  for(int i=0;i<data.size();i++)
-  {
-    for(int j=0;j<data[0].size();j++)
-    {
-      cout << data[i][j] << "\t";
-    }
-    cout << "\n";
   }
 }

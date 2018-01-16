@@ -261,7 +261,11 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   {
     case pdg_neutron:
       ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
-      //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      cout<<"neutron  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
+      NN_xsec->set_input_point(X.Ek);
+      X.xsec_n = NN_xsec->get_value(1);
+      X.xsec_p = NN_xsec->get_value(2);
+      cout<<"new neutron  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
       X.xsec_n*=mod;
       X.xsec_p*=mod;
       if (X.Ek<40)
@@ -271,7 +275,11 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
 
     case pdg_proton:
       ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
-      //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      cout<<"proton  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
+      NN_xsec->set_input_point(X.Ek);
+      X.xsec_n = NN_xsec->get_value(2);
+      X.xsec_p = NN_xsec->get_value(1);
+      cout<<"new proton  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
       X.xsec_n*=mod;
       X.xsec_p*=mod;
       if (X.Ek<40)

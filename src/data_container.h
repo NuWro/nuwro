@@ -21,8 +21,9 @@ class data_container
   vector<double>     unit_fields;                 //!< Conversion to natural units.
   vector< vector<double> >  data;                 //!< 2d vector with data.
   int                 input_axis;                 //!< An input axis.
-  int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
+  double             input_point;                 //!< Currently set input point.
   float          input_mid_point;                 //!< Fraction between the data-taking bins.
+  int             input_prev_bin;                 //!< An input bin previous to the data-taking point.
 
   public:
     string            param_name;                 //!< Name of the parameter governing the data.
