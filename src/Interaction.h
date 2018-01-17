@@ -872,11 +872,11 @@ class Interaction
                                                    (table p) and the number of outgoing particles (n). */
     int process_id()                          //! Returns the process id.
     { 
-      return k1==nucleon_ ? ND.process_id() : PD.process_id(); 
+      return k1==nucleon_ ? nucleon_process_id() : PD.process_id(); 
     }
     const char* process_name()                //! Returns the process name.
     {
-      return k1==nucleon_ ? ND.process_name() : PD.process_name();
+      return k1==nucleon_ ? nucleon_process_name() : PD.process_name();
     }
     void test ();                             //!< Test function.
 
@@ -893,6 +893,10 @@ class Interaction
                                               //!< Scattering of p1, p2 with single pion production.
     bool   nucleon_dpp(        particle  p1, particle  p2, int &n, particle p[] );
                                               //!< Scattering of p1, p2 with double pion production.
+    int         nucleon_process_id();
+                                              //!< Returns the nucleon process id.
+    const char* nucleon_process_name();
+                                              //!< Returns the nucleon process name.
 };
 
 ////////////////////////////////////////

@@ -505,3 +505,21 @@ bool Interaction::nucleon_dpp( particle p1, particle p2, int &n, particle p[] )
   doit(n,cnls[canal],p);// p[2],p[3] are pions
   return scatter_n (n, p1, p2, p);
 }
+
+////////////////////////////////////////
+
+int Interaction::nucleon_process_id()
+{
+  return nucleon_+k2;
+}
+
+////////////////////////////////////////
+
+const char* Interaction::nucleon_process_name()
+{
+  const char *name[4]={"nucleon elastic","nucleon ce","nucleon spp","nucleon dpp"};
+  if(k2<4)
+    return name[k2];
+  else
+    return NULL;
+}
