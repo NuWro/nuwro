@@ -846,6 +846,8 @@ class Interaction
   data_container* NN_inel;                    //!< Storage of nucleon-nucleon inelasticity coefficients.
   data_container* NN_angle;                   //!< Storage of nucleon-nucleon angle distributions.
   int k1;                                     //!< Type of particle that interacted: nucleon_ or pion_.
+  int k2;                                     //!< Type of process that occured: elastic_, spp_, dpp_.
+  int ij;                                     //!< Type of target: 0 - same, 1 - different.
   NData ND;                                   //!< Storage of nucleon experimental cross sections.
   PiData PD;                                  //!< Storage of pion experimental cross sections.
 
@@ -879,7 +881,18 @@ class Interaction
     void test ();                             //!< Test function.
 
   private:
-    void get_NN_xsec( double Ek, double &resii, double &resij );
+    void   get_NN_xsec( double Ek, double &resii, double &resij );
+                                              //!< Reads the NN cross sections from data.
+    double get_NN_xsec_ij( double Ek );
+                                              //!< Returns the NN (ii/ij) cross sections from data.
+    bool   nucleon_scattering( particle& p1, particle& p2, int &n, particle p[] );
+                                              //!< Scatters particles p1, p2 into n particles in p[].
+    bool   nucleon_elastic(    particle& p1, particle& p2, int &n, particle p[] );
+                                              //!< Elastic scattering of p1, p2.
+    bool   nucleon_spp(        particle  p1, particle  p2, int &n, particle p[] );
+                                              //!< Scattering of p1, p2 with single pion production.
+    bool   nucleon_dpp(        particle  p1, particle  p2, int &n, particle p[] );
+                                              //!< Scattering of p1, p2 with double pion production.
 };
 
 ////////////////////////////////////////

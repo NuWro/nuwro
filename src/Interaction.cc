@@ -380,12 +380,128 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
     Ek = max( Ek, 30 * MeV );
     const double M = (mass_proton + mass_neutron) / 2;
     double v = sqrt(1 - pow2 (M / (Ek+M)));
-    resij=((34.10 / v - 82.20) / v + 82.2) * millibarn;
     resii=((10.63 / v - 29.92) / v + 42.9) * millibarn;
+    resij=((34.10 / v - 82.20) / v + 82.2) * millibarn;
   }
   else
   {
     resii = NN_xsec->get_value(1);
     resij = NN_xsec->get_value(2);
   }
+}
+
+////////////////////////////////////////
+
+double Interaction::get_NN_xsec_ij( double Ek )
+{
+  NN_xsec->set_input_point( Ek );
+
+  if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
+  {
+    Ek = max( Ek, 30 * MeV );
+    const double M = (mass_proton + mass_neutron) / 2;
+    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    if( ij )
+      return ((34.10 / v - 82.20) / v + 82.2) * millibarn;
+    else
+      return ((10.63 / v - 29.92) / v + 42.9) * millibarn;
+  }
+  else
+  {
+    if( ij )
+      return NN_xsec->get_value(2);
+    else
+      return NN_xsec->get_value(1);
+  }
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_scattering ( particle& p1, particle& p2, int &n, particle p[] )
+{
+  ij=p1!=p2;  // set the type of target
+
+  vec v = p2.v();
+  assert ( v*v<1 && " nucleon  ");
+
+  double Ek1 = p1.Ek_in_frame (v);
+  double Ek2 = p1.Ek_in_frame (-v);
+  double s1  = get_NN_xsec_ij( Ek1 );
+  double s2  = get_NN_xsec_ij( Ek2 );
+
+  if( frandom()*(s1 + s2) < s2 )
+  {
+    p2.x *= -1;
+    p2.y *= -1;
+    p2.z *= -1;
+    NN_inel->set_input_point( Ek2 );
+    NN_angle->set_input_point( Ek2 );
+  }
+  else
+  {
+    NN_inel->set_input_point( Ek1 );
+    NN_angle->set_input_point( Ek1 );
+  }
+
+  if ( frandom() > NN_inel->get_value( 1+ij ) )  // 1 is ii, 2 is ij
+      return nucleon_elastic(p1, p2, n, p);
+  if ( frandom() > NN_inel->get_value( 3+ij ) )  // 3 is ii, 4 is ij
+    return nucleon_spp(p1, p2, n, p) 
+        || nucleon_elastic(p1, p2, n, p); // in case of insufficiend energy fallback to elastic
+  else        
+    return nucleon_dpp(p1, p2, n, p) 
+        || nucleon_spp(p1, p2, n, p)      // in case of insufficiend energy fallback to spp
+        || nucleon_elastic(p1, p2, n, p); // or even to to elastic
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_elastic( particle& p1, particle& p2, int &n, particle p[] )
+{
+  k2=elastic_;
+  n = 2;
+  p[0] = p1;
+  p[1] = p2;
+  float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij
+  float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij
+  int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b8x^3 + 0*x^2 + 0*x + 1
+
+  if(res==0) cerr<<"AB=0"<<endl;
+  return res;
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_spp( particle p1, particle p2, int &n, particle p[] )
+{
+  k2=spp_;
+  int canal=(p1==Proton)*2+(p2==Proton);
+  static const double f1[]={0.11};
+  static const double f2[]={0.43,0.815};
+  static const channel cnls[4][3]=
+      {{f1[0],"nn.",    1,"np-", 1,"ccc"},//nn
+       {f2[0],"np.",f2[1],"nn+", 1,"pp-"},//np
+       {f2[0],"pn.",f2[1],"pp-", 1,"nn+"},//pn
+       {f1[0],"pp.",    1,"np+", 1,"ddd"} //pp
+      };
+  doit(n,cnls[canal],p);  // p[2] is pion 
+  return scatter_n (n, p1, p2, p);
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_dpp( particle p1, particle p2, int &n, particle p[] )
+{
+  k2=dpp_;
+  int canal=(p1==Proton)*2+(p2==Proton);
+  static const double f1[]={0.6,0.8};
+  static const double f2[]={0.6,0.8,0.9};
+  static const channel cnls[4][4]=
+      {{f1[0],"nn..",f1[1],"nn+-",    1,"np.-",1,"    "},//nn
+       {f2[0],"np..",f2[1],"np+-",f2[2],"pp.-",1,"nn.+"},//np
+       {f2[0],"pn..",f2[1],"pn-+",f2[2],"nn.+",1,"pp.-"},//pn
+       {f1[0],"pp..",f1[1],"pp-+",    1,"pn.+",1,"    "} //pp
+      };
+  doit(n,cnls[canal],p);// p[2],p[3] are pions
+  return scatter_n (n, p1, p2, p);
 }
