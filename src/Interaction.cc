@@ -323,11 +323,23 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
   else
     X.p2.set_neutron ();
 
+      particle test1=p1;
+      particle test2=X.p2;
+      particle test3=p1;
+      particle test4=X.p2;
   switch (p1.pdg)                   // generate the kinematics
   {
     case pdg_proton:
     case pdg_neutron:
       k1=nucleon_;
+      nucleon_scattering(test1, test2, X.n, X.p);
+      cout << "old: " << k2 << "\n";
+      //cout << X.p[0] << " " << X.p[0].momentum() << "\n";
+      //cout << X.p[1] << " " << X.p[1].momentum() << "\n";
+      ND.nucleon_scattering(test3, test4, X.n, X.p);
+      cout << "new: " << k2 << "\n";
+      //cout << X.p[0] << " " << X.p[0].momentum() << "\n";
+      //cout << X.p[1] << " " << X.p[1].momentum() << "\n";
       return ND.nucleon_scattering (p1, X.p2 , X.n,  X.p);
     case pdg_pi: 
     case pdg_piP: 
