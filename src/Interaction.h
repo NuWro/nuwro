@@ -142,165 +142,6 @@ inline void doit(int& n,const channel a[],particle p[])
 
 
 ////////////////////////////////////////
-// NData
-////////////////////////////////////////
-
-class NData
-{
-  int k2;
-  double Ek;
-  int iE;
-  double aE; 
-  int ij;
-  const double *E,*s[2],*F[2],*A[2],*B[2],*Fp[2];
-  double val(const double* v)
-  {
-    return (1-aE)*v[iE]+aE*v[iE+1];
-  }
-
-  public:
-    NData(int i)
-    {
-      if(i)                   // 0 is Metropolis, others are Oset
-        setOset();
-      else
-        setMetropolis();
-    }
-    void setMetropolis();
-    void setOset();
-    void set_Ek(double NewEk)
-    {
-      Ek=NewEk;
-      iE=0;
-      while(NewEk>=E[iE+1])
-        ++iE;
-      aE=(NewEk-E[iE])/(E[iE+1]-E[iE]);
-    }
-    void set_particles(particle& p1,particle& p2)
-    {
-      ij=p1!=p2;
-    }
-    inline double sigma (double Ek);
-    double finel(){return F[ij][iE];}
-    double a(){return A[ij][iE];}
-    double b(){return B[ij][iE];}
-    double fp(){return Fp[ij][iE];}
-    inline bool nucleon_scattering (particle & p1, particle & p2, int &n, particle p[]);
-    inline bool nucleon_elastic    (particle & p1, particle & p2, int &n, particle p[]);
-    inline bool nucleon_spp        (particle p1, particle p2, int &n, particle p[]);// p[2] is pion
-    inline bool nucleon_dpp        (particle p1, particle p2, int &n, particle p[]);// p[2], p[3] are pions
-    inline int process_id()
-    {
-      return nucleon_+k2;
-    }
-    inline const char * process_name()
-    {
-      const char *name[4]={"nucleon elastic","nucleon ce","nucleon spp","nucleon dpp"};
-      if(k2<4)
-        return name[k2];
-      else
-        return NULL;
-    }
-};
-///////////////////////////////////////////////////////////
-double NData::sigma (double Ek_)
-{   set_Ek(Ek_);
-	if (Ek_ < 335 * MeV)
-	{ 
-  	  Ek=max(Ek, 40 * MeV); 
-	  const double M = (mass_proton + mass_neutron) / 2;
-  	  double v = sqrt (1 - pow2 (M / (Ek+M)));
-	  if(ij) return ((10.63 / v - 29.92) / v + 42.9)* millibarn;
-	  else    return ((34.10 / v - 82.20) / v + 82.2)* millibarn;
-	}
-	else
-	  { 
-        return val(s[ij]) * millibarn;    
-      }
-}
-///////////////////////////////////////////////////////////
-bool NData::nucleon_scattering (particle & p1, particle & p2, 
-			                   int &n, particle p[])
-{
-    set_particles(p1,p2);
-    vec v = p2.v();
-    assert ( v*v<1 && " nucleon  ");
-    
-    double Ek1 = p1.Ek_in_frame (v);
-    double Ek2 = p1.Ek_in_frame (-v);
-    double s2=sigma(Ek2); 
-    double s1=sigma(Ek1); 
-    double s = s1;
-
-	if (frandom()*(s1 + s2) < s2)
-	  {
-		p2.x *= -1;
-		p2.y *= -1;
-		p2.z *= -1;
-		set_Ek(Ek2);
-	  }
-	  
-	if (frandom()>finel())
-	    return nucleon_elastic(p1, p2, n, p);
-	if (frandom() <  fp() ) 
-		return nucleon_spp(p1, p2, n, p) 
-		     ||nucleon_elastic(p1, p2, n, p); // in case of insufficiend energy fallback to elastic
-	else 		    
-	    return nucleon_dpp(p1, p2, n, p) 
-	         ||nucleon_spp(p1, p2, n, p)      // in case of insufficiend energy fallback to spp
-	         ||nucleon_elastic(p1, p2, n, p); // or even to to elastic
-}
-///////////////////////////////////////////////////////////
-bool NData::nucleon_elastic(particle& p1,particle& p2, int &n, particle p[])
- { 
-	k2=elastic_;
-	n = 2;
-	p[0] = p1;
-	p[1] = p2;
-	int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, a(), b(), 0, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b8x^3 + 0*x^2 + 0*x + 1
-		
-	if(res==0) cerr<<"AB=0"<<endl;
-	return res;
- }
-
-///////////////////////////////////////////////////////////
-
-/// nucleon single pion production
-bool NData::nucleon_spp (particle p1, particle p2, int &n, particle p[])
-  {
-	k2=spp_;
-    int canal=(p1==Proton)*2+(p2==Proton);
-    static const double f1[]={0.11};
-    static const double f2[]={0.43,0.815};
-    static const channel cnls[4][3]=
-      {{f1[0],"nn.",    1,"np-", 1,"ccc"},//nn
-       {f2[0],"np.",f2[1],"nn+", 1,"pp-"},//np
-       {f2[0],"pn.",f2[1],"pp-", 1,"nn+"},//pn
-       {f1[0],"pp.",    1,"np+", 1,"ddd"} //pp
-      };
-    doit(n,cnls[canal],p); 	// p[2] is pion    
-    return scatter_n (n, p1, p2, p);
-  }
-///////////////////////////////////////////////////////////  
-/// nucleon double pion production
-bool NData::nucleon_dpp (particle p1, particle p2, int &n, particle p[])	
-  {
- 	  k2=dpp_;
-      int canal=(p1==Proton)*2+(p2==Proton);
-      static const double f1[]={0.6,0.8};
-      static const double f2[]={0.6,0.8,0.9};
-      static const channel cnls[4][4]=
-      {{f1[0],"nn..",f1[1],"nn+-",    1,"np.-",1,"    "},//nn
-       {f2[0],"np..",f2[1],"np+-",f2[2],"pp.-",1,"nn.+"},//np
-       {f2[0],"pn..",f2[1],"pn-+",f2[2],"nn.+",1,"pp.-"},//pn
-       {f1[0],"pp..",f1[1],"pp-+",    1,"pn.+",1,"    "} //pp
-      };
-       doit(n,cnls[canal],p);// p[2],p[3] are pions
-       return scatter_n (n, p1, p2, p);
-  }
-
-
-////////////////////////////////////////
 // PiData
 ////////////////////////////////////////
 
@@ -848,18 +689,18 @@ class Interaction
   int k1;                                     //!< Type of particle that interacted: nucleon_ or pion_.
   int k2;                                     //!< Type of process that occured: elastic_, spp_, dpp_.
   int ij;                                     //!< Type of target: 0 - same, 1 - different.
-  NData ND;                                   //!< Storage of nucleon experimental cross sections.
   PiData PD;                                  //!< Storage of pion experimental cross sections.
 
   public: 
     Interaction(data_container* _NN_xsec, data_container* _NN_inel, data_container* _NN_angle,
-                int xsec2_NN, int xsec_piN):
+                int xsec_piN):
                 NN_xsec(_NN_xsec), NN_inel(_NN_inel), NN_angle(_NN_angle),
-                ND(xsec2_NN),PD(xsec_piN){}
+                PD(xsec_piN){}
                                               //!< The default constructor.
-                                              /*!< Takes the params options "kaskada_xsec_NN" and "kaskada_xsec_piN"
-                                                   for the chosen set of data of NN and piN cross sections.
-                                                   Initializes NData and PiData for a given option. */
+                                              /*!< Takes the data containers storing information about NN:
+                                                   cross sections, and the coeeficients of inelasticity
+                                                   and angular distributions. Initializes PiData for a given
+                                                   option of "kaskada_piN_xsec". */
     void total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X);
                                               //!< Calculates in-medium cross sections for scattering on nucleons.
                                               /*!< The experimental cross section data is taken from NData, PiData

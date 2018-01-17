@@ -3,49 +3,6 @@
 
 
 ///////////////////////////////////////////////////////////
-void NData::setMetropolis()
-{
-  static const double    E[]={    0,  335,  410,  510,  660,  840, 1160, 1780, 3900,1e300};
-  static const double  sii[]={ 24.5, 24.5, 26.4, 30.4, 41.2, 47.2, 48.0, 44.2, 41.0, 41.0};
-  static const double  sij[]={ 33.0, 33.0, 34.0, 35.1, 36.5, 37.9, 40.2, 42.7, 42.0, 42.0};
-  static const double  fii[]={ 0.07, 0.07, 0.20, 0.31, 0.43, 0.58, 0.65, 0.69, 0.69, 0.69};
-  static const double  fij[]={ 0.04, 0.04, 0.07, 0.15, 0.27, 0.37, 0.36, 0.35, 0.35, 0.35};
-  static const double  Aii[]={  0.1,  0.1,  0.9,  2.7,  9.0, 14.3, 19.2, 1e99, 1e99, 1e99};
-  static const double  Aij[]={  2.2,  2.2,  1.8,  2.3,  8.8, 15.0, 29.4, 1e99, 1e99, 1e99}; 
-  static const double  Bii[]={    0,    0,    0,    0,    0,    0,    0,    0,    0,    0};
-  static const double  Bij[]={ -1.0, -1.0, -1.1, -0.7, -0.2,  0.0,  0.0,  0.0,  0.0,  0.0};
-  static const double  fpi[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 0.97, 0.80, 0.44, 0.44, 0.44};
-  this->E=E;
-  s[0]=sii;  s[1]=sij;
-  F[0]=fii;  F[1]=fij;
-  A[0]=Aii;  A[1]=Aij;
-  B[0]=Bii;  B[1]=Bij;
-  Fp[0]=fpi; Fp[1]=fpi;
-}
-
-///////////////////////////////////////////////////////////
-void NData::setOset()
-{
-  static const double    E[]={    0,  335,  410,  510,  660,  840, 1160, 1780, 2500,1e300};
-  static const double  sii[]={ 24.5, 24.5, 26.4, 30.4, 41.2, 47.2, 48.0, 44.2, 41.0, 41.0};
-  static const double  sij[]={ 33.0, 33.0, 34.0, 35.1, 36.5, 37.9, 40.2, 42.7, 42.0, 42.0};
-  static const double  fii[]={ 0.07, 0.07, 0.20, 0.31, 0.43, 0.48, 0.51, 0.62, 0.70, 0.70};
-  static const double  fij[]={ 0.04, 0.04, 0.07, 0.15, 0.37, 0.37, 0.51, 0.55, 0.65, 0.65};
-  static const double  Aii[]={  0.1,  0.1,  0.9,  2.7,  9.0, 14.3, 19.2, 1e99, 1e99, 1e99};
-  static const double  Aij[]={  2.2,  2.2,  1.8,  2.3,  8.8, 15.0, 29.4, 1e99, 1e99, 1e99};
-  static const double  Bii[]={    0,    0,    0,    0,    0,    0,    0,    0,    0,    0};
-  static const double  Bij[]={ -1.0, -1.0, -1.1, -0.7, -0.2,  0.0,  0.0,  0.0,  0.0,  0.0};
-  static const double fpii[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.90, 0.73, 0.50, 0.50};
-  static const double fpij[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 0.87, 0.55, 0.46, 0.30, 0.30}; 
-  this->E=E;
-  s[0]=sii;   s[1]=sij;
-  F[0]=fii;   F[1]=fij;
-  A[0]=Aii;   A[1]=Aij;
-  B[0]=Bii;   B[1]=Bij;
-  Fp[0]=fpii; Fp[1]=fpij;
-}
-
-///////////////////////////////////////////////////////////
 PiData::PiData(int xs):xsec(xs),Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0)
 { 
 	switch(xs)
