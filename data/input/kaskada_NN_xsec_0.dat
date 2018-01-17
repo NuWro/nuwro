@@ -1,11 +1,7 @@
-# Metropolis
-# reference
-# E, sii
+# N. Metropolis et al., Phys.Rev. 110 (1958) 204-219
 
 -
     energy: 0
-    xsec_ii: 24.5
-    xsec_ij: 33.0
 -
     energy: 335
     xsec_ii: 24.5
@@ -40,5 +36,3 @@
     xsec_ij: 42.0
 -
     energy: 1e+300
-    xsec_ii: 41.0
-    xsec_ij: 42.0

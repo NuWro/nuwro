@@ -1,4 +1,4 @@
-# N. Metropolis et al., Phys.Rev. 110 (1958) 204-219
+# Oset...
 
 -
     energy: 0
@@ -23,26 +23,32 @@
 -
     energy: 660
     inel_ii: 0.43
-    inel_ij: 0.27
+    inel_ij: 0.37
     inel_1pii: 1.0
     inel_1pij: 1.0
 -
     energy: 840
-    inel_ii: 0.58
+    inel_ii: 0.48
     inel_ij: 0.37
-    inel_1pii: 0.97
-    inel_1pij: 0.97
+    inel_1pii: 1.0
+    inel_1pij: 0.87
 -
     energy: 1160
-    inel_ii: 0.65
-    inel_ij: 0.36
-    inel_1pii: 0.8
-    inel_1pij: 0.8
+    inel_ii: 0.51
+    inel_ij: 0.51
+    inel_1pii: 0.9
+    inel_1pij: 0.55
 -
     energy: 1780
-    inel_ii: 0.69
-    inel_ij: 0.35
-    inel_1pii: 0.44
-    inel_1pij: 0.44
+    inel_ii: 0.62
+    inel_ij: 0.55
+    inel_1pii: 0.73
+    inel_1pij: 0.46
+-
+    energy: 2500
+    inel_ii: 0.7
+    inel_ij: 0.65
+    inel_1pii: 0.5
+    inel_1pij: 0.3
 -
     energy: 1e+300

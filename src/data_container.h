@@ -35,10 +35,11 @@ class data_container
                     int *_interpolate_fields, double *_unit_fields );
                                                   //!< The default constructor.
     ~data_container();                            //!< The default destructor.
-    void read_data_file();                        //!< Read and store the data.
-    void set_input_point( double input_value );
+    void   read_data_file();                      //!< Read and store the data.
+    void   set_input_point( double input_value );
                                                   //!< Set the point where the data is taken.
     double get_value( int field );                //!< Get a value (interpolated) for a given field.
+    void   debug();                               //!< Write down the contents of the container.
 
   private:
     void generate_file_name( string input_path ); //!< Generates file name.

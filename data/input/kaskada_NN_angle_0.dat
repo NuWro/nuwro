@@ -1,13 +1,7 @@
-# Metropolis
-# reference
-# E, sii
+# N. Metropolis et al., Phys.Rev. 110 (1958) 204-219
 
 -
     energy: 0
-    angle_A_ii: 0.1
-    angle_A_ij: 2.2
-    angle_B_ii: 0
-    angle_B_ij: -1.0
 -
     energy: 335
     angle_A_ii: 0.1
@@ -51,14 +45,4 @@
     angle_B_ii: 0
     angle_B_ij: 0.0
 -
-    energy: 3900
-    angle_A_ii: 1e+99
-    angle_A_ij: 1e+99
-    angle_B_ii: 0
-    angle_B_ij: 0.0
--
     energy: 1e+300
-    angle_A_ii: 1e+99
-    angle_A_ij: 1e+99
-    angle_B_ii: 0
-    angle_B_ij: 0.0

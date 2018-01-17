@@ -77,7 +77,7 @@ void input_data::initialize_data_containers()
 {
   // Provide the parameter that governs the data,
   // then the number of different fields in the file, their names and the method of interpolation:
-  //  0 is no interpolation,
+  //  0 is taking floor,
   //  1 is linear interpolation,
   // -1 means it is the input axis.
 
@@ -89,10 +89,10 @@ void input_data::initialize_data_containers()
                                           cascade_NN_xsec_number_of_fields, cascade_NN_xsec_data_fields,
                                           cascade_NN_xsec_interpolate_fields, cascade_NN_xsec_unit_fields ));
 
-    int    cascade_NN_inel_number_of_fields     = 4;
-    string cascade_NN_inel_data_fields[]        = {"energy", "inel_ii", "inel_ij", "inel_1pi"};
-    int    cascade_NN_inel_interpolate_fields[] = {-1, 0, 0, 0};
-    double cascade_NN_inel_unit_fields[]        = { 1, 1, 1, 1};
+    int    cascade_NN_inel_number_of_fields     = 5;
+    string cascade_NN_inel_data_fields[]        = {"energy", "inel_ii", "inel_ij", "inel_1pii", "inel_1pij"};
+    int    cascade_NN_inel_interpolate_fields[] = {-1, 0, 0, 0, 0};
+    double cascade_NN_inel_unit_fields[]        = { 1, 1, 1, 1, 1};
     containers.push_back( data_container( input_path, "kaskada_NN_inel", par.kaskada_NN_inel,
                                           cascade_NN_inel_number_of_fields, cascade_NN_inel_data_fields,
                                           cascade_NN_inel_interpolate_fields, cascade_NN_inel_unit_fields ));

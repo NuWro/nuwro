@@ -85,12 +85,9 @@ double data_container::get_value( int field )
 {
   switch( interpolate_fields[field] )
   {
-    case 0:                                       // no interpolation
+    case 0:                                       // taking floor
     {
-      if( input_mid_point <= 0.5 )
-        return data[input_prev_bin][field];
-      else
-        return data[input_prev_bin+1][field];
+      return data[input_prev_bin][field];
     }
     case 1:                                       // linear interpolation
     {
@@ -110,6 +107,24 @@ double data_container::get_value( int field )
       }
     }
   }
+}
+
+////////////////////////////////////////
+
+void data_container::debug()
+{
+  cout << "\n# data_container: "
+       << param_name << "_" << param_value << "\n";
+  for(int i=0; i<number_of_points; i++)
+  {
+    cout << "# ";
+    for(int j=0; j<number_of_fields; j++)
+    {
+      cout << data[i][j] << "\t";
+    }
+    cout << "\n";
+  }
+  cout << "\n";
 }
 
 

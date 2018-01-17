@@ -236,8 +236,8 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
   p1.p4().boost2 (-vvv);
 
-  double dens00 = 0.16/fermi3;
-  double Masssa = (938.272+939.56533)/2.0;
+  const double dens00 = 0.16/fermi3;
+  const double Masssa = (938.272+939.56533)/2.0;
 
   double beta = -116.0*X.dens/dens00;
   double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
@@ -260,31 +260,19 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   switch (X.pdg)
   {
     case pdg_neutron:
-      ND.get_sij (X.Ek,X.xsec_n,X.xsec_p);
-      cout<<"neutron  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
-      NN_xsec->set_input_point(X.Ek);
-      X.xsec_n = NN_xsec->get_value(1);
-      X.xsec_p = NN_xsec->get_value(2);
-      cout<<"new neutron  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
+      get_NN_xsec( X.Ek, X.xsec_n, X.xsec_p );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ek<40)
-        X.xsec_p*=0.9;                 // effective Pauli blocking 
-      //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      if (X.Ek<40)                 // effective Pauli blocking
+        X.xsec_p*=0.9;
       break;
 
     case pdg_proton:
-      ND.get_sij (X.Ek,X.xsec_p,X.xsec_n);
-      cout<<"proton  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
-      NN_xsec->set_input_point(X.Ek);
-      X.xsec_n = NN_xsec->get_value(2);
-      X.xsec_p = NN_xsec->get_value(1);
-      cout<<"new proton  "<<X.Ek<<"\t"<<X.xsec_n<<"\t"<<X.xsec_p<<"\n";
+      get_NN_xsec( X.Ek, X.xsec_p, X.xsec_n );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ek<40)
-        X.xsec_n*=0.9;                 // effective Pauli blocking 
-      //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      if (X.Ek<40)                 // effective Pauli blocking
+        X.xsec_n*=0.9;
       break;
 
     default:
@@ -377,5 +365,28 @@ void Interaction::test ()
   for (int i = 0; i < 1000; i++)
   {
     cout << i << '\t' << t[i] << endl;
+  }
+}
+
+////////////////////////////////////////
+// Private methods
+////////////////////////////////////////
+
+void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
+{
+  NN_xsec->set_input_point( Ek );
+
+  if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
+  {
+    Ek = max( Ek, 30 * MeV );
+    const double M = (mass_proton + mass_neutron) / 2;
+    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    resij=((34.10 / v - 82.20) / v + 82.2) * millibarn;
+    resii=((10.63 / v - 29.92) / v + 42.9) * millibarn;
+  }
+  else
+  {
+    resii = NN_xsec->get_value(1);
+    resij = NN_xsec->get_value(2);
   }
 }

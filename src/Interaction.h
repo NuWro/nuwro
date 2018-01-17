@@ -180,8 +180,6 @@ class NData
     {
       ij=p1!=p2;
     }
-    //void set_density(double dens){}
-    inline void get_sij (double Ek,double &resii,double &resij);
     inline double sigma (double Ek);
     double finel(){return F[ij][iE];}
     double a(){return A[ij][iE];}
@@ -204,23 +202,6 @@ class NData
         return NULL;
     }
 };
-///////////////////////////////////////////////////////////
-/// Cross section for same (ii) and different (ij) nucleons
-void NData::get_sij (double Ek_,double &resii,double &resij)
-{   set_Ek(Ek_);
-	if (Ek_ < 335 * MeV)
-	{   Ek_=max(Ek, 30 * MeV); //makes virtually no difference to set 25 MeV here
-		const double M = (mass_proton + mass_neutron) / 2;
-		double v = sqrt (1 - pow2 (M / (Ek+M)));
-		resij=((34.10 / v - 82.20) / v + 82.2)* millibarn;		
-		resii=((10.63 / v - 29.92) / v + 42.9)* millibarn;
-	}
-	else
-    { 
-	  resii=max(0.0,val(s[0])) * millibarn;
-	  resij=max(0.0,val(s[1])) * millibarn;
-     }  
-}
 ///////////////////////////////////////////////////////////
 double NData::sigma (double Ek_)
 {   set_Ek(Ek_);
@@ -898,7 +879,7 @@ class Interaction
     void test ();                             //!< Test function.
 
   private:
-
+    void get_NN_xsec( double Ek, double &resii, double &resij );
 };
 
 ////////////////////////////////////////
