@@ -317,9 +317,8 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
   assert(X.p2.v().length()<1 && "particle scattering");
 
-  if (frandom () < X.frac_proton)   // X.frac_proton is the probability of interaction on proton
-                                    // it has the proton cross section included!!!
-                                    // KN: The name is a bit misleading.
+  if (frandom () < X.prob_proton)   // X.prob_proton is the probability of interaction on proton
+                                    // it has the proton cross section included!
     X.p2.set_proton ();
   else
     X.p2.set_neutron ();

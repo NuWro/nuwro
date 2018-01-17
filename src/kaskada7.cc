@@ -172,7 +172,7 @@ interaction_parameters kaskada::prepare_interaction()
   if (res.xsec != 0)
   {
     res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
-    res.frac_proton = res.xsec_p * res.dens_p / res.xsec;
+    res.prob_proton = res.xsec_p * res.dens_p / res.xsec;
   }
   else
     res.freepath = 2.0 * max_step;

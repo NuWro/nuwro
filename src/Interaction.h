@@ -31,7 +31,7 @@ struct interaction_parameters
   double   xsec;            //!< Total cross section.
   double   xsec_n;          //!< Cross section for neutron target.
   double   xsec_p;          //!< Cross section for proton target.
-  double   frac_proton;     //!< Probability that the interaction happen on proton.
+  double   prob_proton;     //!< Probability that the interaction happen on proton.
   int      pdg;             //!< Interacting particle pdg.
   double   Ek;              //!< Interacting particle kinetic energy.
   double   Ekeff;           //!< Interacting particle effective kinetic energy.
