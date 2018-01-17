@@ -124,8 +124,8 @@ void kaskada::prepare_particles()
         }
       }
       
-      double fz = formation_zone(p1, par, *e);        // calculate formation zone
-      p1.krok(fz);      // move particle by a distance defined by its formation zone
+      //double fz = formation_zone(p1, par, *e);        // calculate formation zone
+      //p1.krok(fz);      // move particle by a distance defined by its formation zone
       
       parts.push (p1);  // put particle to a queue
     }

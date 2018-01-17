@@ -217,7 +217,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   switch (X.pdg)
   {
     case pdg_neutron:
-      get_NN_xsec( X.Ek, X.xsec_n, X.xsec_p );
+      get_NN_xsec( X.Ekeff, X.xsec_n, X.xsec_p );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
       if (X.Ek<40)                 // effective Pauli blocking
@@ -225,7 +225,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
       break;
 
     case pdg_proton:
-      get_NN_xsec( X.Ek, X.xsec_p, X.xsec_n );
+      get_NN_xsec( X.Ekeff, X.xsec_p, X.xsec_n );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
       if (X.Ek<40)                 // effective Pauli blocking
