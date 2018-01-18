@@ -22,44 +22,114 @@ mkdir -p $OUTDIR
 for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
 do
     for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
-        for c5a in $(seq $C5A_MIN $C5A_STEP $C5A_MAX)
-        do
-            ../../../bin/nuwro -i "parres.txt" \
-                -p "beam_particle = 14" \
-                -p "beam_energy = $energy" \
-                -p "pion_axial_mass = $ma" \
-                -p "pion_C5A = $c5a" \
-                -p "dyn_qel_cc = 1" \
-                -p "dyn_qel_nc = 0" \
-                -o "${OUTDIR}/numu${energy}_cc_ma${ma}_c5a${c5a}.root" &
+    do
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.1" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numu${energy}_cc_ma${ma}_c5a11.root" &
 
-            ../../../bin/nuwro -i "parres.txt" \
-                -p "beam_particle = 14" \
-                -p "beam_energy = $energy" \
-                -p "pion_axial_mass = $ma" \
-                -p "pion_C5A = $c5a" \
-                -p "dyn_qel_cc = 0" \
-                -p "dyn_qel_nc = 1" \
-                -o "${OUTDIR}/numu${energy}_nc_ma${ma}_c5a${c5a}.root" &
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.1" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numu${energy}_nc_ma${ma}_c5a11.root" &
 
-            ../../../bin/nuwro -i "parres.txt" \
-                -p "beam_particle = -14" \
-                -p "beam_energy = $energy" \
-                -p "pion_axial_mass = $ma" \
-                -p "pion_C5A = $c5a" \
-                -p "dyn_qel_cc = 1" \
-                -p "dyn_qel_nc = 0" \
-                -o "${OUTDIR}/numubar${energy}_cc_ma${ma}_c5a${c5a}.root" &
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = -14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.1" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numubar${energy}_cc_ma${ma}_c5a11.root" &
 
-            ../../../bin/nuwro -i "parres.txt" \
-                -p "beam_particle = 14" \
-                -p "beam_energy = $energy" \
-                -p "pion_axial_mass = $ma" \
-                -p "pion_C5A = $c5a" \
-                -p "dyn_qel_cc = 0" \
-                -p "dyn_qel_nc = 1" \
-                -o "${OUTDIR}/numubar${energy}_nc_ma${ma}_c5a${c5a}.root" &
-        done
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.1" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numubar${energy}_nc_ma${ma}_c5a11.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.2" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numu${energy}_cc_ma${ma}_c5a12.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.2" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numu${energy}_nc_ma${ma}_c5a12.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = -14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.2" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numubar${energy}_cc_ma${ma}_c5a12.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.2" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numubar${energy}_nc_ma${ma}_c5a12.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.3" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numu${energy}_cc_ma${ma}_c5a13.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.3" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numu${energy}_nc_ma${ma}_c5a13.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = -14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.3" \
+            -p "dyn_qel_cc = 1" \
+            -p "dyn_qel_nc = 0" \
+            -o "${OUTDIR}/numubar${energy}_cc_ma${ma}_c5a13.root" &
+
+        ../../../bin/nuwro -i "parres.txt" \
+            -p "beam_particle = 14" \
+            -p "beam_energy = $energy" \
+            -p "pion_axial_mass = $ma" \
+            -p "pion_C5A = 1.3" \
+            -p "dyn_qel_cc = 0" \
+            -p "dyn_qel_nc = 1" \
+            -o "${OUTDIR}/numubar${energy}_nc_ma${ma}_c5a13.root"
     done
 done
 
