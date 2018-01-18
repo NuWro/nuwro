@@ -1,12 +1,16 @@
 #include <iostream>
 #include "../event1.h"
 #include "../nucleus.h"
+#include "../dis/res_xsec.h"
+#include "../dis/res_kinematics.h"
 #include "Reweighters.h"
 #include "TFile.h"
 #include "TROOT.h"
 #include "TTree.h"
 
 void SetupSPP(params&);  // defined in rewRES.cc
+double get_pi_fraction(const int pion_pdg, res_xsec xsec);
+bool get_pdg_spp(event &e, int &pion_pdg, int &nucleon_pdg);
 
 void info(const string msg) { std::cout << "\033[32m[INFO] " << msg << "\033[0m\n"; }
 
@@ -150,6 +154,21 @@ int main(int argc, char* argv[]) {
     // calculate cross section for nominal parameters
     double nominal = REW.weight(*e, e->par, t);
 
+    // if (e->flag.res) {
+    //   res_kinematics kin(*e);
+    //   kin.set_kinematics(*e);
+
+    //   res_xsec xsec(kin, e->flag.cc);
+
+    //   int pion_pdg = 0, nucleon_pdg = 0;                    // placeholders for final hadrons PDG
+    //   bool is_spp = get_pdg_spp(*e, pion_pdg, nucleon_pdg);  // SPP above Pythia threshold
+
+    //   if (kin.is_above_pythia_threshold() and not xsec.is_no_dis() and is_spp) {
+    //     xsec.set_xsec(kin, e->par, pion_pdg, nucleon_pdg, e->in[0].t);
+    //     nominal *= get_pi_fraction(pion_pdg, xsec);
+    //   }
+    // }
+
     // change all parameters set up to reweight
     for (int j = 0; j < args.size(); j++) args[j]->set(vals[j]);
 
@@ -158,6 +177,8 @@ int main(int argc, char* argv[]) {
 
     // calculate cross section with new parameters
     weight = REW.weight(*e, e->par, t) / nominal;
+
+    if (weight != weight) weight = 0;
 
     if (ttree_weights) ttree_weights->Fill();
 

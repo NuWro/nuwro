@@ -52,6 +52,7 @@ extern double SPP[2][2][2][3][40];
 void resevent2(params &p, event &e, bool cc) {
   e.weight = 0;              // if kinmetically forbidden
   e.flag.res_delta = false;  // pion from background by default
+  e.res_angrew = 1.0;        // no xsec scaling by default
 
   res_kinematics kin(e);  // kinematics variables
 
@@ -60,6 +61,11 @@ void resevent2(params &p, event &e, bool cc) {
 
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(p.res_dis_cut)) return;
+
+  // save for reweighting
+  e.res_q = kin.q;
+  e.res_nu = kin.neutrino;
+  e.res_jacobian = kin.jacobian;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -162,7 +168,8 @@ void resevent2(params &p, event &e, bool cc) {
         // produces 4-momenta of final pair: nucleon + pion with density matrix information
         kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, final_nucleon, final_pion, p.delta_angular);
 
-        e.weight *= angrew;  // reweight according to angular correlation (angrew defined in LeptonMass...)
+        e.weight *= angrew;     // reweight according to angular correlation (angrew defined in LeptonMass...)
+        e.res_angrew = angrew;  // keep this value for reweighting
 
         // boost back to nu-N CMS frame and then to LAB frame
         kin.neutrino.boost(kin.hadron_speed);

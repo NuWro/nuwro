@@ -71,6 +71,11 @@ class event:public TObject
 		int nr;     ///< number of neutrons in the residual nucleus
 		double r_distance; //< distance from nucleus center of absorption point (if happened)
 
+		double res_jacobian; ///< store Jacobian calculated in RES for random kinematics
+		double res_angrew;   ///< store xsec factor coming from angular distribution (for Delta)
+		particle res_nu;     ///< store neutrino for reweighting
+		vect res_q;          ///< store q for reweighting
+
 		event ():weight(0),norm(1){}///< default constructor
 		inline void check();        ///< stop program if event weight or momentum of any particle is NaN (not a number) 
 		inline void clear_fsi();    ///< clear the fsi intermediate particles tracks

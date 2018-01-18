@@ -83,7 +83,9 @@ void res_kinematics::set_kinematics(event &e) {
   // set kinematics necessary to calculate cross section
   W = e.W();
   W2 = W * W;
-  q = e.q();
+  q = e.res_q;
+  neutrino = e.res_nu;
+  jacobian = e.res_jacobian;
 }
 
 double get_binding_energy(const params &p, const vec &momentum) {
