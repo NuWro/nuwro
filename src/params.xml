@@ -408,6 +408,7 @@
     <description><![CDATA[The model of the nucleon-nucleon cross sections in the cascade]]></description>
     <options>
       <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
+      <option key="2"><![CDATA[PDG 2016]]></option>
     </options>
   </param>
   <param name="kaskada_NN_inel" type="select" ctype="int" default="1" >
