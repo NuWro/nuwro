@@ -4,6 +4,8 @@
 #include <fstream>
 #include <dirent.h>
 #include <math.h>
+#include <algorithm>
+#include <stdlib.h>
 
 
 ////////////////////////////////////////
@@ -221,7 +223,7 @@ void data_container::read_data( ifstream &file_ifstream )
       field = file_line.substr(0, char_position);           // take everything up to ":"
       field.erase(0, field.find_first_not_of(" \n\r\t") );  // trim from left
 
-      value = stod( file_line.substr(char_position+1) );    // everything after ":", convert to double
+      value = atof( file_line.substr(char_position+1).c_str() ); // everything after ":", convert to double
 
       for( int i=0; i<number_of_fields; i++ )               // determine the row and fill
       {
