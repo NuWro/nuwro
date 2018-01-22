@@ -5,7 +5,6 @@
 #include <dirent.h>
 #include <math.h>
 #include <algorithm>
-#include <stdlib.h>
 
 
 ////////////////////////////////////////
@@ -223,7 +222,7 @@ void data_container::read_data( ifstream &file_ifstream )
       field = file_line.substr(0, char_position);           // take everything up to ":"
       field.erase(0, field.find_first_not_of(" \n\r\t") );  // trim from left
 
-      value = atof( file_line.substr(char_position+1).c_str() ); // everything after ":", convert to double
+      value = stod( file_line.substr(char_position+1) );    // everything after ":", convert to double
 
       for( int i=0; i<number_of_fields; i++ )               // determine the row and fill
       {
@@ -239,7 +238,7 @@ void data_container::read_data( ifstream &file_ifstream )
         }
       }
 
-      if( isnan(data[point][input_axis]) )
+      if( ::isnan(data[point][input_axis]) )
       {
         throw "input_data error: Point specified without a value on the input axis.";
       }
@@ -265,7 +264,7 @@ void data_container::fill_nan_data()
       for( int point_up = 0; point_up < number_of_points; point_up++ )
                                                       // scan upwards
       {
-        if( !isnan(data[point_up][field]) )           // find the first one that is a number
+        if( !::isnan(data[point_up][field]) )           // find the first one that is a number
         {
           for( int nan = point_up; nan >= 0; nan-- )  // fill the previous ones with this number
           {
@@ -281,7 +280,7 @@ void data_container::fill_nan_data()
       for( int point_down = number_of_points-1; point_down >= 0; point_down-- )
                                                       // scan downwards
       {
-        if( !isnan(data[point_down][field]) )         // find the last one that is a number
+        if( !::isnan(data[point_down][field]) )         // find the last one that is a number
         {
           for( int nan = point_down+1; nan < number_of_points; nan++ )
                                                       // fill the next ones with this number
@@ -303,12 +302,12 @@ void data_container::fill_nan_data()
       for( int nan_up = 0; nan_up < number_of_points; nan_up++ )
                                                       // scan upwards
       {
-        if( isnan(data[nan_up][field]) )            // find the first nan
+        if( ::isnan(data[nan_up][field]) )            // find the first nan
         {
           for( int point_up = nan_up+1; point_up < number_of_points; point_up++ )
                                                       // scan for the next number
           {
-            if( !isnan(data[point_up][field]) )     // find the next number
+            if( !::isnan(data[point_up][field]) )     // find the next number
             {
               for ( int nan = nan_up; nan < point_up; nan++ )
                                                       // for every nan in a sequence
