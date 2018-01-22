@@ -2,22 +2,74 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-with PdfPages("rew_val_pion_C5A.pdf") as pdf:
-    for particle in ("pip", "pi0", "pim"):
-        plt.figure()
+nus = ("numu", "numubar")
+energies = (1000, 2000, 3000, 4000, 5000)
+mas = (900, 1000, 1100)
+c5as = (1.1, 1.2, 1.3)
+dyns = ("cc", "nc")
 
-        plt.title(particle)
+inpath = "res"
 
-        x1, y1 = np.loadtxt("res_nominal_{}.txt".format(particle), delimiter=' ', unpack=True)
-        x2, y2 = np.loadtxt("res_c5a_{}.txt".format(particle), delimiter=' ', unpack=True)
-        x3, y3 = np.loadtxt("res_rw_{}.txt".format(particle), delimiter=' ', unpack=True)
+# with PdfPages("rew_val_res_ma.pdf") as pdf:
+#     for nu in nus:
+#         for energy in energies:
+#             for c5a in c5as:
+#                 for dyn in dyns:
+#                     for pion in ("pip", "pi0", "pim"):
+#                         plt.figure()
 
-        plt.xlabel("pion momentum [GeV]")
-        plt.ylabel("#events")
+#                         plt.title("{}, {}, E = {}, C5A = {}, pion = {}".format(nu, dyn, energy, c5a, pion))
 
-        plt.plot(x1, y1, 'r-', label='C5A 1.19')
-        plt.plot(x2, y2, 'b-', label='C5A = 1.09')
-        plt.plot(x3, y3, 'g.', label='1.19 -> 1.09')
+#                         x1a, y1a = np.loadtxt("res/{}{}_{}_ma900_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
+#                         x1b, y1b = np.loadtxt("res/{}{}_{}_ma1000_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
+#                         x1c, y1c = np.loadtxt("res/{}{}_{}_ma1100_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
 
-        plt.legend()
-        pdf.savefig()
+#                         x2a, y2a = np.loadtxt("res/{}{}_{}_marewto_ma900_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
+#                         x2b, y2b = np.loadtxt("res/{}{}_{}_marewto_ma1000_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
+#                         x2c, y2c = np.loadtxt("res/{}{}_{}_marewto_ma1100_c5a{}_{}.txt".format(nu, energy, dyn, int(c5a*10), pion), delimiter=' ', unpack=True)
+
+#                         plt.xlabel("pion momentum [GeV]")
+#                         plt.ylabel("arbitrary units   ")
+
+#                         plt.plot(x1a, y1a, 'r-', label='Ma = 900')
+#                         plt.plot(x1b, y1b, 'b-', label='Ma = 1000')
+#                         plt.plot(x1c, y1c, 'g-', label='Ma = 1100')
+
+#                         plt.plot(x2a, y2a, 'r.', label='1000 -> 900')
+#                         plt.plot(x2b, y2b, 'b.', label='1000 -> 1000')
+#                         plt.plot(x2c, y2c, 'g.', label='1000 -> 1100')
+
+#                         plt.legend()
+#                         pdf.savefig()
+
+with PdfPages("rew_val_res_c5a.pdf") as pdf:
+    for nu in nus:
+        for energy in energies:
+            for ma in mas:
+                for dyn in dyns:
+                    for pion in ("pip", "pi0", "pim"):
+                        plt.figure()
+
+                        plt.title("{}, {}, E = {}, Ma = {}, pion = {}".format(nu, dyn, energy, ma, pion))
+
+                        x1a, y1a = np.loadtxt("res/{}{}_{}_ma{}_c5a11_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+                        x1b, y1b = np.loadtxt("res/{}{}_{}_ma{}_c5a12_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+                        x1c, y1c = np.loadtxt("res/{}{}_{}_ma{}_c5a13_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+
+                        x2a, y2a = np.loadtxt("res/{}{}_{}_c5arewto_ma{}_c5a11_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+                        x2b, y2b = np.loadtxt("res/{}{}_{}_c5arewto_ma{}_c5a12_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+                        x2c, y2c = np.loadtxt("res/{}{}_{}_c5arewto_ma{}_c5a13_{}.txt".format(nu, energy, dyn, ma, pion), delimiter=' ', unpack=True)
+
+                        plt.xlabel("pion momentum [GeV]")
+                        plt.ylabel("arbitrary units")
+
+                        plt.plot(x1a, y1a, 'r-', label='C5A = 1.1')
+                        plt.plot(x1b, y1b, 'b-', label='C5A = 1.2')
+                        plt.plot(x1c, y1c, 'g-', label='C5A = 1.3')
+
+                        plt.plot(x2a, y2a, 'r.', label='1.2 -> 1.1')
+                        plt.plot(x2b, y2b, 'b.', label='1.2 -> 1.2')
+                        plt.plot(x2c, y2c, 'g.', label='1.2 -> 1.3')
+
+                        plt.legend()
+                        pdf.savefig()

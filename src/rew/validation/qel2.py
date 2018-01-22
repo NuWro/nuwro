@@ -17,7 +17,7 @@ with PdfPages("qel_combo.pdf") as pdf:
         x2r, y2r = np.loadtxt("{}/numu1200r_{}.txt".format(inpath, what), delimiter=' ', unpack=True)
 
         plt.xlabel(what)
-        plt.ylabel("#events")
+        plt.ylabel("arbitrary units")
 
         plt.plot(x1, y1, 'r-', label='nominal A')
         plt.plot(x2, y2, 'b-', label='nominal B')
