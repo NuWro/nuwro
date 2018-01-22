@@ -23,7 +23,7 @@ for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
 do
     for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
     do
-        mav=$((ma/1000))
+        mav=$(echo print $ma/1000.0 | python)
 
         ../../../bin/nuwro -i "parres.txt" \
             -p "beam_particle = 14" \
@@ -141,7 +141,7 @@ for energy in $(seq $ENERGY_MIN $ENERGY_STEP $ENERGY_MAX)
 do
     for ma in $(seq $MA_MIN $MA_STEP $MA_MAX)
     do
-        mav=$((ma/1000))
+        mav=$(echo print $ma/1000.0 | python)
     
         ../../../bin/reweight_to \
             "${OUTDIR}/numu${energy}_cc_ma1000_c5a11.root" \
