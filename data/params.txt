@@ -25,6 +25,12 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 #
 ################################################################
 
+# a beam defined by hand
+
+beam_type = 0       // single flavor beam
+beam_energy = 1000  // monoenergetic (in MeV)
+beam_particle = 14    // neutrino PDG
+
 # It is convenient to include one of the predefined beam specifications
 # with the @ char
 # or modify them as needed
@@ -90,13 +96,13 @@ dyn_mec_nc =0      // Meson exchange neutral current
 #qel_axial_ff_set = 4 // 4-fold parabolic modification of axial FF
 
 #qel_strange=0   // don't use the strangenes
-qel_strange=1    //  use the strangenes in the axial ff
-qel_strangeEM=0  //  dont use the strangenes in the vector ff
-delta_s       =-0.15  // 
+qel_strange = 1    //  use the strangenes in the axial ff
+qel_strangeEM = 0  //  dont use the strangenes in the vector ff
+delta_s = 0
 
-qel_cc_axial_mass= 1200   //[MeV] axial mass
-qel_nc_axial_mass= 1350   //[MeV] axial mass
-qel_s_axial_mass= 1200  //[MeV] axial mass used in the strange dipole ff
+qel_cc_axial_mass = 1030   //[MeV] axial mass
+qel_nc_axial_mass = 1030   //[MeV] axial mass
+qel_s_axial_mass = 1030    //[MeV] axial mass used in the strange dipole ff
 
 #################################################################
 ##use te below values to recowed old nc behaviour
@@ -120,6 +126,8 @@ sf_method = 0 // don't use spectral function
 #sf_method = 1 // use grid spectral function: (C12, O16, Ar40, Fe56)
 #sf_method = 2 // use factorized spectral function: (O16, Ar40, Ca40)
 
+sf_fsi = 0      // FSI correction for SF (0 - disabled, 1 - enabled)
+sf_coulomb = 0 // Coulomb correction for SF (0 - disabled, 1 - enabled)
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
@@ -140,8 +148,8 @@ cc_smoothing=0
 #       4 - Fermi gas with 
 
 
-  qel_rpa = 0    // Don't use rpa
-# qel_rpa = 1    // Use rpa without effective mass of nucleon
+# qel_rpa = 0    // Don't use rpa
+qel_rpa = 1    // Use rpa without effective mass of nucleon
 # qel_rpa = 2    // Use effectove mass without rpa (test only)
 # qel_rpa = 3    // Use rpa with effective mass of nucleon (test only) 
 
@@ -169,6 +177,8 @@ pion_C5A = 1.19
 # delta_FF_set = 6 // Eq.(13), L. Alvarez-Ruso, S. K. Singh, M. J. Vincente Vascas, Phys. Rev. C 57, (1998) 2693
 # delta_FF_set = 7 // taken from Bariquila-Cano.et al (chiral quark model)
 
+delta_angular = 2 // produces 4-momenta of final pair: nucleon + pion with density matrix information
+
 ################################################################
 #   RES - DIS boundary
 ################################################################
@@ -184,25 +194,25 @@ bkgrscaling = 0.0  //non-resonant background scaling; should be from -1.3 ... +1
 ################################################################
 
 
-coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion production
-
+coh_mass_correction = 1  // Rein Sehgal correction to CC coherent single pion production
+coh_kind = 2             // Switch between Rein-Sehgal (1) and Berger Sehgal(2) models
 
 ################################################################
 #   MEC
 ################################################################
 
-mec_kind = 1  // TEM model
+#mec_kind = 1  // TEM model
 #mec_kind = 2  // Marteau model
-#mec_kind = 3  // Nieves model
+mec_kind = 3  // Nieves model
 
-mec_ratio_pp = 0.9
+mec_ratio_pp = 0.85
 mec_ratio_ppp = 0.8
 
-mec_central_motion = 100.0 //motion of correlated pairs, sigma in gaussian distribution; default 0.0
-mec_back_to_back_smearing = 0.15 //smearing of originally back-to-back correlated pair nucleons momenta; default 0.0
+mec_central_motion = 0 //motion of correlated pairs, sigma in gaussian distribution; default 0.0
+mec_back_to_back_smearing = 0 //smearing of originally back-to-back correlated pair nucleons momenta; default 0.0
 MEC_pauli_blocking = 1 //switch on/off Pauli blocking for nucleons from MEC dynamics; default 1 (on)
-mec_pb_trials = 25 //how many times configuration satisfying Pauli blocking is searched for; default 25
-MEC_cm_direction = 0.0 //in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1
+mec_pb_trials = 30 //how many times configuration satisfying Pauli blocking is searched for; default 25
+MEC_cm_direction = 0 //in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1
 
 ################################################################
 #
@@ -223,7 +233,7 @@ nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and
 # Models for the description of nucleus as a target:
 # nucleus_target = 0 // free target; 
 # nucleus_target = 1 // Fermi gas; 
-# nucleus_target = 2 // local Fermi gas; 
+nucleus_target = 2 // local Fermi gas; 
 # nucleus_target = 3 // Bodek-Ritchie; 
 # nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
 # nucleus_target = 5 // deuterium; 

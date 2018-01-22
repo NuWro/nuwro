@@ -8,7 +8,11 @@
 kaskada::kaskada(params &p, event &e1, input_data *input)
 {
   par = p;
-  e = &e1;
+
+  if (par.nucleus_p + par.nucleus_n < 3)
+    par.kaskada_w = 0;  //for free nucleons and deuteron there is no extra binding energy
+  
+    e = &e1;
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
@@ -167,8 +171,17 @@ interaction_parameters kaskada::prepare_interaction()
 
   res.xsec /= par.kaskada_meanfreepath_scale;               // scale the mean free path (1/res.xsec)
                                                             // according to the params
-  assert(res.xsec>=0);
 
+  switch (res.pdg)                                          // fits of scaling the mean free path
+  {
+    case pdg_neutron:                                       // for nucleons
+    case pdg_proton:
+      res.xsec /= meanfreepath_NN_scale_from_fit();         // fit to data
+      break;
+  }
+
+  assert(res.xsec>=0);                           // make sure that the cross section is positive
+  // KN: so what if xsec == 0? there is an assertion but it's covered later
   if (res.xsec != 0)
   {
     res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
@@ -181,6 +194,40 @@ interaction_parameters kaskada::prepare_interaction()
 }
 
 ////////////////////////////////////////
+
+double kaskada::meanfreepath_NN_scale_from_fit()
+{
+  double particle_momentum = p->momentum();
+
+  switch(par.kaskada_meanfreepath_NN_fit)
+  {
+    case 1:                                      // fit to available transparency data
+                                                 // without the c_a factors
+      if(particle_momentum > 1650)
+      {
+        return 1.05;
+      }
+      else if(particle_momentum > 927)
+      {
+        return 0.00049793 * particle_momentum + 0.22842324;
+      }
+      else if(particle_momentum > 625)
+      {
+        return -0.00102649 * particle_momentum + 1.64155629;
+      }
+      else
+      {
+        return 1;
+      }
+      break;
+
+    default:
+      return 1;
+  }
+}
+
+////////////////////////////////////////
+
 
 bool kaskada::move_particle()
 { 
@@ -341,8 +388,8 @@ bool kaskada::finalize_interaction()
     else
     {
       parts.push (X.p[i]);
-      double fz = formation_zone(X.p[i], par);
-      X.p[i].krok(fz);
+      //double fz = formation_zone(X.p[i], par);
+      //X.p[i].krok(fz);
     }
 
     //procinfo(*p,X.p2,X.n,X.p);

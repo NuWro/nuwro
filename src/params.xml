@@ -241,7 +241,7 @@
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
     </options>
   </param>
-  <param name="qel_rpa" type="select" ctype="int" default="0">
+  <param name="qel_rpa" type="select" ctype="int" default="1">
     <description>Use rpa corretions of KG in qel cc events</description>
     <options>
       <option key="0"><![CDATA[disabled]]></option>
@@ -250,22 +250,25 @@
       <option key="3"><![CDATA[enabled RPA and effective mass]]></option>
     </options>
   </param>
-  <param name="qel_strange" type="text" ctype="int" default="0">
+  <param name="qel_strange" type="text" ctype="int" default="1">
     <description><![CDATA[use the strangenes in the axial ff]]></description>
   </param>
   <param name="qel_strangeEM" type="text" ctype="int" default="0">
     <description><![CDATA[[MeV]dont use the strangenes in the vector ff]]></description>
   </param>
-  <param name="delta_s" type="text" ctype="double" default="-0.15">
+  <param name="delta_s" type="text" ctype="double" default="0">
     <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
   </param>
-  <param name="qel_cc_axial_mass" type="text" ctype="double" default="1200">
+    <param name="qel_cc_vector_mass" type="text" ctype="double" default="1000">
+      <description><![CDATA[[MeV] vector mass]]></description>
+    </param>
+  <param name="qel_cc_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>
-  <param name="qel_nc_axial_mass" type="text" ctype="double" default="1350">
+  <param name="qel_nc_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass]]></description>
   </param>
-  <param name="qel_s_axial_mass" type="text" ctype="double" default="1200">
+  <param name="qel_s_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass used in the strange dipole ff]]></description>
   </param>
   <param name="flux_correction" type="checkbox" ctype="bool" default="1">
@@ -278,6 +281,12 @@
       <option key="1"><![CDATA[use grid spectral function: (C12, O16, Ar40, Fe56)]]></option>
       <option key="2"><![CDATA[use factorized spectral function: (O16, Ar40, Ca40)]]></option>
     </options>
+  </param>
+  <param name="sf_fsi" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[Turn on/off FSI for spectral function]]></description>
+  </param>
+  <param name="sf_coulomb" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[Turn on/off Couloumb correction for spectral function]]></description>
   </param>
   <param name="sf_pb" type="select" ctype="int" default="0">
     <description><![CDATA[Pauli blocking model for SF.]]></description>
@@ -307,7 +316,7 @@
   <param name="pion_C5A" type="text" ctype="double" default="1.19">
     <description><![CDATA[]]></description>
   </param>
-  <param name="delta_angular" type="select" ctype="int" default="0">
+  <param name="delta_angular" type="select" ctype="int" default="2">
     <description><![CDATA[Delta decay anisotropy]]></description>
     <options>
       <option key="0"><![CDATA[off]]></option>
@@ -333,7 +342,7 @@
   <param name="coh_kind" type="checkbox" ctype="int" default="2">
     <description><![CDATA[Switch between Rein-Sehgal (1) and Berger Sehgal(2) models]]></description>
   </param>
-  <param name="mec_kind" type="select" ctype="int" default="1">
+  <param name="mec_kind" type="select" ctype="int" default="3">
     <description><![CDATA[MEC model]]></description>
 	<options>
       <option key="1"><![CDATA[TEM model]]></option>
@@ -341,7 +350,7 @@
       <option key="3"><![CDATA[Nieves model]]></option>
     </options>
   </param>
-  <param name="mec_ratio_pp" type="text" ctype="double" default="0.6">
+  <param name="mec_ratio_pp" type="text" ctype="double" default="0.85">
     <description><![CDATA[]]></description>
   </param>
   <param name="mec_ratio_ppp" type="text" ctype="double" default="0.8">
@@ -353,7 +362,7 @@
    <param name="mec_back_to_back_smearing" type="text" ctype="double" default="0.0">
     <description><![CDATA[smearing of originally back-to-back correlated pair nucleons momenta]]></description>
   </param>
-  <param name="mec_pb_trials" type="text" ctype="int" default="25">
+  <param name="mec_pb_trials" type="text" ctype="int" default="30">
     <description><![CDATA[how many times configuration satisfying Pauli blocking is searched for]]></description>
   </param>
   <param name="MEC_pauli_blocking" type="checkbox" ctype="bool" default="1">
@@ -370,6 +379,13 @@
   </param>
   <param name="kaskada_meanfreepath_scale" type="text" ctype="double" default="1">
     <description><![CDATA[Scale the mean free path in the cascade]]></description>
+  </param>
+  <param name="kaskada_meanfreepath_NN_fit" type="text" ctype="int" default="0">
+    <description><![CDATA[Fit for scaling the nucleon mean free path in the cascade]]></description>
+    <options>
+      <option key="0"><![CDATA[none]]></option>
+      <option key="1"><![CDATA[fit to transparency data without c_A factors]]></option>
+    </options>
   </param>
   <param name="kaskada_redo" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[Only recalculate FSI for an existing eventsout.root]]></description>

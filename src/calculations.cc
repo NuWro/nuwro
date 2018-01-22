@@ -1086,7 +1086,7 @@ int calcMBCCtotal (int fz, int xs)
 		string Hfile = "root_files/E" + energy + string("_MB_CC_Hydrogen_100k_*.root");
 		Hfile = find_last(Hfile);			
 		
-		double xsec[3]; //0 - hydrogen, 1 - carbon, 2 - carbon fsi
+		double xsec[4]; //0 - hydrogen, 1 - carbon, 2 - carbon fsi
 		zero(xsec, 3);
 		
 		help = Hfile + string(".txt");

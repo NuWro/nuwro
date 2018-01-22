@@ -28,18 +28,16 @@
 double qelevent1(params&p, event & e, nucleus &t,bool nc)
 ////////////////////////////////////////////////////////////////////////
 {
-    e.flag.qel=true;
-    e.flag.nc=nc;
-    e.flag.cc=!nc;
-    e.flag.dis=false;
     e.weight=0;
 
     particle nu=e.in[0];		           // neutrino
     particle N0=e.in[1];		           // initial nucleon
     particle lepton;  
     particle N1;
+
     N1.r=N0.r;
     lepton.r=N0.r;
+    
     int kind=0; // 0 - cc //  1 - nc proton // 2 - nc neutron
     if(nc)
     {
@@ -82,19 +80,18 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	# 6 is deuterium with constant binding energy nucleus_E_b (for tests only!)
 	*/
 	
-	vec ped=N0.p();
 	switch(p.nucleus_target)
 	{
 		case 0: _E_bind=0; 				break;
 		case 1: _E_bind= p.nucleus_E_b;	break;
-		case 2: _E_bind= t.Ef(N0) + p.kaskada_w;              break; //temporary
-		case 3: _E_bind=0;              break; //temporary
-		case 4: _E_bind = binen (ped, p.nucleus_p, p.nucleus_n);
+		case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
+		case 3: _E_bind=0;              break;         //temporary
+		case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
 				 //in the future it is possible to add SF for other nuclei as well	
 				 //cout<<ped<<"  "<<_E_bind<<endl;//SF
 				 break;
-		case 5: _E_bind= deuter_binen (ped);break; //deuterium 
-		case 6: _E_bind= p.nucleus_E_b; 	break; //deuterium like Fermi gas
+		case 5: _E_bind= deuter_binen (N0.p());break; //deuterium 
+		case 6: _E_bind= p.nucleus_E_b; 	   break; //deuterium like Fermi gas
 		default: _E_bind=0;
 	}
 

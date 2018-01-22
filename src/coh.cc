@@ -377,17 +377,16 @@ cohevent_bs (params & par, event & e, nucleus & jadro, bool cc, bool fast)
 	double Q2min=mlep*mlep*y*(1-y);                       
 
 //According to original Berger-Sehgal the second set holds
-    if(cc)
-    {
+  if(cc)
+  {
 		//double Corr = pow2(1.0 - 0.5 * Q2min / (Q2 + mpi2))+ y/4 * Q2min * (Q2 - Q2min) / pow2(Q2 + mpi2);
 		//e.weight*=2*Corr*cos2thetac;
 		double Corr = pow2(ma2/(ma2+Q2) - 0.5 * Q2min / (Q2 + mpi2))+ y/4 * Q2min * (Q2 - Q2min) / pow2(Q2 + mpi2);
 		e.weight*=2*Corr/pow2(ma2/(ma2+Q2))*cos2thetac;
-    }
+  }
 
-    if ((par.coh_mass_correction) && 
-       ((y > 1.0 - mlep / E) || (Q2 < Q2min)))
-        e.weight = 0.0;
+  if ((par.coh_mass_correction) && ((y > 1.0 - mlep / E) || (Q2 < Q2min)))
+      e.weight = 0.0;
 	
 	//Re-weight for A!=12 according to R-S model
 	if(A!=12)

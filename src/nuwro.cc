@@ -30,9 +30,15 @@
 #include "hist.h"
 #include "nucleusmaker.h"
 #include "Interaction.h"
+#include "rew/rewparams.h"
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
+extern "C" {
+void shhpythiaitokay_(void);
+void youcanspeaknowpythia_(void);
+}
+
 
 params *p1=NULL;
 string data_dir;
@@ -134,6 +140,7 @@ void NuWro::init (int argc, char **argv)
 	p.list (cout);
 	p.list (string(a.output)+".par");
 	p1=&p;
+	rew.init(p);
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
@@ -146,15 +153,6 @@ void NuWro::init (int argc, char **argv)
 	{
 		cout<<" Calculating the one pion functions ..."<<endl;
 		singlepion (p);
-		/*  for (int c = 0; c < 40; c++)
-			cout << 1210 + c * 20 << "  MeV -> "
-			 << setw(10)<< SPP[0][0][0][0][c] << "  "
-			 << setw(10)<< SPP[0][0][0][1][c] << "  "
-			 << setw(10)<< SPP[0][0][0][2][c] << "  "
-			 << setw(10)<< SPP[0][0][1][0][c] << "  "
-			 << setw(10)<< SPP[0][0][1][1][c] << "  "
-				 << setw(10)<< SPP[0][0][1][2][c] << endl;
-	*/
 	}							 
 	if(p.kaskada_redo==0)
 	{
@@ -221,12 +219,15 @@ void NuWro::makeevent(event* e, params &p)
 		nu=_beam->shoot(dyn>1 && dyn<6 && dismode);
 		nu.r=vec(nu.r)+p.beam_offset;
 	}
+
 	if(_detector or _mixer) // _nucleus not reusable
 	{
 		delete _nucleus;
 		_nucleus= make_nucleus(p);
 		//cout<<"make_nucleus "<<_nucleus->p<<" "<<_nucleus->n<<endl;
 	}
+	else
+		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
 	if(dyn<6)
 	{
@@ -281,7 +282,7 @@ void NuWro::makeevent(event* e, params &p)
 			if (p.dyn_qel_cc) // qel cc
 			{
 				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
-					sfevent2cc (p, *e, *_nucleus);
+					sfevent (p, *e, *_nucleus);
 				else
 					qelevent1 (p, *e, *_nucleus, false);
 			}
@@ -290,7 +291,7 @@ void NuWro::makeevent(event* e, params &p)
 			if (p.dyn_qel_nc) // qel nc
 			{
 				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
-					sfevent2nc (p, *e, *_nucleus);
+					sfevent (p, *e, *_nucleus);
 				else
 				qelevent1 (p, *e, *_nucleus, true);
 			}
@@ -885,6 +886,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 void NuWro::main (int argc, char **argv)
 {
+  	shhpythiaitokay_();
 	try
 	{
 		init(argc,argv);

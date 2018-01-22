@@ -1,0 +1,17 @@
+#FNAL neutrino beam. A.Meyer et al. digitization made in ref. Phys. Rev. D 93, 113015 (2016) from fig 6 of ref. from Phys. Rev. D 28, 436 (1983).
+beam_type=0
+beam_energy = 5000 200000 132.502, 78.2375, 78.2375, 35.3973, 35.3973, 15.6104, 15.6104, 6.5409, 6.5409, 1.79265, 1.79265, 1.79265, 1.79265, 0.252619, 0.252619, 0.252619, 0.252619, 0.252619, 0.252619, 0.252619, 0.252619, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496, 0.0378496
+
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1

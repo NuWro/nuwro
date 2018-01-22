@@ -414,16 +414,17 @@ void boone::addq2(double q2, double x, int mc)
    }
 
 double boone::wdiff2(double &mul)
-  {int dof=-1;
-   if(mul==0)
-     mul=scale();
-   if(mul==-1)
-     mul=findmin(makefun(*this,&boone::wdiff2),0.1,10);
-   double res=0;
-   for(int i=0;i<20;i++)
+  {
+    int dof=-1;
+    if(mul==0)
+      mul=scale();
+    if(mul==-1)
+      mul=findmin(makefun(*this,&boone::wdiff2),0.1,10);
+    double res=0;
+    for(int i=0;i<20;i++)
     for(int j=0;j<18;j++)
-       if(active[i][j])
-       {
+      if(active[i][j])
+      {
        	double y=exp(i,j)-nuw(i,j)*mul;
         if(err(i,j)!=0 )
           { y/=err(i,j);
@@ -442,8 +443,8 @@ double boone::wdiff2(double &mul)
 	      
 	   }
     cout<<dof<<endl;          
-	return res;   
-   }
+	  return res;   
+  }
 
 double boone::wdiff2g(double &mul)
   {int dof=-1;
@@ -618,17 +619,19 @@ void boone::printmcq2table(ostream& o, double mul)
 
 
 void boone::printdiffs(ostream& o, double mul)
-   {if(mul==0)
-     mul=scale();
-   for(int i=0;i<20;i++)
-    {   o<<setw(2)<<i<<": ";
-		for(int j=0;j<18;j++)
-		   {
-       	   o<<setw(8)<<nuw(i,j)*mul-exp(i,j)<<"  ";
-	       }
-       	o<<endl;   
-	 }  
-   }
+  {
+    if(mul==0)
+      mul=scale();
+    for(int i=0;i<20;i++)
+    {   
+      o<<setw(2)<<i<<": ";
+		  for(int j=0;j<18;j++)
+		  {
+        o<<setw(8)<<nuw(i,j)*mul-exp(i,j)<<"  ";
+	    }
+      o<<endl;   
+    } 
+  }
 
 
 
@@ -644,20 +647,21 @@ double boone::avg9(int i ,int j)
    }
 
 void boone::print()
-{ for(int i=0;i<20;i++)
-    for(int j=0;j<18;j++)
+{ 
+  for(int i=0;i<20;i++)
+  for(int j=0;j<18;j++)
     {
-	cout<< i<<"  "<<j<< "  ========================================="<<endl;
-	cout<< h2.GetBinContent(i+1,j+1)<<endl;
-	cout<< Nuw[i][j]<<endl;
-	}
-    for(int i=0;i<17;i++)
+    	cout<< i<<"  "<<j<< "  ========================================="<<endl;
+    	cout<< h2.GetBinContent(i+1,j+1)<<endl;
+    	cout<< Nuw[i][j]<<endl;
+  	}
+  for(int i=0;i<17;i++)
     {
-	cout<< i<< "  ========================================="<<endl;
-	cout<< h1.GetBinContent(i+1)<<endl;
-	cout<< Nuwq2[i]/binlen[i]<<endl;
-	cout<< h1mc.GetBinContent(i+1)<<endl;
-	cout<< Nuwmcq2[i]/binlen[i]<<endl;
+    	cout<< i<< "  ========================================="<<endl;
+    	cout<< h1.GetBinContent(i+1)<<endl;
+    	cout<< Nuwq2[i]/binlen[i]<<endl;
+    	cout<< h1mc.GetBinContent(i+1)<<endl;
+    	cout<< Nuwmcq2[i]/binlen[i]<<endl;
     }
 }
 
@@ -673,12 +677,13 @@ void boone::save(const char* filename)
       h2lowq.Scale(s);
       cout<<endl<<"Procent zdarzeń z niskim przekazem pędu (<350MeV)"<<endl ;    
       for(int i=1;i<=20;i++) 
-       {
+      {
         for(int j=1;j<=18;j++)     
-          {double x=h2.GetBinContent(i,j);
-           double y=h2lowq.GetBinContent(i,j);
-           int z=(x>0)? 100*y/x : 0;
-           cout<<setw(5)<<z;
+        {
+          double x=h2.GetBinContent(i,j);
+          double y=h2lowq.GetBinContent(i,j);
+          int z=(x>0)? 100*y/x : 0;
+          cout<<setw(5)<<z;
 	      }
 	      cout<<endl;    
 	    }

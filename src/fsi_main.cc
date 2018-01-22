@@ -226,7 +226,8 @@ int main(int argc, char** argv)
 			int spaces = 50 - expr[i].length();
 			
 			cout<<((char)(97+i))<<" - "<<expr[i]; for (int k = 0; k < spaces; k++) cout<<" "; if (expr_on[i]) cout<<"*"; cout<<endl;
-			for (int k = 0; k < 50 + 5; k++) cout<<"-"; cout<<endl;
+			for (int k = 0; k < 50 + 5; k++) cout<<"-"; 
+			cout<<endl;
 		}
 		
 		cout<<endl<<((char)(97+nof_expr))<<" - "<<allinone; for (int k = 0; k < space; k++) cout<<" "; if (allinone_on) cout<<"*"; cout<<endl; 
@@ -248,7 +249,8 @@ int main(int argc, char** argv)
 			int spaces = 50 - xsec[i].length();
 			
 			cout<<((char)(97+i))<<" - "<<xsec[i]; for (int k = 0; k < spaces; k++) cout<<" "; if (xsec_on[i]) cout<<"*"; cout<<endl;
-			for (int k = 0; k < 50 + 5; k++) cout<<"-"; cout<<endl;
+			for (int k = 0; k < 50 + 5; k++) cout<<"-"; 
+			cout<<endl;
 		}
 		
 		type = getch();
@@ -267,7 +269,8 @@ int main(int argc, char** argv)
 			int spaces = 50 - fzname[i].length();
 			
 			cout<<((char)(97+i))<<" - "<<fzname[i];	for (int k = 0; k < spaces; k++) cout<<" ";	if (fz_on[i]) cout<<"*"; cout<<endl;
-			for (int k = 0; k < 50 + 5; k++) cout<<"-"; cout<<endl;
+			for (int k = 0; k < 50 + 5; k++) cout<<"-"; 
+			cout<<endl;
 		}
 		
 		type = getch();
@@ -286,7 +289,8 @@ int main(int argc, char** argv)
 			int spaces = 50 - options[i].length();
 			
 			cout<<((char)(97+i))<<" - "<<options[i]; for (int k = 0; k < spaces; k++) cout<<" "; if (options_on[i]) cout<<"*"; cout<<endl;
-			for (int k = 0; k < 50 + 5; k++) cout<<"-"; cout<<endl;
+			for (int k = 0; k < 50 + 5; k++) cout<<"-"; 
+			cout<<endl;
 		}
 		
 		cout<<endl<<endl; for (int k = 0; k < 50; k++) cout<<"-";
