@@ -1,0 +1,15 @@
+#target_cntent line = tar
+# target_content += protons neutron count x 
+
+# 2) for mixtures use a multiline parameter target_content:
+# which gives 5 the parameters of a single isotope in a single line:
+# taget_content += protons neutrons count x nucleus_Eb nucleus_kf nucleus_target
+ 
+# Example: Water:
+# target_content = 1 0 2x 0 0 0
+# target_content += 8 8 1x 34 220 2 
+
+target_type=1
+target_content = 6 6 1x 
+target_content += 1 0 1x 
+nucleus_target = 2
