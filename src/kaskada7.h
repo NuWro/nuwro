@@ -64,9 +64,6 @@ class kaskada
                                                   /*!< The free path depends on the density and the total cross section. 
                                                        The density is set for a current position.
                                                        The cross section is set according to the kinetic energy and particle type. */
-    double meanfreepath_NN_scale_from_fit();      //!< Calculates the scaling of the nucleon mean free path.
-                                                  /*!< It depends on the particular fit chosen in params. The fits are done to
-                                                       transparency data. */
     bool move_particle();                         //!< Propagates the particle.
                                                   /*!< Particle is propagated by no more than max_step.
                                                        If its kinetic energy is lower than binding it remains jailed. */
