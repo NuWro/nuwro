@@ -116,7 +116,7 @@ coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion pro
 
 kaskada_on 	 = 1  // use kaskade in qasielastic events 
 pauli_blocking   = 1 // enable Pauli blocking
-xsec = 1
+#xsec = 1
 formation_zone = nofz
 first_step = 0
 

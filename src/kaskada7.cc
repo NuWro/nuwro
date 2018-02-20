@@ -5,7 +5,7 @@
 // Public methods
 ////////////////////////////////////////
 
-kaskada::kaskada(params &p, event &e1)
+kaskada::kaskada(params &p, event &e1, input_data *input)
 {
   par = p;
 
@@ -16,7 +16,8 @@ kaskada::kaskada(params &p, event &e1)
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
-  I = new Interaction(par.xsec);
+  I = new Interaction(input->get_data_container(0), input->get_data_container(1), input->get_data_container(2),
+                      par.kaskada_piN_xsec);
 }
 
 ////////////////////////////////////////
@@ -127,8 +128,8 @@ void kaskada::prepare_particles()
         }
       }
       
-      double fz = formation_zone(p1, par, *e);        // calculate formation zone
-      p1.krok(fz);      // move particle by a distance defined by its formation zone
+      //double fz = formation_zone(p1, par, *e);        // calculate formation zone
+      //p1.krok(fz);      // move particle by a distance defined by its formation zone
       
       parts.push (p1);  // put particle to a queue
     }
@@ -184,7 +185,7 @@ interaction_parameters kaskada::prepare_interaction()
   if (res.xsec != 0)
   {
     res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
-    res.frac_proton = res.xsec_p * res.dens_p / res.xsec;
+    res.prob_proton = res.xsec_p * res.dens_p / res.xsec;
   }
   else
     res.freepath = 2.0 * max_step;

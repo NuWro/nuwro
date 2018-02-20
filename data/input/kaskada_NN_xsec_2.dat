@@ -1,0 +1,177 @@
+# Fit to PDG 2016 data
+
+-
+    energy: 0.
+-
+    energy: 0.0165
+    xsec_ij: 13281.0
+-
+    energy: 0.0427
+    xsec_ij: 3864.6875
+-
+    energy: 0.0621
+    xsec_ij: 2867.83846154
+-
+    energy: 0.0815
+    xsec_ij: 2037.29615385
+-
+    energy: 0.1009
+    xsec_ij: 1533.99166667
+-
+    energy: 0.1203
+    xsec_ij: 1168.5875
+-
+    energy: 0.146875
+    xsec_ij: 816.55875
+    xsec_ii: 314.0
+-
+    energy: 0.180625
+    xsec_ij: 558.26983871
+    xsec_ii: 155.0
+-
+    energy: 0.214375
+    xsec_ij: 398.178166667
+-
+    energy: 0.248125
+    xsec_ij: 300.191142857
+    xsec_ii: 92.0
+-
+    energy: 0.281875
+    xsec_ij: 204.819333333
+    xsec_ii: 70.0
+-
+    energy: 0.315625
+    xsec_ij: 159.385384615
+    xsec_ii: 52.8
+-
+    energy: 0.349375
+    xsec_ij: 123.902
+    xsec_ii: 42.5
+-
+    energy: 0.383125
+    xsec_ij: 101.1405
+    xsec_ii: 35.65
+-
+    energy: 0.438095238095
+    xsec_ij: 76.2219666667
+    xsec_ii: 28.1
+-
+    energy: 0.514285714286
+    xsec_ij: 56.5951
+    xsec_ii: 25.0
+-
+    energy: 0.590476190476
+    xsec_ij: 47.1783
+    xsec_ii: 24.5125
+-
+    energy: 0.666666666667
+    xsec_ij: 41.20775
+    xsec_ii: 24.1
+-
+    energy: 0.742857142857
+    xsec_ij: 37.4545
+    xsec_ii: 23.175
+-
+    energy: 0.819047619048
+    xsec_ij: 34.778375
+    xsec_ii: 24.1
+-
+    energy: 0.895238095238
+    xsec_ij: 33.60925
+    xsec_ii: 24.15
+-
+    energy: 0.971428571429
+    xsec_ij: 33.0208888889
+    xsec_ii: 26.1041666667
+-
+    energy: 1.04761904762
+    xsec_ij: 33.1357
+    xsec_ii: 27.5333333333
+-
+    energy: 1.12380952381
+    xsec_ij: 33.879625
+    xsec_ii: 31.7571818182
+-
+    energy: 1.2
+    xsec_ij: 34.3944444444
+    xsec_ii: 36.5666666667
+-
+    energy: 1.27619047619
+    xsec_ij: 35.4557272727
+    xsec_ii: 40.9723333333
+-
+    energy: 1.35238095238
+    xsec_ij: 37.74375
+    xsec_ii: 43.0
+-
+    energy: 1.42857142857
+    xsec_ij: 38.483
+    xsec_ii: 46.0174
+-
+    energy: 1.50476190476
+    xsec_ij: 37.82
+    xsec_ii: 47.6
+-
+    energy: 1.58095238095
+    xsec_ij: 39.03
+    xsec_ii: 47.254
+-
+    energy: 1.65714285714
+    xsec_ij: 40.09
+    xsec_ii: 48.1843333333
+-
+    energy: 1.73333333333
+    xsec_ij: 38.21
+    xsec_ii: 47.2
+-
+    energy: 1.80952380952
+    xsec_ij: 39.7045
+    xsec_ii: 47.5966666667
+-
+    energy: 1.88571428571
+    xsec_ij: 40.287
+    xsec_ii: 47.2183333333
+-
+    energy: 1.9619047619
+    xsec_ij: 41.5045
+    xsec_ii: 47.2553333333
+-
+    energy: 2.8
+    xsec_ij: 41.9519285714
+    xsec_ii: 45.0329032258
+-
+    energy: 4.4
+    xsec_ij: 41.7022222222
+    xsec_ii: 41.8150769231
+-
+    energy: 6.0
+    xsec_ij: 40.2672
+    xsec_ii: 40.7138571429
+-
+    energy: 7.6
+    xsec_ij: 40.1546666667
+    xsec_ii: 40.3958333333
+-
+    energy: 9.2
+    xsec_ij: 40.8
+    xsec_ii: 39.4
+-
+    energy: 15.0
+    xsec_ij: 39.2164705882
+    xsec_ii: 39.4229411765
+-
+    energy: 60.0
+    xsec_ij: 38.6537037037
+    xsec_ii: 38.5348571429
+-
+    energy: 250.0
+    xsec_ij: 39.4642307692
+    xsec_ii: 38.8967741935
+-
+    energy: 10200.0
+    xsec_ii: 42.4774193548
+-
+    energy: 865760000.0
+    xsec_ii: 99.8985714286
+-
+    energy: 1.e300

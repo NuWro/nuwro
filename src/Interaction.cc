@@ -3,49 +3,6 @@
 
 
 ///////////////////////////////////////////////////////////
-void NData::setMetropolis()
-{                             
-static const double    E[]={    0,  335,  410,  510,  660,  840, 1160, 1780, 3900,1e300};
-static const double  sii[]={ 24.5, 24.5, 26.4, 30.4, 41.2, 47.2, 48.0, 44.2, 41.0, 41.0};
-static const double  sij[]={ 33.0, 33.0, 34.0, 35.1, 36.5, 37.9, 40.2, 42.7, 42.0, 42.0};
-static const double  fii[]={ 0.07, 0.07, 0.20, 0.31, 0.43, 0.58, 0.65, 0.69, 0.69, 0.69};
-static const double  fij[]={ 0.04, 0.04, 0.07, 0.15, 0.27, 0.37, 0.36, 0.35, 0.35, 0.35};
-static const double  Aii[]={  0.1,  0.1,  0.9,  2.7,  9.0, 14.3, 19.2, 1e99, 1e99, 1e99};
-static const double  Aij[]={  2.2,  2.2,  1.8,  2.3,  8.8, 15.0, 29.4, 1e99, 1e99, 1e99}; 
-static const double  Bii[]={    0,    0,    0,    0,    0,    0,    0,    0,    0,    0};
-static const double  Bij[]={ -1.0, -1.0, -1.1, -0.7, -0.2,  0.0,  0.0,  0.0,  0.0,  0.0};
-static const double  fpi[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 0.97, 0.80, 0.44, 0.44, 0.44};
-	this->E=E;
-	s[0]=sii;  s[1]=sij;
-	F[0]=fii;  F[1]=fij;
-	A[0]=Aii;  A[1]=Aij;
-	B[0]=Bii;  B[1]=Bij;
-   Fp[0]=fpi; Fp[1]=fpi;
-}
-
-///////////////////////////////////////////////////////////
-void NData::setOset()
-{   
-static const double    E[]={    0,  335,  410,  510,  660,  840, 1160, 1780, 2500,1e300};
-static const double  sii[]={ 24.5, 24.5, 26.4, 30.4, 41.2, 47.2, 48.0, 44.2, 41.0, 41.0};
-static const double  sij[]={ 33.0, 33.0, 34.0, 35.1, 36.5, 37.9, 40.2, 42.7, 42.0, 42.0};
-static const double  fii[]={ 0.07, 0.07, 0.20, 0.31, 0.43, 0.48, 0.51, 0.62, 0.70, 0.70};
-static const double  fij[]={ 0.04, 0.04, 0.07, 0.15, 0.37, 0.37, 0.51, 0.55, 0.65, 0.65};
-static const double  Aii[]={  0.1,  0.1,  0.9,  2.7,  9.0, 14.3, 19.2, 1e99, 1e99, 1e99};
-static const double  Aij[]={  2.2,  2.2,  1.8,  2.3,  8.8, 15.0, 29.4, 1e99, 1e99, 1e99};
-static const double  Bii[]={    0,    0,    0,    0,    0,    0,    0,    0,    0,    0};
-static const double  Bij[]={ -1.0, -1.0, -1.1, -0.7, -0.2,  0.0,  0.0,  0.0,  0.0,  0.0};
-static const double fpii[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.90, 0.73, 0.50, 0.50};
-static const double fpij[]={ 1.00, 1.00, 1.00, 1.00, 1.00, 0.87, 0.55, 0.46, 0.30, 0.30}; 
-	this->E=E;
-	s[0]=sii;  s[1]=sij;
-	F[0]=fii;  F[1]=fij;
-	A[0]=Aii;  A[1]=Aij;
-	B[0]=Bii;  B[1]=Bij;
-  Fp[0]=fpii; Fp[1]=fpij;
-}
-
-///////////////////////////////////////////////////////////
 PiData::PiData(int xs):xsec(xs),Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0)
 { 
 	switch(xs)
@@ -236,8 +193,8 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
   p1.p4().boost2 (-vvv);
 
-  double dens00 = 0.16/fermi3;
-  double Masssa = (938.272+939.56533)/2.0;
+  const double dens00 = 0.16/fermi3;
+  const double Masssa = (938.272+939.56533)/2.0;
 
   double beta = -116.0*X.dens/dens00;
   double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
@@ -260,23 +217,19 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   switch (X.pdg)
   {
     case pdg_neutron:
-      ND.get_sij (X.Ekeff,X.xsec_n,X.xsec_p);
-      //cout<<"neutron  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      get_NN_xsec( X.Ekeff, X.xsec_n, X.xsec_p );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ek<40)
-        X.xsec_p*=0.9;                 // effective Pauli blocking 
-      //cout<<"neutron2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      if (X.Ek<40)                 // effective Pauli blocking
+        X.xsec_p*=0.9;
       break;
 
     case pdg_proton:
-      ND.get_sij (X.Ekeff,X.xsec_p,X.xsec_n);
-      //cout<<"proton  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      get_NN_xsec( X.Ekeff, X.xsec_p, X.xsec_n );
       X.xsec_n*=mod;
       X.xsec_p*=mod;
-      if (X.Ek<40)
-        X.xsec_n*=0.9;                 // effective Pauli blocking 
-      //cout<<"proton2  "<<X.r<<"  "<<X.xsec_n<<"  "<<X.xsec_p<<"  "<<mod<<endl;
+      if (X.Ek<40)                 // effective Pauli blocking
+        X.xsec_n*=0.9;
       break;
 
     default:
@@ -321,9 +274,8 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     cout<<"t.n="<<t.n<<"  t.p="<<t.p<<"   "<<X.p2<<endl;
   assert(X.p2.v().length()<1 && "particle scattering");
 
-  if (frandom () < X.frac_proton)   // X.frac_proton is the probability of interaction on proton
-                                    // it has the proton cross section included!!!
-                                    // KN: The name is a bit misleading.
+  if (frandom () < X.prob_proton)   // X.prob_proton is the probability of interaction on proton
+                                    // it has the proton cross section included!
     X.p2.set_proton ();
   else
     X.p2.set_neutron ();
@@ -333,7 +285,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     case pdg_proton:
     case pdg_neutron:
       k1=nucleon_;
-      return ND.nucleon_scattering (p1, X.p2 , X.n,  X.p);
+      return nucleon_scattering (p1, X.p2 , X.n,  X.p);
     case pdg_pi: 
     case pdg_piP: 
     case -pdg_piP:
@@ -370,4 +322,161 @@ void Interaction::test ()
   {
     cout << i << '\t' << t[i] << endl;
   }
+}
+
+////////////////////////////////////////
+// Private methods
+////////////////////////////////////////
+
+void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
+{
+  NN_xsec->set_input_point( Ek );
+
+  if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
+  {
+    Ek = max( Ek, 30 * MeV );
+    const double M = (mass_proton + mass_neutron) / 2;
+    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    resii=((10.63 / v - 29.92) / v + 42.9) * millibarn;
+    resij=((34.10 / v - 82.20) / v + 82.2) * millibarn;
+  }
+  else
+  {
+    resii = NN_xsec->get_value(1);
+    resij = NN_xsec->get_value(2);
+  }
+}
+
+////////////////////////////////////////
+
+double Interaction::get_NN_xsec_ij( double Ek )
+{
+  NN_xsec->set_input_point( Ek );
+
+  if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
+  {
+    Ek = max( Ek, 30 * MeV );
+    const double M = (mass_proton + mass_neutron) / 2;
+    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    if( ij )
+      return ((34.10 / v - 82.20) / v + 82.2) * millibarn;
+    else
+      return ((10.63 / v - 29.92) / v + 42.9) * millibarn;
+  }
+  else
+  {
+    if( ij )
+      return NN_xsec->get_value(2);
+    else
+      return NN_xsec->get_value(1);
+  }
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_scattering ( particle& p1, particle& p2, int &n, particle p[] )
+{
+  ij=p1!=p2;  // set the type of target
+
+  vec v = p2.v();
+  assert ( v*v<1 && " nucleon  ");
+
+  double Ek1 = p1.Ek_in_frame (v);
+  double Ek2 = p1.Ek_in_frame (-v);
+  double s1  = get_NN_xsec_ij( Ek1 );
+  double s2  = get_NN_xsec_ij( Ek2 );
+
+  if( frandom()*(s1 + s2) < s2 )
+  {
+    p2.x *= -1;
+    p2.y *= -1;
+    p2.z *= -1;
+    NN_inel->set_input_point( Ek2 );
+    NN_angle->set_input_point( Ek2 );
+  }
+  else
+  {
+    NN_inel->set_input_point( Ek1 );
+    NN_angle->set_input_point( Ek1 );
+  }
+
+  if ( frandom() > NN_inel->get_value( 1+ij ) )  // 1 is ii, 2 is ij
+      return nucleon_elastic(p1, p2, n, p);
+  if ( frandom() > NN_inel->get_value( 3+ij ) )  // 3 is ii, 4 is ij
+    return nucleon_spp(p1, p2, n, p) 
+        || nucleon_elastic(p1, p2, n, p); // in case of insufficiend energy fallback to elastic
+  else        
+    return nucleon_dpp(p1, p2, n, p) 
+        || nucleon_spp(p1, p2, n, p)      // in case of insufficiend energy fallback to spp
+        || nucleon_elastic(p1, p2, n, p); // or even to to elastic
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_elastic( particle& p1, particle& p2, int &n, particle p[] )
+{
+  k2=elastic_;
+  n = 2;
+  p[0] = p1;
+  p[1] = p2;
+  float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij
+  float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij
+  int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b8x^3 + 0*x^2 + 0*x + 1
+
+  if(res==0) cerr<<"AB=0"<<endl;
+  return res;
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_spp( particle p1, particle p2, int &n, particle p[] )
+{
+  k2=spp_;
+  int canal=(p1==Proton)*2+(p2==Proton);
+  static const double f1[]={0.11};
+  static const double f2[]={0.43,0.815};
+  static const channel cnls[4][3]=
+      {{f1[0],"nn.",    1,"np-", 1,"ccc"},//nn
+       {f2[0],"np.",f2[1],"nn+", 1,"pp-"},//np
+       {f2[0],"pn.",f2[1],"pp-", 1,"nn+"},//pn
+       {f1[0],"pp.",    1,"np+", 1,"ddd"} //pp
+      };
+  doit(n,cnls[canal],p);  // p[2] is pion 
+  return scatter_n (n, p1, p2, p);
+}
+
+////////////////////////////////////////
+
+bool Interaction::nucleon_dpp( particle p1, particle p2, int &n, particle p[] )
+{
+  k2=dpp_;
+  int canal=(p1==Proton)*2+(p2==Proton);
+  static const double f1[]={0.6,0.8};
+  static const double f2[]={0.6,0.8,0.9};
+  static const channel cnls[4][4]=
+      {{f1[0],"nn..",f1[1],"nn+-",    1,"np.-",1,"    "},//nn
+       {f2[0],"np..",f2[1],"np+-",f2[2],"pp.-",1,"nn.+"},//np
+       {f2[0],"pn..",f2[1],"pn-+",f2[2],"nn.+",1,"pp.-"},//pn
+       {f1[0],"pp..",f1[1],"pp-+",    1,"pn.+",1,"    "} //pp
+      };
+  doit(n,cnls[canal],p);// p[2],p[3] are pions
+  return scatter_n (n, p1, p2, p);
+}
+
+////////////////////////////////////////
+
+int Interaction::nucleon_process_id()
+{
+  return nucleon_+k2;
+}
+
+////////////////////////////////////////
+
+const char* Interaction::nucleon_process_name()
+{
+  const char *name[4]={"nucleon elastic","nucleon ce","nucleon spp","nucleon dpp"};
+  if(k2<4)
+    return name[k2];
+  else
+    return NULL;
 }

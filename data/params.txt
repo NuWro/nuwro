@@ -247,7 +247,7 @@ tau = 8.0            //
 first_step = 1       // use (1) or not (0) formation zone for primary particles
 step = 0.2           // length of one step in cascade
 
-xsec = 1 //model of cross sections in cascade: 0 - metropolis, 1 - oset
+#xsec = 1 //model of cross sections in cascade: 0 - metropolis, 1 - oset
 kaskada_w = 7
 
   formation_zone = fz-new
