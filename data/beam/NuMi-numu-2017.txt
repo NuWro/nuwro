@@ -1,0 +1,19 @@
+#new Numi nu flux
+beam_type=0
+
+# the PDG code of the beam particle
+# 12 - nu_e    
+# 14 - nu_mu
+# 16 - nu_tau
+# -12 - anti_nu_e
+# -14 - anti_nu_mu
+# -16 - anti_nu_tau
+
+beam_particle      = 14
+
+# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+
+beam_direction     = 0 0 1
+
+beam_energy = 1500 20000 5.06e-09 6.66e-09 8.18e-09 8.53e-09 6.81e-09 4.06e-09 2.20e-09 1.35e-09 9.72e-10 7.90e-10 6.67e-10 5.82e-10 5.09e-10 4.58e-10 4.10e-10 3.71e-10 3.40e-10 2.95e-10 2.95e-10 2.46e-10 2.46e-10 2.06e-10 2.06e-10 1.75e-10 1.75e-10 1.45e-10 1.45e-10 1.20e-10 1.20e-10 1.01e-10 1.01e-10 8.42e-11 8.42e-11 7.11e-11 7.11e-11 6.07e-11 6.07e-11
+
