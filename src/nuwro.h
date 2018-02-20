@@ -9,6 +9,7 @@
 #include <ostream>
 #include "nucleus.h"
 #include "chooser.h"
+#include "input_data.h"
 
 class NuWro
 {
@@ -42,6 +43,7 @@ class NuWro
 		nucleus *_nucleus;
 		target_mixer *_mixer;
 		bool dismode;
+		input_data input;
 };
 
 extern NuWro nuwro;

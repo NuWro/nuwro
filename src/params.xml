@@ -420,11 +420,31 @@
   <param name="step" type="text" ctype="double" default="0.2">
     <description><![CDATA[[fm] length of one step in cascade]]></description>
   </param>
-  <param name="xsec" type="select" ctype="int" default="1" >
-    <description><![CDATA[model of cross sections in cascade]]></description>
+  <param name="kaskada_NN_xsec" type="select" ctype="int" default="0" >
+    <description><![CDATA[The model of the nucleon-nucleon cross sections in the cascade]]></description>
     <options>
-      <option key="0"><![CDATA[metropolis]]></option>
-      <option key="1"><![CDATA[oset]]></option>
+      <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
+      <option key="2"><![CDATA[PDG 2016]]></option>
+    </options>
+  </param>
+  <param name="kaskada_NN_inel" type="select" ctype="int" default="1" >
+    <description><![CDATA[The model of the nucleon-nucleon cross sections in the cascade]]></description>
+    <options>
+      <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
+      <option key="1"><![CDATA[Oset]]></option>
+    </options>
+  </param>
+  <param name="kaskada_NN_angle" type="select" ctype="int" default="0" >
+    <description><![CDATA[The model of the nucleon-nucleon cross sections in the cascade]]></description>
+    <options>
+      <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
+    </options>
+  </param>
+  <param name="kaskada_piN_xsec" type="select" ctype="int" default="1" >
+    <description><![CDATA[The model of the pion-nucleon cross sections in the cascade]]></description>
+    <options>
+      <option key="0"><![CDATA[Metropolis]]></option>
+      <option key="1"><![CDATA[Oset]]></option>
     </options>
   </param>
   <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">

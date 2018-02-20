@@ -1,0 +1,38 @@
+# N. Metropolis et al., Phys.Rev. 110 (1958) 204-219
+
+-
+    energy: 0
+-
+    energy: 335
+    xsec_ii: 24.5
+    xsec_ij: 33.0
+-
+    energy: 410
+    xsec_ii: 26.4
+    xsec_ij: 34.0
+-
+    energy: 510
+    xsec_ii: 30.4
+    xsec_ij: 35.1
+-
+    energy: 660
+    xsec_ii: 41.2
+    xsec_ij: 36.5
+-
+    energy: 840
+    xsec_ii: 47.2
+    xsec_ij: 37.9
+-
+    energy: 1160
+    xsec_ii: 48.0
+    xsec_ij: 40.2
+-
+    energy: 1780
+    xsec_ii: 44.2
+    xsec_ij: 42.7
+-
+    energy: 3900
+    xsec_ii: 41.0
+    xsec_ij: 42.0
+-
+    energy: 1e+300

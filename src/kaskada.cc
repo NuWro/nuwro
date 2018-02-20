@@ -6,64 +6,78 @@
 #include "args.h"
 #include "nucleusmaker.h"
 #include "dirs.h"
+#include "input_data.h"
 
 int main(int argc,  char** argv)
-{  
-  set_dirs(argv[0]);	
+{
+  set_dirs(argv[0]);
   args a("kaskada","kaskada.txt","kaskada.root");
-  a.read(argc,argv);   
+  a.read(argc,argv);
   params p;
   p.read(a.input);
   p.read(a.params,"Command line");
   p.list();
   frandom_init(p.random_seed);
   
+  // load the input data
+  input_data input;
+  try
+  {
+    input.initialize( p );
+    input.load_data();
+  }
+  catch( char const* ex )
+  {
+    cout << ex << endl;
+    return 1;
+  }
+
   event *e=new event;
   TFile *f= new TFile(a.output,"recreate");
   TTree * t2=new TTree("treeout","Tree of events");
-  t2->Branch("e","event",&e); ///< tree1 has only one branch (branch of events)
+  t2->Branch("e","event",&e);   // tree1 has only one branch (branch of events)
 
   try
   {
-	  nucleus* nucl= make_nucleus(p);
-	  beam_uniform b(p);
-	  b.check_energy();         
+    nucleus* nucl= make_nucleus(p);
+    beam_uniform b(p);
+    b.check_energy();
   }
   catch(const char* w)
   {
-	  cout<<endl<<"Exception:     "<<w<<endl<<endl;
-	  return 1;
+    cout<<endl<<"Exception:     "<<w<<endl<<endl;
+    return 1;
   }
 
   beam_uniform b(p);
   nucleus* nucl= make_nucleus(p); 
 
   for(int i=0;i<p.number_of_events;i++)
-  {  cout<<"event="<<i<<" begin      \r"; 
-     e=new event;
-     e->weight = 1;
-     e->par = p;
-     particle p0=b.shoot();
-     p0.r=start_point(nucl,p);
-     e->out.push_back(p0);
-     e->flag.qel = 0;
-     e->flag.res = 0;
-	 particle pi = nucl->get_nucleon(p0.r);
-	 e->in.push_back(pi);
-	 e->in.push_back(pi);
-	 //e->in[1].p4().t = 0;
-	 kaskada k(p,*e);
-     k.kaskadaevent();
-     t2->Fill();
-     delete e;
-     cout<<"event "<<i<<": completed.\r"; 
-
+  {
+    cout<<"event="<<i<<" begin      \r"; 
+    e=new event;
+    e->weight = 1;
+    e->par = p;
+    particle p0=b.shoot();
+    p0.r=start_point(nucl,p);
+    e->out.push_back(p0);
+    e->flag.qel = 0;
+    e->flag.res = 0;
+    particle pi = nucl->get_nucleon(p0.r);
+    e->in.push_back(pi);
+    e->in.push_back(pi);
+    //e->in[1].p4().t = 0;
+    kaskada k(p,*e,&input);
+    k.kaskadaevent();
+    t2->Fill();
+    delete e;
+    cout<<"event "<<i<<": completed.\r";
   }
-  
+
   f->Write();
   delete nucl;
   delete t2;
   delete f;
-  genrand_write_state(); 
+  genrand_write_state();
   return 0;
 }

@@ -59,14 +59,13 @@ $(BIN)/nuwro:   $(addprefix src/, event1.o event1dict.o generatormt.o particle.o
 	    mecdynamics2.o mecevent2.o rew/rewparams.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o\
         nucleus_data.o isotopes.o elements.o rew/PythiaQuiet.o\
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o main.o) \
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o  main.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
 
 
-
-$(BIN)/kaskada:   $(addprefix src/, scatter.o generatormt.o particle.o event1.o event1dict.o kaskada7.o Interaction.o dirs.o\
-				  pdg.o nucleus.o kaskada.o fsi.o pitab.o  nucleus_data.o isotopes.o elements.o  rew/rewparams.o)
+$(BIN)/kaskada:   $(addprefix src/, scatter.o generatormt.o particle.o event1.o event1dict.o kaskada7.o Interaction.o input_data.o data_container.o dirs.o\
+				  pdg.o nucleus.o kaskada.o fsi.o pitab.o nucleus_data.o isotopes.o elements.o rew/rewparams.o)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/myroot:  $(EVENT_OBJS) src/myroot.o
@@ -90,14 +89,14 @@ $(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o
 $(BIN)/nuwro2rootracker: $(EVENT_OBJS) src/nuwro2rootracker.o
 		 $(LINK.cc) $^ -o $@
 
-$(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
+$(BIN)/fsi:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/input_data.o src/data_container.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
        src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/dirs.o src/fsi_main.o  src/rew/rewparams.o
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/mb_nce_run:   src/mb_nce.o src/mb_nce_run.o src/event1.o src/event1dict.o src/mb_nce_fit.o src/pdg.o src/scatter.o src/generatormt.o src/dirs.o src/particle.o
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
+$(BIN)/niwg:   src/scatter.o src/generatormt.o src/particle.o src/event1.o src/event1dict.o src/kaskada7.o src/Interaction.o src/input_data.o src/data_container.o src/pdg.o src/dirs.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
         src/fsi.o src/pitab.o src/calculations.o src/niwg_ccqe.o src/niwg_tech.o src/niwg_ccpi.o src/niwg.o  
 		$(LINK.cc) $^ -o $@
 
@@ -112,7 +111,7 @@ $(BIN)/ganalysis: $(addprefix src/, \
 		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o rew/PythiaQuiet.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o ganalysis.o rew/rewparams.o) \
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o ganalysis.o rew/rewparams.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc) $^ -o $@
 
@@ -120,7 +119,7 @@ $(BIN)/reweight_to: $(addprefix src/, \
 		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o\
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_to.o rew/PythiaQuiet.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc)  $^ -o $@ 
@@ -129,7 +128,7 @@ $(BIN)/reweight_along: $(addprefix src/, \
 		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o\
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
         $(SF_OBJS) $(DIS_OBJS)
 		$(LINK.cc)  $^ -o $@ 
