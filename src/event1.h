@@ -119,6 +119,7 @@ class event:public TObject
 		inline int number_of_particles (int pdg, bool fsi); ///< number of particles before/after fsi
 		inline double nuc_kin_en();                         ///< total kinetic energy of nucleons that left the nucleus
 		inline int num_part_thr (int pdg, bool fsi, double threshold);  ///< number of particles with momentum above threshold before/after fsi
+		inline int num_part_thr_withincosine (int pdg, bool fsi, double threshold, double kosinus);/// as above plus a condition for cosine
 		inline double proton_cosine(bool fsi, double thr);              ///< cosine of the angle between two protons with momenta above thr
 		inline double proton_transp_mom();
 		inline double proton_transp_mom2();
@@ -140,6 +141,8 @@ class event:public TObject
 		inline double total_recoil_without_masses (double K, double N);
 		inline double neutral_kaon_recoil ();
 		inline vec proton_max_mom();
+		inline vect particle_max_mom(int pdg, bool fsi);
+		inline vect particle_max_mom_withincosine (int pdg, bool fsi, double kosinus);
 		inline double total_hadr_post();
 		ClassDef (event, 1);
 };
@@ -660,6 +663,33 @@ int event::num_part_thr (int pdg, bool fsi, double threshold)
 
 }
 
+/// number of particles of given pdg with momentum above threshold before/after fsi and with angle within cosine region
+int event::num_part_thr_withincosine (int pdg, bool fsi, double threshold, double kosinus)
+{
+	int number = 0;
+
+	if(fsi)
+	{
+		for (int k = 0; k<post.size(); k++)
+		{
+			if ( post[k].pdg == pdg && post[k].momentum() > threshold && post[k].z/post[k].momentum() > kosinus )
+				number++;
+		}
+	}
+	else if (!fsi)
+	{
+		for (int k = 0; k<out.size(); k++)
+		{
+			if ( out[k].pdg == pdg && out[k].momentum() > threshold && out[k].z/out[k].momentum() > kosinus )
+				number++;
+		}
+	}
+
+	return number;
+}
+
+
+
 /// cosine if the angle between the two outgoing protons
 double event::proton_cosine(bool fsi, double thr)
 {
@@ -868,6 +898,67 @@ vec event::proton_max_mom()
 	}
 	}
 	return proton_mom;
+}
+
+vect event::particle_max_mom(int pdg, bool fsi)
+{
+  vect particle_mom;
+  double length=0;
+    if (fsi==true)
+    {
+	for (int k = 0; k<post.size(); k++)
+	{
+	if ( (post[k].pdg == pdg) && (post[k].momentum() > length) )
+	{particle_mom=post[k];
+	  length = post[k].momentum();
+	//cout<<"sabaka  "<<proton_mom<<"  "<<length<<endl;
+	}
+	}
+    }
+	if (fsi==false)
+    {
+	for (int k = 0; k<out.size(); k++)
+	{
+	if ( (out[k].pdg == pdg) && (out[k].momentum() > length) )
+	{particle_mom=out[k];
+	  length = out[k].momentum();
+	//cout<<"sabaka  "<<proton_mom<<"  "<<length<<endl;
+	}
+	}
+    }
+	
+	return particle_mom;
+}
+
+
+vect event::particle_max_mom_withincosine (int pdg, bool fsi, double kosinus)
+{
+  vect particle_mom;
+  double length=0;
+    if (fsi==true)
+    {
+	for (int k = 0; k<post.size(); k++)
+	{
+	if ( post[k].pdg == pdg && post[k].momentum() > length && post[k].z/post[k].momentum() > kosinus)
+	{particle_mom=post[k];
+	  length = post[k].momentum();
+	//cout<<"sabaka  "<<proton_mom<<"  "<<length<<endl;
+	}
+	}
+    }
+	if (fsi==false)
+    {
+	for (int k = 0; k<out.size(); k++)
+	{
+	if ( out[k].pdg == pdg && out[k].momentum() > length && out[k].z/out[k].momentum() > kosinus )
+	{particle_mom=out[k];
+	  length = out[k].momentum();
+	//cout<<"sabaka  "<<proton_mom<<"  "<<length<<endl;
+	}
+	}
+    }
+	
+	return particle_mom;
 }
 
 					
