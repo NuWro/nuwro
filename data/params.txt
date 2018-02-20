@@ -126,8 +126,8 @@ sf_method = 0 // don't use spectral function
 #sf_method = 1 // use grid spectral function: (C12, O16, Ar40, Fe56)
 #sf_method = 2 // use factorized spectral function: (O16, Ar40, Ca40)
 
-sf_fsi = 0      // FSI correction for SF (0 - disabled, 1 - enabled)
-sf_coulomb = 0 // Coulomb correction for SF (0 - disabled, 1 - enabled)
+sf_fsi = 1      // FSI correction for SF (0 - disabled, 1 - enabled)
+sf_coulomb = 1  // Coulomb correction for SF (0 - disabled, 1 - enabled)
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
