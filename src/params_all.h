@@ -85,8 +85,6 @@ PARAM(bool,MEC_pauli_blocking,1)\
 PARAM(double,MEC_cm_direction,0.0)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\
-PARAM(double,kaskada_meanfreepath_scale,1)\
-PARAM(int,kaskada_meanfreepath_NN_fit,0)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\
 PARAM(string,formation_zone,"fz-new")\
@@ -94,7 +92,8 @@ PARAM(double,tau,8)\
 PARAM(double,formation_length,1)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
-PARAM(int,kaskada_NN_xsec,0)\
+PARAM(double,kaskada_NN_mfp_scale,1)\
+PARAM(int,kaskada_NN_xsec,2)\
 PARAM(int,kaskada_NN_inel,1)\
 PARAM(int,kaskada_NN_angle,0)\
 PARAM(int,kaskada_piN_xsec,1)\

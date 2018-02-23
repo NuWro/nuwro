@@ -169,19 +169,17 @@ interaction_parameters kaskada::prepare_interaction()
 
   res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path
 
-  res.xsec /= par.kaskada_meanfreepath_scale;               // scale the mean free path (1/res.xsec)
-                                                            // according to the params
-
-  switch (res.pdg)                                          // fits of scaling the mean free path
+  switch (res.pdg)
   {
-    case pdg_neutron:                                       // for nucleons
+    case pdg_neutron:                       // for nucleons
     case pdg_proton:
-      res.xsec /= meanfreepath_NN_scale_from_fit();         // fit to data
+      res.xsec /= par.kaskada_NN_mfp_scale; // scale the mean free path (1/res.xsec)
+                                            // according to the params
       break;
   }
 
-  assert(res.xsec>=0);                           // make sure that the cross section is positive
-  // KN: so what if xsec == 0? there is an assertion but it's covered later
+  assert(res.xsec>=0);                      // make sure that the cross section is positive
+
   if (res.xsec != 0)
   {
     res.freepath = -log (frandom ()) / res.xsec; // choose free path according to the mean free path (1/res.xsec)
@@ -191,39 +189,6 @@ interaction_parameters kaskada::prepare_interaction()
     res.freepath = 2.0 * max_step;
 
   return res;
-}
-
-////////////////////////////////////////
-
-double kaskada::meanfreepath_NN_scale_from_fit()
-{
-  double particle_momentum = p->momentum();
-
-  switch(par.kaskada_meanfreepath_NN_fit)
-  {
-    case 1:                                      // fit to available transparency data
-                                                 // without the c_a factors
-      if(particle_momentum > 1650)
-      {
-        return 1.05;
-      }
-      else if(particle_momentum > 927)
-      {
-        return 0.00049793 * particle_momentum + 0.22842324;
-      }
-      else if(particle_momentum > 625)
-      {
-        return -0.00102649 * particle_momentum + 1.64155629;
-      }
-      else
-      {
-        return 1;
-      }
-      break;
-
-    default:
-      return 1;
-  }
 }
 
 ////////////////////////////////////////
