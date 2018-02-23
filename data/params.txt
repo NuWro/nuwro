@@ -128,6 +128,9 @@ sf_method = 0 // don't use spectral function
 
 sf_fsi = 1      // FSI correction for SF (0 - disabled, 1 - enabled)
 sf_coulomb = 1  // Coulomb correction for SF (0 - disabled, 1 - enabled)
+sf_pb = 0       // PB method used for SF: 0 - average Fermi momentum
+                //                        1 - local Fermi momentum
+                //                        2 - nucleon momentum distribution given by spectral function
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
