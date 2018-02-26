@@ -203,4 +203,5 @@ void frandom_init(int option)
     case 1: genrand_read_state();break;
     default: init_genrand(option);break;
   }
+  genrand_write_state();
 }
