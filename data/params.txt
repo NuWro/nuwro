@@ -126,11 +126,13 @@ sf_method = 0 // don't use spectral function
 #sf_method = 1 // use grid spectral function: (C12, O16, Ar40, Fe56)
 #sf_method = 2 // use factorized spectral function: (O16, Ar40, Ca40)
 
-sf_fsi = 1      // FSI correction for SF (0 - disabled, 1 - enabled)
-sf_coulomb = 1  // Coulomb correction for SF (0 - disabled, 1 - enabled)
-sf_pb = 0       // PB method used for SF: 0 - average Fermi momentum
-                //                        1 - local Fermi momentum
-                //                        2 - nucleon momentum distribution given by spectral function
+sf_fsi = 1      # FSI correction for SF (0 - disabled, 1 - enabled)
+sf_coulomb = 1  # Coulomb correction for SF (0 - disabled, 1 - enabled)
+# PB method used for SF:
+#     0 - average Fermi momentum
+#     1 - local Fermi momentum
+#     2 - nucleon momentum distribution given by spectral function
+sf_pb = 0
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
@@ -251,9 +253,11 @@ first_step = 1       // use (1) or not (0) formation zone for primary particles
 step = 0.2           // length of one step in cascade
 kaskada_w = 7
 
-kaskada_NN_mfp_scale = 1.0  // Global rescaling of the nucleon mean free path in the cascade;
-                            // It has been checked against transparency data that
-                            // the uncertainty here is not larger than +- 15%
+# Global rescaling of the nucleon mean free path in the cascade;
+# It has been checked against transparency data that
+# the uncertainty here is not larger than +- 15%
+kaskada_NN_mfp_scale = 1.0
+
 kaskada_NN_xsec  = 2  // NN cross sections:  (0) Metropolis et al., (2) PDG2016
 kaskada_NN_inel  = 1  // NN inelastic frac.: (0) Metropolis et al., (1) Oset et al.
 kaskada_NN_angle = 0  // NN angular distr.:  (0) Metropolis et al.
