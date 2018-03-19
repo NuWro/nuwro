@@ -1,177 +1,190 @@
 # Fit to PDG 2016 data
 
 -
-    energy: 0.
--
-    energy: 0.0165
+    energy: 0.0
     xsec_ij: 13281.0
+    xsec_ii: 314.0
 -
-    energy: 0.0427
+    energy: 0.14496940478318265
+    xsec_ij: 13281.0
+    xsec_ii: 314.0
+-
+    energy: 0.9704504416281452
     xsec_ij: 3864.6875
+    xsec_ii: 314.0
 -
-    energy: 0.0621
+    energy: 2.0514031465490916
+    xsec_ii: 314.0
     xsec_ij: 2867.83846154
 -
-    energy: 0.0815
+    energy: 3.530542599144269
+    xsec_ii: 314.0
     xsec_ij: 2037.29615385
 -
-    energy: 0.1009
+    energy: 5.405997706399489
+    xsec_ii: 314.0
     xsec_ij: 1533.99166667
 -
-    energy: 0.1203
+    energy: 7.675412850695807
     xsec_ij: 1168.5875
+    xsec_ii: 314.0
 -
-    energy: 0.146875
+    energy: 11.41839269632851
     xsec_ij: 816.55875
     xsec_ii: 314.0
 -
-    energy: 0.180625
+    energy: 17.216078264052612
     xsec_ij: 558.26983871
     xsec_ii: 155.0
 -
-    energy: 0.214375
+    energy: 24.162274554548503
     xsec_ij: 398.178166667
+    xsec_ii: 123.5
 -
-    energy: 0.248125
+    energy: 32.23233757629316
     xsec_ij: 300.191142857
     xsec_ii: 92.0
 -
-    energy: 0.281875
+    energy: 41.39851239524853
     xsec_ij: 204.819333333
     xsec_ii: 70.0
 -
-    energy: 0.315625
+    energy: 51.63037044045882
     xsec_ij: 159.385384615
     xsec_ii: 52.8
 -
-    energy: 0.349375
+    energy: 62.895259717470935
     xsec_ij: 123.902
     xsec_ii: 42.5
 -
-    energy: 0.383125
+    energy: 75.15875449973976
     xsec_ij: 101.1405
     xsec_ii: 35.65
 -
-    energy: 0.438095238095
+    energy: 97.17770172051269
     xsec_ij: 76.2219666667
     xsec_ii: 28.1
 -
-    energy: 0.514285714286
+    energy: 131.622335494146
     xsec_ij: 56.5951
     xsec_ii: 25.0
 -
-    energy: 0.590476190476
+    energy: 170.2388364321091
     xsec_ij: 47.1783
     xsec_ii: 24.5125
 -
-    energy: 0.666666666667
+    energy: 212.60756958393904
     xsec_ij: 41.20775
     xsec_ii: 24.1
 -
-    energy: 0.742857142857
+    energy: 258.33024464990626
     xsec_ij: 37.4545
     xsec_ii: 23.175
 -
-    energy: 0.819047619048
+    energy: 307.0376790246123
     xsec_ij: 34.778375
     xsec_ii: 24.1
 -
-    energy: 0.895238095238
+    energy: 358.39372901276715
     xsec_ij: 33.60925
     xsec_ii: 24.15
 -
-    energy: 0.971428571429
+    energy: 412.0963834146744
     xsec_ij: 33.0208888889
     xsec_ii: 26.1041666667
 -
-    energy: 1.04761904762
+    energy: 467.87693188288586
     xsec_ij: 33.1357
     xsec_ii: 27.5333333333
 -
-    energy: 1.12380952381
+    energy: 525.4979488071772
     xsec_ij: 33.879625
     xsec_ii: 31.7571818182
 -
-    energy: 1.2
+    energy: 584.7506440153868
     xsec_ij: 34.3944444444
     xsec_ii: 36.5666666667
 -
-    energy: 1.27619047619
+    energy: 645.4519623350463
     xsec_ij: 35.4557272727
     xsec_ii: 40.9723333333
 -
-    energy: 1.35238095238
+    energy: 707.4416793355642
     xsec_ij: 37.74375
     xsec_ii: 43.0
 -
-    energy: 1.42857142857
+    energy: 770.5796412800921
     xsec_ij: 38.483
     xsec_ii: 46.0174
 -
-    energy: 1.50476190476
+    energy: 834.7432284012173
     xsec_ij: 37.82
     xsec_ii: 47.6
 -
-    energy: 1.58095238095
+    energy: 899.825075222016
     xsec_ij: 39.03
     xsec_ii: 47.254
 -
-    energy: 1.65714285714
+    energy: 965.7310533199259
     xsec_ij: 40.09
     xsec_ii: 48.1843333333
 -
-    energy: 1.73333333333
+    energy: 1032.3785053902914
     xsec_ij: 38.21
     xsec_ii: 47.2
 -
-    energy: 1.80952380952
+    energy: 1099.6947107275819
     xsec_ij: 39.7045
     xsec_ii: 47.5966666667
 -
-    energy: 1.88571428571
+    energy: 1167.61555846437
     xsec_ij: 40.287
     xsec_ii: 47.2183333333
 -
-    energy: 1.9619047619
+    energy: 1236.0844041453713
     xsec_ij: 41.5045
     xsec_ii: 47.2553333333
 -
-    energy: 2.8
+    energy: 2014.3114188115753
     xsec_ij: 41.9519285714
     xsec_ii: 45.0329032258
 -
-    energy: 4.4
+    energy: 3560.1443122748933
     xsec_ij: 41.7022222222
     xsec_ii: 41.8150769231
 -
-    energy: 6.0
+    energy: 5134.100964015895
     xsec_ij: 40.2672
     xsec_ii: 40.7138571429
 -
-    energy: 7.6
+    energy: 6718.8595476123955
     xsec_ij: 40.1546666667
     xsec_ii: 40.3958333333
 -
-    energy: 9.2
+    energy: 8308.86846986884
     xsec_ij: 40.8
     xsec_ii: 39.4
 -
-    energy: 15.0
+    energy: 14090.438138942052
     xsec_ij: 39.2164705882
     xsec_ii: 39.4229411765
 -
-    energy: 60.0
+    energy: 59068.42720645829
     xsec_ij: 38.6537037037
     xsec_ii: 38.5348571429
 -
-    energy: 250.0
+    energy: 249062.84438331082
     xsec_ij: 39.4642307692
     xsec_ii: 38.8967741935
 -
-    energy: 10200.0
+    energy: 10199061.124466836
+    xsec_ij: 39.4642307692
     xsec_ii: 42.4774193548
 -
-    energy: 865760000.0
+    energy: 865759999061.0813
+    xsec_ij: 39.4642307692
     xsec_ii: 99.8985714286
 -
     energy: 1.e300
+    xsec_ij: 39.4642307692
+    xsec_ii: 99.8985714286
