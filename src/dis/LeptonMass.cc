@@ -143,12 +143,11 @@ void kin3part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vec
   finpion = vect(pionenergy, -momentum * kierunek.x, -momentum * kierunek.y, -momentum * kierunek.z);
 }
 
-double angrew = 1.0;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////Decay of hadronic mass W into 2 particles: test of ANL/BNL correltation in both angles
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void kin4part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vect& finnuk, vect& finpion, int ANLang) {
+double kin4part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vect& finnuk, vect& finpion,
+                int ANLang) {
   double nukmass, pionmass;
   double W2 = hama * hama;
   double W4 = W2 * W2;
@@ -250,6 +249,13 @@ void kin4part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vec
         break;
       }
     }
+    case 3:  // Rein Sehgal according to Libo
+    {
+      r33 = 0.75;
+      r31 = 0;
+      r3m1 = 0;
+      break;
+    }
     // No correlations
     default: {
       r33 = 0.5;
@@ -258,9 +264,9 @@ void kin4part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vec
       break;
     }
   }
-  // angrew=1.0;
-  angrew = (1.0 - (r33 - 0.5) * (3 * ct * ct - 1) -
-            sqrt(3.0) * (2 * r31 * sqrt(1 - ct * ct) * ct * cphi + r3m1 * (1 - ct * ct) * (2.0 * cphi * cphi - 1.0)));
+
+  return (1.0 - (r33 - 0.5) * (3 * ct * ct - 1) -
+          sqrt(3.0) * (2 * r31 * sqrt(1 - ct * ct) * ct * cphi + r3m1 * (1 - ct * ct) * (2.0 * cphi * cphi - 1.0)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

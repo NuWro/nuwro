@@ -166,10 +166,11 @@ void resevent2(params &p, event &e, bool cc) {
         kin.lepton.boost(-kin.hadron_speed);
 
         // produces 4-momenta of final pair: nucleon + pion with density matrix information
-        kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, final_nucleon, final_pion, p.delta_angular);
+        // returns angrew (keep this value for reweighting)
+        e.res_angrew = kin4part(kin.neutrino, kin.lepton, kin.W, nucleon_pdg, pion_pdg, final_nucleon, final_pion,
+                                p.delta_angular);
 
-        e.weight *= angrew;     // reweight according to angular correlation (angrew defined in LeptonMass...)
-        e.res_angrew = angrew;  // keep this value for reweighting
+        e.weight *= e.res_angrew;  // reweight according to angular correlation
 
         // boost back to nu-N CMS frame and then to LAB frame
         kin.neutrino.boost(kin.hadron_speed);
