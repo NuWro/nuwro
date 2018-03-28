@@ -402,7 +402,7 @@ bool Interaction::nucleon_scattering ( particle& p1, particle& p2, int &n, parti
 
   if ( frandom() > NN_inel->get_value( 1+ij ) )  // 1 is ii, 2 is ij
       return nucleon_elastic(p1, p2, n, p);
-  if ( frandom() > NN_inel->get_value( 3+ij ) )  // 3 is ii, 4 is ij
+  if ( frandom() < NN_inel->get_value( 3+ij ) )  // 3 is ii, 4 is ij
     return nucleon_spp(p1, p2, n, p) 
         || nucleon_elastic(p1, p2, n, p); // in case of insufficiend energy fallback to elastic
   else        
