@@ -211,6 +211,18 @@
   <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
     <description>Meson exchange charged current</description>
   </param>
+  <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
+    <description>Elastic electron scattering</description>
+  </param>
+  <param name="eel_theta_lab" type="text" ctype="double" default="90">
+    <description><![CDATA[Theta lab for eletron measurement]]></description>
+  </param>
+  <param name="eel_dz" type="text" ctype="double" default="2">
+    <description><![CDATA[electon scattering cos_theta_lab accuracy]]></description>
+  </param>
+  <param name="eel_alg" type="text" ctype="string" default="slow">
+    <description><![CDATA[electron elastic scattering algorithm: slow, fast, Mott, Rutheford]]></description>
+  </param>
   <param name="qel_kinematics" type="select" ctype="int" default="0">
     <description>Quasi elastic kinematics</description>
     <options>

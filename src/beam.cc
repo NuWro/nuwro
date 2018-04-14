@@ -14,8 +14,8 @@ void CreateNewHistogram( int dimsizes[5], string hist_out );
 beam * create_beam(params &p, geomy *detector)
 {   
 	int pdg = p.beam_particle;
-	if (!(pdg == 12 or pdg == 14 or pdg == 16 or pdg == -12 or pdg == -14 or pdg == -16))
-		throw "the PDG code of the beam particle is not neutrino code";
+	if (!(pdg == 12 or pdg == 14 or pdg == 16 or pdg == -12 or pdg == -14 or pdg == -16 or pdg==11))
+		throw "the PDG code of the beam particle is not neutrino or electron code";
 
 	switch( p.beam_type )
 	{

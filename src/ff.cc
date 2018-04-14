@@ -160,6 +160,14 @@ pair<double, double> FF::f12(int kind) {
       Gm = sqrt(1 + 6.0 * Q2 / 1e6 * exp(-Q2 / 0.35 / 1e6)) *
            (0.5 * (GMn - GMp) - 2 * sin2thetaW * GMn);  //-0.5*GMs;
       break;
+    case 10: //elastic ep scattering
+        Ge=GEp;
+        Gm=GMp;
+        break;
+    case 11: //elastic en scattering
+        Ge=GEn;
+        Gm=GMn;
+        break;
   }
 
   const double tau = Q2 / (4 * M2);
@@ -210,8 +218,8 @@ FF DipoleFF(const double q2)  // dipole electric form factor G_E^V
 
 /////////////////////////////////////////////////////////////
 FF bba03_FF(const double q2) {
-  const double Q2 = -q2 / GeV2;
-  const double tau = Q2 / (4 * M2);
+  const double Q2 = -q2 / GeV2;       // Q2 in GeV2 
+  const double tau = -q2 / (4 * M2);  // must be dimensionless
 
   FF ff;
   ff.Q2 = -q2;

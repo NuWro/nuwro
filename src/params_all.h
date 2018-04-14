@@ -48,6 +48,10 @@ PARAM(bool,dyn_coh_cc,1)\
 PARAM(bool,dyn_coh_nc,1)\
 PARAM(bool,dyn_mec_cc,0)\
 PARAM(bool,dyn_mec_nc,0)\
+PARAM(bool,dyn_e_el,0)\
+PARAM(double,eel_theta_lab,90)\
+PARAM(double,eel_dz,2)\
+PARAM(string,eel_alg,"slow")\
 PARAM(int,qel_kinematics,0)\
 PARAM(int,qel_vector_ff_set,2)\
 PARAM(int,qel_axial_ff_set,1)\

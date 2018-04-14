@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "qelevent.h"
+#include "e_el_event.h"
 #include "pdg.h"
 #include "chooser.h"
 #include "beam.h"
@@ -268,7 +269,9 @@ void NuWro::makeevent(event* e, params &p)
 	e->par =p;
 	
 	
-	if(
+	if(//is_neutrino(nu.pdg)
+	   abs(nu.pdg)==12 or abs(nu.pdg)==14 or abs(nu.pdg)==16
+	  )
 	switch (dyn)
 	{
 		case 0:
@@ -386,6 +389,35 @@ void NuWro::makeevent(event* e, params &p)
 				}
 			}
 			break;
+	}
+	else if(e->in[0].pdg==11) // electron scattering
+	{
+		switch(dyn)
+		{
+			case 20:
+			    //~ if(p.eel_alg=="old")
+                    e_el_event(p,*e,*_nucleus,false); 
+			    //~ else 	
+                    //~ if(p.eel_alg=="fast")
+                    //~ e_el_event2orig(p,*e,*_nucleus,false); 
+                //~ else   // all remaining algorithms  
+                    //~ e_el_event2(p,*e,*_nucleus,false); 
+			    break;
+/*
+			case 11: 
+			    if(p.eel_theta_lab>0) 	
+                    e_spp_event(p,*e,*_nucleus,false); 
+			    else // use negative theta to test new implementation	
+                    e_spp_event3(p,*e,*_nucleus,false); 
+			    break;
+			case 12:  //Bosted
+			    //~ if(p.eel_theta_lab>0) 	
+				e_bosted_event(p,*e,*_nucleus,false); 
+			    //~ else // use negative theta to test new implementation	
+				//~ e_bosted_event2(p,*e,*_nucleus,false); 
+			    break;
+*/
+		}
 	}
 	e->weight*=factor;
 

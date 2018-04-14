@@ -51,6 +51,7 @@ class event:public TObject
 		                        ///< 4,5 - dis  cc/nc - deep inelastric
 		                        ///< 6,7 - coh  cc/nc - coherent 
 		                        ///< 8,9 - mec  cc/nc - meson exhchange current   
+		                        ///< 20 -  eel  nc - elastic electron scattering 
 
 		int nod[14];            ///< number of rescattering interactions of given type:
 		                        ///< 0 - nucleon elastic,

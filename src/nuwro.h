@@ -36,7 +36,7 @@ class NuWro
 	private:
 		params p;
 		args a;
-		chooser < 10 > _procesy;
+		chooser < 11 > _procesy;
 		ofstream _progress;
 		geomy *_detector;
 		beam *_beam;

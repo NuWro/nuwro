@@ -134,6 +134,7 @@ inline void chooser<N>::reset(params &p)
         proc[7]=bin(&maxxw,7,p.dyn_coh_nc);
         proc[8]=bin(&maxxw,8,p.dyn_mec_cc);
         proc[9]=bin(&maxxw,9,p.dyn_mec_nc);
+        proc[10]=bin(&maxxw,20,p.dyn_e_el);
         do_distrib();
 	    if(proc[N-1].Wacc==0)
 	    {

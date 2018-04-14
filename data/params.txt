@@ -62,14 +62,16 @@ beam_particle = 14    // neutrino PDG
 
 dyn_qel_cc =1      // Quasi elastic charged current
 dyn_qel_nc =0      // Quasi elastic neutral current
-dyn_res_cc =1      // Resonant charged current 
+dyn_res_cc =1      // Resonant charged current
 dyn_res_nc =0      // Resonant neutral current
-dyn_dis_cc =1      // Deep inelastic charged current 
-dyn_dis_nc =0      // Deep inelastic neutral current 
-dyn_coh_cc =1      // Coherent charged current  
-dyn_coh_nc =0      // Coherent neutral current  
-dyn_mec_cc =1      // Meson exchange charged current  
-dyn_mec_nc =0      // Meson exchange neutral current  
+dyn_dis_cc =1      // Deep inelastic charged current
+dyn_dis_nc =0      // Deep inelastic neutral current
+dyn_coh_cc =1      // Coherent charged current
+dyn_coh_nc =0      // Coherent neutral current
+dyn_mec_cc =1      // Meson exchange charged current
+dyn_mec_nc =0      // Meson exchange neutral current
+
+dyn_e_el   =0      // Elastic electron scattering
 
 
 ################################################################
