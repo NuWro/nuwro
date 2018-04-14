@@ -215,10 +215,12 @@ double e_el_event2(params&p, event & e, nucleus &t, bool nc)
 	_E_bind=t.Ef(); 
     
     if(t.A()>4)  //subtract the binding energy from total energy
+    {
         p4.t-=_E_bind;
+    }
 
-	vec k=turn_by_theta(l0,p.eel_theta_lab*Pi/180);
-        k=k.dir();  // direction of the outgoing electron
+    vec k=turn_by_theta(l0,p.eel_theta_lab*Pi/180);
+    k=k.dir();  // direction of the outgoing electron
     double E=p4.t;
     double E2=E*E;
     vec P=vec(p4);	//total momentum
