@@ -88,16 +88,7 @@ void NuWro :: refresh_target (params &par)
 
 void NuWro :: refresh_dyn (params &par)
 {
-	bool active[] =
-	{
-		par.dyn_qel_cc,par.dyn_qel_nc,
-		par.dyn_res_cc,par.dyn_res_nc,
-		par.dyn_dis_cc,par.dyn_dis_nc,
-		par.dyn_coh_cc,par.dyn_coh_nc,
-		par.dyn_mec_cc,par.dyn_mec_nc
-	};
-
-	_procesy.reset(active);
+	_procesy.reset(par);
 }
 
 geomy* NuWro::make_detector(params &p)
@@ -187,7 +178,7 @@ void NuWro::makeevent(event* e, params &p)
 		material mat;
 		do
 		{
-			nu=_beam->shoot(dyn>1 && dyn<6 && dismode);
+			nu=_beam->shoot(1<dyn && dyn<6 && dismode);
 			if(nu.travelled>0 && p.beam_weighted==0)
 			{
 				if(nu.travelled<frandom()*max_norm)
@@ -216,7 +207,7 @@ void NuWro::makeevent(event* e, params &p)
 	}
 	else
 	{
-		nu=_beam->shoot(dyn>1 && dyn<6 && dismode);
+		nu=_beam->shoot(1<dyn && dyn<6 && dismode);
 		nu.r=vec(nu.r)+p.beam_offset;
 	}
 
@@ -229,7 +220,7 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6)
+	if(dyn<6 || dyn>=20)
 	{
 								 // insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
@@ -242,14 +233,14 @@ void NuWro::makeevent(event* e, params &p)
 		e->norm=nu.travelled;
 	// else e->norm remains 1;
 
-	e->flag.cc  = dyn%2  == 0;
-	e->flag.nc  = dyn%2  == 1;
+	e->flag.cc  = dyn==0 || dyn==2 || dyn==4 || dyn==6 || dyn==8;
+	e->flag.nc  = dyn==1 || dyn==3 || dyn==5 || dyn==7 || dyn==9;
 
-	e->flag.qel = dyn/2  == 0;
-	e->flag.res = dyn/2  == 1;
-	e->flag.dis = dyn/2  == 2;
-	e->flag.coh = dyn/2  == 3;
-	e->flag.mec = dyn/2  == 4;
+	e->flag.qel = dyn==0 || dyn==1;
+	e->flag.res = dyn==2 || dyn==3;
+	e->flag.dis = dyn==4 || dyn==5;
+	e->flag.coh = dyn==6 || dyn==7;
+	e->flag.mec = dyn==8 || dyn==9;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -275,7 +266,9 @@ void NuWro::makeevent(event* e, params &p)
 		}
 	}
 	e->par =p;
-
+	
+	
+	if(
 	switch (dyn)
 	{
 		case 0:
@@ -538,16 +531,18 @@ void NuWro::test_events(params & p)
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			e = new event ();
-
-			e->dyn = _procesy.choose (); // choose dynamics
+			int k= _procesy.choose(); 
+			e->dyn = _procesy.dyn(k); // choose dynamics
 			if(_mixer)
 				_mixer->prepare(p);
 			makeevent(e,p);
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
-			_procesy.add (e->dyn, e->weight, bias);
-			e->weight/=_procesy.ratio(e->dyn); // make avg(weight)= total cross section
+			
+				
+			_procesy.add (k, e->weight, bias);
+			e->weight/=_procesy.ratio(k); // make avg(weight)= total cross section
 			//~ if(_detector and _beam->nu_per_POT() != 0)
 				//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
 
@@ -643,7 +638,8 @@ void NuWro::user_events(params &p)
 		{
 			event *e = new event ();
 								 
-			e->dyn = _procesy.choose ();///< choose dynamics
+			int k = _procesy.choose ();///< choose bin
+			e->dyn = _procesy.dyn(k);  ///< choose dynamics
 			
 			A->prepare_event(*e);
 			if(_mixer)
@@ -657,7 +653,7 @@ void NuWro::user_events(params &p)
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
 
-			_procesy.add (e->dyn, e->weight, bias);
+			_procesy.add (k, e->weight, bias);
 
 			delete e;
 			
@@ -728,7 +724,7 @@ void NuWro::real_events(params& p)
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
 					e = new event ();
-					e->dyn = k;
+					e->dyn = _procesy.dyn(k);
 
 					if(_mixer)
 						_mixer->prepare(p);
@@ -736,7 +732,7 @@ void NuWro::real_events(params& p)
 					double bias=1;
 					if(!p.beam_test_only && dismode && k>1 && k<6)
 						bias=e->in[0].t;
-					if (_procesy.accept(e->dyn,e->weight,bias))
+					if (_procesy.accept(k,e->weight,bias))
 					{
 						finishevent(e, p);
 						e->weight=_procesy.total();
@@ -746,7 +742,7 @@ void NuWro::real_events(params& p)
 					}
 					delete e;
 
-					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,k,bool(a.progress));
+					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
 				}
 				f1->Write ();
 
@@ -763,7 +759,7 @@ void NuWro::real_events(params& p)
 						t1->GetEntry (jj);
 						tf->Fill ();
 						delete e;
-						raport(jj-start+1,nn-start," % events copied...",100,k,bool(a.progress));
+						raport(jj-start+1,nn-start," % events copied...",100,_procesy.dyn(k),bool(a.progress));
 					}
 					cout<<endl;
 				}

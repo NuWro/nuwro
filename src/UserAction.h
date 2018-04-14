@@ -8,17 +8,13 @@
 void NuWro::UserAction(params& p)
 {params p1=p;
  event *e;
- bool active[]={p.dyn_qel_cc,p.dyn_qel_nc,
-                 p.dyn_res_cc,p.dyn_res_nc,
-	             p.dyn_dis_cc,p.dyn_dis_nc,
-	             p.dyn_coh_cc,p.dyn_coh_nc};
 
 /// 
 ///_________________________________________  
 ///some kind of loop with changing parameters
 //for(;;) 
 ///_________________________________________  
-  { _procesy.reset(active);
+  { _procesy.reset(p);
   /// prepare stuctures for this values of parameters
   
   ///________________________________________________

@@ -2,35 +2,97 @@
 #define _chooser_h_
 
 #include <iostream>
+#include "params.h"
 
+using namespace std;
 
 template <int N> 
 class chooser
 { 
- private:
- 
-    double Maxxw;                ///< global max xw
-    double maxxw[N];             ///< max xw   in i-th bin
-    int    n[N];                 ///< count    in i-th bin
-//    double sb[N];                ///< sum b    in i-th bin
-    double sw[N];                ///< sum w    in i-th bin
-    double sx[N];                ///< sum x    in i-th bin
-    double sxw[N];               ///< sum xw   in i-th bin
-    double sx2w[N];              ///< sum x^2w in i-th bin
+    class bin
+    {
+	public: 
+        double maxxw; ///< max xw   in i-th bin
+        int n;        ///< count    in i-th bin
+        double sw;    ///< sum w    in i-th bin
+        double sxw;   ///< sum xw   in i-th bin
+        double sx2w;  ///< sum x^2w in i-th bin
 
-    double W[N];                ///< weight of  i-th bin
-    double Wacc[N];             ///< accumalated weights
-    double Desired[N];          ///< #events for i-th bin
-    double Ready[N];            ///< #events for i-th bin
+        bool active;    ///< the bin is active
+        double W;       ///< weight of  i-th bin
+        double Wacc;    ///< accumalated weights
+        double Desired; ///< #events for i-th bin
+        double Ready;   ///< #events for i-th bin
+        int dyn;        ///< code for the dynamics
+        double *Maxxw;  /// Total Max
+
+        bin(double *Maxxwp=NULL,int code=0,bool active0=true):Maxxw(Maxxwp)
+        {
+            dyn = code;
+            active = active0;
+            W = active;
+            sw = 0;
+            sxw = 0;
+            sx2w = 0;
+            n = 0;
+            maxxw = 0;
+            Desired = 0;
+            Ready = 0;
+        }
+
+        void add(double x,double bias=1)
+        {
+            if (!(x == x)) // refuse to add 'nan'
+                return;
+            double w = 1 / bias;
+            double xw = x * w;
+            n += 1;
+            sw += w;
+            sxw += xw;
+            sx2w += x * xw;
+            if (xw > maxxw)
+            {
+                maxxw = xw;
+                if (xw > *Maxxw)
+                    *Maxxw = xw;
+            }
+        }
+	double avg (){ return n ? sxw/sw : 0;}
+
+        double var ()  
+	{
+	    if(n==0)
+		return 0;
+	    return sx2w/sw - sxw*sxw/sw/sw;
+	}
+        double sigma ()
+	{
+	    if(n<=1)
+		return 0;
+	    return sqrt(var()/(n-1));
+	}
+	double efficiency()
+	{ if(n>0 && maxxw>0)
+		return sxw/n/maxxw;
+	  else
+		return 0;
+	}
+        
+    };
+ private:
+    double maxxw;
+    bin proc[N];
     void do_distrib();    
  public:
-	int size(){return N;}       ///<number of chanels
-    void reset(bool active[N]);
+    int size(){return N;}       ///<number of chanels
+    void reset(params &p);
     void add(int i,double x, double bias=1);   ///< add x to i-th bin
-    int choose();			                ///< choose bin
+    int choose();			       ///< choose bin
     void set_weights_to_avg();        
     bool accept(int i,double x,double bias=1); /// return 1 with probability x/max(i)
                                             /// increase maxwx and Maxwx if needed                                  
+    bool active(int i){return proc[i].active;}
+    int dyn(int i);                         ///      
     double weight(int i);                   /// 
     double count(int i);
     double ratio(int i);                    /// probability of choosing i-th bin
@@ -40,10 +102,11 @@ class chooser
     double efficiency(int i);
     void report();
     void short_report(ostream &f);	///< write calculated total cross sections for each channel to file 
-	void calculate_counts(int ilosc);
-	int desired(int i);
-	int ready(int i);
-	double total(){return Wacc[N-1];}
+    void calculate_counts(int ilosc);
+    int desired(int i);
+    int ready(int i);
+    double total(){return proc[N-1].Wacc;}
+
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -54,29 +117,28 @@ inline void chooser<N>::do_distrib()
 	{
 	  double prev=0;
 	  for(int i=0;i<N;i++)
-		 Wacc[i]=prev=prev+W[i];
+		 proc[i].Wacc=prev=prev+proc[i].W;
 	}
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
-inline void chooser<N>::reset(bool active[N])
-    {double prev=0;
-	 for(int i=0;i<N;i++)
-        {
-         W[i]=active[i];
-         Wacc[i]=prev=prev+W[i];
-		 sx[i]=0;
-//		 sb[i]=0;
-		 sw[i]=0;
-		 sxw[i]=0;
-		 sx2w[i]=0;
-		 n[i]=0;
-		 maxxw[i]=0;
-		 Desired[i]=0;
-		 Ready[i]=0;
-	     } 
-	  if(Wacc[N-1]==0)
-	    {cerr<<"No active dynamics - chooser invalid"<<endl;
-	     exit(19);
+inline void chooser<N>::reset(params &p)
+    {
+        double prev=0;
+        proc[0]=bin(&maxxw,0,p.dyn_qel_cc);
+        proc[1]=bin(&maxxw,1,p.dyn_qel_nc);
+        proc[2]=bin(&maxxw,2,p.dyn_res_cc);
+        proc[3]=bin(&maxxw,3,p.dyn_res_nc);
+        proc[4]=bin(&maxxw,4,p.dyn_dis_cc);
+        proc[5]=bin(&maxxw,5,p.dyn_dis_nc);
+        proc[6]=bin(&maxxw,6,p.dyn_coh_cc);
+        proc[7]=bin(&maxxw,7,p.dyn_coh_nc);
+        proc[8]=bin(&maxxw,8,p.dyn_mec_cc);
+        proc[9]=bin(&maxxw,9,p.dyn_mec_nc);
+        do_distrib();
+	    if(proc[N-1].Wacc==0)
+	    {
+            cerr<<"No active dynamics - chooser invalid"<<endl;
+	        exit(19);
 	    }
 	   else
 	    std::cout<<"chooser created"<<std::endl;
@@ -86,88 +148,56 @@ inline void chooser<N>::reset(bool active[N])
 template <int N> 
 inline void chooser<N>::add(int i,double x,double bias)
     {
-//	   double w=1;
-//     x/=bias;
-     double w=1/bias;
-
-	 if(!(x==x)) // refuse to add 'nan'
-	    return;
-	 double xw=x*w;
-     n[i]+=1;
-//     sb[i]+=1/bias;
-     sw[i]+=w;
-     sx[i]+=x;
-     sxw[i]+=xw;
-     sx2w[i]+=x*xw;
-/*     if(xw>maxxw[i])
-        {maxxw[i]=x;
-		 if(x>Maxxw)
-		   Maxxw=x;
-		}   
-		*/
-     if(xw>maxxw[i])
-        {maxxw[i]=xw;
-		 if(xw>Maxxw)
-		   Maxxw=xw;
-		}   
+        proc[i].add(x,bias);
     }
     
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline int chooser<N>::choose()//wybiera dynamike
-    { 
-      double x=frandom()*Wacc[N-1];
-      int i=0;
-	  while(x>=Wacc[i]) 
-	      {++i;
-	       if(i==N) return N-1;
-	      }
-      return i;      
+    {
+        double x = frandom() * proc[N-1].Wacc;
+        int i = 0;
+        while (x >= proc[i].Wacc)
+        {
+            ++i;
+            if (i == N)
+                return N - 1;
+	}
+	return i;      
     }
 
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline void chooser<N>::set_weights_to_avg()
     {
-    cout<<"Updating"<<endl;
-     for(int i=0;i<N;i++)
-       {
-		W[i]=(n[i] ? avg(i) : 0);
-		//maxxw[i]=0;
-	   }
-	  do_distrib(); 
+	cout<<"Updating"<<endl;
+	for(int i=0;i<N;i++)
+	{
+		proc[i].W=(proc[i].n ? avg(i) : 0);
+	}
+	do_distrib(); 
     }
 
-////////////////////////////////////////////////////////////////////////
-/*
-template <int N> 
-inline void chooser<N>::set_weights_to_max()
-    {
-     cout<<"Updating"<<endl;
-     for(int i=0;i<N;i++)
-			W[i]=max(i);
-	 do_distrib();
-    }
-*/
+
 ////////////////////////////////////////////////////////////////////////
 /// return 1 with probability x/max(i)
 /// increase maxwx and Maxwx if needed
 template <int N> 
 inline bool chooser<N>::accept(int i,double x,double bias)
 	{ // double w=1;
-		double prevmax=maxxw[i];
-		double prevready=Ready[i];
+		double prevmax=proc[i].maxxw;
+		double prevready=proc[i].Ready;
 	   	add(i,x,bias);
-	   	if(prevmax==maxxw[i])
-		   if(x/bias>frandom()*maxxw[i])
-		     {Ready[i]+=1;
+	   	if(prevmax==proc[i].maxxw)
+		   if(x/bias>frandom()*proc[i].maxxw)
+		     {proc[i].Ready+=1;
 		       return 1;
 		     }
 		    else 
 		       return 0;  
 		else
 		  {
-           Ready[i]*=prevmax/maxxw[i];
+           proc[i].Ready*=prevmax/proc[i].maxxw;
   	       cout.precision(6);
 /*	       cout << "Dyn[" << i << "]"
 //	       <<"   New max =" << setw(11)<< max(i) 
@@ -175,55 +205,57 @@ inline bool chooser<N>::accept(int i,double x,double bias)
 		   <<"   " <<setw(11)<<prevready-Ready[i] << " events deleted." 
 		   <<" Efficiency "<<setw(11)<<sxw[i]/n[i]/maxxw[i]*100 <<" %."<< endl;
 		   */
-           Ready[i]*=prevmax/maxxw[i];
-		   Ready[i]+=1;
-		   return 1;
+           proc[i].Ready*=prevmax/proc[i].maxxw;
+           proc[i].Ready += 1;
+           return 1;
 	      }
 	}                                      
     
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
+inline int chooser<N>::dyn(int i)
+    {
+       return proc[i].dyn;
+    }
+
+////////////////////////////////////////////////////////////////////////
+template <int N> 
 inline double chooser<N>::weight(int i)
     {
-       return W[i];
+       return proc[i].W;
     }
 
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::count(int i)
     {
-       return n[i];
+       return proc[i].n;
     }
 
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::ratio(int i)/// probability of choosing i-th bin
-    {  
-       return Wacc[N-1]>0 ? W[i]/Wacc[N-1] :0;
+    {
+       return proc[i].W/proc[N-1].Wacc;
     }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::avg (int i)
     {
-      if(n[i]==0)
-	return 0;
-      return sxw[i]/sw[i];// /sb[i]*n[i];
+        return proc[i].avg();
     }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::var (int i)
     {
-      if(n[i]==0)
-	return 0;
-      return (sx2w[i]/sw[i]- sxw[i]*sxw[i]/sw[i]/sw[i]);// /sb[i]*n[i]/sb[i]*n[i];
+      
+      return proc[i].var();
     }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::sigma (int i)
     {
-      if(n[i]<=1)
-	return 0;
-      return sqrt(var(i)/(n[i]-1));
+      return proc[i].sigma();
     }
 
 ////////////////////////////////////////////////////////////////////////
@@ -256,7 +288,7 @@ inline void chooser<N>::report()
  cout<<"--------------------------------------------------------------";
  cout<<"-------------------------------------------"<<endl;
       for (int j = 0; j < N; j++)
-        cout <<setw(2)<< j<<setprecision(6) <<" |"
+        cout <<setw(2)<<  proc[j].dyn<<setprecision(6) <<" |"
              <<setw(12)<< weight (j)  <<            "  |"
              <<setw(12)<< ratio (j)  <<             "  |"
              <<setw(12)<< efficiency(j)*100 << " %  | "
@@ -266,46 +298,44 @@ inline void chooser<N>::report()
              << endl;
  cout<<"--------------------------------------------------------------";
  cout<<"-------------------------------------------"<<endl;
-	}
+}
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline void chooser<N>::calculate_counts(int ilosc)
-	{
+     {
       double total=1.0;
       for (int k = 0; k < N-1; k++)
-      {  Ready[k]=0;
-         double frac=ratio(k);
-         if(frac==0)
-	        Desired[k]=0;
-         else
-	        Desired[k] = int(frac/total*ilosc+0.5 );
-         ilosc-=Desired[k];
+      {  
+          proc[k].Ready=0;
+          double frac=ratio(k);
+          if(frac==0)
+               proc[k].Desired=0;
+          else
+               proc[k].Desired = int(frac/total*ilosc+0.5);
+         ilosc-=proc[k].Desired;
          total-=frac;
       }
-      Desired[N-1]=ratio(N-1)>0?ilosc:0;
-	 }
-	 
+      proc[N-1].Desired=ilosc;
+      }
+
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline int chooser<N>::desired(int i)
-	{
-      return Desired[i];
-	}
+    {
+      return proc[i].Desired;
+    }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline int chooser<N>::ready(int i)
-	{
-      return Ready[i];
-	}
+    {
+      return proc[i].Ready;
+    }
 ////////////////////////////////////////////////////////////////////////
 template <int N> 
 inline double chooser<N>::efficiency(int i)
-	{ if(n[i]>0 && maxxw[i]>0)
-		return sxw[i]/n[i]/maxxw[i];
-//      return avg(i)/maxxw[i];
-	  else
-		return 0;
-	}
+    { 
+        return proc[i].efficiency();
+    }
  
 ////////////////////////////////////////////////////////////////////////
 
