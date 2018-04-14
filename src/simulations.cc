@@ -108,23 +108,23 @@ void ft_sim ()
 	//run(com);	
 }
 
-void PiT2le (int fz, int xs)
-{
-	get_date();
+// void PiT2le (int fz, int xs)
+// {
+// 	get_date();
 	
-	string com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_carbon_" + fzwork[fz] + sep + xsec[1] + sep + date + ".root ";
-	com += events100k + carbon + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
-	run(com);
+// 	string com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_carbon_" + fzwork[fz] + sep + xsec[1] + sep + date + ".root ";
+// 	com += events100k + carbon + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
+// 	run(com);
 	
-	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_lithium_" + fzwork[fz] + sep + xsec[3] + sep + date + ".root ";
-	com += events100k + lithium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
-	run(com);
+// 	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_lithium_" + fzwork[fz] + sep + xsec[3] + sep + date + ".root ";
+// 	com += events100k + lithium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
+// 	run(com);
 
-	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_aluminium_" + fzwork[fz] + sep + xsec[2] + sep + date + ".root ";
-	com += events100k + aluminium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
-	run(com);
+// 	com = get_bin_dir()+"nuwro -o root_files/PiTrans_le_aluminium_" + fzwork[fz] + sep + xsec[2] + sep + date + ".root ";
+// 	com += events100k + aluminium + string(" -p 'beam_type = 0' -p 'beam_energy = 2000' ") + numu + onlydis + fzp(fz) + xpar(xs);
+// 	run(com);
 		
-}
+// }
 
 void K2K (int fz, int xs)
 {

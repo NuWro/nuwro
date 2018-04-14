@@ -62,7 +62,7 @@ inline int kod(int i)
     case 24: return 11; 
     case 99: return 9;
     case 100: return 10;
-    default: return -1;
+    default: throw "invalid interaction code";
   }
 }
 

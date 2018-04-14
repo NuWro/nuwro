@@ -1974,9 +1974,9 @@ double calcPiTrans3b(string filename)
 
 int calcPiTrans3(int fz)
 {
-	double C[5];
-	double A[5];
-	double M[5];
+	double C[5]={0};
+	double A[5]={0};
+	double M[5]={0};
 	
 	for (int i = 0; i < 5; i++)
 	{

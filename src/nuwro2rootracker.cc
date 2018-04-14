@@ -261,7 +261,7 @@ int main (int argc, char *argv[]){
     //---main loop per output file---
     while (i<n){//until end-of-file
       string fname=outtemplate;
-      char buf[5];
+      char buf[16];
       sprintf(buf,"%d",fnum);
       if (!onefile) fname.replace(index,1,buf);
       TFile *fout=TFile::Open(fname.c_str(),"RECREATE"); //an output file
