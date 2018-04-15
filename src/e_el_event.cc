@@ -11,10 +11,9 @@ double LH_(particle k, particle p, particle kprim, vect pprim);
 
 double e_el_event(params&p, event & e, nucleus &t, bool nc)
 {
-    //
-    //  electron  elastic scattering 
-    //
-    
+    /*
+     *  electron  elastic scattering 
+     */
     e.weight=0; // event impossible before setting non zero cross section
 
     particle l0=e.in[0];  // in electron
@@ -24,43 +23,72 @@ double e_el_event(params&p, event & e, nucleus &t, bool nc)
 
     double _E_bind=0;  
 			    
-    _E_bind=t.Ef(); //calculate binding energy 
-		    // some other options are also possible here
+    //_E_bind=t.Ef(); // calculate Fermi energy for nucleus 
+	
+    // some other options are also possible here
+    switch (p.nucleus_target)
+    {
+        case 0: //  0: free nucleon
+            _E_bind = 0;
+            break;
+        case 1: // 1: global Fermi gas
+            _E_bind = p.nucleus_E_b;
+            break;
+        case 2: // 2: local Fermi gas
+            _E_bind = t.Ef(N0) + p.kaskada_w; //temporary
+            break;
+        case 3: // 3: Bodek-Ritchie
+            _E_bind = 0; //temporary
+            break;
+        case 4: // 4: "effective" spectral function(carbon or oxygen);
+            _E_bind = binen(N0.p(), p.nucleus_p, p.nucleus_n);
+            //in the future it is possible to add SF for other nuclei as well
+            //cout<<ped<<"  "<<_E_bind<<endl;//SF
+            break;
+        case 5: // 5: deuterium
+            _E_bind = deuter_binen(N0.p());
+            break;
+        case 6: // 6: deuterium with constant binding energy nucleus_E_b (for tests only!)
+            _E_bind = p.nucleus_E_b;
+            break;
+        default: // no binding energy otherwise
+            _E_bind = 0;
+    }
 
     double q2,jakobian;  // kinematics jacobian in q2 for crossection calcualtion
 
     switch(p.qel_kinematics) // use the same parameter as for qel_kinematics
     { 
-	case 0: 
-	    q2 = czarek_kinematics2(_E_bind, l0, N0, l1, N1,jakobian); 
-	    break;
+        case 0: 
+            q2 = czarek_kinematics2(_E_bind, l0, N0, l1, N1,jakobian); 
+            break;
         case 1: 
-	    // preservation of energy momentum for the whole system
+            // preservation of energy momentum for the whole system
             // the nucleon is off shell
             // binding energy used for spectator nucleus mass calculation
             q2 = bodek_kinematics(_E_bind, l0, N0, l1, N1, jakobian);
             break;
         case 2: 
-	    // effective mass trick kinematics the most doubtful
+            // effective mass trick kinematics the most doubtful
             // first lower the nucleon mass down the binging energy
             N0.set_mass(N0.mass() - 27 * MeV);
             // next do the usual kinematics
             // preserving energy and momentum
             // (not taking into account the spactator nucleus)
             q2 = czarek_kinematics(_E_bind // should be 0 here???
-                                   , l0, N0, l1, N1, jakobian);
+                                , l0, N0, l1, N1, jakobian);
 
             // use this mass also for dynamics????
             // should it appear in the form factors
             break;
         case 3: 
-	    // use momentum dependent potential V(p) 
+            // use momentum dependent potential V(p) 
             // V(p) is on both sides of the equation but with different p
             // N1.set_energy(N1.energy()+V(N1.momentum(),kF_P));
             q2 = momentum_dependent_potential_kinematics(l0, N0, l1, N1, jakobian);
             break;
         case 4: 
-	    // use momentum dependent potential V(p)
+            // use momentum dependent potential V(p)
             // V(p) is on both sides of the equation but with different p
             // then adjust the kinetic energy 
             q2 = momentum_dependent_potential_kinematics(l0, N0, l1, N1, jakobian);
