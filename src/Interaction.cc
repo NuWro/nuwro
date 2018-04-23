@@ -339,6 +339,15 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
     resii = NN_xsec_parametrization_0( beta, 0 );
     resij = NN_xsec_parametrization_0( beta, 1 );
   }
+  else if( NN_xsec->param_value == 3 && Ek > 6 * MeV && Ek < 4148 * MeV )
+                                                        // J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220
+  {
+    const double M = (mass_proton + mass_neutron) / 2;  // average nucleon mass
+    double p       = sqrt(Ek*Ek + 2*Ek*M)/1000;         // parametrization in terms of nucleon momentum in GeV
+
+    resii = NN_xsec_parametrization_3( p, 0 );
+    resij = NN_xsec_parametrization_3( p, 1 );
+  }
   else
   {
     NN_xsec->set_input_point( Ek );
@@ -360,6 +369,14 @@ double Interaction::get_NN_xsec_ij( double Ek )
 
     return NN_xsec_parametrization_0( beta, ij );
   }
+  else if( NN_xsec->param_value == 3 && Ek > 6 * MeV && Ek < 4148 * MeV )
+                                                        // J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220
+  {
+    const double M = (mass_proton + mass_neutron) / 2;  // average nucleon mass
+    double p       = sqrt(Ek*Ek + 2*Ek*M)/1000;         // parametrization in terms of nucleon momentum in GeV
+
+    return NN_xsec_parametrization_3( p, ij );
+  }
   else
   {
     NN_xsec->set_input_point( Ek );
@@ -379,6 +396,34 @@ double Interaction::NN_xsec_parametrization_0( double x, bool ij )
     return millibarn * ((34.10 / x - 82.20) / x + 82.2);
   else
     return millibarn * ((10.63 / x - 29.92) / x + 42.9);
+}
+
+////////////////////////////////////////
+
+double Interaction::NN_xsec_parametrization_3( double x, bool ij )
+{
+  if( ij )
+  {
+    if( x < 0.4 )
+      return millibarn * (6.3555 * pow( x, -3.2481 ) * exp( -0.3777 * pow( log(x), 2. )));
+    else if( x < 1 )
+      return millibarn * (33 + 196 * pow( fabs( x-0.95 ), 2.5 ));
+    else if( x < 2 )
+      return millibarn * (24.2 + 8.9 * x );
+    else
+      return millibarn * (42);
+  }
+  else
+  {
+    if( x < 0.4 )
+      return millibarn * (34 * pow( x/0.4, -2.104 ));
+    else if( x < 0.8 )
+      return millibarn * (23.5 + 1000 * pow( (x-0.7), 4. ));
+    else if( x < 1.5 )
+      return millibarn * (23.5 + 24.6 / ( 1 + exp( -(x-1.2) / 0.1 )));
+    else
+      return millibarn * (41 + 60 * (x-0.9) * exp( -1.2 * x ));
+  }
 }
 
 ////////////////////////////////////////
