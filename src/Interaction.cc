@@ -330,8 +330,6 @@ void Interaction::test ()
 
 void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
 {
-  NN_xsec->set_input_point( Ek );
-
   if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
   {
     Ek = max( Ek, 30 * MeV );
@@ -342,6 +340,8 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
   }
   else
   {
+    NN_xsec->set_input_point( Ek );
+
     resii = NN_xsec->get_value(1);
     resij = NN_xsec->get_value(2);
   }
@@ -351,8 +351,6 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
 
 double Interaction::get_NN_xsec_ij( double Ek )
 {
-  NN_xsec->set_input_point( Ek );
-
   if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
   {
     Ek = max( Ek, 30 * MeV );
@@ -365,6 +363,8 @@ double Interaction::get_NN_xsec_ij( double Ek )
   }
   else
   {
+    NN_xsec->set_input_point( Ek );
+
     if( ij )
       return NN_xsec->get_value(2);
     else
