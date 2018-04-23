@@ -335,8 +335,9 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
     Ek = max( Ek, 30 * MeV );
     const double M = (mass_proton + mass_neutron) / 2;
     double v = sqrt(1 - pow2 (M / (Ek+M)));
-    resii=((10.63 / v - 29.92) / v + 42.9) * millibarn;
-    resij=((34.10 / v - 82.20) / v + 82.2) * millibarn;
+
+    resii = NN_xsec_parametrization_0( v, 0 );
+    resij = NN_xsec_parametrization_0( v, 1 );
   }
   else
   {
@@ -356,10 +357,8 @@ double Interaction::get_NN_xsec_ij( double Ek )
     Ek = max( Ek, 30 * MeV );
     const double M = (mass_proton + mass_neutron) / 2;
     double v = sqrt(1 - pow2 (M / (Ek+M)));
-    if( ij )
-      return ((34.10 / v - 82.20) / v + 82.2) * millibarn;
-    else
-      return ((10.63 / v - 29.92) / v + 42.9) * millibarn;
+
+    return NN_xsec_parametrization_0( v, ij );
   }
   else
   {
@@ -370,6 +369,16 @@ double Interaction::get_NN_xsec_ij( double Ek )
     else
       return NN_xsec->get_value(1);
   }
+}
+
+////////////////////////////////////////
+
+double Interaction::NN_xsec_parametrization_0( double x, bool ij )
+{
+  if( ij )
+    return millibarn * ((34.10 / x - 82.20) / x + 82.2);
+  else
+    return millibarn * ((10.63 / x - 29.92) / x + 42.9);
 }
 
 ////////////////////////////////////////
