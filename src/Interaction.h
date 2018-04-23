@@ -730,6 +730,8 @@ class Interaction
                                               //!< Returns the NN (ii/ij) cross sections from data.
     double NN_xsec_parametrization_0( double x, bool ij );
                                               //!< N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
+    double NN_xsec_parametrization_3( double x, bool ij );
+                                              //!< // J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220
     bool   nucleon_scattering( particle& p1, particle& p2, int &n, particle p[] );
                                               //!< Scatters particles p1, p2 into n particles in p[].
     bool   nucleon_elastic(    particle& p1, particle& p2, int &n, particle p[] );

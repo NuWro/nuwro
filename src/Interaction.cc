@@ -332,12 +332,12 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
 {
   if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
   {
-    Ek = max( Ek, 30 * MeV );
-    const double M = (mass_proton + mass_neutron) / 2;
-    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    Ek             = max( Ek, 30 * MeV );               // keep the xsec constant for Ek below 30MeV
+    const double M = (mass_proton + mass_neutron) / 2;  // average nucleon mass
+    double beta    = sqrt(1 - pow2 (M / (Ek+M)));       // parametrization in terms of beta = v/c
 
-    resii = NN_xsec_parametrization_0( v, 0 );
-    resij = NN_xsec_parametrization_0( v, 1 );
+    resii = NN_xsec_parametrization_0( beta, 0 );
+    resij = NN_xsec_parametrization_0( beta, 1 );
   }
   else
   {
@@ -354,11 +354,11 @@ double Interaction::get_NN_xsec_ij( double Ek )
 {
   if( NN_xsec->param_value == 0 && Ek < 335 * MeV )     // N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
   {
-    Ek = max( Ek, 30 * MeV );
-    const double M = (mass_proton + mass_neutron) / 2;
-    double v = sqrt(1 - pow2 (M / (Ek+M)));
+    Ek             = max( Ek, 30 * MeV );               // keep the xsec constant for Ek below 30MeV
+    const double M = (mass_proton + mass_neutron) / 2;  // average nucleon mass
+    double beta    = sqrt(1 - pow2 (M / (Ek+M)));       // parametrization in terms of beta = v/c
 
-    return NN_xsec_parametrization_0( v, ij );
+    return NN_xsec_parametrization_0( beta, ij );
   }
   else
   {
