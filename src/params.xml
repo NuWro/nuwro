@@ -429,7 +429,7 @@
     <description><![CDATA[The model of the nucleon-nucleon cross sections in the cascade]]></description>
     <options>
       <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
-      <option key="2"><![CDATA[PDG 2016]]></option>
+      <option key="2"><![CDATA[Custom fit to C. Patrignani et al. (Particle Data Group), Chin.Phys. C40 (2016) 100001]]></option>
       <option key="3"><![CDATA[J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220 & PDG 2016]]></option>
     </options>
   </param>
