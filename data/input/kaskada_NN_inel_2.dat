@@ -1,0 +1,69 @@
+# Custom fit to C. Patrignani et al. (Particle Data Group), Chin.Phys. C40 (2016) 100001 & J. Bystricky et al., Journal de Physique 48 (1987) 1901-1924
+
+-
+    energy: 0.0
+-
+    energy: 247.944571143
+    inel_ii: 0.0
+-
+    energy: 346.558823659
+    inel_ii: 0.0548658390068
+    inel_ij: 0.0
+-
+    energy: 493.663766274
+    inel_ii: 0.181893315099
+    inel_1pii: 1.0
+    inel_1pij: 1.0
+-
+    energy: 653.364122414
+    inel_ii: 0.377951098537
+    inel_ij: 0.204031865462
+    inel_1pii: 0.983374947431
+    inel_1pij: 0.99448285079
+-
+    energy: 822.236788338
+    inel_ii: 0.500626148037
+    inel_1pii: 0.851442560916
+-
+    energy: 997.884006618
+    inel_ii: 0.48212252574
+    inel_ij: 0.443099991947
+    inel_1pii: 0.990354400836
+    inel_1pij: 0.937891342975
+-
+    energy: 1178.62062588
+    inel_ii: 0.527910775842
+    inel_1pii: 0.933974018643
+-
+    energy: 1731.5810693
+    inel_ii: 0.575594233728
+    inel_ij: 0.497650961212
+    inel_1pii: 0.755411598706
+    inel_1pij: 0.704224270854
+-
+    energy: 2684.83203634
+    inel_ii: 0.628198604842
+    inel_ij: 0.642711945474
+    inel_1pii: 0.524660301199
+    inel_1pij: 0.424512865913
+-
+    energy: 3657.99002091
+    inel_ii: 0.68387354942
+    inel_1pii: 0.399211453706
+-
+    energy: 4640.64850378
+    inel_ii: 0.725712672414
+    inel_ij: 0.680883116014
+    inel_1pii: 0.323389505228
+    inel_1pij: 0.235870197776
+-
+    energy: 17085.5528639
+    inel_ii: 0.754799468894
+    inel_ij: 0.743914465563
+    inel_1pii: 0.0798931200369
+    inel_1pij: 0.0879597807071
+-
+    energy: 74066.9583894
+    inel_ii: 0.809726114074
+-
+    energy: 1.e300
