@@ -10,15 +10,15 @@ using namespace std;
 class Dyn
 {
 public: 
-    double Mxw;   ///< max x*w   
+    double Mxw;     ///< max x*w   
     int n;          ///< count    
     double Sw;      ///< sum w    
     double Sxw;     ///< sum x*w   
     double Sxxw;    ///< sum x*x*w 
 
     bool active;    ///< is the dynamics enabled?
-    double W;       ///< re probabability of choosing this channel
-    double Wacc;    ///< accumalated weights
+    double W;       ///< weight ~ probabability of choosing this channel
+    double Wacc;    ///< accumalated weights 
     double Desired; ///< number of events to be generated
     double Ready;   ///< number of accepted events
     int dyn;        ///< code for the dynamics

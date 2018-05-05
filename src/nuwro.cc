@@ -123,7 +123,7 @@ geomy* NuWro::make_detector(params &p)
 
 void NuWro::init (int argc, char **argv)
 {
-	//  dismode=false;
+	//dismode=false;
 	dismode=true;
 	set_dirs(argv[0]);
 	a.read (argc, argv);
@@ -762,7 +762,7 @@ void NuWro::real_events(params& p)
 						_mixer->prepare(p);
 					makeevent(e,p);
 					double bias=1;
-					if(!p.beam_test_only && dismode && k>1 && k<6)
+					if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6)
 						bias=e->in[0].t;
 					if (_procesy.accept(k,e->weight,bias))
 					{
