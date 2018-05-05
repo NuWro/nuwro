@@ -2,283 +2,216 @@
 #define _chooser_h_
 
 #include <iostream>
+#include <vector>
 #include "params.h"
 
 using namespace std;
 
-template <int N> 
+class Dyn
+{
+public: 
+    double Mxw;   ///< max x*w   
+    int n;          ///< count    
+    double Sw;      ///< sum w    
+    double Sxw;     ///< sum x*w   
+    double Sxxw;    ///< sum x*x*w 
+
+    bool active;    ///< is the dynamics enabled?
+    double W;       ///< re probabability of choosing this channel
+    double Wacc;    ///< accumalated weights
+    double Desired; ///< number of events to be generated
+    double Ready;   ///< number of accepted events
+    int dyn;        ///< code for the dynamics
+    string label;   ///< label for the dynamics
+
+    Dyn(int dyn0, string label0="",bool active0=true)
+    {
+        dyn = dyn0;
+        label=label0;
+        active = active0;
+        W = active;
+        Sw = Sxw = Sxxw = Mxw = Desired = Ready = n = 0;
+    }
+
+    void add(double x,double bias=1)
+    {
+        if (!(x == x)) // refuse to add 'nan'
+            return;
+        double w = 1 / bias;
+        double xw = x * w;
+        if (xw > Mxw)
+            Mxw = xw;
+        n ++;
+        Sw += w;
+        Sxw += xw;
+        Sxxw += x * xw;
+    }
+    
+	double avg (){ return Sw==0 ? 0 : Sxw/Sw;}
+
+    double var (){ return Sw==0 ? 0 : Sxxw/Sw - Sxw*Sxw/Sw/Sw;}
+    
+    double sigma (){ return n<=1 ? 0 : sqrt(var()/(n-1));}
+	
+    double efficiency()	{ return n==0 || Mxw==0 ? 0 : Sxw/n/Mxw;}
+
+};
+
+
 class chooser
 { 
-    class bin
-    {
-	public: 
-        double maxxw; ///< max xw   in i-th bin
-        int n;        ///< count    in i-th bin
-        double sw;    ///< sum w    in i-th bin
-        double sxw;   ///< sum xw   in i-th bin
-        double sx2w;  ///< sum x^2w in i-th bin
-
-        bool active;    ///< the bin is active
-        double W;       ///< weight of  i-th bin
-        double Wacc;    ///< accumalated weights
-        double Desired; ///< #events for i-th bin
-        double Ready;   ///< #events for i-th bin
-        int dyn;        ///< code for the dynamics
-        double *Maxxw;  /// Total Max
-
-        bin(double *Maxxwp=NULL,int code=0,bool active0=true):Maxxw(Maxxwp)
-        {
-            dyn = code;
-            active = active0;
-            W = active;
-            sw = 0;
-            sxw = 0;
-            sx2w = 0;
-            n = 0;
-            maxxw = 0;
-            Desired = 0;
-            Ready = 0;
-        }
-
-        void add(double x,double bias=1)
-        {
-            if (!(x == x)) // refuse to add 'nan'
-                return;
-            double w = 1 / bias;
-            double xw = x * w;
-            n += 1;
-            sw += w;
-            sxw += xw;
-            sx2w += x * xw;
-            if (xw > maxxw)
-            {
-                maxxw = xw;
-                if (xw > *Maxxw)
-                    *Maxxw = xw;
-            }
-        }
-	double avg (){ return n ? sxw/sw : 0;}
-
-        double var ()  
-	{
-	    if(n==0)
-		return 0;
-	    return sx2w/sw - sxw*sxw/sw/sw;
-	}
-        double sigma ()
-	{
-	    if(n<=1)
-		return 0;
-	    return sqrt(var()/(n-1));
-	}
-	double efficiency()
-	{ if(n>0 && maxxw>0)
-		return sxw/n/maxxw;
-	  else
-		return 0;
-	}
-        
-    };
  private:
-    double maxxw;
-    bin proc[N];
-    void do_distrib();    
+    int N;             // number of channels
+    vector<Dyn> proc;  // dynamical channels
+    void do_distrib(); // initialize    
  public:
-    int size(){return N;}       ///<number of chanels
-    void reset(params &p);
-    void add(int i,double x, double bias=1);   ///< add x to i-th bin
-    int choose();			       ///< choose bin
-    void set_weights_to_avg();        
-    bool accept(int i,double x,double bias=1); /// return 1 with probability x/max(i)
-                                            /// increase maxwx and Maxwx if needed                                  
-    bool active(int i){return proc[i].active;}
-    int dyn(int i);                         ///      
-    double weight(int i);                   /// 
-    double count(int i);
-    double ratio(int i);                    /// probability of choosing i-th bin
-    double avg (int i);
-    double var (int i);
-    double sigma (int i);
-    double efficiency(int i);
-    void report();
+    chooser():N(0){}
+    void reset(params &p);                     ///< initialize active dynamics
+    int size(){return N;}                      ///< number of chanels
+    void add(int i,double x, double bias=1);   ///< add x to i-th channel
+    int choose();			                   ///< choose bin number (according to bin weight)
+    Dyn& chooseDyn(){return proc[choose()];}   ///< choose bin (according to bin weight)
+    void set_weights_to_avg();                 ///< make weights proportional to cross sections
+    bool accept(int i,double x,double bias=1); ///< add x and return true with probability xw/Mxw 
+    bool active(int i){return proc[i].active;} ///< is the channel active?
+    int dyn(int i) {return proc[i].dyn;}       ///< code for the dynamics
+    double weight(int i) {return proc[i].W;}   ///< weight of i-th channel
+    double total() {return proc[N-1].Wacc;}    ///< Sum of channel weigths 
+    double count(int i) {return proc[i].n;}    ///< Number af additions to the bin
+    double ratio(int i) {return proc[i].W/proc[N-1].Wacc;}///< bin probability 
+    double avg (int i) {return proc[i].avg();} ///< weighted average
+    double var (int i) {return proc[i].var();} ///< variance 
+    double sigma (int i){return proc[i].sigma();} ///< sigma
+    double efficiency(int i) {return proc[i].efficiency();} /// efficincy of i-th channel
+    void report();                  ///< report active channels characteristics
     void short_report(ostream &f);	///< write calculated total cross sections for each channel to file 
-    void calculate_counts(int ilosc);
-    int desired(int i);
-    int ready(int i);
-    double total(){return proc[N-1].Wacc;}
-
+    void calculate_counts(int ilosc); ///< calculate how many events to generate for each channel
+    int desired(int i) {return proc[i].Desired;} ///< how many events to generate for each channel
+    int ready(int i) {return proc[i].Ready;}; ///< how many events got accepted (and writen to file)
+    
 };
 
 ////////////////////////////////////////////////////////////////////////
 //                     Implementation     
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::do_distrib()
-	{
-	  double prev=0;
-	  for(int i=0;i<N;i++)
-		 proc[i].Wacc=prev=prev+proc[i].W;
-	}
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::reset(params &p)
-    {
-        double prev=0;
-        proc[0]=bin(&maxxw,0,p.dyn_qel_cc);
-        proc[1]=bin(&maxxw,1,p.dyn_qel_nc);
-        proc[2]=bin(&maxxw,2,p.dyn_res_cc);
-        proc[3]=bin(&maxxw,3,p.dyn_res_nc);
-        proc[4]=bin(&maxxw,4,p.dyn_dis_cc);
-        proc[5]=bin(&maxxw,5,p.dyn_dis_nc);
-        proc[6]=bin(&maxxw,6,p.dyn_coh_cc);
-        proc[7]=bin(&maxxw,7,p.dyn_coh_nc);
-        proc[8]=bin(&maxxw,8,p.dyn_mec_cc);
-        proc[9]=bin(&maxxw,9,p.dyn_mec_nc);
-        proc[10]=bin(&maxxw,20,p.dyn_e_el);
-        do_distrib();
-	    if(proc[N-1].Wacc==0)
-	    {
-            cerr<<"No active dynamics - chooser invalid"<<endl;
-	        exit(19);
-	    }
-	   else
-	    std::cout<<"chooser created"<<std::endl;
-    }
-    
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::add(int i,double x,double bias)
-    {
-        proc[i].add(x,bias);
-    }
-    
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline int chooser<N>::choose()//wybiera dynamike
-    {
-        double x = frandom() * proc[N-1].Wacc;
-        int i = 0;
-        while (x >= proc[i].Wacc)
-        {
-            ++i;
-            if (i == N)
-                return N - 1;
-	}
-	return i;      
-    }
+
+inline void chooser::do_distrib()
+{
+    double prev=0;
+    for(int i=0;i<N;i++)
+        proc[i].Wacc=prev=prev+proc[i].W;
+}
 
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::set_weights_to_avg()
+inline void chooser::reset(params &p)
+{
+    proc.clear();
+    if(p.dyn_qel_cc) proc.push_back(Dyn(0,"QELcc"));
+    if(p.dyn_qel_nc) proc.push_back(Dyn(1,"QELnc"));
+    if(p.dyn_res_cc) proc.push_back(Dyn(2,"REScc"));
+    if(p.dyn_res_nc) proc.push_back(Dyn(3,"RESnc"));
+    if(p.dyn_dis_cc) proc.push_back(Dyn(4,"DIScc"));
+    if(p.dyn_dis_nc) proc.push_back(Dyn(5,"DISnc"));
+    if(p.dyn_coh_cc) proc.push_back(Dyn(6,"COHcc"));
+    if(p.dyn_coh_nc) proc.push_back(Dyn(7,"COHnc"));
+    if(p.dyn_mec_cc) proc.push_back(Dyn(8,"MECcc"));
+    if(p.dyn_mec_nc) proc.push_back(Dyn(9,"MECnc"));
+    if(p.dyn_e_el  ) proc.push_back(Dyn(20,"EEL  "));
+    N=proc.size();
+    do_distrib();
+    if(proc[N-1].Wacc==0)
     {
+        cerr<<"No active dynamics - chooser invalid"<<endl;
+        exit(19);
+    }
+    else
+        std::cout<<"chooser created"<<std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////
+inline void chooser::add(int i, double x, double bias)
+{
+    proc[i].add(x,bias);
+}
+
+////////////////////////////////////////////////////////////////////////
+inline int chooser::choose() 
+{
+    double x = frandom() * proc[N-1].Wacc;
+    int i = 0;
+    while (x >= proc[i].Wacc)
+    {
+        ++i;
+        if (i == N)
+            return N - 1;
+    }
+    return i;      
+}
+
+////////////////////////////////////////////////////////////////////////
+inline void chooser::set_weights_to_avg()
+{
 	cout<<"Updating"<<endl;
 	for(int i=0;i<N;i++)
-	{
-		proc[i].W=(proc[i].n ? avg(i) : 0);
-	}
+		proc[i].W=avg(i);
 	do_distrib(); 
-    }
-
-
-////////////////////////////////////////////////////////////////////////
-/// return 1 with probability x/max(i)
-/// increase maxwx and Maxwx if needed
-template <int N> 
-inline bool chooser<N>::accept(int i,double x,double bias)
-	{ // double w=1;
-		double prevmax=proc[i].maxxw;
-		double prevready=proc[i].Ready;
-	   	add(i,x,bias);
-	   	if(prevmax==proc[i].maxxw)
-		   if(x/bias>frandom()*proc[i].maxxw)
-		     {proc[i].Ready+=1;
-		       return 1;
-		     }
-		    else 
-		       return 0;  
-		else
-		  {
-           proc[i].Ready*=prevmax/proc[i].maxxw;
-  	       cout.precision(6);
-/*	       cout << "Dyn[" << i << "]"
-//	       <<"   New max =" << setw(11)<< max(i) 
-//		   <<"   Prev max=" << setw(11)<< prevmax 
-		   <<"   " <<setw(11)<<prevready-Ready[i] << " events deleted." 
-		   <<" Efficiency "<<setw(11)<<sxw[i]/n[i]/maxxw[i]*100 <<" %."<< endl;
-		   */
-           proc[i].Ready*=prevmax/proc[i].maxxw;
-           proc[i].Ready += 1;
-           return 1;
-	      }
-	}                                      
-    
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline int chooser<N>::dyn(int i)
-    {
-       return proc[i].dyn;
-    }
+}
 
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::weight(int i)
+inline bool chooser::accept(int i, double x, double bias)
+{
+    /// return 1 with probability x/max(i)
+    /// increase Mwx if needed
+    double prevmax = proc[i].Mxw;
+    double prevready = proc[i].Ready;
+    add(i, x, bias);
+    if (prevmax == proc[i].Mxw)
     {
-       return proc[i].W;
+        if (x / bias > frandom() * proc[i].Mxw)
+        {
+            proc[i].Ready++;
+            return true;
+        }
+        else 
+            return false;
     }
+    else
+    {
+
+/*	       
+        cout.precision(6);
+        cout << "Dyn[" << dyn(i) << "]"
+	    <<"   New max =" << setw(11)<< proc[i].maxxw
+        <<"   Prev max=" << setw(11)<< prevmax 
+        <<"   " <<setw(11)<<prevready-ready(i) << " events deleted." 
+        <<" Efficiency "<<setw(11)<<efficiency(i)*100 <<" %."<< endl;
+*/
+
+        proc[i].Ready*=prevmax/proc[i].Mxw;// "remove" some events
+        proc[i].Ready++;
+        return true;
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::count(int i)
+inline void chooser::short_report(ostream &f)
+{
+/// write calculated total cross sections for each channel to file
+    f << "dyn  n        ratio          sigma[cm2] " << endl;
+    for (int k = 0; k < N; k++)
     {
-       return proc[i].n;
+        f << dyn(k) << " " << setw(5) << desired(k)
+          << " " << setw(15) << ratio(k)
+          << " " << setw(15) << avg(k) << endl;
     }
+}
 
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::ratio(int i)/// probability of choosing i-th bin
-    {
-       return proc[i].W/proc[N-1].Wacc;
-    }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::avg (int i)
-    {
-        return proc[i].avg();
-    }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::var (int i)
-    {
-      
-      return proc[i].var();
-    }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::sigma (int i)
-    {
-      return proc[i].sigma();
-    }
-
-////////////////////////////////////////////////////////////////////////
-/// write calculated total cross sections for each channel to file 
-template <int N> 
-inline void chooser<N>::short_report(ostream &f)
-    {
-	  f <<"dyn  n   ratio     sigma[cm2] " <<  endl;
-	  for (int k = 0; k < N; k++)
-		{
-		  f << k <<" "<< setw(5)  << desired(k) 
-				<<" "<<  setw(10) << ratio(k)
-				<<" "<<  setw(10) << avg(k) << endl;
-		}
-	}
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::report()
-    {
+inline void chooser::report()
+{
  cout<<"--------------------------------------------------------------";
- cout<<"-------------------------------------------"<<endl;
-	  cout <<"dyn|"
+ cout<<"---------------------------------------------------"<<endl;
+	  cout <<"dyn| label |"
 	       <<"  weight      |"
 	       <<"  ratio       |"
 	       <<"  efficiency    |"
@@ -287,57 +220,37 @@ inline void chooser<N>::report()
 	       <<"  sigma          |" 
 	       <<  endl;
  cout<<"--------------------------------------------------------------";
- cout<<"-------------------------------------------"<<endl;
+ cout<<"---------------------------------------------------"<<endl;
       for (int j = 0; j < N; j++)
-        cout <<setw(2)<<  proc[j].dyn<<setprecision(6) <<" |"
-             <<setw(12)<< weight (j)  <<            "  |"
-             <<setw(12)<< ratio (j)  <<             "  |"
+        cout <<setw(2)<<  proc[j].dyn<<setprecision(6) << " | "
+             <<proc[j].label  << " |"
+             <<setw(12)<< weight (j) << "  |"
+             <<setw(12)<< ratio (j) << "  |"
              <<setw(12)<< efficiency(j)*100 << " %  | "
-             <<setw(12)<< avg (j)    <<             " cm2| "
-             <<setw(12)<< sqrt(var(j))<<            " cm2| "
-             <<setw(12)<< sigma(j)<<       " cm2| "
+             <<setw(12)<< avg (j) << " cm2| "
+             <<setw(12)<< sqrt(var(j))<< " cm2| "
+             <<setw(12)<< sigma(j)<< " cm2| "
              << endl;
  cout<<"--------------------------------------------------------------";
- cout<<"-------------------------------------------"<<endl;
+ cout<<"---------------------------------------------------"<<endl;
 }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline void chooser<N>::calculate_counts(int ilosc)
-     {
-      double total=1.0;
-      for (int k = 0; k < N-1; k++)
-      {  
-          proc[k].Ready=0;
-          double frac=ratio(k);
-          if(frac==0)
-               proc[k].Desired=0;
-          else
-               proc[k].Desired = int(frac/total*ilosc+0.5);
-         ilosc-=proc[k].Desired;
-         total-=frac;
-      }
-      proc[N-1].Desired=ilosc;
-      }
 
 ////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline int chooser<N>::desired(int i)
-    {
-      return proc[i].Desired;
+inline void chooser::calculate_counts(int Total)
+{
+    double total=1.0;
+    for (int k = 0; k < N-1; k++)
+    {  
+        proc[k].Ready=0;
+        double frac=ratio(k);
+        if(frac==0)
+            proc[k].Desired=0;
+        else
+            proc[k].Desired = int(frac/total*Total+0.5);
+        Total-=proc[k].Desired;
+        total-=frac;
     }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline int chooser<N>::ready(int i)
-    {
-      return proc[i].Ready;
-    }
-////////////////////////////////////////////////////////////////////////
-template <int N> 
-inline double chooser<N>::efficiency(int i)
-    { 
-        return proc[i].efficiency();
-    }
- 
-////////////////////////////////////////////////////////////////////////
+    proc[N-1].Desired=Total;
+}
 
 #endif

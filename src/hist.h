@@ -13,7 +13,7 @@
 class hist
 {
 private:
-  char * name;                  // nazwa parametru
+  string name;                  // nazwa parametru
   double min, max, width;       // minimum , maximim i szeroko¶æ kube³ka
   int nkub;                     // ilo¶æ kube³ków 
   double *sum;			// tablica kube³ków
@@ -24,7 +24,7 @@ private:
 
 public:
 
-   inline hist (char *n = NULL, double minv = 0, double maxv = 1,  int ile = 1);
+   inline hist (string n="", double minv = 0, double maxv = 1,  int ile = 1);
     
    inline ~hist () { delete [] sum;}
    
@@ -74,7 +74,7 @@ int hist::ind (double arg)   // nr kube³ka je¶li parametr wynosi 'arg'
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-hist::hist (char *n, double minv, double maxv, int ile)
+hist::hist (string n, double minv, double maxv, int ile)
 /////////////////////////////////////////////////////////////////////////////////////
            :name(n), 
 	    min(minv), 
