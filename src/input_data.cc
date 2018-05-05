@@ -91,7 +91,10 @@ void input_data::initialize_data_containers()
 
     int    cascade_NN_inel_number_of_fields     = 5;
     string cascade_NN_inel_data_fields[]        = {"energy", "inel_ii", "inel_ij", "inel_1pii", "inel_1pij"};
-    int    cascade_NN_inel_interpolate_fields[] = {-1, 0, 0, 0, 0};
+    int    cascade_NN_inel_interpolate_fields[] = {-1, 1, 1, 1, 1};
+    if( par.kaskada_NN_inel <= 1 )  // for dataset 0 and 1 use no interpolation
+    {cascade_NN_inel_interpolate_fields[1] = 0;cascade_NN_inel_interpolate_fields[2]=0;
+     cascade_NN_inel_interpolate_fields[3] = 0;cascade_NN_inel_interpolate_fields[4]=0;}
     double cascade_NN_inel_unit_fields[]        = { 1, 1, 1, 1, 1};
     containers.push_back( data_container( input_path, "kaskada_NN_inel", par.kaskada_NN_inel,
                                           cascade_NN_inel_number_of_fields, cascade_NN_inel_data_fields,
