@@ -48,10 +48,13 @@ PARAM(bool,dyn_coh_cc,1)\
 PARAM(bool,dyn_coh_nc,1)\
 PARAM(bool,dyn_mec_cc,0)\
 PARAM(bool,dyn_mec_nc,0)\
+PARAM(bool,dyn_hip_la,0)\
+PARAM(bool,dyn_hip_si,0)\
 PARAM(bool,dyn_e_el,0)\
+PARAM(bool,dyn_e_spp,0)\
 PARAM(double,eel_theta_lab,90)\
 PARAM(double,eel_dz,2)\
-PARAM(string,eel_alg,"slow")\
+PARAM(string,eel_alg,"old")\
 PARAM(int,qel_kinematics,0)\
 PARAM(int,qel_vector_ff_set,2)\
 PARAM(int,qel_axial_ff_set,1)\
@@ -70,6 +73,8 @@ PARAM(bool,sf_coulomb,1)\
 PARAM(int,sf_pb,0)\
 PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
+PARAM(int,e_spp_ff_set,4)\
+PARAM(int,delta_selfenergy,0)\
 PARAM(double,pion_axial_mass,0.94)\
 PARAM(double,pion_C5A,1.19)\
 PARAM(int,delta_angular,2)\

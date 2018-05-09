@@ -211,8 +211,17 @@
   <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
     <description>Meson exchange charged current</description>
   </param>
+  <param name="dyn_hip_la" type="checkbox" ctype="bool" default="0">
+    <description>Lambda hiperon quasielastic production</description>
+  </param>
+  <param name="dyn_hip_si" type="checkbox" ctype="bool" default="0">
+    <description>Sigma hiperon quasielastic production</description>
+  </param>
   <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
     <description>Elastic electron scattering</description>
+  </param>
+  <param name="dyn_e_spp" type="checkbox" ctype="bool" default="0">
+    <description>electron SPP</description>
   </param>
   <param name="eel_theta_lab" type="text" ctype="double" default="90">
     <description><![CDATA[Theta lab for eletron measurement]]></description>
@@ -220,8 +229,8 @@
   <param name="eel_dz" type="text" ctype="double" default="2">
     <description><![CDATA[electon scattering cos_theta_lab accuracy]]></description>
   </param>
-  <param name="eel_alg" type="text" ctype="string" default="slow">
-    <description><![CDATA[electron elastic scattering algorithm: slow, fast, Mott, Rutheford]]></description>
+  <param name="eel_alg" type="text" ctype="string" default="old">
+    <description><![CDATA[electron elastic scattering algorithm: old, fast, Mott, Rutheford]]></description>
   </param>
   <param name="qel_kinematics" type="select" ctype="int" default="0">
     <description>Quasi elastic kinematics</description>
@@ -322,7 +331,24 @@
       <option key="7"><![CDATA[taken from Bariquila-Cano.et al (chiral quark model)]]></option>
     </options>
   </param>
-  <param name="pion_axial_mass" type="text" ctype="double" default="0.94">
+  <param name="e_spp_ff_set" type="select" ctype="int" default="4">
+    <description><![CDATA[Electromagnetic Delta form factors for electron scattering]]></description>
+    <options>
+      <option key="0"><![CDATA[SU(6) quark model-inspired (C4V=-M/W C3V, C5V=0) (KMG+JZ fit, unpublished)]]></option>
+      <option key="1"><![CDATA[SU(6) quark model-inspired + Pade correction (KMG+JZ fit, unpublished)]]></option>
+      <option key="2"><![CDATA["Model B" KMG+JZ fit 1501.03086 [hep-ph] ]]></option>
+      <option key="3"><![CDATA["Model A" KMG+JZ fit 1501.03086 [hep-ph] ]]></option>
+      <option key="4"><![CDATA[Paschos Lalakulich]]></option>
+    </options>
+  </param>
+ <param name="delta_selfenergy" type="select" ctype="int" default="0">
+    <description><![CDATA[E. Oset Nucl. Phys. A 468 Delta selfenergy for electron scattering]]></description>
+    <options>
+      <option key="0"><![CDATA[off]]></option>
+      <option key="1"><![CDATA[on]]></option>
+    </options>
+  </param>
+   <param name="pion_axial_mass" type="text" ctype="double" default="0.94">
     <description><![CDATA[in GeV units]]></description>
   </param>
   <param name="pion_C5A" type="text" ctype="double" default="1.19">

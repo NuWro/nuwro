@@ -9,6 +9,8 @@
 #include "TH1.h"
 #include "qelevent.h"
 #include "e_el_event.h"
+#include "e_spp_event.h"
+#include "hipevent.h"
 #include "pdg.h"
 #include "chooser.h"
 #include "beam.h"
@@ -221,7 +223,7 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6 || dyn>=20)
+	if(dyn<6 || dyn>=10)
 	{
 								 // insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
@@ -234,14 +236,15 @@ void NuWro::makeevent(event* e, params &p)
 		e->norm=nu.travelled;
 	// else e->norm remains 1;
 
-	e->flag.cc  = dyn==0 || dyn==2 || dyn==4 || dyn==6 || dyn==8;
-	e->flag.nc  = dyn==1 || dyn==3 || dyn==5 || dyn==7 || dyn==9;
-
-	e->flag.qel = dyn==0 || dyn==1;
-	e->flag.res = dyn==2 || dyn==3;
-	e->flag.dis = dyn==4 || dyn==5;
-	e->flag.coh = dyn==6 || dyn==7;
-	e->flag.mec = dyn==8 || dyn==9;
+	e->flag.cc  = false;
+	e->flag.nc  = false;
+				  
+	e->flag.qel = false;
+	e->flag.res = false;
+	e->flag.dis = false;
+	e->flag.coh = false;
+	e->flag.mec = false;
+	e->flag.hip = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -253,7 +256,7 @@ void NuWro::makeevent(event* e, params &p)
 	}
 	double factor=1.0;
 								 
-	if(p.cc_smoothing and e->flag.cc and dyn==0) //only in qel_cc
+	if(p.cc_smoothing and dyn==0) //only in qel_cc
 	{
 		if(e->in[0].pdg>0)
 		{
@@ -269,12 +272,13 @@ void NuWro::makeevent(event* e, params &p)
 	e->par =p;
 	
 	
-	if(//is_neutrino(nu.pdg)
+	if(  // (anty)-neutrino interaction
 	   abs(nu.pdg)==12 or abs(nu.pdg)==14 or abs(nu.pdg)==16
 	  )
 	switch (dyn)
 	{
-		case 0:
+		case 0: 
+			e->flag.qel=e->flag.cc=true;
 			if (p.dyn_qel_cc) // qel cc
 			{
 				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
@@ -284,6 +288,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;				 
 		case 1:
+			e->flag.qel=e->flag.nc=true;
 			if (p.dyn_qel_nc) // qel nc
 			{
 				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
@@ -293,6 +298,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;				 
 		case 2:
+			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
 			{
 				resevent2 (p, *e, true);
@@ -301,6 +307,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;				
 		case 3:
+			e->flag.res=e->flag.nc=true;
 			if (p.dyn_res_nc) // res nc
 			{
 				resevent2 (p, *e, false);
@@ -309,6 +316,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 4:
+			e->flag.dis=e->flag.cc=true;
 			if (p.dyn_dis_cc) // dis cc
 			{
 				disevent (p, *e, true);
@@ -317,6 +325,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;				
 		case 5:
+			e->flag.dis=e->flag.nc=true;
 			if (p.dyn_dis_nc) //dis nc
 			{
 				disevent (p, *e, false);
@@ -325,6 +334,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 6:                  
+			e->flag.coh=e->flag.cc=true;
 			if (p.dyn_coh_cc) // coh cc
 			{
 				if(p.coh_new)
@@ -338,6 +348,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 7:                  
+			e->flag.coh=e->flag.nc=true;
 			if (p.dyn_coh_nc) // coh nc
 			{
 				if(p.coh_new)
@@ -351,6 +362,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 8:
+			e->flag.mec=e->flag.cc=true;
 			if (p.dyn_mec_cc) // mec cc
 			//if( nu.pdg>0 || !(p.mec_kind==3) )// al flavor states/antineutrinos available
 			{	
@@ -372,6 +384,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 9: 
+			e->flag.mec=e->flag.nc=true;
 			if (p.dyn_mec_nc) //mec nc
 			if(p.mec_kind==1)      // only TEM for NC
 			{   
@@ -389,34 +402,43 @@ void NuWro::makeevent(event* e, params &p)
 				}
 			}
 			break;
+		case 10:
+			e->flag.hip=e->flag.cc=true;
+			if (p.dyn_hip_la) // qel hiperon lambda
+			{
+				hipevent (p, *e, *_nucleus, true); //Lambda
+			}
+			break;		
+		case 11:
+			e->flag.hip=e->flag.cc=true;
+			if (p.dyn_hip_si) // qel hiperon sigma
+			{
+				hipevent (p, *e, *_nucleus, false); // Sigma
+			}
+			break;		
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{
 		switch(dyn)
 		{
 			case 20:
-			    //~ if(p.eel_alg=="old")
+				e->flag.nc=true;
+			    if(p.eel_alg=="old")
                     e_el_event(p,*e,*_nucleus,false); 
-			    //~ else 	
-                    //~ if(p.eel_alg=="fast")
-                    //~ e_el_event2orig(p,*e,*_nucleus,false); 
-                //~ else   // all remaining algorithms  
-                    //~ e_el_event2(p,*e,*_nucleus,false); 
+			    else 	
+                if(p.eel_alg=="fast")
+                    e_el_event2orig(p,*e,*_nucleus,false); 
+                else   // all remaining algorithms  
+                    e_el_event2(p,*e,*_nucleus,false); 
 			    break;
-/*
-			case 11: 
+
+			case 21: 
+				e->flag.nc=true;
 			    if(p.eel_theta_lab>0) 	
                     e_spp_event(p,*e,*_nucleus,false); 
 			    else // use negative theta to test new implementation	
                     e_spp_event3(p,*e,*_nucleus,false); 
 			    break;
-			case 12:  //Bosted
-			    //~ if(p.eel_theta_lab>0) 	
-				e_bosted_event(p,*e,*_nucleus,false); 
-			    //~ else // use negative theta to test new implementation	
-				//~ e_bosted_event2(p,*e,*_nucleus,false); 
-			    break;
-*/
 		}
 	}
 	e->weight*=factor;
@@ -639,12 +661,18 @@ void NuWro::test_events(params & p)
 		ofstream totals ((prefix+"totals.txt").c_str(),ios::app);
 		totals<<p.beam_energy;
 		double tot=0;
+		
+		int j=0;
 		for(int i=0;i<_procesy.size();i++)
 		{
-			
+			while(j++<_procesy.dyn(i))
+				totals << ' '<<0; // cross section of disabled channels
 			totals << ' '<<_procesy.avg(i);
 			tot+=_procesy.avg(i);
 		}
+		while(j++<10)
+			totals << ' '<<0; // cross section of disabled channels
+
 		totals<<endl;
 		pot_report(cout);		
 		if(_detector)

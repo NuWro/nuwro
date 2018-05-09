@@ -146,7 +146,7 @@ double findmin(double (boone::*f)(double),double a, double b)
     bh1("h1","dsigma/dq2", 17,booneq2borders),
     h1("h1","dsigma/dq2", 17,booneq2borders),
     h1mc("h1mc","dsigma/dq2mc", 17,booneq2borders),
-    bh2("h2","dsigma/dcos theta dT", 20,-1,1, 18, 0.2,2)
+    bh2("h2","dsigma/dcos theta dT", 20,-1,1, 18, 0.2,2),
     h2("h2","dsigma/dcos theta dT", 20,-1,1, 18, 0.2,2)
     {double binarea=2*1.8/(20*18);
     for(int i;i<20;i++)

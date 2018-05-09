@@ -116,7 +116,11 @@ inline void chooser::reset(params &p)
     if(p.dyn_coh_nc) proc.push_back(Dyn(7,"COHnc"));
     if(p.dyn_mec_cc) proc.push_back(Dyn(8,"MECcc"));
     if(p.dyn_mec_nc) proc.push_back(Dyn(9,"MECnc"));
+    if(p.dyn_hip_la) proc.push_back(Dyn(10,"HIPla"));
+    if(p.dyn_hip_si) proc.push_back(Dyn(11,"HIPsi"));
+    
     if(p.dyn_e_el  ) proc.push_back(Dyn(20,"EEL  "));
+    if(p.dyn_e_spp ) proc.push_back(Dyn(21,"ESPP "));
     N=proc.size();
     do_distrib();
     if(proc[N-1].Wacc==0)
@@ -161,7 +165,7 @@ inline void chooser::set_weights_to_avg()
 inline bool chooser::accept(int i, double x, double bias)
 {
     /// return 1 with probability x/max(i)
-    /// increase Mwx if needed
+    /// increase Mxw if needed
     double prevmax = proc[i].Mxw;
     double prevready = proc[i].Ready;
     add(i, x, bias);
@@ -209,19 +213,18 @@ inline void chooser::short_report(ostream &f)
 ////////////////////////////////////////////////////////////////////////
 inline void chooser::report()
 {
- cout<<"--------------------------------------------------------------";
- cout<<"---------------------------------------------------"<<endl;
-	  cout <<"dyn| label |"
-	       <<"  weight      |"
-	       <<"  ratio       |"
-	       <<"  efficiency    |"
-	       <<"  mean_value     |" 
-	       <<"  deviation      |" 
-	       <<"  sigma          |" 
-	       <<  endl;
- cout<<"--------------------------------------------------------------";
- cout<<"---------------------------------------------------"<<endl;
-      for (int j = 0; j < N; j++)
+    string linia(113,'-');
+    cout<<linia<<endl;
+    cout<<"dyn| label |"
+        <<"  weight      |"
+        <<"  ratio       |"
+        <<"  efficiency    |"
+        <<"  mean_value     |" 
+        <<"  deviation      |" 
+        <<"  sigma          |" 
+        <<  endl;
+    cout<<linia<<endl;
+    for (int j = 0; j < N; j++)
         cout <<setw(2)<<  proc[j].dyn<<setprecision(6) << " | "
              <<proc[j].label  << " |"
              <<setw(12)<< weight (j) << "  |"
@@ -231,8 +234,7 @@ inline void chooser::report()
              <<setw(12)<< sqrt(var(j))<< " cm2| "
              <<setw(12)<< sigma(j)<< " cm2| "
              << endl;
- cout<<"--------------------------------------------------------------";
- cout<<"---------------------------------------------------"<<endl;
+    cout<<linia<<endl;
 }
 
 ////////////////////////////////////////////////////////////////////////
