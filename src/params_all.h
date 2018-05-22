@@ -70,7 +70,7 @@ PARAM(bool,flux_correction,1)\
 PARAM(int,sf_method,0)\
 PARAM(bool,sf_fsi,1)\
 PARAM(bool,sf_coulomb,1)\
-PARAM(int,sf_pb,0)\
+PARAM(int,sf_pb,1)\
 PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
 PARAM(int,e_spp_ff_set,4)\

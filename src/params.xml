@@ -309,7 +309,7 @@
   <param name="sf_coulomb" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Turn on/off Couloumb correction for spectral function]]></description>
   </param>
-  <param name="sf_pb" type="select" ctype="int" default="0">
+  <param name="sf_pb" type="select" ctype="int" default="1">
     <description><![CDATA[Pauli blocking model for SF.]]></description>
     <options>
       <option key="0"><![CDATA[average Fermi momentum]]></option>
