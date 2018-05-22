@@ -102,7 +102,7 @@ void input_data::initialize_data_containers()
 
     int    cascade_NN_angle_number_of_fields    = 5;
     string cascade_NN_angle_data_fields[]       = {"energy", "angle_A_ii", "angle_A_ij", "angle_B_ii","angle_B_ij"};
-    int    cascade_NN_angle_interpolate_fields[]= {-1, 0, 0, 0, 0};
+    int    cascade_NN_angle_interpolate_fields[]= {-1, 1, 1, 1, 1};
     double cascade_NN_angle_unit_fields[]       = { 1, 1, 1, 1, 1};
     containers.push_back( data_container( input_path, "kaskada_NN_angle", par.kaskada_NN_angle,
                                           cascade_NN_angle_number_of_fields, cascade_NN_angle_data_fields,
