@@ -28,6 +28,12 @@ CXX	      = g++
 CC 	      = g++
 FC            = gfortran
 
+%.o: %.cc
+		g++ ${CXXFLAGS} -c $< -o $@
+
+%.o: %.f
+		gfortran  -c $< -o $@
+
 TRGTS =         $(addprefix $(BIN)/,nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
                 dumpParams test_beam_rf test_makehist test_nucleus test_beam \
                 fsi niwg ladek_topologies test mb_nce_run ganalysis reweight_to reweight_along whist\
