@@ -111,17 +111,17 @@ class D4V
 	//vector-vector covariant multiplication. notice metric= (+,-,-,-)
 	inline friend T operator* (const D4V<T> &v1,const D4V<double> &v2)
 	{
-		return v1.t0_*v2.t0_-v1.t1_*v2.t1_-v1.t2_*v2.t2_-v1.t3_*v2.t3_;
+		return v1(0)*v2(0)-v1(1)*v2(1)-v1(2)*v2(2)-v1(3)*v2(3);
 	}
 
 	inline friend T operator* (D4V<T> v1,D4V< std::complex<double> > v2)
 	{
-		return v1.t0_*v2.t0_-v1.t1_*v2.t1_-v1.t2_*v2.t2_-v1.t3_*v2.t3_;
+		return v1(0)*v2(0)-v1(1)*v2(1)-v1(2)*v2(2)-v1(3)*v2(3);
 	}
 
 	inline friend DM operator* (D4V<T> v1,D4V< DM > v2)
 	{
-		DM result=v1.t0_*v2.t0_-v1.t1_*v2.t1_-v1.t2_*v2.t2_-v1.t3_*v2.t3_;
+		DM result=v1(0)*v2(0)-v1(1)*v2(1)-v1(2)*v2(2)-v1(3)*v2(3);
 		return result;
 
 	}
