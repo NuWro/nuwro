@@ -37,11 +37,11 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
   PB=p.MEC_pauli_blocking;
 
   //binding:either carbon or oxygen or calcium neutrino/antineutrino
-  Bmec=qvalues[2*nucl+(e.in[0].pdg<0)];
+  Bmec=qvalues_Nieves[2*nucl+(e.in[0].pdg<0)];
 
   // Qvalue threshold...
   double q0max=e.in[0].E()-ml-eV;
-  if(q0max>qmax) q0max=qmax;
+  if(q0max>qmax_Nieves) q0max=qmax_Nieves;
   width_q0=q0max-Bmec;
 
   particle mecnucleon[4]; //0,1 - in, 2, 3 - out
@@ -52,7 +52,7 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
                                                mec_smearing, binding, ile_pb, mc_sampling);
 
   e.weight = weight;
-  if (weight>0) mec_do_cc ( mecnucleon,  p.mec_ratio_pp);
+  if (weight>0) mec_do_cc (mecnucleon, p.mec_ratio_pp);
   e.in.push_back (mecnucleon[0]);
   e.in.push_back (mecnucleon[1]);
   e.out.push_back (meclepton);
@@ -150,7 +150,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
   // final lepton momentum
   double lp=sqrt(lp2);
   // minimum cosine boundary from momentum transfer cut
-  double cos_min=0.5*(E*E+lp2-qmax*qmax)/E/lp;
+  double cos_min=0.5*(E*E+lp2-qmax_Nieves*qmax_Nieves)/E/lp;
   if(cos_min<-1.0) cos_min=-1.0;
   if(cos_min<1)
   {
@@ -340,7 +340,7 @@ double Nieves_dsdEdc(double E, double q0, double ct)
     double w12=0;
     double w33=0;
     q0-=Bmec;
-    if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax))
+    if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax_Nieves))
     {
       double spacing=0.01*GeV;
       int m=int((q-spacing)/spacing);

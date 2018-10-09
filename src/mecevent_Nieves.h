@@ -17,6 +17,14 @@
 // Data file with hadronic tensor elements
 #include "Nieves_MEC.h"
 
+// Cut in momentum transfer for Valencia model
+const double qmax_Nieves=1.2*GeV;
+
+// Efffecitive CC binding energies in MeV: Carbon-neutrino, Carbon-antineutrino
+// Oxygen-neutrino, Oxygen-antineutrino
+static double qvalues_Nieves[6]={16.827*MeV,13.880*MeV,14.906*MeV,10.931*MeV,13.809*MeV,1.822*MeV};
+//static double qvalues_Nieves[6]={16.827*MeV,13.880*MeV,14.906*MeV,10.931*MeV,14.906*MeV,10.931*MeV};
+
 // Generate event
 void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc);
 

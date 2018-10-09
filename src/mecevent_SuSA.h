@@ -17,13 +17,20 @@
 // Data file with hadronic tensor elements
 #include "Nieves_MEC.h"
 
+// Cut in momentum transfer for SuSA model
+const double qmax_SuSA=2.0*GeV;
+
+// Efffecitive CC binding energies in MeV: Carbon-neutrino, Carbon-antineutrino
+// Oxygen-neutrino, Oxygen-antineutrino
+static double qvalues_SuSA[4]={40.*MeV,40.*MeV,32.*MeV,32.*MeV};
+
 // Generate event
 void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc);
 
 // Generate lepton kinematics and calculate the cross section
 double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
-                              double mec_central, double mec_smearing, double binding,
-                              int ile_pb, double sampling);
+                            double mec_central, double mec_smearing, double binding,
+                            int ile_pb, double sampling);
 
 // Double-differential cross section
 double SuSA_dsdEdc (double E, double q0, double ct);

@@ -33,15 +33,15 @@ void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
   ml2=ml*ml;
 
   //nucleus and Pauli blocking
-  nucl=(t.p>7);//+(t.p>15);
+  nucl=(t.p>7);
   PB=p.MEC_pauli_blocking;
 
   //binding:either carbon or oxygen or calcium neutrino/antineutrino
-  Bmec=qvalues[2*nucl+(e.in[0].pdg<0)];
+  Bmec=qvalues_SuSA[2*nucl+(e.in[0].pdg<0)];
 
   // Qvalue threshold...
   double q0max=e.in[0].E()-ml-eV;
-  if(q0max>qmax) q0max=qmax;
+  if(q0max>qmax_SuSA) q0max=qmax_SuSA;
   width_q0=q0max-Bmec;
 
   particle mecnucleon[4]; //0,1 - in, 2, 3 - out
@@ -52,7 +52,7 @@ void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
                                                mec_smearing, binding, ile_pb, mc_sampling);
 
   e.weight = weight;
-  if (weight>0) mec_do_cc ( mecnucleon,  p.mec_ratio_pp);
+  if (weight>0) mec_do_cc (mecnucleon, p.mec_ratio_pp);
   e.in.push_back (mecnucleon[0]);
   e.in.push_back (mecnucleon[1]);
   e.out.push_back (meclepton);
@@ -97,45 +97,13 @@ void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
       weight=weight*renorm;
     }
   }
-
-  /*
-  if (e.in[0].pdg>0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
-    weight=weight*1.21;
-  if (e.in[0].pdg>0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.99;
-  
-  if (e.in[0].pdg>0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
-    weight=weight*1.15;
-  if (e.in[0].pdg>0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.995;
-  
-  if (e.in[0].pdg>0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4224)
-    weight=weight*1.47;
-  if (e.in[0].pdg>0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.955;
-  
-  if (e.in[0].pdg<0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
-    weight=weight*0.805;
-  if (e.in[0].pdg<0 && p.nucleus_p==18 && p.nucleus_n==22 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.99;
-  
-  if (e.in[0].pdg<0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
-    weight=weight*0.86;
-  if (e.in[0].pdg<0 && p.nucleus_p==26 && p.nucleus_n==30 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.995;
-  
-  if (e.in[0].pdg<0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4424)
-    weight=weight*0.62;
-  if (e.in[0].pdg<0 && p.nucleus_p==82 && p.nucleus_n==126 && (mecnucleon[0].pdg +  mecnucleon[1].pdg) ==4324)
-    weight=weight*0.955;
-  */
 }
 
 ////////////////////////////////////////
 
 double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
-                              double mec_central, double mec_smearing, double binding,
-                              int ile_PB, double sampling)
+                            double mec_central, double mec_smearing, double binding,
+                            int ile_PB, double sampling)
 {
   // it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 
@@ -150,7 +118,7 @@ double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucle
   // final lepton momentum
   double lp=sqrt(lp2);
   // minimum cosine boundary from momentum transfer cut
-  double cos_min=0.5*(E*E+lp2-qmax*qmax)/E/lp;
+  double cos_min=0.5*(E*E+lp2-qmax_SuSA*qmax_SuSA)/E/lp;
   if(cos_min<-1.0) cos_min=-1.0;
   if(cos_min<1)
   {
@@ -184,53 +152,8 @@ double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucle
         unsigned licz=0;
         vect suma;
 
-        /*
-        //no Pauli blocking version
         do
         {
-          nucleon[0] = t.get_nucleon ();
-          nucleon[1] = t.get_nucleon ();
-
-          suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-          licz++;
-        }//to be able to make Lorentz boost and to "decay"
-        while ( (( suma.t < suma.length() ) || ( suma*suma < 4.0 * MN2)) &&(licz<calls_max) );
-        if(licz<calls_max)
-        {
-          vec trans = suma.v();
-          nucleon[2].set_proton();  //in mec_do* we decide about isospin  
-          nucleon[3].set_proton();
-          //cerr<<"\n suma"<<suma;
-          //cerr<<" q"<<qqq<<"\n";
-          suma.boost2 (trans);      //boost to the CM frame
-          double Ecm = suma.t / 2.0;  //each nucleon get the same energy in CM
-
-          vec dir_cm = rand_dir () * sqrt(Ecm * Ecm  - MN2);  //radnomly set direction of nucleons in CM
-          nucleon[2].set_momentum (dir_cm);
-          nucleon[3].set_momentum (-dir_cm);
-
-          nucleon[2].p4().boost2 (-trans);
-          nucleon[3].p4().boost2 (-trans);     //nucleons in the LAB frame
-        }
-        else
-        {
-          result=0;
-          vect zero (0,0,0);
-          nucleon[2].set_momentum (zero);
-          nucleon[3].set_momentum (zero);
-          nucleon[2].set_energy (MN);
-          nucleon[3].set_energy (MN);
-        }
-
-        meclep.set_momentum(kprim);*/
-
-        do
-        {
-          //nucleon[0] = t.get_nucleon ();
-          //nucleon[1] = t.get_nucleon ();
-
-          //suma = nucleon[0].p4() + nucleon[1].p4() + qqq;
-
           nucleon[0] = t.get_nucleon ();
           vec N1=spectral_choice (6, 6); // we take SF carbon distribution; should be improved !!!
           nucleon[0].set_momentum(N1);
@@ -340,7 +263,7 @@ double SuSA_dsdEdc(double E, double q0, double ct)
     double w12=0;
     double w33=0;
     q0-=Bmec;
-    if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax))
+    if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax_SuSA))
     {
       double spacing=0.01*GeV;
       int m=int((q-spacing)/spacing);
@@ -376,15 +299,6 @@ double SuSA_dsdEdc(double E, double q0, double ct)
             w33=(H2*(H1*O16grid[d+4])/spacing+(spacing-H2)*(H1*O16grid[b+4])/spacing)/spacing;
             break;
           }
-          case 2:
-          {
-            w00=(H2*(H1*Ca40grid[d])/spacing+(spacing-H2)*(H1*Ca40grid[b])/spacing)/spacing;
-            w03=(H2*(H1*Ca40grid[d+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*Ca40grid[d+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*Ca40grid[d+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*Ca40grid[d+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4])/spacing)/spacing;
-            break;
-          }
         }
       } // now we are in the data grid
       else if(n<m)
@@ -415,15 +329,6 @@ double SuSA_dsdEdc(double E, double q0, double ct)
             w33=(H2*(H1*O16grid[d+4]+(spacing-H1)*O16grid[c+4])/spacing+(spacing-H2)*(H1*O16grid[b+4]+(spacing-H1)*O16grid[a+4])/spacing)/spacing;
             break;
           }
-          case 2:
-          {
-            w00=(H2*(H1*Ca40grid[d]+(spacing-H1)*Ca40grid[c])/spacing+(spacing-H2)*(H1*Ca40grid[b]+(spacing-H1)*Ca40grid[a])/spacing)/spacing;
-            w03=(H2*(H1*Ca40grid[d+1]+(spacing-H1)*Ca40grid[c+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1]+(spacing-H1)*Ca40grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*Ca40grid[d+2]+(spacing-H1)*Ca40grid[c+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2]+(spacing-H1)*Ca40grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*Ca40grid[d+3]+(spacing-H1)*Ca40grid[c+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3]+(spacing-H1)*Ca40grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*Ca40grid[d+4]+(spacing-H1)*Ca40grid[c+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4]+(spacing-H1)*Ca40grid[a+4])/spacing)/spacing;
-            break;
-          }
         }
       } // an now we are in the external triangle near q0-B=q
       else if(n==m)
@@ -443,7 +348,7 @@ double SuSA_dsdEdc(double E, double q0, double ct)
             w12=(H1*(H*C12grid[a+3]+(spacing-H)*C12grid[c+3])/spacing+(H-H1)*(H*C12grid[d+3]+(spacing-H)*C12grid[c+3])/spacing)/H;
             w33=(H1*(H*C12grid[a+4]+(spacing-H)*C12grid[c+4])/spacing+(H-H1)*(H*C12grid[d+4]+(spacing-H)*C12grid[c+4])/spacing)/H;
             break;
-          }     
+          }
           case 1:
           {
             w00=(H1*(H*O16grid[a]+(spacing-H)*O16grid[c])/spacing+(H-H1)*(H*O16grid[d]+(spacing-H)*O16grid[c])/spacing)/H;
@@ -451,15 +356,6 @@ double SuSA_dsdEdc(double E, double q0, double ct)
             w11=(H1*(H*O16grid[a+2]+(spacing-H)*O16grid[c+2])/spacing+(H-H1)*(H*O16grid[d+2]+(spacing-H)*O16grid[c+2])/spacing)/H;
             w12=(H1*(H*O16grid[a+3]+(spacing-H)*O16grid[c+3])/spacing+(H-H1)*(H*O16grid[d+3]+(spacing-H)*O16grid[c+3])/spacing)/H;
             w33=(H1*(H*O16grid[a+4]+(spacing-H)*O16grid[c+4])/spacing+(H-H1)*(H*O16grid[d+4]+(spacing-H)*O16grid[c+4])/spacing)/H;
-            break;
-          }
-          case 2:
-          {
-            w00=(H1*(H*Ca40grid[a]+(spacing-H)*Ca40grid[c])/spacing+(H-H1)*(H*Ca40grid[d]+(spacing-H)*Ca40grid[c])/spacing)/H;
-            w03=(H1*(H*Ca40grid[a+1]+(spacing-H)*Ca40grid[c+1])/spacing+(H-H1)*(H*Ca40grid[d+1]+(spacing-H)*Ca40grid[c+1])/spacing)/H;
-            w11=(H1*(H*Ca40grid[a+2]+(spacing-H)*Ca40grid[c+2])/spacing+(H-H1)*(H*Ca40grid[d+2]+(spacing-H)*Ca40grid[c+2])/spacing)/H;
-            w12=(H1*(H*Ca40grid[a+3]+(spacing-H)*Ca40grid[c+3])/spacing+(H-H1)*(H*Ca40grid[d+3]+(spacing-H)*Ca40grid[c+3])/spacing)/H;
-            w33=(H1*(H*Ca40grid[a+4]+(spacing-H)*Ca40grid[c+4])/spacing+(H-H1)*(H*Ca40grid[d+4]+(spacing-H)*Ca40grid[c+4])/spacing)/H;
             break;
           }
         }
