@@ -1,5 +1,16 @@
 #include "mecevent_common.h"
 
+//int noev=0;
+double ml=0;
+double ml2=0;
+double width_q0=0;
+double Bmec=0;
+int ap=0;
+int nucl=0;
+bool PB=0;
+
+////////////////////////////////////////
+
 void mec_do_cc (particle *p, double ratio)
 {
   // here is the isospin model; I assume that 3/5 times a pair is p-p and 2/5 times it is p-n

@@ -1,5 +1,5 @@
-#ifndef _mecevent_Nieves_h_
-#define _mecevent_Nieves_h_
+#ifndef _mecevent_SuSA_h_
+#define _mecevent_SuSA_h_
 
 #include <cmath>
 
@@ -18,14 +18,14 @@
 #include "Nieves_MEC.h"
 
 // Generate event
-void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc);
+void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc);
 
 // Generate lepton kinematics and calculate the cross section
-double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
+double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
                               double mec_central, double mec_smearing, double binding,
                               int ile_pb, double sampling);
 
 // Double-differential cross section
-double Nieves_dsdEdc (double E, double q0, double ct);
+double SuSA_dsdEdc (double E, double q0, double ct);
 
 #endif

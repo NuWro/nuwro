@@ -1,6 +1,6 @@
-#include "mecevent_Nieves.h"
+#include "mecevent_SuSA.h"
 
-void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
+void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
 {
   e.par = p;            // save params in the event
   e.flag.cc = cc;       // set flags for the event
@@ -48,7 +48,7 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
 
   double weight=0;
 
-  if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t, mec_central,
+  if(width_q0>0) weight=SuSA_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t, mec_central,
                                                mec_smearing, binding, ile_pb, mc_sampling);
 
   e.weight = weight;
@@ -133,13 +133,13 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
 
 ////////////////////////////////////////
 
-double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
+double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
                               double mec_central, double mec_smearing, double binding,
                               int ile_PB, double sampling)
 {
   // it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 
-  // here we extrapolate the cross section from Nieves's data file
+  // here we extrapolate the cross section from SuSA data file
   double result=0;
   // Bmec=Qvalue we randomize q0
   double q0_nucl=frandom()*width_q0;
@@ -162,7 +162,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
     if((q2>q0*q0))
     {
       //double differential cross section
-      result=Nieves_dsdEdc(E,q0,ct)*width_q0*width_cos/GeV;
+      result=SuSA_dsdEdc(E,q0,ct)*width_q0*width_cos/GeV;
 
       // Why should we bother to do anything, if weight=0??
       if(result>0)
@@ -323,7 +323,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 
 ////////////////////////////////////////
 
-double Nieves_dsdEdc(double E, double q0, double ct)
+double SuSA_dsdEdc(double E, double q0, double ct)
 {
   double result=0;
   double Ep=E-q0;

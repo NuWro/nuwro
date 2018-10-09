@@ -365,7 +365,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.mec=e->flag.cc=true;
 			if (p.dyn_mec_cc) // mec cc
 			//if( nu.pdg>0 || !(p.mec_kind==3) )// al flavor states/antineutrinos available
-			{	
+			{
 				if(_nucleus->A()<=1)
 					break;
 				switch(p.mec_kind)
@@ -374,20 +374,21 @@ void NuWro::makeevent(event* e, params &p)
 					case 2:mecevent2 (p, *e, *_nucleus, true, false);break;
 					case 3:mecevent_Nieves (p, *e, *_nucleus, true);break;
 					case 4:mecevent2 (p, *e, *_nucleus, true, true);break;
-					default:mecevent_tem (p, *e, *_nucleus, true);break; 
+					case 5:mecevent_SuSA (p, *e, *_nucleus, true);break;
+					default:mecevent_tem (p, *e, *_nucleus, true);break;
 				}
 				for(int i=0;i<e->out.size();i++)
-				{	
+				{
 					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 				}
 			}
 			break;
-		case 9: 
+		case 9:
 			e->flag.mec=e->flag.nc=true;
 			if (p.dyn_mec_nc) //mec nc
 			if(p.mec_kind==1)      // only TEM for NC
-			{   
+			{
 				if(_nucleus->A()<=1)
 					break;
 				switch(p.mec_kind)
@@ -396,7 +397,7 @@ void NuWro::makeevent(event* e, params &p)
 					default: mecevent_tem (p, *e, *_nucleus, false);break; 
 				}
 				for(int i=0;i<e->out.size();i++)
-				{      
+				{
 					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 				}
