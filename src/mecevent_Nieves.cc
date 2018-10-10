@@ -360,29 +360,29 @@ double Nieves_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H2*(H1*C12grid[d])/spacing+(spacing-H2)*(H1*C12grid[b])/spacing)/spacing;
-            w03=(H2*(H1*C12grid[d+1])/spacing+(spacing-H2)*(H1*C12grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*C12grid[d+2])/spacing+(spacing-H2)*(H1*C12grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*C12grid[d+3])/spacing+(spacing-H2)*(H1*C12grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*C12grid[d+4])/spacing+(spacing-H2)*(H1*C12grid[b+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_C12grid[d])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_C12grid[d+1])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_C12grid[d+2])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_C12grid[d+3])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_C12grid[d+4])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+4])/spacing)/spacing;
             break;
           }
           case 1:
           {
-            w00=(H2*(H1*O16grid[d])/spacing+(spacing-H2)*(H1*O16grid[b])/spacing)/spacing;
-            w03=(H2*(H1*O16grid[d+1])/spacing+(spacing-H2)*(H1*O16grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*O16grid[d+2])/spacing+(spacing-H2)*(H1*O16grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*O16grid[d+3])/spacing+(spacing-H2)*(H1*O16grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*O16grid[d+4])/spacing+(spacing-H2)*(H1*O16grid[b+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_O16grid[d])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_O16grid[d+1])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_O16grid[d+2])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_O16grid[d+3])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_O16grid[d+4])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+4])/spacing)/spacing;
             break;
           }
           case 2:
           {
-            w00=(H2*(H1*Ca40grid[d])/spacing+(spacing-H2)*(H1*Ca40grid[b])/spacing)/spacing;
-            w03=(H2*(H1*Ca40grid[d+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*Ca40grid[d+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*Ca40grid[d+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*Ca40grid[d+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_Ca40grid[d])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_Ca40grid[d+1])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_Ca40grid[d+2])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_Ca40grid[d+3])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_Ca40grid[d+4])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+4])/spacing)/spacing;
             break;
           }
         }
@@ -399,29 +399,29 @@ double Nieves_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H2*(H1*C12grid[d]+(spacing-H1)*C12grid[c])/spacing+(spacing-H2)*(H1*C12grid[b]+(spacing-H1)*C12grid[a])/spacing)/spacing;
-            w03=(H2*(H1*C12grid[d+1]+(spacing-H1)*C12grid[c+1])/spacing+(spacing-H2)*(H1*C12grid[b+1]+(spacing-H1)*C12grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*C12grid[d+2]+(spacing-H1)*C12grid[c+2])/spacing+(spacing-H2)*(H1*C12grid[b+2]+(spacing-H1)*C12grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*C12grid[d+3]+(spacing-H1)*C12grid[c+3])/spacing+(spacing-H2)*(H1*C12grid[b+3]+(spacing-H1)*C12grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*C12grid[d+4]+(spacing-H1)*C12grid[c+4])/spacing+(spacing-H2)*(H1*C12grid[b+4]+(spacing-H1)*C12grid[a+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_C12grid[d]+(spacing-H1)*Nieves_C12grid[c])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b]+(spacing-H1)*Nieves_C12grid[a])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_C12grid[d+1]+(spacing-H1)*Nieves_C12grid[c+1])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+1]+(spacing-H1)*Nieves_C12grid[a+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_C12grid[d+2]+(spacing-H1)*Nieves_C12grid[c+2])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+2]+(spacing-H1)*Nieves_C12grid[a+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_C12grid[d+3]+(spacing-H1)*Nieves_C12grid[c+3])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+3]+(spacing-H1)*Nieves_C12grid[a+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_C12grid[d+4]+(spacing-H1)*Nieves_C12grid[c+4])/spacing+(spacing-H2)*(H1*Nieves_C12grid[b+4]+(spacing-H1)*Nieves_C12grid[a+4])/spacing)/spacing;
             break;
           }
           case 1:
           {
-            w00=(H2*(H1*O16grid[d]+(spacing-H1)*O16grid[c])/spacing+(spacing-H2)*(H1*O16grid[b]+(spacing-H1)*O16grid[a])/spacing)/spacing;
-            w03=(H2*(H1*O16grid[d+1]+(spacing-H1)*O16grid[c+1])/spacing+(spacing-H2)*(H1*O16grid[b+1]+(spacing-H1)*O16grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*O16grid[d+2]+(spacing-H1)*O16grid[c+2])/spacing+(spacing-H2)*(H1*O16grid[b+2]+(spacing-H1)*O16grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*O16grid[d+3]+(spacing-H1)*O16grid[c+3])/spacing+(spacing-H2)*(H1*O16grid[b+3]+(spacing-H1)*O16grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*O16grid[d+4]+(spacing-H1)*O16grid[c+4])/spacing+(spacing-H2)*(H1*O16grid[b+4]+(spacing-H1)*O16grid[a+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_O16grid[d]+(spacing-H1)*Nieves_O16grid[c])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b]+(spacing-H1)*Nieves_O16grid[a])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_O16grid[d+1]+(spacing-H1)*Nieves_O16grid[c+1])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+1]+(spacing-H1)*Nieves_O16grid[a+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_O16grid[d+2]+(spacing-H1)*Nieves_O16grid[c+2])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+2]+(spacing-H1)*Nieves_O16grid[a+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_O16grid[d+3]+(spacing-H1)*Nieves_O16grid[c+3])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+3]+(spacing-H1)*Nieves_O16grid[a+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_O16grid[d+4]+(spacing-H1)*Nieves_O16grid[c+4])/spacing+(spacing-H2)*(H1*Nieves_O16grid[b+4]+(spacing-H1)*Nieves_O16grid[a+4])/spacing)/spacing;
             break;
           }
           case 2:
           {
-            w00=(H2*(H1*Ca40grid[d]+(spacing-H1)*Ca40grid[c])/spacing+(spacing-H2)*(H1*Ca40grid[b]+(spacing-H1)*Ca40grid[a])/spacing)/spacing;
-            w03=(H2*(H1*Ca40grid[d+1]+(spacing-H1)*Ca40grid[c+1])/spacing+(spacing-H2)*(H1*Ca40grid[b+1]+(spacing-H1)*Ca40grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*Ca40grid[d+2]+(spacing-H1)*Ca40grid[c+2])/spacing+(spacing-H2)*(H1*Ca40grid[b+2]+(spacing-H1)*Ca40grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*Ca40grid[d+3]+(spacing-H1)*Ca40grid[c+3])/spacing+(spacing-H2)*(H1*Ca40grid[b+3]+(spacing-H1)*Ca40grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*Ca40grid[d+4]+(spacing-H1)*Ca40grid[c+4])/spacing+(spacing-H2)*(H1*Ca40grid[b+4]+(spacing-H1)*Ca40grid[a+4])/spacing)/spacing;
+            w00=(H2*(H1*Nieves_Ca40grid[d]+(spacing-H1)*Nieves_Ca40grid[c])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b]+(spacing-H1)*Nieves_Ca40grid[a])/spacing)/spacing;
+            w03=(H2*(H1*Nieves_Ca40grid[d+1]+(spacing-H1)*Nieves_Ca40grid[c+1])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+1]+(spacing-H1)*Nieves_Ca40grid[a+1])/spacing)/spacing;
+            w11=(H2*(H1*Nieves_Ca40grid[d+2]+(spacing-H1)*Nieves_Ca40grid[c+2])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+2]+(spacing-H1)*Nieves_Ca40grid[a+2])/spacing)/spacing;
+            w12=(H2*(H1*Nieves_Ca40grid[d+3]+(spacing-H1)*Nieves_Ca40grid[c+3])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+3]+(spacing-H1)*Nieves_Ca40grid[a+3])/spacing)/spacing;
+            w33=(H2*(H1*Nieves_Ca40grid[d+4]+(spacing-H1)*Nieves_Ca40grid[c+4])/spacing+(spacing-H2)*(H1*Nieves_Ca40grid[b+4]+(spacing-H1)*Nieves_Ca40grid[a+4])/spacing)/spacing;
             break;
           }
         }
@@ -437,29 +437,29 @@ double Nieves_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H1*(H*C12grid[a]+(spacing-H)*C12grid[c])/spacing+(H-H1)*(H*C12grid[d]+(spacing-H)*C12grid[c])/spacing)/H;
-            w03=(H1*(H*C12grid[a+1]+(spacing-H)*C12grid[c+1])/spacing+(H-H1)*(H*C12grid[d+1]+(spacing-H)*C12grid[c+1])/spacing)/H;
-            w11=(H1*(H*C12grid[a+2]+(spacing-H)*C12grid[c+2])/spacing+(H-H1)*(H*C12grid[d+2]+(spacing-H)*C12grid[c+2])/spacing)/H;
-            w12=(H1*(H*C12grid[a+3]+(spacing-H)*C12grid[c+3])/spacing+(H-H1)*(H*C12grid[d+3]+(spacing-H)*C12grid[c+3])/spacing)/H;
-            w33=(H1*(H*C12grid[a+4]+(spacing-H)*C12grid[c+4])/spacing+(H-H1)*(H*C12grid[d+4]+(spacing-H)*C12grid[c+4])/spacing)/H;
+            w00=(H1*(H*Nieves_C12grid[a]+(spacing-H)*Nieves_C12grid[c])/spacing+(H-H1)*(H*Nieves_C12grid[d]+(spacing-H)*Nieves_C12grid[c])/spacing)/H;
+            w03=(H1*(H*Nieves_C12grid[a+1]+(spacing-H)*Nieves_C12grid[c+1])/spacing+(H-H1)*(H*Nieves_C12grid[d+1]+(spacing-H)*Nieves_C12grid[c+1])/spacing)/H;
+            w11=(H1*(H*Nieves_C12grid[a+2]+(spacing-H)*Nieves_C12grid[c+2])/spacing+(H-H1)*(H*Nieves_C12grid[d+2]+(spacing-H)*Nieves_C12grid[c+2])/spacing)/H;
+            w12=(H1*(H*Nieves_C12grid[a+3]+(spacing-H)*Nieves_C12grid[c+3])/spacing+(H-H1)*(H*Nieves_C12grid[d+3]+(spacing-H)*Nieves_C12grid[c+3])/spacing)/H;
+            w33=(H1*(H*Nieves_C12grid[a+4]+(spacing-H)*Nieves_C12grid[c+4])/spacing+(H-H1)*(H*Nieves_C12grid[d+4]+(spacing-H)*Nieves_C12grid[c+4])/spacing)/H;
             break;
           }     
           case 1:
           {
-            w00=(H1*(H*O16grid[a]+(spacing-H)*O16grid[c])/spacing+(H-H1)*(H*O16grid[d]+(spacing-H)*O16grid[c])/spacing)/H;
-            w03=(H1*(H*O16grid[a+1]+(spacing-H)*O16grid[c+1])/spacing+(H-H1)*(H*O16grid[d+1]+(spacing-H)*O16grid[c+1])/spacing)/H;
-            w11=(H1*(H*O16grid[a+2]+(spacing-H)*O16grid[c+2])/spacing+(H-H1)*(H*O16grid[d+2]+(spacing-H)*O16grid[c+2])/spacing)/H;
-            w12=(H1*(H*O16grid[a+3]+(spacing-H)*O16grid[c+3])/spacing+(H-H1)*(H*O16grid[d+3]+(spacing-H)*O16grid[c+3])/spacing)/H;
-            w33=(H1*(H*O16grid[a+4]+(spacing-H)*O16grid[c+4])/spacing+(H-H1)*(H*O16grid[d+4]+(spacing-H)*O16grid[c+4])/spacing)/H;
+            w00=(H1*(H*Nieves_O16grid[a]+(spacing-H)*Nieves_O16grid[c])/spacing+(H-H1)*(H*Nieves_O16grid[d]+(spacing-H)*Nieves_O16grid[c])/spacing)/H;
+            w03=(H1*(H*Nieves_O16grid[a+1]+(spacing-H)*Nieves_O16grid[c+1])/spacing+(H-H1)*(H*Nieves_O16grid[d+1]+(spacing-H)*Nieves_O16grid[c+1])/spacing)/H;
+            w11=(H1*(H*Nieves_O16grid[a+2]+(spacing-H)*Nieves_O16grid[c+2])/spacing+(H-H1)*(H*Nieves_O16grid[d+2]+(spacing-H)*Nieves_O16grid[c+2])/spacing)/H;
+            w12=(H1*(H*Nieves_O16grid[a+3]+(spacing-H)*Nieves_O16grid[c+3])/spacing+(H-H1)*(H*Nieves_O16grid[d+3]+(spacing-H)*Nieves_O16grid[c+3])/spacing)/H;
+            w33=(H1*(H*Nieves_O16grid[a+4]+(spacing-H)*Nieves_O16grid[c+4])/spacing+(H-H1)*(H*Nieves_O16grid[d+4]+(spacing-H)*Nieves_O16grid[c+4])/spacing)/H;
             break;
           }
           case 2:
           {
-            w00=(H1*(H*Ca40grid[a]+(spacing-H)*Ca40grid[c])/spacing+(H-H1)*(H*Ca40grid[d]+(spacing-H)*Ca40grid[c])/spacing)/H;
-            w03=(H1*(H*Ca40grid[a+1]+(spacing-H)*Ca40grid[c+1])/spacing+(H-H1)*(H*Ca40grid[d+1]+(spacing-H)*Ca40grid[c+1])/spacing)/H;
-            w11=(H1*(H*Ca40grid[a+2]+(spacing-H)*Ca40grid[c+2])/spacing+(H-H1)*(H*Ca40grid[d+2]+(spacing-H)*Ca40grid[c+2])/spacing)/H;
-            w12=(H1*(H*Ca40grid[a+3]+(spacing-H)*Ca40grid[c+3])/spacing+(H-H1)*(H*Ca40grid[d+3]+(spacing-H)*Ca40grid[c+3])/spacing)/H;
-            w33=(H1*(H*Ca40grid[a+4]+(spacing-H)*Ca40grid[c+4])/spacing+(H-H1)*(H*Ca40grid[d+4]+(spacing-H)*Ca40grid[c+4])/spacing)/H;
+            w00=(H1*(H*Nieves_Ca40grid[a]+(spacing-H)*Nieves_Ca40grid[c])/spacing+(H-H1)*(H*Nieves_Ca40grid[d]+(spacing-H)*Nieves_Ca40grid[c])/spacing)/H;
+            w03=(H1*(H*Nieves_Ca40grid[a+1]+(spacing-H)*Nieves_Ca40grid[c+1])/spacing+(H-H1)*(H*Nieves_Ca40grid[d+1]+(spacing-H)*Nieves_Ca40grid[c+1])/spacing)/H;
+            w11=(H1*(H*Nieves_Ca40grid[a+2]+(spacing-H)*Nieves_Ca40grid[c+2])/spacing+(H-H1)*(H*Nieves_Ca40grid[d+2]+(spacing-H)*Nieves_Ca40grid[c+2])/spacing)/H;
+            w12=(H1*(H*Nieves_Ca40grid[a+3]+(spacing-H)*Nieves_Ca40grid[c+3])/spacing+(H-H1)*(H*Nieves_Ca40grid[d+3]+(spacing-H)*Nieves_Ca40grid[c+3])/spacing)/H;
+            w33=(H1*(H*Nieves_Ca40grid[a+4]+(spacing-H)*Nieves_Ca40grid[c+4])/spacing+(H-H1)*(H*Nieves_Ca40grid[d+4]+(spacing-H)*Nieves_Ca40grid[c+4])/spacing)/H;
             break;
           }
         }

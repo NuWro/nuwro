@@ -36,7 +36,7 @@ void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
   nucl=(t.p>7);
   PB=p.MEC_pauli_blocking;
 
-  //binding:either carbon or oxygen or calcium neutrino/antineutrino
+  //binding:either carbon or oxygen neutrino/antineutrino
   Bmec=qvalues_SuSA[2*nucl+(e.in[0].pdg<0)];
 
   // Qvalue threshold...
@@ -110,6 +110,7 @@ double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucle
   // here we extrapolate the cross section from SuSA data file
   double result=0;
   // Bmec=Qvalue we randomize q0
+  // K.N.: width_q0 includes Bmec and therefore q0_nucl is effective, but q0 is real
   double q0_nucl=frandom()*width_q0;
   // de-Forest like subtraction of binding energy...
   double q0=q0_nucl+Bmec;
@@ -262,7 +263,7 @@ double SuSA_dsdEdc(double E, double q0, double ct)
     double w11=0;
     double w12=0;
     double w33=0;
-    q0-=Bmec;
+    q0-=Bmec; // K.N.: data is for effective q0, so Bmec is subtracted and then added back
     if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax_SuSA))
     {
       double spacing=0.01*GeV;
@@ -283,20 +284,20 @@ double SuSA_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H2*(H1*C12grid[d])/spacing+(spacing-H2)*(H1*C12grid[b])/spacing)/spacing;
-            w03=(H2*(H1*C12grid[d+1])/spacing+(spacing-H2)*(H1*C12grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*C12grid[d+2])/spacing+(spacing-H2)*(H1*C12grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*C12grid[d+3])/spacing+(spacing-H2)*(H1*C12grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*C12grid[d+4])/spacing+(spacing-H2)*(H1*C12grid[b+4])/spacing)/spacing;
+            w00=(H2*(H1*SuSA_C12grid[d])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b])/spacing)/spacing;
+            w03=(H2*(H1*SuSA_C12grid[d+1])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+1])/spacing)/spacing;
+            w11=(H2*(H1*SuSA_C12grid[d+2])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+2])/spacing)/spacing;
+            w12=(H2*(H1*SuSA_C12grid[d+3])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+3])/spacing)/spacing;
+            w33=(H2*(H1*SuSA_C12grid[d+4])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+4])/spacing)/spacing;
             break;
           }
           case 1:
           {
-            w00=(H2*(H1*O16grid[d])/spacing+(spacing-H2)*(H1*O16grid[b])/spacing)/spacing;
-            w03=(H2*(H1*O16grid[d+1])/spacing+(spacing-H2)*(H1*O16grid[b+1])/spacing)/spacing;
-            w11=(H2*(H1*O16grid[d+2])/spacing+(spacing-H2)*(H1*O16grid[b+2])/spacing)/spacing;
-            w12=(H2*(H1*O16grid[d+3])/spacing+(spacing-H2)*(H1*O16grid[b+3])/spacing)/spacing;
-            w33=(H2*(H1*O16grid[d+4])/spacing+(spacing-H2)*(H1*O16grid[b+4])/spacing)/spacing;
+            w00=(H2*(H1*SuSA_O16grid[d])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b])/spacing)/spacing;
+            w03=(H2*(H1*SuSA_O16grid[d+1])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+1])/spacing)/spacing;
+            w11=(H2*(H1*SuSA_O16grid[d+2])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+2])/spacing)/spacing;
+            w12=(H2*(H1*SuSA_O16grid[d+3])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+3])/spacing)/spacing;
+            w33=(H2*(H1*SuSA_O16grid[d+4])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+4])/spacing)/spacing;
             break;
           }
         }
@@ -313,20 +314,20 @@ double SuSA_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H2*(H1*C12grid[d]+(spacing-H1)*C12grid[c])/spacing+(spacing-H2)*(H1*C12grid[b]+(spacing-H1)*C12grid[a])/spacing)/spacing;
-            w03=(H2*(H1*C12grid[d+1]+(spacing-H1)*C12grid[c+1])/spacing+(spacing-H2)*(H1*C12grid[b+1]+(spacing-H1)*C12grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*C12grid[d+2]+(spacing-H1)*C12grid[c+2])/spacing+(spacing-H2)*(H1*C12grid[b+2]+(spacing-H1)*C12grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*C12grid[d+3]+(spacing-H1)*C12grid[c+3])/spacing+(spacing-H2)*(H1*C12grid[b+3]+(spacing-H1)*C12grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*C12grid[d+4]+(spacing-H1)*C12grid[c+4])/spacing+(spacing-H2)*(H1*C12grid[b+4]+(spacing-H1)*C12grid[a+4])/spacing)/spacing;
+            w00=(H2*(H1*SuSA_C12grid[d]+(spacing-H1)*SuSA_C12grid[c])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b]+(spacing-H1)*SuSA_C12grid[a])/spacing)/spacing;
+            w03=(H2*(H1*SuSA_C12grid[d+1]+(spacing-H1)*SuSA_C12grid[c+1])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+1]+(spacing-H1)*SuSA_C12grid[a+1])/spacing)/spacing;
+            w11=(H2*(H1*SuSA_C12grid[d+2]+(spacing-H1)*SuSA_C12grid[c+2])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+2]+(spacing-H1)*SuSA_C12grid[a+2])/spacing)/spacing;
+            w12=(H2*(H1*SuSA_C12grid[d+3]+(spacing-H1)*SuSA_C12grid[c+3])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+3]+(spacing-H1)*SuSA_C12grid[a+3])/spacing)/spacing;
+            w33=(H2*(H1*SuSA_C12grid[d+4]+(spacing-H1)*SuSA_C12grid[c+4])/spacing+(spacing-H2)*(H1*SuSA_C12grid[b+4]+(spacing-H1)*SuSA_C12grid[a+4])/spacing)/spacing;
             break;
           }
           case 1:
           {
-            w00=(H2*(H1*O16grid[d]+(spacing-H1)*O16grid[c])/spacing+(spacing-H2)*(H1*O16grid[b]+(spacing-H1)*O16grid[a])/spacing)/spacing;
-            w03=(H2*(H1*O16grid[d+1]+(spacing-H1)*O16grid[c+1])/spacing+(spacing-H2)*(H1*O16grid[b+1]+(spacing-H1)*O16grid[a+1])/spacing)/spacing;
-            w11=(H2*(H1*O16grid[d+2]+(spacing-H1)*O16grid[c+2])/spacing+(spacing-H2)*(H1*O16grid[b+2]+(spacing-H1)*O16grid[a+2])/spacing)/spacing;
-            w12=(H2*(H1*O16grid[d+3]+(spacing-H1)*O16grid[c+3])/spacing+(spacing-H2)*(H1*O16grid[b+3]+(spacing-H1)*O16grid[a+3])/spacing)/spacing;
-            w33=(H2*(H1*O16grid[d+4]+(spacing-H1)*O16grid[c+4])/spacing+(spacing-H2)*(H1*O16grid[b+4]+(spacing-H1)*O16grid[a+4])/spacing)/spacing;
+            w00=(H2*(H1*SuSA_O16grid[d]+(spacing-H1)*SuSA_O16grid[c])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b]+(spacing-H1)*SuSA_O16grid[a])/spacing)/spacing;
+            w03=(H2*(H1*SuSA_O16grid[d+1]+(spacing-H1)*SuSA_O16grid[c+1])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+1]+(spacing-H1)*SuSA_O16grid[a+1])/spacing)/spacing;
+            w11=(H2*(H1*SuSA_O16grid[d+2]+(spacing-H1)*SuSA_O16grid[c+2])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+2]+(spacing-H1)*SuSA_O16grid[a+2])/spacing)/spacing;
+            w12=(H2*(H1*SuSA_O16grid[d+3]+(spacing-H1)*SuSA_O16grid[c+3])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+3]+(spacing-H1)*SuSA_O16grid[a+3])/spacing)/spacing;
+            w33=(H2*(H1*SuSA_O16grid[d+4]+(spacing-H1)*SuSA_O16grid[c+4])/spacing+(spacing-H2)*(H1*SuSA_O16grid[b+4]+(spacing-H1)*SuSA_O16grid[a+4])/spacing)/spacing;
             break;
           }
         }
@@ -342,20 +343,20 @@ double SuSA_dsdEdc(double E, double q0, double ct)
         {
           case 0:
           {
-            w00=(H1*(H*C12grid[a]+(spacing-H)*C12grid[c])/spacing+(H-H1)*(H*C12grid[d]+(spacing-H)*C12grid[c])/spacing)/H;
-            w03=(H1*(H*C12grid[a+1]+(spacing-H)*C12grid[c+1])/spacing+(H-H1)*(H*C12grid[d+1]+(spacing-H)*C12grid[c+1])/spacing)/H;
-            w11=(H1*(H*C12grid[a+2]+(spacing-H)*C12grid[c+2])/spacing+(H-H1)*(H*C12grid[d+2]+(spacing-H)*C12grid[c+2])/spacing)/H;
-            w12=(H1*(H*C12grid[a+3]+(spacing-H)*C12grid[c+3])/spacing+(H-H1)*(H*C12grid[d+3]+(spacing-H)*C12grid[c+3])/spacing)/H;
-            w33=(H1*(H*C12grid[a+4]+(spacing-H)*C12grid[c+4])/spacing+(H-H1)*(H*C12grid[d+4]+(spacing-H)*C12grid[c+4])/spacing)/H;
+            w00=(H1*(H*SuSA_C12grid[a]+(spacing-H)*SuSA_C12grid[c])/spacing+(H-H1)*(H*SuSA_C12grid[d]+(spacing-H)*SuSA_C12grid[c])/spacing)/H;
+            w03=(H1*(H*SuSA_C12grid[a+1]+(spacing-H)*SuSA_C12grid[c+1])/spacing+(H-H1)*(H*SuSA_C12grid[d+1]+(spacing-H)*SuSA_C12grid[c+1])/spacing)/H;
+            w11=(H1*(H*SuSA_C12grid[a+2]+(spacing-H)*SuSA_C12grid[c+2])/spacing+(H-H1)*(H*SuSA_C12grid[d+2]+(spacing-H)*SuSA_C12grid[c+2])/spacing)/H;
+            w12=(H1*(H*SuSA_C12grid[a+3]+(spacing-H)*SuSA_C12grid[c+3])/spacing+(H-H1)*(H*SuSA_C12grid[d+3]+(spacing-H)*SuSA_C12grid[c+3])/spacing)/H;
+            w33=(H1*(H*SuSA_C12grid[a+4]+(spacing-H)*SuSA_C12grid[c+4])/spacing+(H-H1)*(H*SuSA_C12grid[d+4]+(spacing-H)*SuSA_C12grid[c+4])/spacing)/H;
             break;
           }
           case 1:
           {
-            w00=(H1*(H*O16grid[a]+(spacing-H)*O16grid[c])/spacing+(H-H1)*(H*O16grid[d]+(spacing-H)*O16grid[c])/spacing)/H;
-            w03=(H1*(H*O16grid[a+1]+(spacing-H)*O16grid[c+1])/spacing+(H-H1)*(H*O16grid[d+1]+(spacing-H)*O16grid[c+1])/spacing)/H;
-            w11=(H1*(H*O16grid[a+2]+(spacing-H)*O16grid[c+2])/spacing+(H-H1)*(H*O16grid[d+2]+(spacing-H)*O16grid[c+2])/spacing)/H;
-            w12=(H1*(H*O16grid[a+3]+(spacing-H)*O16grid[c+3])/spacing+(H-H1)*(H*O16grid[d+3]+(spacing-H)*O16grid[c+3])/spacing)/H;
-            w33=(H1*(H*O16grid[a+4]+(spacing-H)*O16grid[c+4])/spacing+(H-H1)*(H*O16grid[d+4]+(spacing-H)*O16grid[c+4])/spacing)/H;
+            w00=(H1*(H*SuSA_O16grid[a]+(spacing-H)*SuSA_O16grid[c])/spacing+(H-H1)*(H*SuSA_O16grid[d]+(spacing-H)*SuSA_O16grid[c])/spacing)/H;
+            w03=(H1*(H*SuSA_O16grid[a+1]+(spacing-H)*SuSA_O16grid[c+1])/spacing+(H-H1)*(H*SuSA_O16grid[d+1]+(spacing-H)*SuSA_O16grid[c+1])/spacing)/H;
+            w11=(H1*(H*SuSA_O16grid[a+2]+(spacing-H)*SuSA_O16grid[c+2])/spacing+(H-H1)*(H*SuSA_O16grid[d+2]+(spacing-H)*SuSA_O16grid[c+2])/spacing)/H;
+            w12=(H1*(H*SuSA_O16grid[a+3]+(spacing-H)*SuSA_O16grid[c+3])/spacing+(H-H1)*(H*SuSA_O16grid[d+3]+(spacing-H)*SuSA_O16grid[c+3])/spacing)/H;
+            w33=(H1*(H*SuSA_O16grid[a+4]+(spacing-H)*SuSA_O16grid[c+4])/spacing+(H-H1)*(H*SuSA_O16grid[d+4]+(spacing-H)*SuSA_O16grid[c+4])/spacing)/H;
             break;
           }
         }

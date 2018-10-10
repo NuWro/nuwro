@@ -15,7 +15,7 @@
 #include "mecevent_common.h"
 
 // Data file with hadronic tensor elements
-#include "Nieves_MEC.h"
+#include "SuSA_MEC.h"
 
 // Cut in momentum transfer for SuSA model
 const double qmax_SuSA=2.0*GeV;

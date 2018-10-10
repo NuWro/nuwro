@@ -1,10 +1,10 @@
-#ifndef Nieves_MEC
-#define Nieves_MEC
+#ifndef SuSA_MEC
+#define SuSA_MEC
 
 //five nuclear tensor elements for MEC normalized per nucleon,
 //spacing each 10 MeV in q and q0
 
-static double Nieves_C12grid[36300]=
+static double SuSA_C12grid[36300]=
 {0.13159, -0.000138258, 0.199673, -0.00825044, 0.19679,
 0.132398, -7.95929e-05, 0.201818, -0.0165725, 0.191457,
 0.128308, 0.000497813, 0.206867, -0.0167795, 0.196175,
@@ -7270,7 +7270,7 @@ static double Nieves_C12grid[36300]=
 //five nuclear tensor elements for MEC normalized per nucleon,
 //spacing each 10 MeV in q and q0
 
-static double Nieves_O16grid[36300]=
+static double SuSA_O16grid[36300]=
 {0.0797161, 0.000874508, 0.154423, -0.0064441, 0.15238,
 0.0786932, 0.00150698, 0.151993, -0.012649, 0.143479,
 0.00394066, -0.0055065, 0.166491, -0.0135418, 0.156433,
@@ -14535,7 +14535,7 @@ static double Nieves_O16grid[36300]=
 
 //five nuclear tensor elements for MEC, spacing each 10 MeV in q and q0
 
-static double Nieves_Ca40grid[36300]=
+static double SuSA_Ca40grid[36300]=
 {0.00174712, 2.86983e-05, 0.0815665, -0.0091639, 0.0803367,
 0.00396376, 1.06693e-05, 0.0835025, -0.0185447, 0.0769419,
 0.188688, -0.00514303, 0.251565, -0.0494344, 0.237813,
