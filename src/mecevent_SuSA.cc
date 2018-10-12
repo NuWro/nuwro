@@ -263,12 +263,12 @@ double SuSA_dsdEdc(double E, double q0, double ct)
     double w11=0;
     double w12=0;
     double w33=0;
-    q0-=Bmec; // K.N.: data is for effective q0, so Bmec is subtracted and then added back
+    q0-=Bmec; // K.N.: Bmec is subtracted and then added back, so the data is for effective q0
     if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax_SuSA))
     {
       double spacing=0.01*GeV;
       int m=int((q-spacing)/spacing);
-      if (m>118) m=int(118);
+      if (m>194) m=int(194);
       int n=int((q0-spacing)/spacing);
       int pos=int(0.5*m*(m+1)+n)*5;
       // q0-B<0.1 GeV extrapolation with 0 at q0-B=0
@@ -375,6 +375,7 @@ double SuSA_dsdEdc(double E, double q0, double ct)
     result=(2*w1*st2+w2*ct2-w3*(E+Ep)*st2);
     result+=ml2/((Ep+lp)*Ep)*(w1*ct-0.5*w2*ct+0.5*w3*(Ep*(1.0-ct)+lp-E*ct)+0.5*w4*(ml2*ct+2*Ep*(Ep+lp)*sts)-0.5*w5*(Ep+lp));
     result*=2*G*G*Ep*lp/Pi/cm2;
+    result*=0.949; // missing square of cabbibo angle cosine in SuSA normalization
     if (result<0) { result=0;}
   }
   return result;

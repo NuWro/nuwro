@@ -18,7 +18,7 @@
 #include "SuSA_MEC.h"
 
 // Cut in momentum transfer for SuSA model
-const double qmax_SuSA=2.0*GeV;
+const double qmax_SuSA=1.95*GeV;
 
 // Efffecitive CC binding energies in MeV: Carbon-neutrino, Carbon-antineutrino
 // Oxygen-neutrino, Oxygen-antineutrino
