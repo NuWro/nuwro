@@ -1,48 +1,52 @@
-# N. Metropolis et al., Phys.Rev. 110 (1958) 204-219
+# N. Metropolis et al., Phys.Rev. 110 (1958) 185-203
 
 -
-    energy: 0
+    energy: 0.0
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_A_ij: 0.0
+    angle_B_ij: 0.0
 -
-    energy: 335
-    angle_A_ii: 0.1
-    angle_A_ij: 2.2
-    angle_B_ii: 0
-    angle_B_ij: -1.0
+    energy: 86.9846435021
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_A_ij: 2.1
+    angle_B_ij: -0.22
 -
-    energy: 410
-    angle_A_ii: 0.9
-    angle_A_ij: 1.8
-    angle_B_ii: 0
-    angle_B_ij: -1.1
--
-    energy: 510
-    angle_A_ii: 2.7
-    angle_A_ij: 2.3
-    angle_B_ii: 0
+    energy: 175.938574008
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_A_ij: 5.8
     angle_B_ij: -0.7
 -
-    energy: 660
-    angle_A_ii: 9.0
-    angle_A_ij: 8.8
-    angle_B_ii: 0
-    angle_B_ij: -0.2
+    energy: 266.861791519
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_A_ij: 6.95
+    angle_B_ij: -0.56
 -
-    energy: 840
-    angle_A_ii: 14.3
-    angle_A_ij: 15.0
-    angle_B_ii: 0
-    angle_B_ij: 0.0
+    energy: 361.938018049
+    angle_A_ii: 0.05
+    angle_B_ii: 0.0
+    angle_A_ij: 4.3
+    angle_B_ij: -0.1
 -
-    energy: 1160
-    angle_A_ii: 19.2
-    angle_A_ij: 29.4
-    angle_B_ii: 0
-    angle_B_ij: 0.0
+    energy: 456.84560694
+    angle_A_ii: 0.29
+    angle_B_ii: 0.0
+    angle_A_ij: 3.5
+    angle_B_ij: 0.2
 -
-    energy: 1780
-    angle_A_ii: 1e+99
-    angle_A_ij: 1e+99
-    angle_B_ii: 0
-    angle_B_ij: 0.0
+    energy: 553.722482835
+    angle_A_ii: 0.8
+    angle_B_ii: 0.0
+    angle_A_ij: 4.15
+    angle_B_ij: 0.5
+-
+    energy: 652.568645734
+    angle_A_ii: 1.85
+    angle_B_ii: 0.0
+    angle_A_ij: 5.35
+    angle_B_ij: 0.7
 -
     energy: 1e+300
