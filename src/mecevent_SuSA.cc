@@ -264,12 +264,14 @@ double SuSA_dsdEdc(double E, double q0, double ct)
     double w12=0;
     double w33=0;
     q0-=Bmec; // K.N.: Bmec is subtracted and then added back, so the data is for effective q0
-    if((q0<=q)and(q>=0.01*GeV)and(q0>=0)and(q<=qmax_SuSA))
+    q -=Bmec; // K.N.: I claim that the same should happen for q
+    if((q0<=q)and(q>=0)and(q0>=0)and(q<=qmax_SuSA-Bmec))
     {
       double spacing=0.01*GeV;
       int m=int((q-spacing)/spacing);
-      if (m>194) m=int(194);
+      if(q<spacing) m=-1;
       int n=int((q0-spacing)/spacing);
+      if(q0<spacing)n=-1;
       int pos=int(0.5*m*(m+1)+n)*5;
       // q0-B<0.1 GeV extrapolation with 0 at q0-B=0
       if(n<0)
@@ -363,6 +365,8 @@ double SuSA_dsdEdc(double E, double q0, double ct)
       }
     }
     q0+=Bmec;
+    q +=Bmec;
+
     double w1=0.5*w11;
     double q02=q0*q0;
     double w2=0.5*(w00+w11+q02/vq2*(w33-w11)-2*q0/q*w03);
