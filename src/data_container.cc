@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 
