@@ -1,0 +1,84 @@
+# J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220
+
+-
+    energy: 0.0
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.0
+    angle_A_ij: 0.0
+    angle_B_ij: 0.0
+    angle_C_ij: 0.0
+-
+    energy: 86.8187712553
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.0
+    angle_A_ij: 0.0
+    angle_B_ij: 0.0
+    angle_C_ij: 0.03
+-
+    energy: 175.876974355
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.0
+    angle_A_ij: 0.05
+    angle_B_ij: 0.0
+    angle_C_ij: 0.52
+-
+    energy: 266.529113811
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.0
+    angle_A_ij: 0.22
+    angle_B_ij: 0.0
+    angle_C_ij: 1.09
+-
+    energy: 361.684417743
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.0
+    angle_A_ij: 0.69
+    angle_B_ij: 0.47
+    angle_C_ij: 1.83
+-
+    energy: 456.284692959
+    angle_A_ii: 0.0
+    angle_B_ii: 0.0
+    angle_C_ii: 0.06
+    angle_A_ij: 1.61
+    angle_B_ij: 1.46
+    angle_C_ij: 2.61
+-
+    energy: 553.451410459
+    angle_A_ii: 0.02
+    angle_B_ii: 0.0
+    angle_C_ii: 0.36
+    angle_A_ij: 3.23
+    angle_B_ij: 2.92
+    angle_C_ij: 3.36
+-
+    energy: 652.556586089
+    angle_A_ii: 0.35
+    angle_B_ii: 0.0
+    angle_C_ii: 1.35
+    angle_A_ij: 5.75
+    angle_B_ij: 4.92
+    angle_C_ij: 3.92
+-
+    energy: 916.22784184
+    angle_A_ii: 18.19
+    angle_B_ii: 0.0
+    angle_C_ii: 3.23
+    angle_A_ij: 18.19
+    angle_B_ij: 12.86
+    angle_C_ij: 3.23
+-
+    energy: 1270.50856366
+    angle_A_ii: 26600000.0
+    angle_B_ii: 0.67
+    angle_C_ii: 0.0
+    angle_A_ij: 333000000.0
+    angle_B_ij: 227000000.0
+    angle_C_ij: 0.0
+-
+    energy: 1e+300

@@ -475,9 +475,10 @@ bool Interaction::nucleon_elastic( particle& p1, particle& p2, int &n, particle 
   p[1] = p2;
   float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij
   float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij
-  int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b8x^3 + 0*x^2 + 0*x + 1
+  float C = NN_angle->get_value( 5+ij ); // 5 is ii, 6 is ij
+  int res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, C, 0, 1); //0*x^7 + 0*x^6 + 0*x^5 + a*x^4 + b*x^3 + c*x^2 + 0*x + 1
 
-  if(res==0) cerr<<"AB=0"<<endl;
+  if(res==0) cerr<<"ABC=0"<<endl;
   return res;
 }
 

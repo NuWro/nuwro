@@ -4,8 +4,10 @@
     energy: 0.0
     angle_A_ii: 0.0
     angle_B_ii: 0.0
+    angle_C_ii: 0.0
     angle_A_ij: 0.0
     angle_B_ij: 0.0
+    angle_C_ij: 0.0
 -
     energy: 86.9846435021
     angle_A_ii: 0.0
