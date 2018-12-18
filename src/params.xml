@@ -467,10 +467,11 @@
       <option key="2"><![CDATA[Custom fit to C. Patrignani et al. (Particle Data Group), Chin.Phys. C40 (2016) 100001 & J. Bystricky et al., Journal de Physique 48 (1987) 1901-1924]]></option>
     </options>
   </param>
-  <param name="kaskada_NN_angle" type="select" ctype="int" default="0" >
+  <param name="kaskada_NN_angle" type="select" ctype="int" default="3" >
     <description><![CDATA[The model of the nucleon-nucleon angular distributions in the cascade]]></description>
     <options>
       <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
+      <option key="3"><![CDATA[J. Cugnon et al., Nucl.Instrum.Meth. B111 (1996) 215-220]]></option>
     </options>
   </param>
   <param name="kaskada_piN_xsec" type="select" ctype="int" default="1" >
