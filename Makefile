@@ -159,7 +159,7 @@ $(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
 		$(LINK.cc) $^ -o $@
 
 clean:;         @rm -f          *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
-		src/gui/*.o src/gui/*.d src/gui/moc_* src/rew/*.o
+		src/gui/*.o src/gui/*.d src/gui/moc_* src/rew/*.o src/espp/*.o
 
 
 distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
