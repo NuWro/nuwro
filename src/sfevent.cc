@@ -126,7 +126,8 @@ double sfevent(params &par, event &e, nucleus &t) {
     const double Tk = Ek * Ek * x / (M + Ek * x);
 
     // energy transfer shift (as defined in eq. 3)
-    q0_shift += potential_real(Tk);  // real part of optical potential
+    if( Tk < 299.088 )
+      q0_shift += potential_real(Tk);  // real part of optical potential
     // apply folding function smearing (eq. 2)
     if (frandom11() > sqrt(transparency(2 * M * Tk))) {
       // repeat until energy transfer > 0
