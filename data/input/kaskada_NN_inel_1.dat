@@ -1,7 +1,9 @@
-# Oset...
+# Custom model
 
 -
     energy: 0
+    inel_ii: 0.0
+    inel_ij: 0.0
 -
     energy: 335
     inel_ii: 0.07

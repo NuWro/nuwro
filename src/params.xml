@@ -463,7 +463,7 @@
     <description><![CDATA[The model of the nucleon-nucleon inelastic coefficients in the cascade]]></description>
     <options>
       <option key="0"><![CDATA[N. Metropolis et al., Phys.Rev. 110 (1958) 204-219]]></option>
-      <option key="1"><![CDATA[Oset]]></option>
+      <option key="1"><![CDATA[Custom model]]></option>
       <option key="2"><![CDATA[Custom fit to C. Patrignani et al. (Particle Data Group), Chin.Phys. C40 (2016) 100001 & J. Bystricky et al., Journal de Physique 48 (1987) 1901-1924]]></option>
     </options>
   </param>
