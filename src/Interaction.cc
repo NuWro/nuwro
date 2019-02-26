@@ -188,16 +188,20 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   X.p2 = t.get_nucleon (p1.r);    // target nucleon (stored in the interaction_parameters)
                                   // note! the further calculations (P&P) are isospin independent,
                                   //       it will be chosen precisely in the interaction itself
+  // Include Fermi motion of the target nucleon
   vec vvv = X.p2.v();
   p1.p4().boost2 (vvv);
   X.Ekeff = p1.Ek();              // kinetic energy in the target rest frame
   p1.p4().boost2 (-vvv);
 
+  // Pandharipande & Piper procedure for the in-medium elastic cross section modification
   const double dens00 = 0.16/fermi3;
   const double Masssa = (938.272+939.56533)/2.0;
 
-  double beta = -116.0*X.dens/dens00;
-  double lambda = (3.29 - 0.373*X.dens/dens00)/fermi;
+  double dens_wrt_00 = X.dens/dens00;
+  double beta = -116.0*dens_wrt_00;
+  double lambda = (3.29 - 0.373*dens_wrt_00)/fermi;
+
   double effmass1 = Masssa/
   (1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
   double effmass2 = Masssa/
@@ -210,24 +214,33 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
   double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
 
-  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the cross section - JTS
+  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the elastic cross section
 
-  //cout<<"mod_proton  "<<X.dens<<"  "<<p1.momentum()<<"  "<<effmass1<<"  "<<mod<<endl;
+  // Other procedure for the in-medium inelastic cross section modification
+  // Parametrized with eta = 0.2
+  double mod2 = (1 - 0.2*dens_wrt_00); // in-medium modification of the inelastic cross section
+
+  // Find the fraction of inelastic cross section
+  NN_inel->set_input_point( X.Ekeff );
+  double inel_ii = NN_inel->get_value( 1 );
+  double inel_ij = NN_inel->get_value( 2 );
+  if( X.Ekeff <= 280. )                // inelastic threshold
+  {inel_ii = 0.;inel_ij =0.;}
 
   switch (X.pdg)
   {
     case pdg_neutron:
       get_NN_xsec( X.Ekeff, X.xsec_n, X.xsec_p );
-      X.xsec_n*=mod;
-      X.xsec_p*=mod;
+      X.xsec_n*=((1-inel_ii)*mod + inel_ii*mod2);
+      X.xsec_p*=((1-inel_ij)*mod + inel_ij*mod2);
       if (X.Ek<40)                 // effective Pauli blocking
         X.xsec_p*=0.9;
       break;
 
     case pdg_proton:
       get_NN_xsec( X.Ekeff, X.xsec_p, X.xsec_n );
-      X.xsec_n*=mod;
-      X.xsec_p*=mod;
+      X.xsec_n*=((1-inel_ij)*mod + inel_ij*mod2);
+      X.xsec_p*=((1-inel_ii)*mod + inel_ii*mod2);
       if (X.Ek<40)                 // effective Pauli blocking
         X.xsec_n*=0.9;
       break;
