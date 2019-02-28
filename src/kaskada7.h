@@ -47,6 +47,7 @@ class kaskada
     interaction_parameters X;                     //!< Keeps the information from prepare to make interaction.
     double max_step;                              //!< Maximal step of propagation.
     double radius;                                //!< Radius of the nucleus.
+    data_container* corr_func;                    //!< Correlation function for effective density.
 
   public:
     kaskada(params &p, event &e1, input_data *input);

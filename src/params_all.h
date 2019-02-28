@@ -105,6 +105,7 @@ PARAM(double,kaskada_NN_mfp_scale,1)\
 PARAM(int,kaskada_NN_xsec,2)\
 PARAM(int,kaskada_NN_inel,2)\
 PARAM(int,kaskada_NN_angle,3)\
+PARAM(int,kaskada_NN_corr,0)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\

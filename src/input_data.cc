@@ -108,4 +108,12 @@ void input_data::initialize_data_containers()
     containers.push_back( data_container( input_path, "kaskada_NN_angle", par.kaskada_NN_angle,
                                           cascade_NN_angle_number_of_fields, cascade_NN_angle_data_fields,
                                           cascade_NN_angle_interpolate_fields, cascade_NN_angle_unit_fields ));
+
+    int    cascade_NN_corr_number_of_fields     = 5;
+    string cascade_NN_corr_data_fields[]        = {"distance", "corr_ii", "corr_ij", "norm_ii", "norm_ij"};
+    int    cascade_NN_corr_interpolate_fields[] = {-1, 1, 1, 1, 1};
+    double cascade_NN_corr_unit_fields[]        = {fermi, 1, 1, 1, 1};
+    containers.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
+                                          cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
+                                          cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields ));
 }
