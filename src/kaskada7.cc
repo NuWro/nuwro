@@ -167,16 +167,23 @@ interaction_parameters kaskada::prepare_interaction()
 
   I->total_cross_sections (*p, *nucl, res); // calculate cross sections xsec_p and xsec_n
 
-  res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path
+  double corr_ii = 1.;
+  double corr_ij = 1.;
+  double norm_ii = 1.;
+  double norm_ij = 1.;
 
-  switch (res.pdg)
+  switch (res.pdg) // mean free path modifications: effective density and scaling
   {
-    case pdg_neutron:                       // for nucleons
+    case pdg_neutron:
+      res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
+      res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
     case pdg_proton:
-      res.xsec /= par.kaskada_NN_mfp_scale; // scale the mean free path (1/res.xsec)
-                                            // according to the params
+      res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
+      res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
       break;
   }
+
+  res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path
 
   assert(res.xsec>=0);                      // make sure that the cross section is positive
 
