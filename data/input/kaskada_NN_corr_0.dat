@@ -1,0 +1,14 @@
+Blank
+
+-
+    distance: 0.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 1.0
+     norm_ij: 1.0
+-
+    distance: 1.e10
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 1.0
+     norm_ij: 1.0
