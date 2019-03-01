@@ -47,6 +47,13 @@ data_container* input_data::get_data_container( int i )
   return &containers[i];
 }
 
+////////////////////////////////////////
+
+data_container* input_data::get_nucl_data_container( int i )
+{
+  return &nucl_containers[i][0];
+}
+
 
 ////////////////////////////////////////
 // Private methods
@@ -81,6 +88,10 @@ void input_data::initialize_data_containers()
   //  1 is linear interpolation,
   // -1 means it is the input axis.
 
+  // Totally independent
+
+  // # 0
+  // kaskada_NN_xsec
     int    cascade_NN_xsec_number_of_fields     = 3;
     string cascade_NN_xsec_data_fields[]        = {"energy", "xsec_ii", "xsec_ij"};
     int    cascade_NN_xsec_interpolate_fields[] = {-1, 1, 1};
@@ -89,6 +100,8 @@ void input_data::initialize_data_containers()
                                           cascade_NN_xsec_number_of_fields, cascade_NN_xsec_data_fields,
                                           cascade_NN_xsec_interpolate_fields, cascade_NN_xsec_unit_fields ));
 
+  // # 1
+  // kaskada_NN_inel
     int    cascade_NN_inel_number_of_fields     = 5;
     string cascade_NN_inel_data_fields[]        = {"energy", "inel_ii", "inel_ij", "inel_1pii", "inel_1pij"};
     int    cascade_NN_inel_interpolate_fields[] = {-1, 1, 1, 1, 1};
@@ -100,6 +113,8 @@ void input_data::initialize_data_containers()
                                           cascade_NN_inel_number_of_fields, cascade_NN_inel_data_fields,
                                           cascade_NN_inel_interpolate_fields, cascade_NN_inel_unit_fields ));
 
+  // # 2
+  // kaskada_NN_angle
     int    cascade_NN_angle_number_of_fields    = 7;
     string cascade_NN_angle_data_fields[]       = {"energy", "angle_A_ii", "angle_A_ij", "angle_B_ii",
                                                    "angle_B_ij", "angle_C_ii", "angle_C_ij"};
@@ -109,11 +124,17 @@ void input_data::initialize_data_containers()
                                           cascade_NN_angle_number_of_fields, cascade_NN_angle_data_fields,
                                           cascade_NN_angle_interpolate_fields, cascade_NN_angle_unit_fields ));
 
+  // Nucleus dependent
+
+  // # 0
+  // kaskada_NN_corr
     int    cascade_NN_corr_number_of_fields     = 5;
     string cascade_NN_corr_data_fields[]        = {"distance", "corr_ii", "corr_ij", "norm_ii", "norm_ij"};
     int    cascade_NN_corr_interpolate_fields[] = {-1, 1, 1, 1, 1};
     double cascade_NN_corr_unit_fields[]        = {fermi, 1, 1, 1, 1};
-    containers.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
-                                          cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
-                                          cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields ));
+    vector<data_container> constructor;
+    constructor.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
+                                           cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
+                                           cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields ));
+    nucl_containers.push_back( constructor );
 }

@@ -25,6 +25,22 @@ data_container::data_container( string _input_path,
 
 ////////////////////////////////////////
 
+data_container::data_container( string _input_path,
+                                string _param_name,       int _param_value,
+                                int _number_of_fields,    string *_data_fields,
+                                int *_interpolate_fields, double *_unit_fields,
+                                int _protons,             int _neutrons ):
+                                param_name(_param_name),  param_value(_param_value),
+                                number_of_fields(_number_of_fields),
+                                input_mid_point(0),       input_prev_bin(0),
+                                protons(_protons),        neutrons(_neutrons)
+{
+  generate_file_name( _input_path );          // generate file name using the provided params and the input path
+  copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
+}
+
+////////////////////////////////////////
+
 data_container::~data_container()
 {
 }

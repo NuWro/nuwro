@@ -14,6 +14,8 @@
 class data_container
 {
   string               file_name;                 //!< The name of the file with input data.
+  int                    protons;                 //!< Proton number for nucleus dependent case.
+  int                   neutrons;                 //!< Neutron number for nucleus dependent case.
   int           number_of_points;                 //!< Number of data points.
   int           number_of_fields;                 //!< Number of fields within data file.
   vector<string>     data_fields;                 //!< Names of the fields.
@@ -34,6 +36,12 @@ class data_container
                     int _number_of_fields,    string *_data_fields,
                     int *_interpolate_fields, double *_unit_fields );
                                                   //!< The default constructor.
+    data_container( string _input_path,
+                    string _param_name,       int _param_value,
+                    int _number_of_fields,    string *_data_fields,
+                    int *_interpolate_fields, double *_unit_fields,
+                    int _protons,             int _neutrons );
+                                                  //!< Constructor for nucleus dependent case.
     ~data_container();                            //!< The default destructor.
     void   read_data_file();                      //!< Read and store the data.
     void   set_input_point( double input_value );
