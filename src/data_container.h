@@ -14,6 +14,7 @@
 class data_container
 {
   string               file_name;                 //!< The name of the file with input data.
+  bool                  nucl_dep;                 //!< Is the container nucleus dependent.
   int                    protons;                 //!< Proton number for nucleus dependent case.
   int                   neutrons;                 //!< Neutron number for nucleus dependent case.
   int           number_of_points;                 //!< Number of data points.
@@ -40,7 +41,7 @@ class data_container
                     string _param_name,       int _param_value,
                     int _number_of_fields,    string *_data_fields,
                     int *_interpolate_fields, double *_unit_fields,
-                    int _protons,             int _neutrons );
+                    int _protons, int _neutrons );
                                                   //!< Constructor for nucleus dependent case.
     ~data_container();                            //!< The default destructor.
     void   read_data_file();                      //!< Read and store the data.

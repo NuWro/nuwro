@@ -38,6 +38,12 @@ void input_data::load_data()
 {
   for( int i = 0; i < containers.size(); i++ )
     containers[i].read_data_file();
+
+  for( int i = 0; i < nucl_containers.size(); i++ )
+  {
+    for( int j = 0; j < nucl_containers[i].size(); j++ )
+      nucl_containers[i][j].read_data_file();
+  }
 }
 
 ////////////////////////////////////////
@@ -135,6 +141,7 @@ void input_data::initialize_data_containers()
     vector<data_container> constructor;
     constructor.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
                                            cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
-                                           cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields ));
+                                           cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields,
+                                           6, 6 ));
     nucl_containers.push_back( constructor );
 }

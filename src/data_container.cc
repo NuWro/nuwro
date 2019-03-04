@@ -16,7 +16,7 @@ data_container::data_container( string _input_path,
                                 int _number_of_fields,    string *_data_fields,
                                 int *_interpolate_fields, double *_unit_fields ):
                                 param_name(_param_name),  param_value(_param_value),
-                                number_of_fields(_number_of_fields),
+                                number_of_fields(_number_of_fields), nucl_dep(0),
                                 input_mid_point(0),       input_prev_bin(0)
 {
   generate_file_name( _input_path );          // generate file name using the provided params and the input path
@@ -31,9 +31,9 @@ data_container::data_container( string _input_path,
                                 int *_interpolate_fields, double *_unit_fields,
                                 int _protons,             int _neutrons ):
                                 param_name(_param_name),  param_value(_param_value),
-                                number_of_fields(_number_of_fields),
-                                input_mid_point(0),       input_prev_bin(0),
-                                protons(_protons),        neutrons(_neutrons)
+                                number_of_fields(_number_of_fields), nucl_dep(1),
+                                protons(_protons),        neutrons(_neutrons),
+                                input_mid_point(0),       input_prev_bin(0)
 {
   generate_file_name( _input_path );          // generate file name using the provided params and the input path
   copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
@@ -152,9 +152,26 @@ void data_container::debug()
 
 void data_container::generate_file_name( string input_path )
 {
-  stringstream name_sstream;
-  name_sstream << input_path << param_name << "_" << param_value << ".dat"; // path + name + extension
-  file_name = name_sstream.str();
+  if ( nucl_dep )
+  {
+    stringstream name_sstream;
+    name_sstream << input_path << param_name << "_" << param_value; // path + name
+    name_sstream << "/" << protons << "p" << neutrons << "n.dat";   // + nucl + extension
+    file_name = name_sstream.str();
+    ifstream file_ifstream( file_name.c_str() );
+    if ( !file_ifstream.good() ) // if there is no such file use the default
+    {
+      name_sstream.str(std::string());
+      name_sstream << input_path << param_name << "_" << param_value << "/default.dat";
+      file_name = name_sstream.str();
+    }
+  }
+  else
+  {
+    stringstream name_sstream;
+    name_sstream << input_path << param_name << "_" << param_value << ".dat"; // path + name + extension
+    file_name = name_sstream.str();
+  }
 }
 
 ////////////////////////////////////////
