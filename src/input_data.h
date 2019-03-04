@@ -16,6 +16,8 @@
 class input_data
 {
   params                 par;                     //!< Params of the simulation.
+  vector<int>            nucl_list;               //!< List of nuclei used in the simulation.
+                                                  /*!< Items in a format: pppnnn. */
   vector<data_container> containers;              //!< Containers for data.
   vector<vector<data_container> >
                          nucl_containers;         //!< Nucleus dependent containers.
@@ -28,11 +30,12 @@ class input_data
                                                   /*!< Receives the params provided, checks essential things. */
     void load_data();                             //!< Loads the data needed for given simulation.
     data_container* get_data_container( int i );  //!< Provides with a specific data_container.
-    data_container* get_nucl_data_container( int i );
+    data_container* get_nucl_data_container( int i, int protons, int neutrons );
                                                   //!< Provides with a nucleus dependent data_container.
 
   private:
     void initialize_input_path();                 //!< Creates the input_path and checks if it exists.
+    void initialize_nucl_list();                  //!< Creates a list of nuclei used in the simulation.
     void initialize_data_containers();            //!< Prepares data containers for reading files.
 };
 

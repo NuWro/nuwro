@@ -29,6 +29,7 @@ void input_data::initialize( params _par )
 {
   par = _par;
   initialize_input_path();
+  initialize_nucl_list();
   initialize_data_containers();
 }
 
@@ -55,9 +56,24 @@ data_container* input_data::get_data_container( int i )
 
 ////////////////////////////////////////
 
-data_container* input_data::get_nucl_data_container( int i )
+data_container* input_data::get_nucl_data_container( int i, int protons, int neutrons )
 {
-  return &nucl_containers[i][0];
+  if ( par.target_type )
+  {
+    int nucl = protons * 1000 + neutrons;
+    int j    = 0;
+    while ( j < nucl_list.size() )
+    {
+      if ( nucl_list[j] == nucl )
+        return &nucl_containers[i][j];
+      j++;
+    }
+    throw "input_data error: Cannot find a requested nucleus.";
+  }
+  else
+  {
+    return &nucl_containers[i][0];
+  }
 }
 
 
@@ -81,6 +97,28 @@ void input_data::initialize_input_path()
   else
   {
     throw "input_data error: Could not find the input folder.";
+  }
+}
+
+////////////////////////////////////////
+
+void input_data::initialize_nucl_list()
+{
+  if ( par.target_type )
+  {
+    stringstream par_stream( par.target_content );
+    string par_line;
+    while( getline( par_stream, par_line ) )
+    {
+      stringstream par_values( par_line );
+      int protons, neutrons;
+      par_values >> protons >> neutrons;
+      nucl_list.push_back( protons * 1000 + neutrons );
+    }
+  }
+  else
+  {
+    nucl_list.push_back( par.nucleus_p * 1000 + par.nucleus_n );
   }
 }
 
@@ -139,9 +177,10 @@ void input_data::initialize_data_containers()
     int    cascade_NN_corr_interpolate_fields[] = {-1, 1, 1, 1, 1};
     double cascade_NN_corr_unit_fields[]        = {fermi, 1, 1, 1, 1};
     vector<data_container> constructor;
-    constructor.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
-                                           cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
-                                           cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields,
-                                           6, 6 ));
+    for( int i=0; i<nucl_list.size(); i++ )
+      constructor.push_back( data_container( input_path, "kaskada_NN_corr", par.kaskada_NN_corr,
+                                             cascade_NN_corr_number_of_fields, cascade_NN_corr_data_fields,
+                                             cascade_NN_corr_interpolate_fields, cascade_NN_corr_unit_fields,
+                                             nucl_list[i]/1000, nucl_list[i]%1000 ));
     nucl_containers.push_back( constructor );
 }

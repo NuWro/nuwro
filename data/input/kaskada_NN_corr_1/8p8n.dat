@@ -1,0 +1,447 @@
+# Nucleon correlations for oxygen, as described in arXiv:1902.05618
+# Extracted from ANL ab initio computations (https://www.phy.anl.gov/theory/research/density2)
+
+-
+    distance: 0.0
+     corr_ii: 0.0
+     corr_ij: 0.0
+     norm_ii: 0.276091567535
+     norm_ij: 0.67803326234
+-
+    distance: 0.1
+     corr_ii: 0.00184689355798
+     corr_ij: 0.0155321822679
+-
+    distance: 0.2
+     corr_ii: 0.00545929322156
+     corr_ij: 0.0384935113677
+-
+    distance: 0.3
+     corr_ii: 0.0122936581101
+     corr_ij: 0.0748420788412
+-
+    distance: 0.4
+     corr_ii: 0.02719366438
+     corr_ij: 0.153059753936
+-
+    distance: 0.5
+     corr_ii: 0.0526489240285
+     corr_ij: 0.272717245192
+     norm_ii: 0.277498447913
+     norm_ij: 0.6784403575
+-
+    distance: 0.6
+     corr_ii: 0.0877870754108
+     corr_ij: 0.427099056707
+-
+    distance: 0.7
+     corr_ii: 0.124797363206
+     corr_ij: 0.578100799079
+-
+    distance: 0.8
+     corr_ii: 0.160502035627
+     corr_ij: 0.711678294877
+-
+    distance: 0.9
+     corr_ii: 0.189480621578
+     corr_ij: 0.800729729141
+-
+    distance: 1.0
+     corr_ii: 0.209853714249
+     corr_ij: 0.841800019641
+     norm_ii: 0.281641736462
+     norm_ij: 0.679890435743
+-
+    distance: 1.1
+     corr_ii: 0.221541536375
+     corr_ij: 0.846916742104
+-
+    distance: 1.2
+     corr_ii: 0.229676286734
+     corr_ij: 0.836526611791
+-
+    distance: 1.3
+     corr_ii: 0.233972417186
+     corr_ij: 0.808771657947
+-
+    distance: 1.4
+     corr_ii: 0.236617241739
+     corr_ij: 0.776349058135
+-
+    distance: 1.5
+     corr_ii: 0.239086215444
+     corr_ij: 0.746765169483
+     norm_ii: 0.288245489926
+     norm_ij: 0.682878522489
+-
+    distance: 1.6
+     corr_ii: 0.240794663722
+     corr_ij: 0.718161407313
+-
+    distance: 1.7
+     corr_ii: 0.243863072857
+     corr_ij: 0.695996602832
+-
+    distance: 1.8
+     corr_ii: 0.247488282805
+     corr_ij: 0.677788460462
+-
+    distance: 1.9
+     corr_ii: 0.250934143127
+     corr_ij: 0.661826093984
+-
+    distance: 2.0
+     corr_ii: 0.254226961152
+     corr_ij: 0.648022496498
+     norm_ii: 0.296749440897
+     norm_ij: 0.687784925787
+-
+    distance: 2.1
+     corr_ii: 0.258477310484
+     corr_ij: 0.640259644262
+-
+    distance: 2.2
+     corr_ii: 0.262805393348
+     corr_ij: 0.635137903842
+-
+    distance: 2.3
+     corr_ii: 0.267522472591
+     corr_ij: 0.632403884824
+-
+    distance: 2.4
+     corr_ii: 0.271699986453
+     corr_ij: 0.631471150001
+-
+    distance: 2.5
+     corr_ii: 0.277909453995
+     corr_ij: 0.636774141981
+     norm_ii: 0.306386959003
+     norm_ij: 0.69488903419
+-
+    distance: 2.6
+     corr_ii: 0.283750993549
+     corr_ij: 0.642768933892
+-
+    distance: 2.7
+     corr_ii: 0.288246413101
+     corr_ij: 0.646514888158
+-
+    distance: 2.8
+     corr_ii: 0.293080548738
+     corr_ij: 0.649649777924
+-
+    distance: 2.9
+     corr_ii: 0.29768810507
+     corr_ij: 0.653801757525
+-
+    distance: 3.0
+     corr_ii: 0.302108325395
+     corr_ij: 0.658646044445
+     norm_ii: 0.316386993553
+     norm_ij: 0.704557486694
+-
+    distance: 3.1
+     corr_ii: 0.306402643015
+     corr_ij: 0.66361185871
+-
+    distance: 3.2
+     corr_ii: 0.310108155793
+     corr_ij: 0.666924722942
+-
+    distance: 3.3
+     corr_ii: 0.314173863769
+     corr_ij: 0.671160286445
+-
+    distance: 3.4
+     corr_ii: 0.318115915221
+     corr_ij: 0.676589713682
+-
+    distance: 3.5
+     corr_ii: 0.321840032624
+     corr_ij: 0.681314155129
+     norm_ii: 0.326160684922
+     norm_ij: 0.717258524893
+-
+    distance: 3.6
+     corr_ii: 0.324767813354
+     corr_ij: 0.684796974053
+-
+    distance: 3.7
+     corr_ii: 0.326737469997
+     corr_ij: 0.686029067374
+-
+    distance: 3.8
+     corr_ii: 0.331010286146
+     corr_ij: 0.692517797765
+-
+    distance: 3.9
+     corr_ii: 0.333192199729
+     corr_ij: 0.696955450665
+-
+    distance: 4.0
+     corr_ii: 0.334655567948
+     corr_ij: 0.698555585297
+     norm_ii: 0.335374610498
+     norm_ij: 0.733396861518
+-
+    distance: 4.1
+     corr_ii: 0.336658242896
+     corr_ij: 0.702025408917
+-
+    distance: 4.2
+     corr_ii: 0.33819245664
+     corr_ij: 0.706499297234
+-
+    distance: 4.3
+     corr_ii: 0.339401852
+     corr_ij: 0.70921637168
+-
+    distance: 4.4
+     corr_ii: 0.339885311429
+     corr_ij: 0.710770648417
+-
+    distance: 4.5
+     corr_ii: 0.341337677801
+     corr_ij: 0.71415892425
+     norm_ii: 0.343949575015
+     norm_ij: 0.753195904329
+-
+    distance: 4.6
+     corr_ii: 0.342648021761
+     corr_ij: 0.716397952982
+-
+    distance: 4.7
+     corr_ii: 0.344347627979
+     corr_ij: 0.721173448402
+-
+    distance: 4.8
+     corr_ii: 0.345247927093
+     corr_ij: 0.725646701158
+-
+    distance: 4.9
+     corr_ii: 0.345801274912
+     corr_ij: 0.728932811434
+-
+    distance: 5.0
+     corr_ii: 0.347135139317
+     corr_ij: 0.733947761416
+     norm_ii: 0.351981618528
+     norm_ij: 0.776695131224
+-
+    distance: 5.1
+     corr_ii: 0.34829228192
+     corr_ij: 0.739960917976
+-
+    distance: 5.2
+     corr_ii: 0.349655826936
+     corr_ij: 0.743397678749
+-
+    distance: 5.3
+     corr_ii: 0.351323220342
+     corr_ij: 0.748195676423
+-
+    distance: 5.4
+     corr_ii: 0.352202962685
+     corr_ij: 0.755640113619
+-
+    distance: 5.5
+     corr_ii: 0.353256063816
+     corr_ij: 0.758562982319
+     norm_ii: 0.359563934392
+     norm_ij: 0.803774494568
+-
+    distance: 5.6
+     corr_ii: 0.355687213934
+     corr_ij: 0.765889722529
+-
+    distance: 5.7
+     corr_ii: 0.357139432435
+     corr_ij: 0.774379805056
+-
+    distance: 5.8
+     corr_ii: 0.358528532785
+     corr_ij: 0.780045207737
+-
+    distance: 5.9
+     corr_ii: 0.358363951803
+     corr_ij: 0.783694484333
+-
+    distance: 6.0
+     corr_ii: 0.358448563341
+     corr_ij: 0.786967472421
+     norm_ii: 0.366610452588
+     norm_ij: 0.834176265806
+-
+    distance: 6.1
+     corr_ii: 0.360081716671
+     corr_ij: 0.79468415731
+-
+    distance: 6.2
+     corr_ii: 0.362618608608
+     corr_ij: 0.803512534916
+-
+    distance: 6.3
+     corr_ii: 0.361337335056
+     corr_ij: 0.804575518627
+-
+    distance: 6.4
+     corr_ii: 0.362349046667
+     corr_ij: 0.808284456181
+-
+    distance: 6.5
+     corr_ii: 0.366040660688
+     corr_ij: 0.818004426335
+     norm_ii: 0.372613697054
+     norm_ij: 0.867354992399
+-
+    distance: 6.6
+     corr_ii: 0.370283096392
+     corr_ij: 0.833076173617
+-
+    distance: 6.7
+     corr_ii: 0.369966804499
+     corr_ij: 0.836914012687
+-
+    distance: 6.8
+     corr_ii: 0.369774298562
+     corr_ij: 0.841276341277
+-
+    distance: 6.9
+     corr_ii: 0.375183929888
+     corr_ij: 0.853251072833
+-
+    distance: 7.0
+     corr_ii: 0.380563172274
+     corr_ij: 0.871757699545
+     norm_ii: 0.37626769575
+     norm_ij: 0.902133740119
+-
+    distance: 7.1
+     corr_ii: 0.376858651562
+     corr_ij: 0.867767324263
+-
+    distance: 7.2
+     corr_ii: 0.373571872158
+     corr_ij: 0.862833460851
+-
+    distance: 7.3
+     corr_ii: 0.380576686261
+     corr_ij: 0.880334518381
+-
+    distance: 7.4
+     corr_ii: 0.380695459981
+     corr_ij: 0.891818782181
+-
+    distance: 7.5
+     corr_ii: 0.375009287692
+     corr_ij: 0.889267949428
+     norm_ii: 0.375162878658
+     norm_ij: 0.936456469479
+-
+    distance: 7.6
+     corr_ii: 0.380948151566
+     corr_ij: 0.904183679168
+-
+    distance: 7.7
+     corr_ii: 0.392943465691
+     corr_ij: 0.931047545926
+-
+    distance: 7.8
+     corr_ii: 0.398732786909
+     corr_ij: 0.931511049402
+-
+    distance: 7.9
+     corr_ii: 0.398490936157
+     corr_ij: 0.93932245848
+-
+    distance: 8.0
+     corr_ii: 0.401867638628
+     corr_ij: 0.969161095402
+     norm_ii: 0.365877943179
+     norm_ij: 0.96755664314
+-
+    distance: 8.1
+     corr_ii: 0.40124185521
+     corr_ij: 0.984109686212
+-
+    distance: 8.2
+     corr_ii: 0.406214447266
+     corr_ij: 0.975727294024
+-
+    distance: 8.3
+     corr_ii: 0.404800938266
+     corr_ij: 0.974030984254
+-
+    distance: 8.4
+     corr_ii: 0.398487016417
+     corr_ij: 0.969406687429
+-
+    distance: 8.5
+     corr_ii: 0.402264369409
+     corr_ij: 0.956844567664
+-
+    distance: 8.6
+     corr_ii: 0.414396396028
+     corr_ij: 1.00195681677
+-
+    distance: 8.7
+     corr_ii: 0.41019840681
+     corr_ij: 1.01544746272
+-
+    distance: 8.8
+     corr_ii: 0.414720086784
+     corr_ij: 1.01842205254
+-
+    distance: 8.9
+     corr_ii: 0.444781479886
+     corr_ij: 1.12557948403
+-
+    distance: 9.0
+     corr_ii: 0.434435091106
+     corr_ij: 1.14786991993
+-
+    distance: 9.1
+     corr_ii: 0.437253931909
+     corr_ij: 1.11817774872
+-
+    distance: 9.2
+     corr_ii: 0.418182374472
+     corr_ij: 1.04571171944
+-
+    distance: 9.3
+     corr_ii: 0.403647615344
+     corr_ij: 1.01748145343
+-
+    distance: 9.4
+     corr_ii: 0.377271157989
+     corr_ij: 1.02360288982
+-
+    distance: 9.5
+     corr_ii: 0.400519730902
+     corr_ij: 1.11880180871
+-
+    distance: 9.6
+     corr_ii: 0.44717264261
+     corr_ij: 1.16403476587
+-
+    distance: 9.7
+     corr_ii: 0.423809585131
+     corr_ij: 1.13644753618
+-
+    distance: 9.8
+     corr_ii: 0.424461393245
+     corr_ij: 1.15161853859
+-
+    distance: 9.9
+     corr_ii: 0.44321105844
+     corr_ij: 1.13671019728
+-
+    distance: 10.0
+     corr_ii: 0.412750400613
+     corr_ij: 1.12626219548
+-
+    distance: 1.e10
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 1.0
+     norm_ij: 1.0

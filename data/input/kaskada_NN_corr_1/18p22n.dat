@@ -1,0 +1,411 @@
+# Nucleon correlations for argon, as described in arXiv:1902.05618
+# Extracted from ab initio computations for infinite nuclear matter (Phys.Rev. C45 (1992) 791-798)
+
+-
+    distance: 0.0
+     corr_ii: 0.0089039998991
+     corr_ij: 0.0358847998789
+     norm_ii: 0.960151500822
+     norm_ij: 0.991032105185
+-
+    distance: 0.1
+     corr_ii: 0.0089039998991
+     corr_ij: 0.0408847998789
+-
+    distance: 0.2
+     corr_ii: 0.0209615999596
+     corr_ij: 0.0668367998285
+-
+    distance: 0.3
+     corr_ii: 0.0458847998789
+     corr_ij: 0.122769599758
+-
+    distance: 0.4
+     corr_ii: 0.0869039998991
+     corr_ij: 0.209731199717
+-
+    distance: 0.5
+     corr_ii: 0.151884799879
+     corr_ij: 0.339519999496
+     norm_ii: 0.959830985722
+     norm_ij: 0.991394679389
+-
+    distance: 0.6
+     corr_ii: 0.24196159996
+     corr_ij: 0.509116799072
+-
+    distance: 0.7
+     corr_ii: 0.34145199995
+     corr_ij: 0.681020798971
+-
+    distance: 0.8
+     corr_ii: 0.454942399939
+     corr_ij: 0.845790398729
+-
+    distance: 0.9
+     corr_ii: 0.54598079998
+     corr_ij: 0.961828798769
+-
+    distance: 1.0
+     corr_ii: 0.61800960001
+     corr_ij: 1.03488639883
+     norm_ii: 0.959032856646
+     norm_ij: 0.99239713462
+-
+    distance: 1.1
+     corr_ii: 0.668134400141
+     corr_ij: 1.08094399889
+-
+    distance: 1.2
+     corr_ii: 0.704268800283
+     corr_ij: 1.09702079897
+-
+    distance: 1.3
+     corr_ii: 0.732489600515
+     corr_ij: 1.09420319916
+-
+    distance: 1.4
+     corr_ii: 0.755643200676
+     corr_ij: 1.08236639933
+-
+    distance: 1.5
+     corr_ii: 0.774296800837
+     corr_ij: 1.06624495952
+     norm_ii: 0.95819081118
+     norm_ij: 0.993801831018
+-
+    distance: 1.6
+     corr_ii: 0.792877440922
+     corr_ij: 1.04774079973
+-
+    distance: 1.7
+     corr_ii: 0.810960001009
+     corr_ij: 1.03097327987
+-
+    distance: 1.8
+     corr_ii: 0.827990721041
+     corr_ij: 1.01470576001
+-
+    distance: 1.9
+     corr_ii: 0.84351760107
+     corr_ij: 1.00230944012
+-
+    distance: 2.0
+     corr_ii: 0.85802720108
+     corr_ij: 0.991249600262
+     norm_ii: 0.957892933307
+     norm_ij: 0.995295046977
+-
+    distance: 2.1
+     corr_ii: 0.87351760107
+     corr_ij: 0.983364800383
+-
+    distance: 2.2
+     corr_ii: 0.887992641043
+     corr_ij: 0.980384000404
+-
+    distance: 2.3
+     corr_ii: 0.901950400999
+     corr_ij: 0.979403200424
+-
+    distance: 2.4
+     corr_ii: 0.915392800938
+     corr_ij: 0.980384000404
+-
+    distance: 2.5
+     corr_ii: 0.928316000858
+     corr_ij: 0.980874400394
+     norm_ii: 0.958709093924
+     norm_ij: 0.996580176577
+-
+    distance: 2.6
+     corr_ii: 0.939729600767
+     corr_ij: 0.982345600363
+-
+    distance: 2.7
+     corr_ii: 0.951124000656
+     corr_ij: 0.985288000303
+-
+    distance: 2.8
+     corr_ii: 0.962518400545
+     corr_ij: 0.989211200222
+-
+    distance: 2.9
+     corr_ii: 0.970932000454
+     corr_ij: 0.991172800182
+-
+    distance: 3.0
+     corr_ii: 0.977374400394
+     corr_ij: 0.992153600161
+     norm_ii: 0.961020939152
+     norm_ij: 0.997482394222
+-
+    distance: 3.1
+     corr_ii: 0.982816800333
+     corr_ij: 0.993624800131
+-
+    distance: 3.2
+     corr_ii: 0.988249600262
+     corr_ij: 0.995586400091
+-
+    distance: 3.3
+     corr_ii: 0.991220800232
+     corr_ij: 0.997057600061
+-
+    distance: 3.4
+     corr_ii: 0.994086240196
+     corr_ij: 0.998234560036
+-
+    distance: 3.5
+     corr_ii: 0.996553600161
+     corr_ij: 0.99852880003
+     norm_ii: 0.964884993101
+     norm_ij: 0.997963179795
+-
+    distance: 3.6
+     corr_ii: 0.997636320143
+     corr_ij: 0.998823040024
+-
+    distance: 3.7
+     corr_ii: 0.999111360117
+     corr_ij: 0.999117280018
+-
+    distance: 3.8
+     corr_ii: 1.0000940801
+     corr_ij: 0.999411520012
+-
+    distance: 3.9
+     corr_ii: 1.00078064008
+     corr_ij: 0.999705760006
+-
+    distance: 4.0
+     corr_ii: 1.00107680008
+     corr_ij: 1.0
+     norm_ii: 0.970003718874
+     norm_ij: 0.998112617906
+-
+    distance: 4.1
+     corr_ii: 1.0009
+     corr_ij: 1.0
+-
+    distance: 4.2
+     corr_ii: 1.0008
+     corr_ij: 1.0
+-
+    distance: 4.3
+     corr_ii: 1.0007
+     corr_ij: 1.0
+-
+    distance: 4.4
+     corr_ii: 1.0006
+     corr_ij: 1.0
+-
+    distance: 4.5
+     corr_ii: 1.0005
+     corr_ij: 1.0
+     norm_ii: 0.975813540401
+     norm_ij: 0.998100257003
+-
+    distance: 4.6
+     corr_ii: 1.0004
+     corr_ij: 1.0
+-
+    distance: 4.7
+     corr_ii: 1.0003
+     corr_ij: 1.0
+-
+    distance: 4.8
+     corr_ii: 1.0002
+     corr_ij: 1.0
+-
+    distance: 4.9
+     corr_ii: 1.0001
+     corr_ij: 1.0
+-
+    distance: 5.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.981635144729
+     norm_ij: 0.998071539514
+-
+    distance: 5.1
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.2
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.3
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.4
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.5
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.98687588958
+     norm_ij: 0.998126339115
+-
+    distance: 5.6
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.7
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.8
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 5.9
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.991174201743
+     norm_ij: 0.9983199777
+-
+    distance: 6.1
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.2
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.3
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.4
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.5
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.994421567932
+     norm_ij: 0.998649816877
+-
+    distance: 6.6
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.7
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.8
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 6.9
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.996695601739
+     norm_ij: 0.999049978828
+-
+    distance: 7.1
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.2
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.3
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.4
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.5
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.998167505404
+     norm_ij: 0.999416492585
+-
+    distance: 7.6
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.7
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.8
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 7.9
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.99904300738
+     norm_ij: 0.999677768944
+-
+    distance: 8.1
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.2
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.3
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.4
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.5
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.99952480869
+     norm_ij: 0.999832405313
+-
+    distance: 8.6
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.7
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.8
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 8.9
+     corr_ii: 1.0
+     corr_ij: 1.0
+-
+    distance: 9.0
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 0.999775382451
+     norm_ij: 0.999916074031
+-
+    distance: 1.e10
+     corr_ii: 1.0
+     corr_ij: 1.0
+     norm_ii: 1.0
+     norm_ij: 1.0
