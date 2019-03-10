@@ -264,7 +264,7 @@ kaskada_NN_mfp_scale = 1.0
 kaskada_NN_xsec  = 2  // NN cross sections:  (0) Metropolis et al., (2) PDG2016, (3) Liege
 kaskada_NN_inel  = 2  // NN inelastic frac.: (0) Metropolis et al., (1) Oset et al., (2) PDG2016 & Bystricky et al.
 kaskada_NN_angle = 3  // NN angular distr.:  (0) Metropolis et al., (3) Liege
-kaskada_NN_corr  = 0  // Effective density:  (0) No correlations,   (1) arXiv:1902.05618
+kaskada_NN_corr  = 1  // Effective density:  (0) No correlations,   (1) arXiv:1902.05618
 kaskada_piN_xsec = 1  // Full sets of input data for pions: (0) Metropolis et al., (1) Oset et al.
 
   formation_zone = fz-new
