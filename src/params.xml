@@ -386,6 +386,7 @@
       <option key="1"><![CDATA[TEM model]]></option>
       <option key="2"><![CDATA[Marteau model]]></option>
       <option key="3"><![CDATA[Nieves model]]></option>
+      <option key="5"><![CDATA[SuSAv2 model]]></option>
     </options>
   </param>
   <param name="mec_ratio_pp" type="text" ctype="double" default="0.85">
