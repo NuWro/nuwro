@@ -134,7 +134,7 @@ sf_coulomb = 1  # Coulomb correction for SF (0 - disabled, 1 - enabled)
 #     0 - average Fermi momentum
 #     1 - local Fermi momentum
 #     2 - nucleon momentum distribution given by spectral function
-sf_pb = 0
+sf_pb = 1
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
