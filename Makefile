@@ -158,18 +158,18 @@ $(BIN)/test_makehist:    src/test_makehist.o src/nd280stats.o
 $(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
 		$(LINK.cc) $^ -o $@
 
-clean:;         @rm -f          *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
+clean:;         @rm -f          *.o *.d src/event1dict.* src/event1dict_rdict.pcm       core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
 		src/gui/*.o src/gui/*.d src/gui/moc_* src/rew/*.o src/espp/*.o
 
 
-distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
+distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* {src,bin}/event1dict_rdict.pcm core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
 		src/gui/*.o src/gui/*.d src/gui/moc_*  src/rew/*.o *.root *.root.txt
 
 
 src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
 		@echo "Generating dictionary ..."
 		cd src;${ROOTSYS}/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
-		
+		cp src/event1dict_rdict.pcm bin
 
 src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
 		@echo "Building params_all.h"
