@@ -21,6 +21,7 @@
 #include "dis/singlepion.h"
 #include "dis/disevent.h"
 #include "dis/resevent2.h"
+#include "resevent_hybrid.h"
 #include "cohevent2.h"
 #include "coh.h"
 #include "mecevent.h"
@@ -301,7 +302,12 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
 			{
-				resevent2 (p, *e, true);
+				switch(p.coh_kind)
+				{
+					case 1:resevent2 (p, *e, true);break;
+					case 2:resevent_hybrid (p, *e, true);break;
+					default:resevent2 (p, *e, true);break;
+				}
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}

@@ -371,6 +371,9 @@
   <param name="bkgrscaling" type="text" ctype="double" default="0.0">
     <description><![CDATA[scaling of non resonant backgroung; should be in the range -1.3...+1.3]]></description>
   </param>
+  <param name="res_kind" type="checkbox" ctype="int" default="1">
+    <description><![CDATA[Switch between the standard spp (1) and the Hybrid (2) models]]></description>
+  </param>
   <param name="coh_mass_correction" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Rein Sehgal correction to CC coherent single pion production]]></description>
   </param>
