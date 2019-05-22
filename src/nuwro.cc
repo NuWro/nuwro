@@ -302,7 +302,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
 			{
-				switch(p.coh_kind)
+				switch(p.res_kind)
 				{
 					case 1:resevent2 (p, *e, true);break;
 					case 2:resevent_hybrid (p, *e, true);break;
