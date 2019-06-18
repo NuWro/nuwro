@@ -19,6 +19,7 @@ const int Wbin_hybrid=(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
 void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
-double hybrid_dsdQ2dW (res_kinematics* kin, double* hybrid_grid);
+// In terms of tabularized hadronic responses
+double hybrid_dsdQ2dW(res_kinematics* kin, int channel);
 
 #endif
