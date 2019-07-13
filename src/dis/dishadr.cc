@@ -13,8 +13,8 @@
 #include "vect.h"
 #include "charge.h"
 #include "event1.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 
 TPythia6 *pythia2 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);

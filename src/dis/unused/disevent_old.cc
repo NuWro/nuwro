@@ -19,8 +19,8 @@
 //#include "lorentz.h"
 //#include "dis2res.h"
 #include "event1.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 #include "pauli.h"
 #include "target.h"
 

@@ -2,8 +2,8 @@
 
 #ifndef _form_faktory_Dipol_h_
 #define _form_faktory_Dipol_h_
-#include<iostream.h>
-#include<math.h>
+#include <iostream.h>
+#include <math.h>
 #include "jednostki.h"
 
 namespace rpa

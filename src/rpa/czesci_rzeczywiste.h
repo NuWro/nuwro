@@ -1,9 +1,8 @@
 #ifndef _czesci_rzeczywist_h
 #define _czesci_rzeczywist_h
-#include<iostream>
-#include<cmath>
+#include <iostream>
+#include <cmath>
 #include "jednostki.h"
-#include "stale_rpa.h"
 #include "alfa_beta_LAM.h"
 
 namespace rpa

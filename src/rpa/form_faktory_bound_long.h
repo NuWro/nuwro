@@ -1,6 +1,6 @@
 #ifndef _faktory_bound_h_
 #define _faktory_bound_h_
-#include<cmath>
+#include <cmath>
 #include "jednostki.h"
 
 namespace rpa

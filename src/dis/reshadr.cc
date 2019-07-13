@@ -14,8 +14,8 @@
 #include "charge.h"
 #include "dis2res.h"
 #include "event1.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 
 TPythia6 *pythia7 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);

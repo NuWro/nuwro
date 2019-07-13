@@ -5,8 +5,8 @@
 #include <fstream>
 using namespace std;
 //#include "sobek.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 
 #include "generatormt.h"
 //routines called from pythia6

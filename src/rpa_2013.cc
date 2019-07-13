@@ -1,9 +1,9 @@
-#include<iostream>
-#include<cmath>
-#include<complex>
-#include<fstream>
-#include<sstream>
-#include<string>
+#include <iostream>
+#include <cmath>
+#include <complex>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include "rpa/jednostki.h"
 #include "rpa/form_faktory_rozdzielnik.h"

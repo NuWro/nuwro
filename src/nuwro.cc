@@ -1,5 +1,4 @@
 #include <iomanip>
-#include <iomanip>
 #include <sstream>
 #include <vector>
 #include "event1.h"
@@ -762,7 +761,7 @@ void NuWro::real_events(params& p)
 		xsections->SetBinError(i+1,_procesy.sigma(i));
 	}
 
-	TNamed version("NuWro version", VERSION);
+	TNamed version("NuWro version", VERSION );
 	version.Write();
 
 	/////////////////////////////////////////////////////////////

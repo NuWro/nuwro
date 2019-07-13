@@ -1,7 +1,7 @@
 #ifndef _czesci_urojone_h_
 #define _czesci_urojone_h_
-#include<iostream>
-#include<cmath>
+#include <iostream>
+#include <cmath>
 #include "jednostki.h"
 #include "stale_rpa.h"
 

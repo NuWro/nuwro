@@ -1,9 +1,9 @@
 #ifndef _density_of_nucleus_h_
 #define _density_of_nucleus_h_
 
-//#include<iostream>
-//#include<fstream>
-#include<cmath>
+//#include <iostream>
+//#include <fstream>
+#include <cmath>
 #include   "jednostki.h"
 //#include <strstream>
 #include   "calg.h"
