@@ -220,8 +220,7 @@ void data_container::count_data_points( ifstream &file_ifstream )
 
 void data_container::create_data_vector()
 {
-  vector<double> empty_array(number_of_fields);                    // create a placeholder for data
-  for(int i=0;i<number_of_fields;i++) empty_array[i] = NAN;        // fill it with NANs
+  vector<double> empty_array(number_of_fields,NAN);     // create a placeholder for data and fill it with NANs
 
   data.reserve(number_of_points);                                  // reserve proper amount of memory
   for(int i=0;i<number_of_points;i++) data.push_back(empty_array); // fill the vector with empty data

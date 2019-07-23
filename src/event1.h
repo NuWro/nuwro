@@ -6,7 +6,6 @@
 #include "TObject.h"
 #include "particle.h"
 #include "params.h"
-#include "dis/LeptonMass.h"
 
 class flags
 {

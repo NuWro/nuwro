@@ -21,9 +21,9 @@ else
   CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -std=c++0x -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 endif
 LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 -lGeom -lMinuit -lgfortran $(QTLIBS)
-LD	      = g++
-CXX	      = g++
-CC 	      = g++
+LD            = g++
+CXX           = g++
+CC            = g++
 FC            = gfortran
 
 %.o: %.cc
@@ -52,7 +52,7 @@ SF_OBJS = $(patsubst %.cc,%.o,$(wildcard src/sf/*.cc))
 GUI_OBJS = $(patsubst %.cc,%.o,$(wildcard src/gui/*.cc))
 GUI_OBJS += $(patsubst src/gui/C%.cc,src/gui/moc_C%.o,$(wildcard src/gui/C*.cc))
 
-EVENT_OBJS =  $(addprefix src/, event1.o event1dict.o pdg.o particle.o generatormt.o dirs.o rew/rewparams.o)
+EVENT_OBJS =  $(addprefix src/, event1.o event1Dict.o pdg.o particle.o generatormt.o dirs.o rew/rewparams.o)
 
 BIN=bin
 #BIN=.
@@ -153,18 +153,18 @@ $(BIN)/test_makehist:    src/test_makehist.o src/nd280stats.o
 $(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
 		$(LINK.cc) $^ -o $@
 
-clean:;         @rm -f *.o *.d src/event1dict.* src/event1dict_rdict.pcm core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
-		src/gui/*.o src/gui/*.d src/gui/moc_* src/rew/*.o src/espp/*.o
+clean:;         @rm -f *.o *.d src/event1Dict.* src/event1Dict_rdict.pcm core\
+		 src/*.o src/*.d src/*/*.o src/*/*.d  src/gui/moc_*
 
 
-distclean:;     @rm -f $(TRGTS) *.o *.d src/event1dict.* {src,bin}/event1dict_rdict.pcm core src/dis/*.o src/dis/*.d src/sf/*.o src/sf/*.d src/*.o src/*.d\
-		src/gui/*.o src/gui/*.d src/gui/moc_*  src/rew/*.o *.root *.root.txt
+distclean:;     @rm -f $(TRGTS) *.o *.d src/event1Dict.* */event1Dict_rdict.pcm core\
+		 src/*.o src/*.d src/*/*.o src/*/*.d src/gui/moc_* *.root *.root.txt
 
 
-src/event1dict.h src/event1dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
+src/event1Dict.h src/event1Dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
 		@echo "Generating dictionary ..."
-		cd src;${ROOTSYS}/bin/rootcint -f event1dict.cc -c event1.h event1LinkDef.h;cd ..
-		cp src/event1dict_rdict.pcm bin
+		cd src;${ROOTSYS}/bin/rootcint -f event1Dict.cc -c event1.h event1LinkDef.h;cd ..
+		cp src/event1Dict_rdict.pcm bin
 
 src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
 		@echo "Building params_all.h"
@@ -183,7 +183,7 @@ src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
- -include $(patsubst %.cc,%.d,$(wildcard  src/dis/*.cc src/sf/*.cc src/*.cc src/gui/*.cc)) src/event1dict.d
+ -include $(patsubst %.cc,%.d,$(wildcard  src/dis/*.cc src/sf/*.cc src/*.cc src/gui/*.cc)) src/event1Dict.d
 endif
 endif
 

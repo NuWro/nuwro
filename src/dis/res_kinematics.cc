@@ -1,5 +1,6 @@
 #include "res_kinematics.h"
 #include "jednostki.h"
+#include "dis/LeptonMass.h"
 
 const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;

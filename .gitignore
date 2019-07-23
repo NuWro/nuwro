@@ -15,4 +15,7 @@
 .clang-format
 /doc/doxygen/html
 /build/
-/bin/
+/lib/
+/include/
+/setup.sh
+/src/event1Dict*
