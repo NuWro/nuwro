@@ -504,10 +504,10 @@ bool Interaction::nucleon_spp( particle p1, particle p2, int &n, particle p[] )
   static const double f1[]={0.11};
   static const double f2[]={0.43,0.815};
   static const channel cnls[4][3]=
-      {{f1[0],"nn.",    1,"np-", 1,"ccc"},//nn
-       {f2[0],"np.",f2[1],"nn+", 1,"pp-"},//np
-       {f2[0],"pn.",f2[1],"pp-", 1,"nn+"},//pn
-       {f1[0],"pp.",    1,"np+", 1,"ddd"} //pp
+      {{{f1[0],"nn."},{    1,"np-"},{ 1,"ccc"}},//nn
+       {{f2[0],"np."},{f2[1],"nn+"},{ 1,"pp-"}},//np
+       {{f2[0],"pn."},{f2[1],"pp-"},{ 1,"nn+"}},//pn
+       {{f1[0],"pp."},{    1,"np+"},{ 1,"ddd"}} //pp
       };
   doit(n,cnls[canal],p);  // p[2] is pion 
   return scatter_n (n, p1, p2, p);
@@ -522,10 +522,10 @@ bool Interaction::nucleon_dpp( particle p1, particle p2, int &n, particle p[] )
   static const double f1[]={0.6,0.8};
   static const double f2[]={0.6,0.8,0.9};
   static const channel cnls[4][4]=
-      {{f1[0],"nn..",f1[1],"nn+-",    1,"np.-",1,"    "},//nn
-       {f2[0],"np..",f2[1],"np+-",f2[2],"pp.-",1,"nn.+"},//np
-       {f2[0],"pn..",f2[1],"pn-+",f2[2],"nn.+",1,"pp.-"},//pn
-       {f1[0],"pp..",f1[1],"pp-+",    1,"pn.+",1,"    "} //pp
+      {{{f1[0],"nn.."},{f1[1],"nn+-"},{    1,"np.-"},{1,"    "}},//nn
+       {{f2[0],"np.."},{f2[1],"np+-"},{f2[2],"pp.-"},{1,"nn.+"}},//np
+       {{f2[0],"pn.."},{f2[1],"pn-+"},{f2[2],"nn.+"},{1,"pp.-"}},//pn
+       {{f1[0],"pp.."},{f1[1],"pp-+"},{    1,"pn.+"},{1,"    "}} //pp
       };
   doit(n,cnls[canal],p);// p[2],p[3] are pions
   return scatter_n (n, p1, p2, p);
