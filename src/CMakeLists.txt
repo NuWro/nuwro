@@ -18,14 +18,14 @@ set(COMMON_SOURCES
   mecevent_common.cc mecdynamics2.cc mecevent2.cc qel_sigma.cc kinsolver.cc input_data.cc data_container.cc kinematics.cc pdg.cc target_mixer.cc
   nucleus.cc sfevent.cc ff.cc rpa_2013.cc nucleus_data.cc isotopes.cc elements.cc beam.cc nd280stats.cc beamHist.cc coh.cc fsi.cc pitab.cc scatter.cc
   kaskada7.cc hipevent.cc Interaction.cc e_el_event.cc e_el_sigma.cc e_spp_event.cc  espp/crossection.cc espp/DM.cc rew/PythiaQuiet.f
-  pauli.cc generatormt.cc
+  pauli.cc generatormt.cc rew/rewparams.cc
 )
 
-set(EVENT_SOURCES event1.cc generatormt.cc particle.cc pdg.cc dirs.cc rew/rewparams.cc  event1Dict.cc )
+set(EVENT_SOURCES event1.cc generatormt.cc particle.cc pdg.cc dirs.cc  event1Dict.cc )
 
 set(FSI_SOURCES scatter.cc kaskada7.cc Interaction.cc input_data.cc data_container.cc nucleus.cc  nucleus_data.cc isotopes.cc elements.cc fsi.cc pitab.cc )  
 
-set(REW_SOURCES rew/Reweighters.cc rew/rewQEL.cc rew/rewRES.cc rew/rewNorm.cc rew/PythiaQuiet.f)
+set(REW_SOURCES  rew/Reweighters.cc rew/rewQEL.cc rew/rewRES.cc rew/rewNorm.cc rew/PythiaQuiet.f)
 
 foreach(FILE ${DIS})
   set(DIS_SOURCES ${DIS_SOURCES} dis/${FILE})
@@ -123,7 +123,7 @@ target_link_libraries(test_makehist ${EXTERNAL_LIBS} event1 )
 
 
 
-install(TARGETS nuwro  myroot nuwro2rootracker dumpParams glue nuwro2nuance fsi reweight_to niwg  DESTINATION bin)
+install(TARGETS nuwro  myroot nuwro2rootracker nuwro2nuance dumpParams glue reweight_to reweight_along niwg fsi kaskada DESTINATION bin)
 install(TARGETS event DESTINATION lib)
 install(FILES event1Dict_rdict.pcm DESTINATION bin OPTIONAL) 
 install(FILES event1Dict_rdict.pcm DESTINATION lib OPTIONAL) 

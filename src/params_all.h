@@ -62,7 +62,7 @@ PARAM(int,qel_rpa,1)\
 PARAM(int,qel_strange,1)\
 PARAM(int,qel_strangeEM,0)\
 PARAM(double,delta_s,0)\
-PARAM(double,qel_cc_vector_mass,1000)\
+PARAM(double,qel_cc_vector_mass,840)\
 PARAM(double,qel_cc_axial_mass,1030)\
 PARAM(double,qel_nc_axial_mass,1030)\
 PARAM(double,qel_s_axial_mass,1030)\

@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 	//if(false)
 	for (int ie=0;ie<n;ie++)
 	{
+		t1->GetEntry(ie);
 		REW.init(e->par);
 		nucleus t(e->par);
 		if(ie==0)
