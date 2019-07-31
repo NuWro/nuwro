@@ -160,9 +160,9 @@ struct RewParams
 		ncNorm ("ncNorm"   ,1,0,0,"rewDyn"),
 		antyNorm("antyNorm",1,0,0,"rewDyn"),
 
+		dynNorm0("dynNorm0",1,0,0,"rewDyn"),
 		dynNorm1("dynNorm1",1,0,0,"rewDyn"),
 		dynNorm2("dynNorm2",1,0,0,"rewDyn"),
-		dynNorm0("dynNorm0",1,0,0,"rewDyn"),
 		dynNorm3("dynNorm3",1,0,0,"rewDyn"),
 		dynNorm4("dynNorm4",1,0,0,"rewDyn"),
 		dynNorm5("dynNorm5",1,0,0,"rewDyn"),

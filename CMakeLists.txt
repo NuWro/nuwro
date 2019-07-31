@@ -68,14 +68,14 @@ set(EXTERNAL_LIBS ${ROOT_LIBS})
 
 message(STATUS "System:" ${CMAKE_SYSTEM_NAME})
 
-set(CXX_WARNINGS "-Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-reorder   -Wno-unknown-warning-option -Wno-unused-but-set-variable  ")
+set(CXX_WARNINGS "-Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function    -Wno-unknown-warning-option -Wno-unused-but-set-variable -Wmissing-braces ")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS} ${CXX_WARNINGS} ${NUWRO_CFLAGS} -std=c++0x -fPIC -O2 -Wl,--no-as-needed -DVERSION=\\\"${NUWRO_VERSION}\\\"  " )
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS} ${CXX_WARNINGS} ${NUWRO_CFLAGS}  -fPIC -O2  -DVERSION=\\\"${NUWRO_VERSION}\\\"  " )
+  set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS} ${CXX_WARNINGS} -Wmissing-braces ${NUWRO_CFLAGS}  -fPIC -O2  -DVERSION=\\\"${NUWRO_VERSION}\\\"  " )
 endif()
 
 message (STATUS "C++ Compiler      : " ${CXX_COMPILER_NAME})

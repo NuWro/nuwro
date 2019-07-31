@@ -32,7 +32,7 @@ struct material
 
 
 inline material::material(double _a, double _z, double _d)
-: A(_a), Z(_z), w_density(_d), N(_a - _z)
+: A(_a), Z(_z), N(_a - _z), w_density(_d)
 {}
 
 

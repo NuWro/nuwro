@@ -3,7 +3,7 @@
 
 
 ///////////////////////////////////////////////////////////
-PiData::PiData(int xs):xsec(xs),Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0)
+PiData::PiData(int xs):Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0),xsec(xs)
 { 
 	switch(xs)
 	{

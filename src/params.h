@@ -112,10 +112,11 @@ public:
   string path_to_data;
 
   /// constructor
-  params ():path_to_data ("")
-#define PARAM(type,name,default_value) ,name(default_value)
+  params ():
+#define PARAM(type,name,default_value) name(default_value),
   PARAMS_ALL ()
 #undef PARAM
+	path_to_data ("")
   {
   }
 

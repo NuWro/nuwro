@@ -258,18 +258,18 @@ double findmin1(double (boone::*f)(double&),double a, double b)
 */
   
     boone():
-		h1("h1","dsigma/dq2 (nuwro Q2rec)", 17,booneq2borders),
-		h1mc("h1mc","dsigma/dq2 (nuwro Q2mc)", 17,booneq2borders),
-		b1("b1","dsigma/dq2 (miboone)", 17,booneq2borders),
-		h2("h2","dsigma/dcos theta dT (nuwro)", 20,-1,1, 18, 0.2,2),
-		h2lowq("h2lowq","dsigma/dcos theta dT (nuwro |q|<350)", 20,-1,1, 18, 0.2,2),
-		b2("b2","dsigma/dcos theta dT (miboone)", 20,-1,1, 18, 0.2,2),
+		    Tmin(0.2),
+        Tmax(2),
         Cosmin(-1),
         Cosmax(1),
-        Tmin(0.2),
-        Tmax(2),
-	    binarea((Tmax-Tmin)*(Cosmax-Cosmin)/(20*18)),
-	    sigma(0.107)
+        binarea((Tmax-Tmin)*(Cosmax-Cosmin)/(20*18)),
+        sigma(0.107),
+        h1("h1","dsigma/dq2 (nuwro Q2rec)", 17,booneq2borders),
+        h1mc("h1mc","dsigma/dq2 (nuwro Q2mc)", 17,booneq2borders),
+        b1("b1","dsigma/dq2 (miboone)", 17,booneq2borders),
+        h2("h2","dsigma/dcos theta dT (nuwro)", 20,-1,1, 18, 0.2,2),
+        h2lowq("h2lowq","dsigma/dcos theta dT (nuwro |q|<350)", 20,-1,1, 18, 0.2,2),
+        b2("b2","dsigma/dcos theta dT (miboone)", 20,-1,1, 18, 0.2,2)
         {reset();}
         
       double chi2(long double x[],long double x2[],double y[],double ys[], int n)
