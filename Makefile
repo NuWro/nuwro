@@ -127,11 +127,12 @@ $(BIN)/reweight_to: $(addprefix src/, \
 		$(LINK.cc)  $^ -o $@ 
 
 $(BIN)/reweight_along: $(addprefix src/, \
-		pauli.o cohevent2.o cohdynamics2.o qelevent1.o e_el_event.o e_el_sigma.o hipevent.o \
-        qel_sigma.o kinsolver.o kinematics.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
+        event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
+        mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
-        rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
-        $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS) $(EVENT_OBJS) $(MEC_OBJS)
+        rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
+        $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS)
 		$(LINK.cc)  $^ -o $@ 
 
 
