@@ -220,7 +220,7 @@ class pattern
 		
 	public:
 		
-		pattern (string name_of_class, int nof_events, bool fsi = false, int l = 1) : name (name_of_class), events (nof_events), onlyfsi(fsi), loop(l)
+		pattern (string name_of_class, int nof_events, bool fsi = false, int l = 1) : onlyfsi(fsi), loop(l), name (name_of_class), events (nof_events)
 		{			
 			for (int i  = 0; i < nof_dyn; i++)
 			{

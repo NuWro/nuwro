@@ -15,10 +15,10 @@ DEBUG         = 1
 #DEBUGON = -g
 ifeq ($(OS),Darwin)
   # Flags for OSX
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
+  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 else
   # Flags for others
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -std=c++0x -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
+  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -std=c++0x -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 endif
 LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -lPythia6  -lEG -lEGPythia6 -lGeom -lMinuit -lgfortran $(QTLIBS)
 LD            = g++
@@ -52,27 +52,27 @@ SF_OBJS = $(patsubst %.cc,%.o,$(wildcard src/sf/*.cc))
 GUI_OBJS = $(patsubst %.cc,%.o,$(wildcard src/gui/*.cc))
 GUI_OBJS += $(patsubst src/gui/C%.cc,src/gui/moc_C%.o,$(wildcard src/gui/C*.cc))
 
-EVENT_OBJS =  $(addprefix src/, event1.o event1Dict.o pdg.o particle.o generatormt.o dirs.o rew/rewparams.o)
+EVENT_OBJS =  $(addprefix src/, event1.o  pdg.o particle.o generatormt.o dirs.o event1Dict.o)
 
 BIN=bin
 #BIN=.
 
 all:            $(TRGTS)
 
-$(BIN)/whist: src/whist.o $(EVENT_OBJS)
+$(BIN)/whist: src/whist.o $(EVENT_OBJS) 
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/nuwro:   $(addprefix src/,\
         pauli.o cohevent2.o cohdynamics2.o qelevent1.o hipevent.o e_el_event.o e_el_sigma.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o\
-        nucleus_data.o isotopes.o elements.o rew/PythiaQuiet.o hipevent.o\
+        nucleus_data.o isotopes.o elements.o rew/PythiaQuiet.o hipevent.o rew/rewparams.o\
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o  main.o) \
         $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS) $(MEC_OBJS)
 		$(LINK.cc) $^ -o $@
 
 
 $(BIN)/kaskada:  $(addprefix src/,\
-        scatter.o kaskada7.o Interaction.o input_data.o data_container.o \
+        scatter.o kaskada7.o Interaction.o input_data.o data_container.o rew/rewparams.o\
         nucleus.o kaskada.o fsi.o pitab.o nucleus_data.o isotopes.o elements.o) $(EVENT_OBJS)
 		$(LINK.cc) $^ -o $@
 
@@ -112,23 +112,24 @@ $(BIN)/test:  src/test.o  src/nucleus.o src/nucleus_data.o src/isotopes.o src/el
 		$(LINK.cc) $^ -o $@
 		
 $(BIN)/ganalysis: $(addprefix src/, \
-		pauli.o cohevent2.o cohdynamics2.o qelevent1.o hipevent.o e_el_event.o e_el_sigma.o rew/PythiaQuiet.o\
-        qel_sigma.o kinsolver.o kinematics.o target_mixer.o nucleus.o  sfevent.o ff.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o ganalysis.o ) \
-        $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS) $(EVENT_OBJS) $(MEC_OBJS)
+		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
+	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o rew/PythiaQuiet.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o ganalysis.o rew/rewparams.o) \
+        $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/reweight_to: $(addprefix src/, \
-		pauli.o cohevent2.o cohdynamics2.o qelevent1.o  hipevent.o e_el_event.o e_el_sigma.o\
+		nuwro.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o  hipevent.o e_el_event.o e_el_sigma.o sfevent.o\
         qel_sigma.o kinsolver.o kinematics.o target_mixer.o nucleus.o  sfevent.o ff.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
-        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
-        rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_to.o rew/PythiaQuiet.o) \
+        beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
+        rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_to.o rew/PythiaQuiet.o) \
         $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS) $(EVENT_OBJS) $(MEC_OBJS)
 		$(LINK.cc)  $^ -o $@ 
 
 $(BIN)/reweight_along: $(addprefix src/, \
-        event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
-        mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o\
+		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
+	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \

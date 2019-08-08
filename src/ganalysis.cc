@@ -248,7 +248,7 @@ void make_smooth (hist2D& h)
 }
 	
 histogram :: histogram (string name_of_hist, string data_file, string plot_title, string x_name, string y_name, int nof_bins, double begin, double end, int typnormy, double norma)
-				: name (name_of_hist), data (data_file), title (plot_title), xlabel (x_name), ylabel (y_name), bins_x (nof_bins), norm_type (typnormy), normalization (norma), begin_x(begin)
+				: name (name_of_hist), data (data_file), title (plot_title), xlabel (x_name), ylabel (y_name), bins_x (nof_bins), begin_x(begin), norm_type (typnormy), normalization (norma)
 {
 	finalized = false;
 	saved = false;
