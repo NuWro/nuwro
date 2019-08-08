@@ -74,6 +74,8 @@ add_library(rew1 STATIC ${REW_SOURCES})
 add_dependencies(rew1 params_header)
 target_link_libraries(rew1 ${EXTERNAL_LIBS} common1 dis1)
 
+
+
 add_executable(nuwro main.cc nuwro.cc)
 target_link_libraries(nuwro ${EXTERNAL_LIBS} event1 common1 dis1 espp1 sf1)
 
@@ -81,27 +83,23 @@ add_executable(kaskada scatter.cc kaskada7.cc Interaction.cc input_data.cc data_
                 nucleus.cc kaskada.cc fsi.cc pitab.cc nucleus_data.cc isotopes.cc elements.cc) 
 target_link_libraries(kaskada ${EXTERNAL_LIBS} event1)
 
-
 add_executable(myroot myroot.cc event1Dict.cc)
 add_dependencies(myroot params_header)
 target_link_libraries(myroot ${EXTERNAL_LIBS} event1 )
 
-add_executable(nuwro2rootracker nuwro2rootracker.cc )
-target_link_libraries(nuwro2rootracker ${EXTERNAL_LIBS} event1)
+add_executable(nuwro2neut nuwro2neut.cc)
+target_link_libraries(nuwro2neut ${EXTERNAL_LIBS} event1)
 
 add_executable(nuwro2nuance nuwro2nuance.cc )
- target_link_libraries(nuwro2nuance ${EXTERNAL_LIBS} event1)
+target_link_libraries(nuwro2nuance ${EXTERNAL_LIBS} event1)
+
+add_executable(nuwro2rootracker nuwro2rootracker.cc )
+target_link_libraries(nuwro2rootracker ${EXTERNAL_LIBS} event1)
 
 add_executable(glue glue.cc  )
 target_link_libraries(glue ${EXTERNAL_LIBS} event1)
 
 add_executable(dumpParams dumpParams.cc dirs.cc)
-
-add_executable(fsi  fsi_main.cc calculations.cc simulations.cc plots.cc mplots.cc vivisection.cc)
-target_link_libraries(fsi ${EXTERNAL_LIBS} event1 fsi1 common1)
-
-add_executable(niwg niwg.cc niwg_ccqe.cc niwg_tech.cc niwg_ccpi.cc niwg.cc calculations.cc )
-target_link_libraries(niwg ${EXTERNAL_LIBS} event1 common1 )
 
 add_executable(reweight_to rew/reweight_to.cc)
 target_link_libraries(reweight_to ${EXTERNAL_LIBS} event1 common1 fsi1 dis1 sf1 rew1 )
@@ -109,10 +107,28 @@ target_link_libraries(reweight_to ${EXTERNAL_LIBS} event1 common1 fsi1 dis1 sf1 
 add_executable(reweight_along rew/reweight_along.cc)
 target_link_libraries(reweight_along ${EXTERNAL_LIBS} event1 common1 fsi1 rew1 sf1 dis1)
 
+add_executable(whist whist.cc)
+target_link_libraries(whist ${EXTERNAL_LIBS} event1)
+
+add_executable(fsi  fsi_main.cc calculations.cc simulations.cc plots.cc mplots.cc vivisection.cc)
+target_link_libraries(fsi ${EXTERNAL_LIBS} event1 fsi1 common1)
+
+add_executable(ladek_topologies ladek_topologies.cc fsi.cc pitab.cc)
+target_link_libraries(ladek_topologies ${EXTERNAL_LIBS} event1)
+
+add_executable(ganalysis  ganalysis.cc nuwro.cc)
+target_link_libraries(ganalysis ${EXTERNAL_LIBS} event1 fsi1 common1 dis1 rew1 sf1 espp1)
+
+add_executable(mb_nce_run   mb_nce_run.cc mb_nce.cc mb_nce_fit.cc scatter.cc)
+target_link_libraries(mb_nce_run ${EXTERNAL_LIBS} event1)
+
+add_executable(niwg niwg.cc niwg_ccqe.cc niwg_tech.cc niwg_ccpi.cc niwg.cc calculations.cc )
+target_link_libraries(niwg ${EXTERNAL_LIBS} event1 common1 )
+
 add_executable(test_nucleus  generatormt.cc nucleus.cc test_nucleus.cc  nucleus_data.cc isotopes.cc elements.cc)
 target_link_libraries(test_nucleus ${EXTERNAL_LIBS} event1)
 
-add_executable(test_beam	 test_beam.cc)
+add_executable(test_beam	test_beam.cc)
 target_link_libraries(test_beam ${EXTERNAL_LIBS} event1)
 
 add_executable(test_beam_rf test_beam_rf.cc )
@@ -123,10 +139,15 @@ target_link_libraries(test_makehist ${EXTERNAL_LIBS} event1 )
 
 
 
-install(TARGETS nuwro  myroot nuwro2rootracker nuwro2nuance dumpParams glue reweight_to reweight_along niwg fsi kaskada DESTINATION bin)
+install(TARGETS nuwro kaskada myroot nuwro2neut nuwro2nuance nuwro2rootracker  
+        dumpParams glue reweight_to reweight_along 
+        whist niwg fsi ganalysis mb_nce_run ladek_topologies 
+        test_nucleus test_beam test_beam_rf test_makehist
+        DESTINATION bin)
 install(TARGETS event DESTINATION lib)
-install(FILES event1Dict_rdict.pcm DESTINATION bin OPTIONAL) 
-install(FILES event1Dict_rdict.pcm DESTINATION lib OPTIONAL) 
-install(DIRECTORY ../data/  DESTINATION data)
-install(FILES params.h vec.h dirs.h params_all.h particle.h generatormt.h jednostki.h  pdg.h vect.h vecrand.h event1.h
-   DESTINATION include)
+install(FILES event1Dict_rdict.pcm DESTINATION bin OPTIONAL) # OPTIONAL necessary for ROOT5
+install(FILES event1Dict_rdict.pcm DESTINATION lib OPTIONAL) # OPTIONAL necessary for ROOT5
+install(DIRECTORY ../data/  DESTINATION data) # data files are needed for nuwro run 
+install(FILES params.h vec.h dirs.h params_all.h particle.h generatormt.h 
+              jednostki.h  pdg.h vect.h vecrand.h event1.h
+        DESTINATION include) # may be useful for ROOT6
