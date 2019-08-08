@@ -110,39 +110,39 @@ target_link_libraries(reweight_along ${EXTERNAL_LIBS} event1 common1 fsi1 rew1 s
 add_executable(whist whist.cc)
 target_link_libraries(whist ${EXTERNAL_LIBS} event1)
 
-add_executable(fsi  fsi_main.cc calculations.cc simulations.cc plots.cc mplots.cc vivisection.cc)
-target_link_libraries(fsi ${EXTERNAL_LIBS} event1 fsi1 common1)
+# add_executable(fsi  fsi_main.cc calculations.cc simulations.cc plots.cc mplots.cc vivisection.cc)
+# target_link_libraries(fsi ${EXTERNAL_LIBS} event1 fsi1 common1)
 
-add_executable(ladek_topologies ladek_topologies.cc fsi.cc pitab.cc)
-target_link_libraries(ladek_topologies ${EXTERNAL_LIBS} event1)
+# add_executable(ladek_topologies ladek_topologies.cc fsi.cc pitab.cc)
+# target_link_libraries(ladek_topologies ${EXTERNAL_LIBS} event1)
 
-add_executable(ganalysis  ganalysis.cc nuwro.cc)
-target_link_libraries(ganalysis ${EXTERNAL_LIBS} event1 fsi1 common1 dis1 rew1 sf1 espp1)
+# add_executable(ganalysis  ganalysis.cc nuwro.cc)
+# target_link_libraries(ganalysis ${EXTERNAL_LIBS} event1 fsi1 common1 dis1 rew1 sf1 espp1)
 
-add_executable(mb_nce_run   mb_nce_run.cc mb_nce.cc mb_nce_fit.cc scatter.cc)
-target_link_libraries(mb_nce_run ${EXTERNAL_LIBS} event1)
+# add_executable(mb_nce_run   mb_nce_run.cc mb_nce.cc mb_nce_fit.cc scatter.cc)
+# target_link_libraries(mb_nce_run ${EXTERNAL_LIBS} event1)
 
-add_executable(niwg niwg.cc niwg_ccqe.cc niwg_tech.cc niwg_ccpi.cc niwg.cc calculations.cc )
-target_link_libraries(niwg ${EXTERNAL_LIBS} event1 common1 )
+# add_executable(niwg niwg.cc niwg_ccqe.cc niwg_tech.cc niwg_ccpi.cc niwg.cc calculations.cc )
+# target_link_libraries(niwg ${EXTERNAL_LIBS} event1 common1 )
 
-add_executable(test_nucleus  generatormt.cc nucleus.cc test_nucleus.cc  nucleus_data.cc isotopes.cc elements.cc)
-target_link_libraries(test_nucleus ${EXTERNAL_LIBS} event1)
+# add_executable(test_nucleus  generatormt.cc nucleus.cc test_nucleus.cc  nucleus_data.cc isotopes.cc elements.cc)
+# target_link_libraries(test_nucleus ${EXTERNAL_LIBS} event1)
 
-add_executable(test_beam	test_beam.cc)
-target_link_libraries(test_beam ${EXTERNAL_LIBS} event1)
+# add_executable(test_beam	test_beam.cc)
+# target_link_libraries(test_beam ${EXTERNAL_LIBS} event1)
 
-add_executable(test_beam_rf test_beam_rf.cc )
-target_link_libraries(test_beam_rf ${EXTERNAL_LIBS} event1 )
+# add_executable(test_beam_rf test_beam_rf.cc )
+# target_link_libraries(test_beam_rf ${EXTERNAL_LIBS} event1 )
 
-add_executable(test_makehist test_makehist.cc nd280stats.cc)
-target_link_libraries(test_makehist ${EXTERNAL_LIBS} event1 )
+# add_executable(test_makehist test_makehist.cc nd280stats.cc)
+# target_link_libraries(test_makehist ${EXTERNAL_LIBS} event1 )
 
 
 
 install(TARGETS nuwro kaskada myroot nuwro2neut nuwro2nuance nuwro2rootracker  
-        dumpParams glue reweight_to reweight_along 
-        whist niwg fsi ganalysis mb_nce_run ladek_topologies 
-        test_nucleus test_beam test_beam_rf test_makehist
+        dumpParams glue reweight_to reweight_along whist
+        # niwg fsi ganalysis mb_nce_run ladek_topologies 
+        # test_nucleus test_beam test_beam_rf test_makehist
         DESTINATION bin)
 install(TARGETS event DESTINATION lib)
 install(FILES event1Dict_rdict.pcm DESTINATION bin OPTIONAL) # OPTIONAL necessary for ROOT5

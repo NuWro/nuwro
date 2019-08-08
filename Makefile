@@ -34,9 +34,10 @@ FC            = gfortran
 
 TRGTS = $(addprefix $(BIN)/,\
         nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
-        dumpParams test_beam_rf test_makehist test_nucleus test_beam \
-        fsi niwg ladek_topologies test mb_nce_run ganalysis reweight_to reweight_along whist\
-        )
+        dumpParams reweight_to reweight_along whist ) 
+		# test_beam_rf test_makehist test_nucleus test_beam 
+        # fsi niwg ladek_topologies test mb_nce_run ganalysis 
+        # )
 
 DIS= charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis_cc_neutron.o delta.o dis2res.o \
 	 dis_cc_proton.o fragmentation.o fragmentation_nc.o fragmentation_cc.o singlepion.o \
@@ -112,7 +113,7 @@ $(BIN)/test:  src/test.o  src/nucleus.o src/nucleus_data.o src/isotopes.o src/el
 		$(LINK.cc) $^ -o $@
 		
 $(BIN)/ganalysis: $(addprefix src/, \
-		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
+		event1.o event1Dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o rew/PythiaQuiet.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o ganalysis.o rew/rewparams.o) \
@@ -128,7 +129,7 @@ $(BIN)/reweight_to: $(addprefix src/, \
 		$(LINK.cc)  $^ -o $@ 
 
 $(BIN)/reweight_along: $(addprefix src/, \
-		event1.o event1dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
+		event1.o event1Dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hipevent.o\
 	    mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o e_el_event.o e_el_sigma.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
