@@ -9,7 +9,7 @@
 #include "qelevent.h"
 #include "e_el_event.h"
 #include "e_spp_event.h"
-#include "hipevent.h"
+#include "hypevent.h"
 #include "pdg.h"
 #include "chooser.h"
 #include "beam.h"
@@ -243,7 +243,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.dis = false;
 	e->flag.coh = false;
 	e->flag.mec = false;
-	e->flag.hip = false;
+	e->flag.hyp = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -403,19 +403,12 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 10:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_la) // qel hiperon lambda
+			e->flag.hyp=e->flag.cc=true;
+			if(p.dyn_hyp_cc) // qel hiperon lambda
 			{
-				hipevent (p, *e, *_nucleus, true); //Lambda
+				hypevent (p, *e, *_nucleus);
 			}
-			break;		
-		case 11:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_si) // qel hiperon sigma
-			{
-				hipevent (p, *e, *_nucleus, false); // Sigma
-			}
-			break;		
+			break;
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{

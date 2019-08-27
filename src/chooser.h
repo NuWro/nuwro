@@ -116,8 +116,7 @@ inline void chooser::reset(params &p)
     if(p.dyn_coh_nc) proc.push_back(Dyn(7,"COHnc"));
     if(p.dyn_mec_cc) proc.push_back(Dyn(8,"MECcc"));
     if(p.dyn_mec_nc) proc.push_back(Dyn(9,"MECnc"));
-    if(p.dyn_hip_la) proc.push_back(Dyn(10,"HIPla"));
-    if(p.dyn_hip_si) proc.push_back(Dyn(11,"HIPsi"));
+    if(p.dyn_hyp_cc) proc.push_back(Dyn(10,"HYPcc"));
     
     if(p.dyn_e_el  ) proc.push_back(Dyn(20,"EEL  "));
     if(p.dyn_e_spp ) proc.push_back(Dyn(21,"ESPP "));

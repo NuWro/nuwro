@@ -16,7 +16,7 @@ class flags
 		bool dis;        ///< deep inelastic        (dis == dyn/2==2)
 		bool coh;        ///< coherent              (coh == dyn/2==3)
 		bool mec;        ///< meson exhange current (mec == dyn/2==4)
-		bool hip;        ///< hiperon production    
+		bool hyp;        ///< hyperon production    
                          
 		bool nc;         ///< neutral current       (nc == dyn%2)     
 		bool cc;         ///< charged current       (cc == !nc)
