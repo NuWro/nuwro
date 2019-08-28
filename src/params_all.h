@@ -91,12 +91,12 @@ PARAM(double,mec_back_to_back_smearing,0.0)\
 PARAM(int,mec_pb_trials,30)\
 PARAM(bool,MEC_pauli_blocking,1)\
 PARAM(double,MEC_cm_direction,0.0)\
-PARAM(bool,hyp_lambda,0)\
-PARAM(bool,hyp_sigma_zero,0)\
-PARAM(bool,hyp_sigma_minus,0)\
+PARAM(bool,hyp_lambda,1)\
+PARAM(bool,hyp_sigma_zero,1)\
+PARAM(bool,hyp_sigma_minus,1)\
 PARAM(double,hyp_g2_Re_part,0)\
 PARAM(double,hyp_g2_Im_part,0)\
-PARAM(bool,hip_su3_sym_breaking,0)\
+PARAM(bool,hyp_su3_sym_breaking,0)\
 PARAM(double,hyp_axial_mass,1030)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\

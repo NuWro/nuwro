@@ -13,11 +13,13 @@
 #include "nucleus.h"
 #include <cstdlib>
 #include "hiperon_sigma.h"
+#include "hyperon_interaction.h"
+#include "scatter.h"
 #define LOCALKF localkf_O
 
 
 
-double hypevent(params&p, event & e, nucleus &t)
+double hypevent(params&p, event &e, nucleus &t)
 {
   /*
    * 
@@ -54,43 +56,65 @@ double hypevent(params&p, event & e, nucleus &t)
   // adjust the lepton flavour
   lepton.pdg=nu.pdg-(nu.pdg>0 ? 1 :-1);
 
-  bool lambda = true; // first only lambda
   switch(N0.pdg)
   {
     case PDG::pdg_proton: // Lambda or Sigma_0 (cross sections should add up)
-      if(lambda)
+      if(p.hyp_lambda)
         hyperon.pdg=PDG::pdg_Lambda;
       else
         hyperon.pdg=PDG::pdg_Sigma;
       break;
 
     case PDG::pdg_neutron: 
-      if(lambda)
+      if(p.hyp_lambda)
         return 0;
       else
         hyperon.pdg=PDG::pdg_SigmaM;
       break;
-  } 
+  }
 
   // set final particle masses
   hyperon.set_mass(PDG::mass(hyperon.pdg));
   lepton.set_mass(PDG::mass(lepton.pdg));
 
-  double E_bind=0;  // binding energy set to 0 
+  double E_bind=0;  // binding energy set to 0 // SUBTRACT PROPER ONE!
   double xsec = 0;
-  double jakobian=0;  // the value will be set by kinematics generator
+  //double jakobian=0;  // the value will be set by kinematics generator
 
-  //double q2 = qel_kinematics(E_bind, nu, N0, lepton, hyperon, jakobian)
-  double q2 = czarek_kinematics2(E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
+  // DEPRECATED
+  // double q2 = qel_kinematics(E_bind, nu, N0, lepton, hyperon, jakobian)
+  // double q2 = czarek_kinematics2(E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
+  double q2 = scatter_2 (nu, N0, lepton, hyperon);
 
   if(q2==0) return 0;
 
-  vect nu4 = nu;      
+  vect nu4 = nu;
   nu4.boost (-N0.v());  // go to target frame
-  double Enu0=nu4.t;     // neutrino energy in target frame   
+  double Enu0=nu4.t;    // neutrino energy in target frame   
 
-  // OLD CZAREK'S APPROACH
-  xsec=jakobian*hiperon_sigma(Enu0,-q2,lepton.mass(),hyperon.pdg); 
+  // DEPRECATED
+  // OLD CZAREK's APPROACH
+  // xsec=jakobian*hiperon_sigma(Enu0,-q2,lepton.mass(),hyperon.pdg);
+
+  // NEW CHRIS's APPROACH
+  vect v1(nu);
+  vect v2(N0);
+  vect v3(lepton);
+  vect v4(hyperon);
+  //boost these to CMS for calculations
+  vec vcms = (vect(nu) + vect(N0)).v ();
+  v1.boost(-vcms);
+  v2.boost(-vcms);
+  v3.boost(-vcms);
+  v4.boost(-vcms);
+
+  double kin = v1.length(); //incoming neutrino momentum
+  double kout = v3.length(); //outgoing lepton momentum
+
+  double rs = sqrt((v1+v2)*(v1+v2)); //CMS energy sqrt(s)
+  double pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
+  double dif = Hyperon_Interaction(-q2,Enu0,1,v1,v2,v3,v4);
+  xsec = 4*dif*pf*Pi;
 
   if(p.flux_correction)
   {

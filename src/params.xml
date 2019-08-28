@@ -407,13 +407,13 @@
    <param name="MEC_cm_direction" type="checkbox" ctype="double" default="0.0">
      <description><![CDATA[ in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1]]></description>
   </param>
-  <param name="hyp_lambda" type="checkbox" ctype="bool" default="0">
+  <param name="hyp_lambda" type="checkbox" ctype="bool" default="1">
     <description>Lambda baryon production</description> 
   </param>
-  <param name="hyp_sigma_zero" type="checkbox" ctype="bool" default="0">
+  <param name="hyp_sigma_zero" type="checkbox" ctype="bool" default="1">
     <description>Sigma zero baryon production</description> 
   </param>
-  <param name="hyp_sigma_minus" type="checkbox" ctype="bool" default="0">
+  <param name="hyp_sigma_minus" type="checkbox" ctype="bool" default="1">
     <description>Sigma minus baryon production</description> 
   </param>
   <param name="hyp_g2_Re_part" type="text" ctype="double" default="0">
@@ -422,7 +422,7 @@
   <param name="hyp_g2_Im_part" type="text" ctype="double" default="0">
     <description>Imaginary part of g2 form factor></description>
   </param>
-  <param name="hip_su3_sym_breaking" type="checkbox" ctype="bool" default="0">
+  <param name="hyp_su3_sym_breaking" type="checkbox" ctype="bool" default="0">
     <description>SU(3) symmetry breaking coefficients from Phys. Rev. D 51, 2262 (1995) tables vii and viii></description>
   </param>
   <param name="hyp_axial_mass" type="text" ctype="double" default="1030">
