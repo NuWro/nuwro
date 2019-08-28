@@ -56,20 +56,32 @@ double hypevent(params&p, event &e, nucleus &t)
   // adjust the lepton flavour
   lepton.pdg=nu.pdg-(nu.pdg>0 ? 1 :-1);
 
+  int h; // hyperon produced: 1,2,3
   switch(N0.pdg)
   {
     case PDG::pdg_proton: // Lambda or Sigma_0 (cross sections should add up)
       if(p.hyp_lambda)
+      {
         hyperon.pdg=PDG::pdg_Lambda;
-      else
+        h = 1;
+      }
+      else if(p.hyp_sigma_zero)
+      {
         hyperon.pdg=PDG::pdg_Sigma;
+        h = 2;
+      }
+      else
+        return 0;
       break;
 
     case PDG::pdg_neutron: 
-      if(p.hyp_lambda)
-        return 0;
-      else
+      if(p.hyp_sigma_minus)
+      {
         hyperon.pdg=PDG::pdg_SigmaM;
+        h = 3;
+      }
+      else
+        return 0;
       break;
   }
 
@@ -78,7 +90,7 @@ double hypevent(params&p, event &e, nucleus &t)
   lepton.set_mass(PDG::mass(lepton.pdg));
 
   double E_bind=0;  // binding energy set to 0 // SUBTRACT PROPER ONE!
-  double xsec = 0;
+  double xsec = 0; double xsec2 = 0;
   //double jakobian=0;  // the value will be set by kinematics generator
 
   // DEPRECATED
@@ -113,8 +125,54 @@ double hypevent(params&p, event &e, nucleus &t)
 
   double rs = sqrt((v1+v2)*(v1+v2)); //CMS energy sqrt(s)
   double pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
-  double dif = Hyperon_Interaction(-q2,Enu0,1,v1,v2,v3,v4);
+  double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
   xsec = 4*dif*pf*Pi;
+
+  // if the interaction was on proton, we calculated Lambda and we still was Sigma_0
+  // we need to calcualte the cross section and weight the choice
+  if( h == 1 && p.hyp_sigma_zero )
+  {
+    // find the lepton unit vector
+    vec unit_vec = v3 / v3.length();
+    // find sqrt(s)
+    vect sqrt_s = vect (nu) + vect (N0);
+    // find the new momentum
+    double pp = cms_momentum2(sqrt_s*sqrt_s,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));
+    // take new particles
+    particle lepton2 = lepton;
+    particle hyperon2 = hyperon;
+    hyperon2.pdg = PDG::pdg_Sigma;
+    hyperon2.set_mass(PDG::mass(hyperon2.pdg));
+    // adjust momentum
+    lepton2.set_momentum (unit_vec * sqrt(pp));
+    hyperon2.set_momentum (-unit_vec * sqrt(pp));
+    // boost to LAB
+    lepton2.boost (vcms);
+    hyperon2.boost (vcms);
+    // calculate q2
+    vect p13 = nu - lepton2;
+    double q22 = p13 * p13;
+    // calculate the cross section
+    v3 = vect(lepton2);
+    v4 = vect(hyperon2);
+    v3.boost(-vcms);
+    v4.boost(-vcms);
+    kout = v3.length();
+    pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
+    dif  = Hyperon_Interaction(-q22,Enu0,2,v1,v2,v3,v4);
+    xsec2 = 4*dif*pf*Pi;
+
+    // range in q2
+    double range = 4 * nu.E() * lepton.momentum();
+    double range2 = 4 * nu.E() * lepton2.momentum();
+    // choose a proper channel
+    if (frandom() < xsec2*range2/(xsec*range + xsec2*range2))
+    {
+      lepton = lepton2;
+      hyperon = hyperon2;
+      xsec = xsec2;
+    }
+  }
 
   if(p.flux_correction)
   {

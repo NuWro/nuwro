@@ -11,7 +11,7 @@ int scatter_n (int n, particle p1, particle p2,
 /// if f is given returns f(s,q2) for chosen kinematics
 double scatter_2 (particle p1,  particle p2, 
 	        particle & p3,  particle & p4,
-	        double (*f) (double, double) = NULL);  
+	        double (*f) (double, double) = NULL);
 
 /// Scatter p1,p2 into p3,p4 occording to distribution 
 /// given by f=Ax^3+Bx where x=\cos \theta
