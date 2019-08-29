@@ -530,17 +530,25 @@ namespace PDG
     return pdg == pdg_proton
         or pdg == pdg_neutron
         or pdg == pdg_pi 
-	or pdg == pdg_piP 
-	or pdg == -pdg_piP;
+        or pdg == pdg_piP 
+        or pdg == -pdg_piP;
   }
   
   inline bool pion (int pdg)
   {
     return pdg == pdg_pi 
-	or pdg == pdg_piP 
-	or pdg == -pdg_piP;
+        or pdg == pdg_piP 
+        or pdg == -pdg_piP;
   }
-  
+
+  //added C Thorpe Jan 2019
+  inline bool hyperon (int pdg)
+  {
+    return pdg == pdg_Lambda
+        or pdg == pdg_Sigma
+        or pdg == pdg_SigmaM
+        or pdg == pdg_SigmaP;
+  }
 
 };
 

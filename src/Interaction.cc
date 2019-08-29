@@ -1,5 +1,6 @@
 #include "Interaction.h"
 #include "pidata.h"
+#include "hyperon_cascade.h"
 
 
 ///////////////////////////////////////////////////////////
@@ -245,7 +246,18 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
         X.xsec_n*=0.9;
       break;
 
-    default:
+    // added by c thorpe Jan 2019
+    // Hyperon interactions
+    case pdg_Lambda:
+    case pdg_Sigma:
+    case pdg_SigmaP:
+    case pdg_SigmaM:
+      // new method added below to house nucleon/hyperon scattering cross section
+      // a new parameter was added to Interaction.h to store the pdg code of the hyperon
+      get_hyp_xsec(X.Ekeff,X.xsec_n,X.xsec_p,X.p2,p1,X.sigma,X.hyp_state);
+      break;
+
+    default: // rest is pions!
     { 
       PD.set_density(X.dens);
       PD.set_Ek(X.Ek);
@@ -304,6 +316,14 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     case -pdg_piP:
       k1=pion_;
       return PD.pion_scattering (p1, X.p2, t, X.n, X.p, X.dens);
+
+    //added C Thorpe Dec 2018   Hyperon processes
+    case pdg_Lambda:
+    case pdg_Sigma:
+    case pdg_SigmaM:
+    case pdg_SigmaP:
+      return hyperon_scattering(X.hyp_state,p1,X.p2,X.n,X.p,X.sigma,X.xsec_p,X.xsec_n);
+
     default:
       return 0;
   }
@@ -368,6 +388,66 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
     resii = NN_xsec->get_value(1);
     resij = NN_xsec->get_value(2);
   }
+}
+
+////////////////////////////////////////                                               
+
+// ADDED C THORPE DEC 2018                                                              
+// hyperon nucleon scatter                                                              
+
+/* Argument list:                                                                      
+Ek hyperon KE in nucleon rest frame                                                    
+nY neutron hyperon cross sections                                                      
+pY proton hyperon cross sections                                                       
+N initial nucleon                                                                      
+Y initial hyperon                                                                      
+sigma[] array of cross sections for up to 6 possible reactions                         
+hyp_state indicates starting nucleon and hyperon                                       
+*/
+
+void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,particle Y,
+			       double sigma[], int &hyp_state)
+{
+  switch(Y.pdg){
+  case PDG::pdg_Lambda:
+    hyp_state = 0;
+    break;
+  case PDG::pdg_Sigma:
+    hyp_state =1;
+    break;
+  case PDG::pdg_SigmaM:
+    hyp_state=2;
+    break;
+  case PDG::pdg_SigmaP:
+    hyp_state=3;
+    break;
+  }
+
+  //Calculate momenta of lambda in nucloen rest frame                                   
+  vec v = vect(N).v();
+
+  //boost to nucleon rest frame                                                         
+  N.boost(-v);
+  Y.boost(-v);
+
+  double Plab = sqrt(Y.x*Y.x + Y.y*Y.y + Y.z*Y.z);
+
+  v = (vect(N) + vect(Y)).v();
+
+  //CMS energy                                                                         
+  //required to check which final states are accessible                                
+
+  double E = sqrt((N+Y)*(N+Y));
+
+  // std::cout << E - N.mass() - Y.mass() << std::endl;                                
+
+  //set 6 cross section values                                                          
+  //function in hyperon_cascade.cc                                                     
+
+  hyperon_exp_xsec(E,Plab,sigma,hyp_state);
+
+  pY = (sigma[0] + sigma[1] + sigma[2]); //total cross section for hyperon + proton     
+  nY = (sigma[3] + sigma[4] + sigma[5]); //total cross section for hyperon + neutron    
 }
 
 ////////////////////////////////////////
@@ -548,3 +628,79 @@ const char* Interaction::nucleon_process_name()
   else
     return NULL;
 }
+
+//////////////////////////////////////                                                 
+//// Added by c thorpe Jan 2019                                                        
+//// Hyperon Scattering Methods                                                        
+//// scatter hyperon either according to disribution for NN scatter                    
+//// If no NN process with same charges exists scatter isotropically in CMS frame      
+//////////////////////////////////////                                                 
+
+bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, int &n,
+				     particle p[],double sigma[], double sigma_p, double sigma_n){
+
+  int res;
+
+  // set value of hyp state, now specific for protons and neutrons
+  if(p2.pdg == PDG::pdg_neutron)
+    {
+      hyp_state += 4;
+    }
+
+  // selects the final state for the hyperons
+  hyperon_state(hyp_state,sigma,ij,p);
+
+  if(ij == 0 || ij == 1){
+
+    vec v = p2.v();
+
+    double Ek =  p1.Ek_in_frame (-v);
+
+    NN_angle->set_input_point( Ek );
+
+    float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij                           
+    float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij                           
+
+    // std::cout << p1.pdg << "  " << p2.pdg << std::endl;                               
+
+    res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1) || hyperon_error(p1,p2,p);
+
+  }
+  else
+    {
+      //     std::cout << p1.pdg << "  " << p2.pdg << std::endl;                       
+
+      res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
+    }
+
+  /*                                                                                   
+										       std::cout << std::endl;                                                              
+										       std::cout << "after" << std::endl;                                                   
+										       std::cout << p2.x << "  " << p2.y << "  "<< p2.z << std::endl;                       
+										       std::cout << std::endl;                                                              
+  */
+  return  res;
+
+}
+/////////////////////////////////////////////                                                                                                  
+// if scatter unable to generate kinematics set                                                                                                
+// initial state same as final                                                                                                                 
+
+// find sometimes that CMS energy calculated                                                                                                   
+// in hyperon cascade.cc is different to the one used by sactter by                                                                            
+// 1-2 MeV and interaction being attempted should have been allowed                                                                            
+///////////////////////////////////////////                                                                                                    
+
+bool Interaction::hyperon_error(particle p1, particle p2,particle p[]){
+
+  //  std::cout << "error" << std::endl;                                                                                                       
+
+  p[0] = p1;
+  p[1] = p2;
+
+  //  std::cout << "failure" << std::endl;                                                                                                     
+
+  return 1;
+}
+
+

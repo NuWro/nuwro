@@ -39,6 +39,10 @@ struct interaction_parameters
   particle p2;              //!< Target nucleon from nucleus.
   particle p[5];            //!< Results of scattering.
   int      n;               //!< Number of particles after scattering.
+
+  // C Thorpe added Jan 2019 hyperon interactions
+  double sigma[6]; // 6 cross sections used in 2 particle hyperon scattering
+  int hyp_state;   // initial hyperon state
 };
 
 
@@ -744,6 +748,13 @@ class Interaction
                                               //!< Returns the nucleon process id.
     const char* nucleon_process_name();
                                               //!< Returns the nucleon process name.
+    //added C Thorpe Dec 2018
+    //calculates nucleon/hyperon cross section
+    void get_hyp_xsec(double Ek, double &nY, double &pY, particle N, particle Y, double sigma[], int &hyp_state);
+    //scatters hyperons, particles p1 and p2 into p[]
+    bool hyperon_scattering(int hyp_state, particle& p1, particle& p2, int &n, particle p[],
+                           double sigma[], double sigma_p, double sigma_n);
+    bool hyperon_error(particle p1, particle p2, particle p[]);
 };
 
 ////////////////////////////////////////

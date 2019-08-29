@@ -134,7 +134,14 @@ void kaskada::prepare_particles()
       
       parts.push (p1);  // put particle to a queue
     }
-    else                // if not a nucleon nor pion
+    //add C Thorpe 
+    //hyperon production
+    else if(hyperon (p1.pdg))
+    {
+      //do not subtract binding energy
+      parts.push(p1); // add particle to queue
+    }
+    else              // if not a nucleon nor pion or hyperon
     {
       p1.endproc=escape;
       e->post.push_back (p1);
