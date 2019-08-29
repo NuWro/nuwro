@@ -83,6 +83,7 @@ int kaskada::kaskadaevent()
       {
       if (nucleon (p1.pdg)) e->nod[13]++;
       if (pion (p1.pdg)) e->nod[12]++;
+      if (hyperon (p1.pdg)) e->nod[14]++;
       parts.push (*p);                          // interaction did not happend, 
                                                 // p should be further propagated 
     }
@@ -151,7 +152,7 @@ void kaskada::prepare_particles()
     }
   }
   
-  for (int i = 0; i<14; i++)  // number of dynamics defined in proctable.h
+  for (int i = 0; i<15; i++)  // number of dynamics defined in proctable.h
     e->nod[i] = 0;
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place
 }

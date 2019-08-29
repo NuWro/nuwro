@@ -15,6 +15,7 @@
 #include "hiperon_sigma.h"
 #include "hyperon_interaction.h"
 #include "scatter.h"
+#include "dis/LeptonMass.h"
 #define LOCALKF localkf_O
 
 
@@ -89,14 +90,43 @@ double hypevent(params&p, event &e, nucleus &t)
   hyperon.set_mass(PDG::mass(hyperon.pdg));
   lepton.set_mass(PDG::mass(lepton.pdg));
 
-  double E_bind=0;  // binding energy set to 0 // SUBTRACT PROPER ONE!
+  double _E_bind=0; //binding energy
+
+  /*
+  # 0 is free target; 
+  # 1 is Fermi gas; 
+  # 2 is local Fermi gas; 
+  # 3 is Bodek-Ritchie; 
+  # 4 is "effective" spectral function (carbon or oxygen); 
+  # 5 is deuterium; 
+  # 6 is deuterium with constant binding energy nucleus_E_b (for tests only!)
+  */
+  
+  switch(p.nucleus_target)
+  {
+    case 0: _E_bind=0;        break;
+    case 1: _E_bind= p.nucleus_E_b; break;
+    case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
+    case 3: _E_bind=0;              break;         //temporary
+    case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
+         //in the future it is possible to add SF for other nuclei as well  
+         //cout<<ped<<"  "<<_E_bind<<endl;//SF
+         break;
+    case 5: _E_bind= deuter_binen (N0.p());break; //deuterium 
+    case 6: _E_bind= p.nucleus_E_b;      break; //deuterium like Fermi gas
+    default: _E_bind=0;
+  }
+
+  particle N0_Eb = N0;
+  N0_Eb.t -= _E_bind;
+
   double xsec = 0; double xsec2 = 0;
   //double jakobian=0;  // the value will be set by kinematics generator
 
   // DEPRECATED
-  // double q2 = qel_kinematics(E_bind, nu, N0, lepton, hyperon, jakobian)
-  // double q2 = czarek_kinematics2(E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
-  double q2 = scatter_2 (nu, N0, lepton, hyperon);
+  // double q2 = qel_kinematics(_E_bind, nu, N0, lepton, hyperon, jakobian)
+  // double q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
+  double q2 = scatter_2 (nu, N0_Eb, lepton, hyperon);
 
   if(q2==0) return 0;
 
@@ -135,7 +165,7 @@ double hypevent(params&p, event &e, nucleus &t)
     // find the lepton unit vector
     vec unit_vec = v3 / v3.length();
     // find sqrt(s)
-    vect sqrt_s = vect (nu) + vect (N0);
+    vect sqrt_s = vect (nu) + vect (N0_Eb);
     // find the new momentum
     double pp = cms_momentum2(sqrt_s*sqrt_s,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));
     // take new particles
@@ -170,8 +200,10 @@ double hypevent(params&p, event &e, nucleus &t)
     {
       lepton = lepton2;
       hyperon = hyperon2;
-      xsec = xsec2;
     }
+
+    // cross sections sum up
+    xsec += xsec2;
   }
 
   if(p.flux_correction)
@@ -180,8 +212,8 @@ double hypevent(params&p, event &e, nucleus &t)
   // corrections to the cross section on the whole nucleus
   // int qel_relat=0;
     double vv,vz;
-    vv = N0.v().length ();
-    vz = N0.v() * nu.v().dir(); // this is general
+    vv = N0_Eb.v().length ();
+    vz = N0_Eb.v() * nu.v().dir(); // this is general
     xsec *= sqrt ( (1 - vz) * (1 - vz) );
   }
 

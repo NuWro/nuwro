@@ -322,6 +322,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     case pdg_Sigma:
     case pdg_SigmaM:
     case pdg_SigmaP:
+      k1 = hyperon_;
       return hyperon_scattering(X.hyp_state,p1,X.p2,X.n,X.p,X.sigma,X.xsec_p,X.xsec_n);
 
     default:

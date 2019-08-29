@@ -53,7 +53,7 @@ class event:public TObject
 		                        ///< 8,9 - mec  cc/nc - meson exhchange current   
 		                        ///< 20 -  eel  nc - elastic electron scattering 
 
-		int nod[14];            ///< number of rescattering interactions of given type:
+		int nod[15];            ///< number of rescattering interactions of given type:
 		                        ///< 0 - nucleon elastic,
 		                        ///< 1 - nucleon ce,
 		                        ///< 2 - nucleon spp,
@@ -68,6 +68,7 @@ class event:public TObject
 		                        ///< 11 - pion tpp
 		                        ///< 12 - pion no interaction
 		                        ///< 13 - nucleon no interaction
+														///< 14 - any hyperon
 		int pr;     ///< number of protons  in the residual nucleus
 		int nr;     ///< number of neutrons in the residual nucleus
 		double r_distance; //< distance from nucleus center of absorption point (if happened)

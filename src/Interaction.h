@@ -12,7 +12,7 @@
 #include "piangle.h"
 #include "input_data.h"
 
-enum {nucleon_=10,pion_=20};
+enum {nucleon_=10,pion_=20,hyperon_=30};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
 ////////////////////////////////////////
@@ -45,7 +45,6 @@ struct interaction_parameters
   int hyp_state;   // initial hyperon state
 };
 
-
 ////////////////////////////////////////
 // Utilities - general
 ////////////////////////////////////////
@@ -63,7 +62,8 @@ inline int kod(int i)
     case 22: return 6;
     case 23: return 7;
     case 25: return 8;
-    case 24: return 11; 
+    case 24: return 11;
+    case 30: return 14; // process names have to be added
     case 99: return 9;
     case 100: return 10;
     default: throw "invalid interaction code";
@@ -718,11 +718,13 @@ class Interaction
                                                    Interaction_parameters object keeps track of resulting particles
                                                    (table p) and the number of outgoing particles (n). */
     int process_id()                          //! Returns the process id.
-    { 
+    {
+      if(k1==hyperon_) return 30; // process names have to be added
       return k1==nucleon_ ? nucleon_process_id() : PD.process_id(); 
     }
     const char* process_name()                //! Returns the process name.
     {
+      if(k1==hyperon_) return "any hyperon"; // process names have to be added
       return k1==nucleon_ ? nucleon_process_name() : PD.process_name();
     }
     void test ();                             //!< Test function.
