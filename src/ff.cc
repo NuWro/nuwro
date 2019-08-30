@@ -827,7 +827,8 @@ pair<double, double> fap(double q2, int kind) {
     case 12:
       // need to add x=F/(F+D) value to constants file 
       // x = 0.36543014996
-      Fa = Axialfromq2(q2, MA_hyp); 
+      //Fa = Axialfromq2(q2, MA_hyp); 
+      Fa  = 1.267/((1-q2/(MA_hyp*MA_hyp))*(1-q2/(MA_hyp*MA_hyp)));
       Fa *= (-1)*(1+2*Axial_x)/pow(6,0.5);
       //SU(3) symmetry breaking
       if(sym_break == true)
@@ -835,13 +836,15 @@ pair<double, double> fap(double q2, int kind) {
         Fa *= 1.051;
       }
       hyp_mass = PDG::mass_Lambda;
-      Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
+      //Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
+      Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/((kmass*kmass-q2));
       break;
     //Sigma zero
     case 13:
       //need to add x=F/(F+D) value to constants file 
       // x = 0.36543014996
-      Fa = Axialfromq2(q2, MA_hyp); 
+      //Fa = Axialfromq2(q2, MA_hyp); 
+      Fa  = 1.267/((1-q2/(MA_hyp*MA_hyp))*(1-q2/(MA_hyp*MA_hyp)));
       Fa *= (1-2*Axial_x)/(pow(2,0.5));
       //SU(3) symmetry breaking
       if(sym_break == true)
@@ -855,7 +858,8 @@ pair<double, double> fap(double q2, int kind) {
     case 14:
       // need to add x=F/(F+D) value to constants file 
       // x = 0.36543014996
-      Fa = Axialfromq2(q2, MA_hyp); 
+      //Fa = Axialfromq2(q2, MA_hyp);
+      Fa  = 1.267/((1-q2/(MA_hyp*MA_hyp))*(1-q2/(MA_hyp*MA_hyp)));
       Fa *= (1-2*Axial_x);
       //SU(3) symmetry breaking
       if(sym_break == true)
