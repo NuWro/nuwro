@@ -10,6 +10,7 @@ This function calculates RES events from the Hybrid model
 #include "vect.h"
 #include "dis/LeptonMass.h"
 #include "hybrid_RES.h"
+#include "hybrid/hybrid_gateway.h"
 
 
 void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
@@ -50,7 +51,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
     case  2:  // pi+ + proton (nu_11)
       xsec_pip = hybrid_dsdQ2dW(&kin, 11);
       xsec_inclusive = xsec_pip;
-      if ( not xsec_inclusive > 0 ) return;
+      if ( not (xsec_inclusive > 0) ) return;
       final_pion.set_pdg_and_mass( PDG::pdg_piP );
       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
       break;
@@ -58,7 +59,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       xsec_pip = hybrid_dsdQ2dW(&kin, 22);
       xsec_pi0 = hybrid_dsdQ2dW(&kin, 21);
       xsec_inclusive = xsec_pip + xsec_pi0;
-      if ( not xsec_inclusive > 0 ) return;
+      if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pip / xsec_inclusive > frandom() ) // random selection
       {
         final_pion.set_pdg_and_mass( PDG::pdg_piP );
@@ -74,7 +75,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       xsec_pi0 = hybrid_dsdQ2dW(&kin, 21); // anu_11 has the tables of nu_21
       xsec_pim = hybrid_dsdQ2dW(&kin, 22); // anu_12 has the tables of nu_22
       xsec_inclusive = xsec_pi0 + xsec_pim;
-      if ( not xsec_inclusive > 0 ) return;
+      if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pi0 / xsec_inclusive > frandom() ) // random selection
       {
         final_pion.set_pdg_and_mass( PDG::pdg_pi );
@@ -89,7 +90,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
     case -1:  // pi- + neutron (anu_22)
       xsec_pim = hybrid_dsdQ2dW(&kin, 11); // anu_22 has the tables of nu_11
       xsec_inclusive = xsec_pim;
-      if ( not xsec_inclusive > 0 ) return;
+      if ( not (xsec_inclusive > 0) ) return;
       final_pion.set_pdg_and_mass( -PDG::pdg_piP );
       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
       break;
@@ -104,6 +105,9 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // inclusive cross section only
   e.weight = xsec_inclusive;
+
+  // use exclusive cross section
+  e.weight = hybrid_dsdQ2dWdOm(&kin, 11, final_pion);
 
   // the cross section needs a factor (initial lepton momentum)^-2 in LAB
   // the cross section needs a jacobian: dw = dQ2/2M
@@ -211,6 +215,47 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel)
   double l12 = (kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
 
   result = l00*w00 + 2*l03*w03 + l33*w33 + 0.5*(l11+l22)*w11 - 2*l12*w12;
+
+  return result;
+}
+
+double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
+{
+  double result = 0.;
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
+  // find proper angles costh_pi^ast and cosphi_pi^ast
+  double pion_momentum = final_pion.length();
+  vect k = kin->neutrino;
+  vect kp= kin->lepton;
+  vect q = kin->q;
+  k.boost (-kin->hadron_speed);
+  kp.boost(-kin->hadron_speed);
+  q.boost(-kin->hadron_speed);
+  vec Zast = k - kp;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,q);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double pion_cos_theta =    Zast * vec(final_pion) / pion_momentum;
+  double pion_phi = atan2(Xast*vec(final_pion),Yast*vec(final_pion));
+
+  // cut for comparisons
+  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+
+  // placeholders
+  double costh[1];
+  int    params[4] = {1,1,-1,1};
+  double ABCDE[1][5] = {{0,0,0,0,0}};
+
+  costh[0] = pion_cos_theta;
+
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
+
+  result = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
+                       + ABCDE[0][3]*sin(pion_phi) + ABCDE[0][4]*sin(2*pion_phi);
+  result *= pion_momentum / pow(2*Pi,4);
+  result *= 4 * Pi; // Phase space!
 
   return result;
 }
