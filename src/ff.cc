@@ -147,7 +147,7 @@ pair<double, double> FF::f12(int kind) {
 
   //C Thorpe added Dec 2018
   //needed by hyperon production channels
-  double f1p,f1n,f2p,f2n;
+  double f1p=0,f1n=0,f2p=0,f2n=0;
 
   switch (kind) {
     case 0:
