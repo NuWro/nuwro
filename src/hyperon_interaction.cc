@@ -30,7 +30,6 @@ p2 = hyperon 4 momentum
 double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect k2, vect p2){
 
   //assume input particles are on shell
-
   //set Hyperon mass
   double My = sqrt(p2*p2);
   //set nucleon mass
@@ -87,8 +86,8 @@ double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect
   p2k1 = p2*k1; 
   p1p2 = p1*p2;
   k1k2 = k1*k2;
-  
-  /*
+
+  /*  
     std::cout << "Q2: " << Q2 << std::endl;
     std::cout << "p1k1: " <<  p1k1 << std::endl;
     std::cout << "p2k2: " << p2k2 << std::endl;
@@ -97,7 +96,7 @@ double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect
     std::cout <<"p1p2: " << p1p2 << std::endl;
     std::cout <<"k1k2: " << k1k2 << std::endl;
     std::cout << std::endl;
-  */
+  */ 
 
   p1q = p1k1 - p1k2;
   p2q = p2k1 - p2k2;
@@ -130,7 +129,7 @@ double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect
     std::cout <<"p2mqn: " << p2mqn << std::endl;
     std::cout <<"qmp1n: " << qmp1n << std::endl;
     std::cout <<"qmp2n: " << qmp2n << std::endl;
-    std::cout <<"gmn: " << gmn << std::endl;
+   std::cout <<"gmn: " << gmn << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
   */
@@ -144,6 +143,14 @@ double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect
   //SCC form factors
   //real and imaginary parts of g2 (axial SCC)
   list(Rg2,Ig2) = g2(q2,h+11);
+
+  /*
+   std::cout << std::endl;
+   std::cout << f1 << std::endl;
+   std::cout << f2 << std::endl;
+  std::cout << g1 << std::endl;
+  std::cout << g3 << std::endl;
+  */
 
   //list of all of the variables needed by H tensor  
 
@@ -180,9 +187,14 @@ double Hyperon_Interaction(double Q2, double E_nu, int h, vect k1, vect p1, vect
  // select pieces of the hadronic tensor contracted with the leptonic tensor 
  // and multiply by the required form factor to calculate contractions
 
-  Mat = H.F1F1()*f1*f1  +  H.F2F2()*f2*f2/(M*M)  +  H.G1G1()*g1*g1  +  H.MG2G2()*(Rg2*Rg2+Ig2*Ig2)/(M*M)
-    +  H.G3G3()*g3*g3/(M*M)  +  H.F1F2()*f1*f2/M  -  H.F1G1()*f1*g1  -  H.F1RG2()*f1*Rg2/M  -  H.F2G1()*f2*g1/M 
-    -  H.F2RG2()*f2*Rg2/(M*M)  -  H.F2IG2()*f2*Ig2/(M*M)  +   H.G1RG2()*g1*Rg2/M   + H.G1G3()*g1*g3/M + H.RG2G3()*Rg2*g3/(M*M);
+ 
+  Mat = H.F1F1()*f1*f1 + H.F2F2()*f2*f2/(M*M) + H.F1F2()*f1*f2/M 
+      + H.G1G1()*g1*g1 - H.F1G1()*f1*g1 - H.F2G1()*f2*g1/M
+    + 4*H.G3G3()*g3*g3/(M*M) + 2*H.G1G3()*g1*g3/M
+    +H.MG2G2()*(Rg2*Rg2+Ig2*Ig2)/(M*M) - H.F1RG2()*f1*Rg2/M 
+    - H.F2RG2()*f2*Rg2/(M*M) + H.G1RG2()*g1*Rg2/M +2*H.RG2G3()*Rg2*g3/(M*M);
+ 
 
-    return Mat/2;
+ 
+return Mat/2;
 }

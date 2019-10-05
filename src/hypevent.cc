@@ -90,7 +90,7 @@ double hypevent(params&p, event &e, nucleus &t)
   hyperon.set_mass(PDG::mass(hyperon.pdg));
   lepton.set_mass(PDG::mass(lepton.pdg));
 
-  double _E_bind=0; //binding energy
+    double _E_bind=0; //binding energy
 
   /*
   # 0 is free target; 
@@ -117,6 +117,8 @@ double hypevent(params&p, event &e, nucleus &t)
     default: _E_bind=0;
   }
 
+
+ 
   particle N0_Eb = N0;
   N0_Eb.t -= _E_bind;
 
@@ -127,6 +129,7 @@ double hypevent(params&p, event &e, nucleus &t)
   // double q2 = qel_kinematics(_E_bind, nu, N0, lepton, hyperon, jakobian)
   // double q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
   double q2 = scatter_2 (nu, N0_Eb, lepton, hyperon);
+
 
   if(q2==0) return 0;
 
@@ -154,21 +157,29 @@ double hypevent(params&p, event &e, nucleus &t)
   double kout = v3.length(); //outgoing lepton momentum
 
   double rs = sqrt((v1+v2)*(v1+v2)); //CMS energy sqrt(s)
-  double pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
-  double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
+
+  double pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2; 
+double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
   xsec = 4*dif*pf*Pi;
+
+ 
+  //for testing of the sigma zero cross section calculation using the 
+  //code below, set xsec to zero
+  //xsec=0;
 
   // if the interaction was on proton, we calculated Lambda and we still was Sigma_0
   // we need to calcualte the cross section and weight the choice
-  if( h == 1 && p.hyp_sigma_zero )
+  
+  //check if sigma production is allowed by kinematics
+  if( h == 1 && p.hyp_sigma_zero && rs > PDG::mass(PDG::pdg_Sigma)+lepton.mass())
   {
     // find the lepton unit vector
     vec unit_vec = v3 / v3.length();
-    // find sqrt(s)
-    vect sqrt_s = vect (nu) + vect (N0_Eb);
-    // find the new momentum
-    double pp = cms_momentum2(sqrt_s*sqrt_s,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));
-    // take new particles
+    
+    //3 momentum of outgoing sigma minus   
+  double pp = cms_momentum2(rs*rs,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));   
+
+ // take new particles
     particle lepton2 = lepton;
     particle hyperon2 = hyperon;
     hyperon2.pdg = PDG::pdg_Sigma;
@@ -179,24 +190,30 @@ double hypevent(params&p, event &e, nucleus &t)
     // boost to LAB
     lepton2.boost (vcms);
     hyperon2.boost (vcms);
+
     // calculate q2
     vect p13 = nu - lepton2;
     double q22 = p13 * p13;
+
     // calculate the cross section
-    v3 = vect(lepton2);
-    v4 = vect(hyperon2);
-    v3.boost(-vcms);
-    v4.boost(-vcms);
-    kout = v3.length();
+
+    //4 momenta of outgoing lepton and hyperon in cms
+    v3 = vect(sqrt(lepton2.mass()*lepton2.mass()+pp),unit_vec*sqrt(pp));
+    v4 = vect(sqrt(hyperon2.mass()*hyperon2.mass()+pp),-unit_vec*sqrt(pp));
+
+    kout = sqrt(pp);
+
     pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
     dif  = Hyperon_Interaction(-q22,Enu0,2,v1,v2,v3,v4);
+
     xsec2 = 4*dif*pf*Pi;
+
 
     // range in q2
     double range = 4 * nu.E() * lepton.momentum();
     double range2 = 4 * nu.E() * lepton2.momentum();
     // choose a proper channel
-    if (frandom() < xsec2*range2/(xsec*range + xsec2*range2))
+    if (frandom() < xsec2/(xsec + xsec2))
     {
       lepton = lepton2;
       hyperon = hyperon2;
@@ -223,7 +240,7 @@ double hypevent(params&p, event &e, nucleus &t)
   e.out.push_back(hyperon);
   e.weight=xsec/cm2;
 
-  return e.weight*cm2;
+    return e.weight*cm2;
 }
 
 
