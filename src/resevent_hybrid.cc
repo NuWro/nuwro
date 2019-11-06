@@ -24,9 +24,6 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(1500)) return;
 
-  // check threshold for pion production (otherwise left e.weight = 0)
-  if (not kin.is_above_threshold()) return;
-
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
   final_lepton.boost(kin.target.v());
@@ -158,9 +155,9 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel)
   double W  = kin->W;
 
   // we build leptonic tensor in CMS with q along z, see JES paper App. A
-  vect kl_inc_lab = kin->neutrino.p4();
-  vect kl_lab     = kin->lepton.p4();
-  vect q_lab      = kin->q;
+  vect kl_inc_lab = kin->neutrino.p4();   //
+  vect kl_lab     = kin->lepton.p4();     //  They are not in LAB, but in target rest frame!
+  vect q_lab      = kin->q;               //
 
   double v = q_lab.length() / (q_lab[0] + res_kinematics::avg_nucleon_mass);
   double g = 1 / sqrt(1 - v*v);
@@ -221,35 +218,44 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel)
 
 double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
 {
+  // placeholders
+  double costh[1];
+  int    params[4];
+  double ABCDE[1][5] = {{0,0,0,0,0}};
   double result = 0.;
+
+  // specify the params (note strange order!)
+  params[0] = 1;                                   // only CC for now
+  params[2] = (1 - 2.0 * (kin->neutrino.pdg > 0)); // helicity
+  params[3] = int(channel/10);                     // nucleon
+  params[1] = channel % 10;                        // decay
+
+  // get Q^2, W
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
-
-  // find proper angles costh_pi^ast and cosphi_pi^ast
-  double pion_momentum = final_pion.length();
-  vect k = kin->neutrino;
-  vect kp= kin->lepton;
-  vect q = kin->q;
-  k.boost (-kin->hadron_speed);
-  kp.boost(-kin->hadron_speed);
-  q.boost(-kin->hadron_speed);
-  vec Zast = k - kp;
-  vec Yast = vecprod(k,kp);
-  vec Xast = vecprod(Yast,q);
-  Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta =    Zast * vec(final_pion) / pion_momentum;
-  double pion_phi = atan2(Xast*vec(final_pion),Yast*vec(final_pion));
 
   // cut for comparisons
   if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
-  // placeholders
-  double costh[1];
-  int    params[4] = {1,1,-1,1};
-  double ABCDE[1][5] = {{0,0,0,0,0}};
+  // find proper angles costh_pi^ast and phi_pi^ast
+  double pion_momentum = final_pion.length();
+  vect k = kin->neutrino;  //
+  vect kp= kin->lepton;    // They are in target rest frame!
+  vect q = kin->q;         //
+  k.boost (-kin->hadron_speed);
+  kp.boost(-kin->hadron_speed);
+  q.boost(-kin->hadron_speed);
+  vec Zast = q;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,q);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double pion_cos_theta =    Zast * vec(final_pion) / pion_momentum;
+  double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
 
+  // fill costh
   costh[0] = pion_cos_theta;
 
+  // get ABCDE
   hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
 
   result = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
