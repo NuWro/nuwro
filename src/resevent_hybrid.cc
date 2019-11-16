@@ -100,10 +100,13 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // Omega_pi^* was chosen in hadronic CMS
 
-  // inclusive cross section only
+  // 2d cross section only
   e.weight = xsec_inclusive;
 
-  // use exclusive cross section
+  // use 3d cross section
+  e.weight = hybrid_dsdQ2dWdcth(&kin, 11, final_pion);
+
+  // use 4d cross section
   e.weight = hybrid_dsdQ2dWdOm(&kin, 11, final_pion);
 
   // the cross section needs a factor (initial lepton momentum)^-2 in LAB
@@ -216,6 +219,55 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel)
   return result;
 }
 
+double hybrid_dsdQ2dWdcth(res_kinematics* kin, int channel, vect final_pion)
+{
+  // placeholders
+  double costh[1];
+  int    params[4];
+  double ABCDE[1][5] = {{0,0,0,0,0}};
+  double result = 0.;
+
+  // specify the params (note strange order!)
+  params[0] = 1;                                   // only CC for now
+  params[2] = (1 - 2.0 * (kin->neutrino.pdg > 0)); // helicity
+  params[3] = int(channel/10);                     // nucleon
+  params[1] = channel % 10;                        // decay
+
+  // get Q^2, W
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
+  // cut for comparisons
+  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+
+  // find proper angles costh_pi^ast and phi_pi^ast
+  double pion_momentum = final_pion.length();
+  vect k = kin->neutrino;  //
+  vect kp= kin->lepton;    // They are in target rest frame!
+  vect q = kin->q;         //
+  k.boost (-kin->hadron_speed);
+  kp.boost(-kin->hadron_speed);
+  q.boost (-kin->hadron_speed);
+  vec Zast = q;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,q);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+  double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
+
+  // fill costh
+  costh[0] = pion_cos_theta;
+
+  // get ABCDE
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
+
+  result = ABCDE[0][0];
+  result *= pion_momentum / pow(2*Pi,4);
+  result *= 4 * Pi; // Phase space!
+
+  return result;
+}
+
 double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
 {
   // placeholders
@@ -244,12 +296,12 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
   vect q = kin->q;         //
   k.boost (-kin->hadron_speed);
   kp.boost(-kin->hadron_speed);
-  q.boost(-kin->hadron_speed);
+  q.boost (-kin->hadron_speed);
   vec Zast = q;
   vec Yast = vecprod(k,kp);
   vec Xast = vecprod(Yast,q);
   Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta =    Zast * vec(final_pion) / pion_momentum;
+  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
   double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
 
   // fill costh
