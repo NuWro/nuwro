@@ -42,6 +42,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   int l = kin.target.pdg != PDG::pdg_proton;
   int final_charge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);
 
+  int channel;
+
   double xsec_pip=0, xsec_pi0=0, xsec_pim=0, xsec_inclusive=0; // cross sections
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
@@ -51,6 +53,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       if ( not (xsec_inclusive > 0) ) return;
       final_pion.set_pdg_and_mass( PDG::pdg_piP );
       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+      channel = 11;
       break;
     case  1:  // pi+ + neutron (nu_22) or pi0 + proton (nu_21)
       xsec_pip = hybrid_dsdQ2dW(&kin, 22);
@@ -61,11 +64,13 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       {
         final_pion.set_pdg_and_mass( PDG::pdg_piP );
         final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+        channel = 22;
       }
       else
       {
         final_pion.set_pdg_and_mass( PDG::pdg_pi );
         final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+        channel = 21;
       }
       break;
     case  0:  // pi0 + neutron (anu_11) or pi- + proton (anu_12)
@@ -77,11 +82,13 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       {
         final_pion.set_pdg_and_mass( PDG::pdg_pi );
         final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+        channel = 11;
       }
       else
       {
         final_pion.set_pdg_and_mass( -PDG::pdg_piP );
         final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+        channel = 12;
       }
       break;
     case -1:  // pi- + neutron (anu_22)
@@ -90,6 +97,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       if ( not (xsec_inclusive > 0) ) return;
       final_pion.set_pdg_and_mass( -PDG::pdg_piP );
       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+      channel = 22;
       break;
     default:
       cerr << "[WARNING]: Reaction charge out of range\n";
@@ -104,10 +112,10 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   e.weight = xsec_inclusive;
 
   // use 3d cross section
-  e.weight = hybrid_dsdQ2dWdcth(&kin, 11, final_pion);
+  e.weight = hybrid_dsdQ2dWdcth(&kin, channel, final_pion);
 
   // use 4d cross section
-  e.weight = hybrid_dsdQ2dWdOm(&kin, 11, final_pion);
+  e.weight = hybrid_dsdQ2dWdOm(&kin, channel, final_pion);
 
   // the cross section needs a factor (initial lepton momentum)^-2 in LAB
   // the cross section needs a jacobian: dw = dQ2/2M
