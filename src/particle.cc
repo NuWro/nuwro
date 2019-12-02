@@ -18,7 +18,10 @@ decay (vect p4, particle & p1, particle & p2)
       xx = 2 * frandom () - 1;
       yy = 2 * frandom () - 1;
       zz = 2 * frandom () - 1;
-    }
+      
+    
+
+}
   while ((rr = xx * xx + yy * yy + zz * zz) > 1);
   // value of momentum of decay products in cms frame
 //  double m1m1 = p1.mass () * p1.mass ();

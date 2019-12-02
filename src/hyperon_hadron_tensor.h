@@ -71,7 +71,6 @@ class Hyperon_Hadron_Tensor
   double F1RG2();
   double F2G1();
   double F2RG2();
-  double F2IG2();
   double G1RG2();
   double G1G3();
   double RG2G3();
@@ -177,7 +176,10 @@ return  4*(p1mp2n + p2mp1n + gmn*Mp*My - gmn*p1p2);
 
 double Hyperon_Hadron_Tensor::F2F2(){
 
-return -4*(2*gmn*p1q*p2q - gmn*p1p2*q2 + p1mp2n*q2 + p2mp1n*q2 + qmqn*p1p2 - p1mqn*p2q  - p2mqn*p1q  - qmp1n*p2q  - qmp2n*p1q - gmn*Mp*My*q2 + qmqn*Mp*My);
+  //original
+  return -4*(2*gmn*p1q*p2q - gmn*p1p2*q2 + p1mp2n*q2 + p2mp1n*q2 + qmqn*p1p2 - p1mqn*p2q  - p2mqn*p1q  - qmp1n*p2q  - qmp2n*p1q - gmn*Mp*My*q2 + qmqn*Mp*My);
+
+  
 
 
 }
@@ -216,7 +218,9 @@ return  4*(p1p2-Mp*My)*qmqn;
 
 double Hyperon_Hadron_Tensor::F1F2(){
 
-return  4*(qmp1n*My - qmp2n*Mp -p2mqn*My + p1mqn*Mp +  2*gmn*p2q*Mp - 2*gmn*p1q*My);
+ 
+  //original
+  return  4*(qmp1n*My - qmp2n*Mp -p2mqn*Mp + p1mqn*My +  2*gmn*p2q*Mp - 2*gmn*p1q*My);
 
 
 }
@@ -225,7 +229,9 @@ return  4*(qmp1n*My - qmp2n*Mp -p2mqn*My + p1mqn*Mp +  2*gmn*p2q*Mp - 2*gmn*p1q*
 
 double Hyperon_Hadron_Tensor::F1G1(){
 
-return  128*(p1k2*p2k1 - p1k1*p2k2);
+
+  return 128*(p1k2*p2k1 - p1k1*p2k2);
+
 
 
 }
@@ -245,7 +251,8 @@ return  128*(p1k2*p2k1-p1k1*p2k2)*(My-Mp);
 
 double Hyperon_Hadron_Tensor::F2G1(){
 
-return  128*(p1k2*p2k1 - p1k1*p2k2)*(Mp+My);
+
+  return  128*(p1k2*p2k1 - p1k1*p2k2)*(Mp+My);
 
 
 }
@@ -260,17 +267,6 @@ return  128*(My*My - Mp*Mp)*(p1k2*p2k1 - p1k1*p2k2);
 
 
 }
-
-// SECOND CLASS CURRENT
-// contribution from g2 * Im(g2)
-
-double Hyperon_Hadron_Tensor::F2IG2(){
-
-return  128*q2*(p1k2*p2k1 - p1k1*p2k2);
-
-
-}
-
 
 // SECOND CLASS CURRENT
 // contribution from g1 * Re(g2)

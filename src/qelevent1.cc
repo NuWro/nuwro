@@ -16,9 +16,12 @@
 #include "nucleus_data.h"
 #include "dis/LeptonMass.h"
 #include <cstdlib>
+
 #define LOCALKF localkf_O
 
 #include "rpa_2013.h"
+
+#include "hyperon_interaction.h"
 
 //double qelm;
 
@@ -163,12 +166,45 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		if(p.qel_kinematics==3)
 			N1.set_energy(N1.energy()+V(N1.momentum(), t.localkf(N1)));
       
-      
+       
 	vect nu4 = nu;
 	nu4.boost (-N0.v ());  // go to nucleon rest frame 
 	double Enu0=nu4.t;     // neutrino energy in target frame   
 	xsec=jakobian* qel_sigma (Enu0, q2, kind, nu.pdg<0, lepton.mass(), N0.mass()); 
-	
+
+	/*
+	/////////////////////////////////////////////////////////
+	// Aligarh Model for QEL (includes second class current)
+	/////////////////////////////////////////////////////////
+
+		
+  vect v1(nu); //neutrino
+    vect v2(N0); //initial nucleon adjusted for binding energy
+    vect v3(lepton); //final lepton
+    vect v4(N1); //final nucleon
+
+    vec vcms =(vect(nu) + vect(N0)).v ();
+
+    v1.boost(-vcms);
+    v2.boost(-vcms);
+     v3.boost(-vcms);
+       v4.boost(-vcms);
+
+     double kin = v1.length();
+       double kout = v3.length();
+      double M2 = v2*v2;
+
+     double pf = G*G*cos2thetac/(8*Pi*Enu0*Enu0*M2);
+
+     bool anti;
+     if(nu.pdg > 0){anti = false;}
+     else if(nu.pdg < 0){anti = true;}
+     else {return 0;}
+
+     xsec = pf*Singh_Model(-q2,Enu0,kind-11,v1,v2,v3,v4,anti)*jakobian;
+
+     */	
+
 	// now take into account the neutrino flux and nucleon proper time 
 	// corrections to the cross section on the whole nucleus
 	// int qel_relat=0;

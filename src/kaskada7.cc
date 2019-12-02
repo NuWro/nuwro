@@ -68,12 +68,14 @@ int kaskada::kaskadaevent()
     particle p1 = parts.front();                // point a particle from a queue
     parts.pop();                                // remove this particle from a temp vector
     p = &p1;
-    
+
     X = prepare_interaction();                  // set the density and the total cross section
                                                 // calculate free path
     
     if (!move_particle()) continue;             // propagate particle, returns false if jailed
         
+   
+
     if (X.r >= radius)                          // particle leaves nucleus
       leave_nucleus();
     else if(  max_step < X.freepath             // no interaction during max_step 
@@ -87,8 +89,9 @@ int kaskada::kaskadaevent()
       parts.push (*p);                          // interaction did not happend, 
                                                 // p should be further propagated 
     }
-  }
-  
+
+      }
+
   clean();  // if nucleus has evaporated the part queue may not be empty
   
   return result;
@@ -137,10 +140,14 @@ void kaskada::prepare_particles()
     }
     //add C Thorpe 
     //hyperon production
+
+    //no cascade for hyperons if hyperon KE below 30 MeV (switch off  in params)
     else if(hyperon (p1.pdg))
-    {
-      //do not subtract binding energy
+    {  
+  
       parts.push(p1); // add particle to queue
+      
+   
     }
     else              // if not a nucleon nor pion or hyperon
     {

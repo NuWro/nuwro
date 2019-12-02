@@ -510,9 +510,22 @@
   <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
   </param>
+
+
+
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
-  </param>  
+  </param> 
+
+
+
+<!-- Cascade hyperon KE cutoff -->
+<!--
+<param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
+<description>Hyperon kinetic energy cutoff</description>
+</param>
+ -->
+
 </params>
 
 <!--

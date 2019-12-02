@@ -46,12 +46,15 @@ double qel_sigma ( double Enu, ///< neutrino energy in the target frame
     list(F1,F2)=f12(q2,kind);
     list(Fa,Fp)=fap(q2,kind);
 
+  
+
 	if(not anty)
 	{
 		Fa=-Fa;
 		Fp=-Fp;
 	}
-	    
+
+
 	double s=pow2(Enu+M)-pow2(Enu);
 	
     //double ABC1= qel_amp(Enu,q2,  m,M12,      F1,F2,Fp,Fa);

@@ -397,7 +397,7 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
 // hyperon nucleon scatter                                                              
 
 /* Argument list:                                                                      
-Ek hyperon KE in nucleon rest frame                                                    
+Ek hyperon KE in target rest frame                                                    
 nY neutron hyperon cross sections                                                      
 pY proton hyperon cross sections                                                       
 N initial nucleon                                                                      
@@ -409,6 +409,7 @@ hyp_state indicates starting nucleon and hyperon
 void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,particle Y,
 			       double sigma[], int &hyp_state)
 {
+
   switch(Y.pdg){
   case PDG::pdg_Lambda:
     hyp_state = 0;
@@ -449,6 +450,8 @@ void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,parti
 
   pY = (sigma[0] + sigma[1] + sigma[2]); //total cross section for hyperon + proton     
   nY = (sigma[3] + sigma[4] + sigma[5]); //total cross section for hyperon + neutron    
+    
+
 }
 
 ////////////////////////////////////////
@@ -674,12 +677,7 @@ bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, i
       res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
     }
 
-  /*                                                                                   
-										       std::cout << std::endl;                                                              
-										       std::cout << "after" << std::endl;                                                   
-										       std::cout << p2.x << "  " << p2.y << "  "<< p2.z << std::endl;                       
-										       std::cout << std::endl;                                                              
-  */
+  
   return  res;
 
 }

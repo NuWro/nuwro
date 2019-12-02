@@ -376,11 +376,14 @@ void NuWro::makeevent(event* e, params &p)
 					case 5:mecevent_SuSA (p, *e, *_nucleus, true);break;
 					default:mecevent_tem (p, *e, *_nucleus, true);break;
 				}
+			
 				for(int i=0;i<e->out.size();i++)
 				{
 					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 				}
+			
+			
 			}
 			break;
 		case 9:
@@ -754,8 +757,8 @@ void NuWro::real_events(params& p)
 		xsections->SetBinError(i+1,_procesy.sigma(i));
 	}
 
-	TNamed version("NuWro version", VERSION );
-	version.Write();
+	//	TNamed version("NuWro version", VERSION );
+	//	version.Write();
 
 	/////////////////////////////////////////////////////////////
 	// The main loop in NPROC -- generate file with unweighted events

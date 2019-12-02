@@ -539,13 +539,11 @@ double NN_newJS (double w, double q)
   double x=(q*q-w*w)/2.0/939/w;
   return  7.904*(0.0048883*x -4.11136e-6*x*x)*exp(-1.75589*x );
 }
-
 double ND_newJS (double w , double q)
 {
   double x=(q*q-w*w)/2.0/939/w;
   return 7.904*(0.000431802 +0.000948343*x)*exp(-2.40084*x - 0.00135351*0.00135351*x*x);
 }
-
 double ND_marco (double w, double q)
 {
   double x=(q*q-w*w)/2.0/939/w;
@@ -555,7 +553,6 @@ double ND_marco (double w, double q)
   else
     return y;
 }
-
 double NN_marco (double w, double q)
 {
   double x=(q*q-w*w)/2.0/939/w;
@@ -2038,7 +2035,6 @@ void model_2body2 (nucleus t, double E, double w, double q, double Bin, particle
 		spowalniacz(Bin,nuc11);
 		spowalniacz(Bin,nuc22);
 	}
-
 	if (fsi)
 	{
 		spowalniacz(-poten,nuc11);
@@ -2161,7 +2157,6 @@ void model_3body (nucleus t, double E, double w, double q, double Bin, particle 
 		spowalniacz(Bin,nuc22);
 		spowalniacz(Bin,nuc33);
 	}
-
 	if (fsi)
 	{
 		spowalniacz(-poten,nuc11);
