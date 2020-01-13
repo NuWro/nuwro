@@ -20,7 +20,7 @@ void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
 // In terms of tabularized hadronic responses
-double hybrid_dsdQ2dW(res_kinematics* kin, int channel);
+double hybrid_dsdQ2dW(res_kinematics* kin, int channel, vect final_pion=NULL);
 
 // Three-fold differential cross section in CMS without LAB factors
 // In terms of ABCDE decomposition

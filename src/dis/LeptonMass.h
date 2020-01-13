@@ -7,6 +7,8 @@ extern double lepton_mass(int lepton_in, bool cur);
 
 void kinfinder(vec b, vec& d, double kos);
 
+void kin1part(double hama, int nukleon, int meson, vect& finnuk, vect& finpion, vec kierunek);
+
 void kin2part(double hama, int nukleon, int meson, vect& finnuk, vect& finpion);
 
 void kin3part(vect neutr, vect finlep, double hama, int nukleon2, int meson, vect& finnuk, vect& finpion);

@@ -33,6 +33,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // final state particles
   particle final_pion, final_nucleon;
+  particle final_pion2, final_nucleon2; // needed for choosing a decay channel
 
   // selection of the final state
 
@@ -42,80 +43,75 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   int l = kin.target.pdg != PDG::pdg_proton;
   int final_charge = charge(kin.target.pdg) + (1 - k) * (1 - 2 * j);
 
-  int channel;
-
   double xsec_pip=0, xsec_pi0=0, xsec_pim=0, xsec_inclusive=0; // cross sections
+
+  // choose a random direction in CMS
+  vec kierunek = rand_dir();
+
+  // cross section function
+  double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dW;
+  //double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dWdcth;
+  //double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dWdOm;
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
     case  2:  // pi+ + proton (nu_11)
-      xsec_pip = hybrid_dsdQ2dW(&kin, 11);
+      {final_pion.set_pdg_and_mass( PDG::pdg_piP );
+       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pip = hybrid_xsec(&kin, 11, final_pion);}
       xsec_inclusive = xsec_pip;
       if ( not (xsec_inclusive > 0) ) return;
-      final_pion.set_pdg_and_mass( PDG::pdg_piP );
-      final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
-      channel = 11;
       break;
     case  1:  // pi+ + neutron (nu_22) or pi0 + proton (nu_21)
-      xsec_pip = hybrid_dsdQ2dW(&kin, 22);
-      xsec_pi0 = hybrid_dsdQ2dW(&kin, 21);
+      {final_pion.set_pdg_and_mass( PDG::pdg_piP );
+       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pip = hybrid_xsec(&kin, 22, final_pion);}
+      {final_pion2.set_pdg_and_mass( PDG::pdg_pi );
+       final_nucleon2.set_pdg_and_mass( PDG::pdg_proton );
+       kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
+       xsec_pi0 = hybrid_xsec(&kin, 21, final_pion2);}
       xsec_inclusive = xsec_pip + xsec_pi0;
       if ( not (xsec_inclusive > 0) ) return;
-      if( xsec_pip / xsec_inclusive > frandom() ) // random selection
+      if( xsec_pip / xsec_inclusive < frandom() ) // random selection, switch to "2"
       {
-        final_pion.set_pdg_and_mass( PDG::pdg_piP );
-        final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-        channel = 22;
-      }
-      else
-      {
-        final_pion.set_pdg_and_mass( PDG::pdg_pi );
-        final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
-        channel = 21;
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
       }
       break;
     case  0:  // pi0 + neutron (anu_11) or pi- + proton (anu_12)
-      xsec_pi0 = hybrid_dsdQ2dW(&kin, 21); // anu_11 has the tables of nu_21
-      xsec_pim = hybrid_dsdQ2dW(&kin, 22); // anu_12 has the tables of nu_22
+      {final_pion.set_pdg_and_mass( PDG::pdg_pi );
+       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pi0 = hybrid_xsec(&kin, 11, final_pion);} // anu_11 has the tables of nu_21
+      {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
+       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+       kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
+       xsec_pim = hybrid_xsec(&kin, 12, final_pion2);} // anu_12 has the tables of nu_22
       xsec_inclusive = xsec_pi0 + xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
-      if( xsec_pi0 / xsec_inclusive > frandom() ) // random selection
+      if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection
       {
-        final_pion.set_pdg_and_mass( PDG::pdg_pi );
-        final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-        channel = 11;
-      }
-      else
-      {
-        final_pion.set_pdg_and_mass( -PDG::pdg_piP );
-        final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
-        channel = 12;
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
       }
       break;
     case -1:  // pi- + neutron (anu_22)
-      xsec_pim = hybrid_dsdQ2dW(&kin, 11); // anu_22 has the tables of nu_11
+      {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
+       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pim = hybrid_xsec(&kin, 22, final_pion);} // anu_22 has the tables of nu_11
       xsec_inclusive = xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
-      final_pion.set_pdg_and_mass( -PDG::pdg_piP );
-      final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-      channel = 22;
       break;
     default:
       cerr << "[WARNING]: Reaction charge out of range\n";
   };
 
-  // produces 4-momenta of final pair: nucleon + pion
-  kin2part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion);
-
   // Omega_pi^* was chosen in hadronic CMS
 
-  // 2d cross section only
+  // set event weight
   e.weight = xsec_inclusive;
-
-  // use 3d cross section
-  e.weight = hybrid_dsdQ2dWdcth(&kin, channel, final_pion);
-
-  // use 4d cross section
-  e.weight = hybrid_dsdQ2dWdOm(&kin, channel, final_pion);
 
   // the cross section needs a factor (initial lepton momentum)^-2 in LAB
   // the cross section needs a jacobian: dw = dQ2/2M
@@ -140,25 +136,49 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
 }
 
-double hybrid_dsdQ2dW(res_kinematics *kin, int channel)
+double hybrid_dsdQ2dW(res_kinematics *kin, int channel, vect final_pion)
 {
   double *hybrid_grid;
-  switch (channel)
+
+  if(kin->neutrino.pdg > 0)
   {
-    case 11:
-      hybrid_grid = hybrid_grid_11;
-      break;
+    switch (channel)
+    {
+      case 11:
+        hybrid_grid = hybrid_grid_11;
+        break;
 
-    case 21:
-      hybrid_grid = hybrid_grid_21;
-      break;
+      case 21:
+        hybrid_grid = hybrid_grid_21;
+        break;
 
-    case 22:
-      hybrid_grid = hybrid_grid_22;
-      break;
+      case 22:
+        hybrid_grid = hybrid_grid_22;
+        break;
 
-    default:
-      cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
+  }
+  else
+  {
+    switch (channel)
+    {
+      case 11:
+        hybrid_grid = hybrid_grid_21;
+        break;
+
+      case 12:
+        hybrid_grid = hybrid_grid_22;
+        break;
+
+      case 22:
+        hybrid_grid = hybrid_grid_11;
+        break;
+
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
   }
 
   double result = 0.;
@@ -269,9 +289,9 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int channel, vect final_pion)
   // get ABCDE
   hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
 
-  result = ABCDE[0][0];
+  result = 2*Pi*ABCDE[0][0];
   result *= pion_momentum / pow(2*Pi,4);
-  result *= 4 * Pi; // Phase space!
+  result *= 2; // Phase space!
 
   return result;
 }
