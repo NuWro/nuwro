@@ -200,7 +200,7 @@ complex<double> PhiV, PhiA;
 
 int Phases = 1; //Phases == 1 to include phases (and, partially, recover unitarity)
 
-if(Phases == 1 /*&& cross != 1*/){ //COMMENTED HERE !
+if(Phases == 1 && cross != 1){ //COMMENTED HERE !
 
   double WGeV = sqrt(Wrec2)/1000;    
       

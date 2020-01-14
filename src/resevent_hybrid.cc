@@ -83,11 +83,11 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       {final_pion.set_pdg_and_mass( PDG::pdg_pi );
        final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pi0 = hybrid_xsec(&kin, 11, final_pion);} // anu_11 has the tables of nu_21
+       xsec_pi0 = hybrid_xsec(&kin, 11, final_pion);}
       {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
        final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
        kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
-       xsec_pim = hybrid_xsec(&kin, 12, final_pion2);} // anu_12 has the tables of nu_22
+       xsec_pim = hybrid_xsec(&kin, 12, final_pion2);}
       xsec_inclusive = xsec_pi0 + xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection
@@ -100,7 +100,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
       {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
        final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pim = hybrid_xsec(&kin, 22, final_pion);} // anu_22 has the tables of nu_11
+       xsec_pim = hybrid_xsec(&kin, 22, final_pion);}
       xsec_inclusive = xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
       break;
@@ -164,15 +164,15 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel, vect final_pion)
   {
     switch (channel)
     {
-      case 11:
+      case 11:  // anu_11 has the tables of nu_21
         hybrid_grid = hybrid_grid_21;
         break;
 
-      case 12:
+      case 12:  // anu_12 has the tables of nu_22
         hybrid_grid = hybrid_grid_22;
         break;
 
-      case 22:
+      case 22:  // anu_22 has the tables of nu_11
         hybrid_grid = hybrid_grid_11;
         break;
 
