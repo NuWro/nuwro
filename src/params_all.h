@@ -24,6 +24,7 @@ PARAM(string,beam_inputroot_numu,"")\
 PARAM(string,beam_inputroot_numub,"")\
 PARAM(string,beam_inputroot_nutau,"")\
 PARAM(string,beam_inputroot_nutaub,"")\
+PARAM(line,beam_atmo_files,"")\
 PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,6)\
