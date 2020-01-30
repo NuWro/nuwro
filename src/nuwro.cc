@@ -138,10 +138,6 @@ void NuWro::init (int argc, char **argv)
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
-  // load the input data
-  input.initialize( p );
-  input.load_data();
-
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
 	{
@@ -167,6 +163,11 @@ void NuWro::init (int argc, char **argv)
 
 
 	}
+
+  // load the input data
+  input.initialize( p );
+  input.load_data();
+
 	ff_configure(p);
 	refresh_dyn(p);	
 }
