@@ -29,6 +29,7 @@ static const double mu_p = 2.793;   // moment dipolowy protonu
 static const double mu_n = -1.913;  // moment dipolowy neutronu
 static const double piMass2 = pow2(PDG::mass_pi);
 static const double gA = -1.2673;
+
 static int axialFFset = 0;
 static const int strangeFFset = 0;
 static int strange = 0;

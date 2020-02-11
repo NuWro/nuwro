@@ -141,7 +141,7 @@ void kaskada::prepare_particles()
     //add C Thorpe 
     //hyperon production
 
-    //no cascade for hyperons if hyperon KE below 30 MeV (switch off  in params)
+ 
     else if(hyperon (p1.pdg))
     {  
   

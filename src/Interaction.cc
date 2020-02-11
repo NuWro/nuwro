@@ -684,7 +684,6 @@ bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, i
 /////////////////////////////////////////////                                                                                                  
 // if scatter unable to generate kinematics set                                                                                                
 // initial state same as final                                                                                                                 
-
 // find sometimes that CMS energy calculated                                                                                                   
 // in hyperon cascade.cc is different to the one used by sactter by                                                                            
 // 1-2 MeV and interaction being attempted should have been allowed                                                                            
@@ -692,7 +691,7 @@ bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, i
 
 bool Interaction::hyperon_error(particle p1, particle p2,particle p[]){
 
-  //  std::cout << "error" << std::endl;                                                                                                       
+  //  std::cout << "hyperon scatter error" << std::endl;                                                                                                       
 
   p[0] = p1;
   p[1] = p2;

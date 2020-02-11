@@ -121,7 +121,7 @@ double hypevent(params&p, event &e, nucleus &t)
   }
 
   //to force zero binding energy
-  //  _E_bind=0; 
+  // _E_bind=0; 
 
  particle N0_Eb = N0; //nucleon with 4 momentum adjusted for binding energy
   N0_Eb.t -= _E_bind;
