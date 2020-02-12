@@ -20,14 +20,23 @@ void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
 // In terms of tabularized hadronic responses
-double hybrid_dsdQ2dW(res_kinematics* kin, int channel, vect final_pion=NULL);
+double hybrid_dsdQ2dW(res_kinematics* kin, int params[4], vect final_pion=NULL);
 
 // Three-fold differential cross section in CMS without LAB factors
 // In terms of ABCDE decomposition
-double hybrid_dsdQ2dWdcth(res_kinematics* kin, int channel, vect final_pion);
+double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion);
 
 // Four-fold differential cross section in CMS without LAB factors
 // In terms of ABCDE decomposition
-double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion);
+double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion);
+
+// Fit polynomial to given points
+void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs);
+
+// Cumulative distribuant of a polynomial
+double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x);
+
+// Random variable from plynomial using bisection
+double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, double epsilon);
 
 #endif

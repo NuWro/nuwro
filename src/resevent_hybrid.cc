@@ -11,6 +11,10 @@ This function calculates RES events from the Hybrid model
 #include "dis/LeptonMass.h"
 #include "hybrid_RES.h"
 #include "hybrid/hybrid_gateway.h"
+#include "TMatrixD.h"
+#include "TDecompLU.h"
+#include "TVectorD.h"
+#include "TH1D.h"
 
 
 void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
@@ -48,59 +52,75 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // choose a random direction in CMS
   vec kierunek = rand_dir();
 
+  // specify the params needed for ABCDE (note strange order!)
+  int params[4];
+  params[0] = 1;                                   // only CC for now
+  params[2] = (1 - 2.0 * (kin.neutrino.pdg > 0)); // helicity
+  // params[3] is the target nucleon, params[1] is the decay channel
+
   // cross section function
-  double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dW;
-  //double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dWdcth;
-  //double (*hybrid_xsec)(res_kinematics*, int, vect) = hybrid_dsdQ2dWdOm;
+  double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dW;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdOm;
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
     case  2:  // pi+ + proton (nu_11)
-      {final_pion.set_pdg_and_mass( PDG::pdg_piP );
-       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+      {params[3] = 1; params[1] = 1;
+       final_pion.set_pdg_and_mass( PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pip = hybrid_xsec(&kin, 11, final_pion);}
+       xsec_pip = hybrid_xsec(&kin, params, final_pion);}
       xsec_inclusive = xsec_pip;
       if ( not (xsec_inclusive > 0) ) return;
       break;
     case  1:  // pi+ + neutron (nu_22) or pi0 + proton (nu_21)
-      {final_pion.set_pdg_and_mass( PDG::pdg_piP );
-       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+      {params[3] = 2; params[1] = 2;
+       final_pion.set_pdg_and_mass( PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pip = hybrid_xsec(&kin, 22, final_pion);}
-      {final_pion2.set_pdg_and_mass( PDG::pdg_pi );
-       final_nucleon2.set_pdg_and_mass( PDG::pdg_proton );
+       xsec_pip = hybrid_xsec(&kin, params, final_pion);}
+      {params[3] = 2; params[1] = 1;
+       final_pion2.set_pdg_and_mass( PDG::pdg_pi ); final_nucleon2.set_pdg_and_mass( PDG::pdg_proton );
        kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
-       xsec_pi0 = hybrid_xsec(&kin, 21, final_pion2);}
+       xsec_pi0 = hybrid_xsec(&kin, params, final_pion2);}
       xsec_inclusive = xsec_pip + xsec_pi0;
       if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pip / xsec_inclusive < frandom() ) // random selection, switch to "2"
       {
         final_pion = final_pion2;
         final_nucleon = final_nucleon2;
+        params[3] = 2; params[1] = 1;
+      }
+      else // make sure the params are okay for "1"
+      {
+        params[3] = 2; params[1] = 2;
       }
       break;
     case  0:  // pi0 + neutron (anu_11) or pi- + proton (anu_12)
-      {final_pion.set_pdg_and_mass( PDG::pdg_pi );
-       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+      {params[3] = 1; params[1] = 1;
+       final_pion.set_pdg_and_mass( PDG::pdg_pi ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pi0 = hybrid_xsec(&kin, 11, final_pion);}
-      {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
-       final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+       xsec_pi0 = hybrid_xsec(&kin, params, final_pion);}
+      {params[3] = 1; params[1] = 2;
+       final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
        kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
-       xsec_pim = hybrid_xsec(&kin, 12, final_pion2);}
+       xsec_pim = hybrid_xsec(&kin, params, final_pion2);}
       xsec_inclusive = xsec_pi0 + xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
-      if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection
+      if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection, switch to "2"
       {
         final_pion = final_pion2;
         final_nucleon = final_nucleon2;
+        params[3] = 1; params[1] = 2;
+      }
+      else // make sure the params are okay for "1"
+      {
+        params[3] = 1; params[1] = 1;
       }
       break;
     case -1:  // pi- + neutron (anu_22)
-      {final_pion.set_pdg_and_mass( -PDG::pdg_piP );
-       final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
+      {params[3] = 2; params[1] = 2;
+       final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pim = hybrid_xsec(&kin, 22, final_pion);}
+       xsec_pim = hybrid_xsec(&kin, params, final_pion);}
       xsec_inclusive = xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
       break;
@@ -109,6 +129,88 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   };
 
   // Omega_pi^* was chosen in hadronic CMS
+
+  // Choose cos_th^* for dsdQ2dW
+  double costh_rnd;
+  // Specify all variables needed for the polyomial interpolation
+  const int costh_pts = 7;             // 3, 5, 7, 9, ...
+  double costh[costh_pts];             // Points of interpolation
+  for( int i = 0; i < costh_pts; i++ ) // Fill costh with evenly spaced points
+    costh[i] = -cos( Pi / (costh_pts-1) * i );
+  // ABCDE contains 5 functions per each costh
+  double ABCDE[costh_pts][5]; double A[costh_pts];
+  // Fitted polynomial
+  double poly_coeffs[costh_pts];
+
+  if( true ) // resample costh^*
+  {
+    // Get ABCDE
+    hybrid_ABCDE(kin.neutrino.E(), -kin.q*kin.q, kin.W, costh, costh_pts, params, ABCDE);
+    for( int i = 0; i < costh_pts; i++ )
+      A[i] = ABCDE[i][0];
+
+    // Fit a polynomial to given number of points in A(costh)
+    hybrid_poly_fit(costh_pts, costh, A, poly_coeffs);
+
+    // Normalize the coefficients for a cumulative distribuant
+    double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
+    for( int i = 0; i < costh_pts; i++ )
+      poly_coeffs[i] /= norm;
+
+    costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.001);
+  }
+
+  // Choose phi^* for dsdQ2dW
+  double phi_rnd;
+  costh[0] = costh_rnd; // reuse the costh and ABCDE arrays
+  // Specify all variables needed for the polyomial interpolation
+  const int phi_pts = 7;             // 3, 5, 7, 9, ...
+  double phi[phi_pts];               // Points of interpolation
+  for( int i = 0; i < phi_pts; i++ ) // Fill costh with evenly spaced points
+    phi[i] = 2*Pi / (phi_pts-1) * i - Pi;
+  // Tab with dsdQ2dWdcosth
+  double phi_ds[phi_pts];
+  // Fitted polynomial
+  double poly_coeffs2[phi_pts];
+
+  if( true ) // resample phi^*
+  {
+    // Get ABCDE
+    hybrid_ABCDE(kin.neutrino.E(), -kin.q*kin.q, kin.W, costh, 1, params, ABCDE);
+
+    // Fill phi_ds
+    for( int i = 0; i < phi_pts; i++ )
+      phi_ds[i] = ABCDE[0][0] + ABCDE[0][1]*cos(phi[i]) + ABCDE[0][2]*cos(2*phi[i])
+                              + ABCDE[0][3]*sin(phi[i]) + ABCDE[0][4]*sin(2*phi[i]);
+
+    // Fit a polynomial to given number of points in dsdQ2dWdcosth
+    hybrid_poly_fit(phi_pts, phi, phi_ds, poly_coeffs2);
+
+    // Normalize the coefficients for a cumulative distribuant
+    double norm = hybrid_poly_dist(phi_pts, poly_coeffs2, phi[0], phi[phi_pts-1]);
+    for( int i = 0; i < phi_pts; i++ )
+      poly_coeffs2[i] /= norm;
+
+    phi_rnd = hybrid_poly_rnd(phi_pts, poly_coeffs2, phi[0], phi[phi_pts-1], 0.001);
+  }
+
+  // here we have costh_rnd and phi_rnd
+  if( true )
+  {
+    vect k = kin.neutrino;  //
+    vect kp= kin.lepton;    // They are in target rest frame!
+    vect q = kin.q;         //
+    k.boost (-kin.hadron_speed);
+    kp.boost(-kin.hadron_speed);
+    q.boost (-kin.hadron_speed);
+    vec Zast = q;
+    vec Yast = vecprod(k,kp);
+    vec Xast = vecprod(Yast,q);
+    Zast.normalize(); Yast.normalize(); Xast.normalize();
+
+    vec kierunek = costh_rnd * Zast + sqrt(1 - costh_rnd*costh_rnd) * (cos(phi_rnd) * Xast + sin(phi_rnd) * Yast);
+    kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, -kierunek);
+  }
 
   // set event weight
   e.weight = xsec_inclusive;
@@ -136,13 +238,13 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
 }
 
-double hybrid_dsdQ2dW(res_kinematics *kin, int channel, vect final_pion)
+double hybrid_dsdQ2dW(res_kinematics *kin, int params[4], vect final_pion)
 {
   double *hybrid_grid;
 
   if(kin->neutrino.pdg > 0)
   {
-    switch (channel)
+    switch (params[3]*10 + params[1])
     {
       case 11:
         hybrid_grid = hybrid_grid_11;
@@ -162,7 +264,7 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel, vect final_pion)
   }
   else
   {
-    switch (channel)
+    switch (params[3]*10 + params[1])
     {
       case 11:  // anu_11 has the tables of nu_21
         hybrid_grid = hybrid_grid_21;
@@ -247,19 +349,12 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int channel, vect final_pion)
   return result;
 }
 
-double hybrid_dsdQ2dWdcth(res_kinematics* kin, int channel, vect final_pion)
+double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
 {
   // placeholders
   double costh[1];
-  int    params[4];
   double ABCDE[1][5] = {{0,0,0,0,0}};
   double result = 0.;
-
-  // specify the params (note strange order!)
-  params[0] = 1;                                   // only CC for now
-  params[2] = (1 - 2.0 * (kin->neutrino.pdg > 0)); // helicity
-  params[3] = int(channel/10);                     // nucleon
-  params[1] = channel % 10;                        // decay
 
   // get Q^2, W
   double Q2 =-kin->q*kin->q;
@@ -296,19 +391,12 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int channel, vect final_pion)
   return result;
 }
 
-double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
+double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
 {
   // placeholders
   double costh[1];
-  int    params[4];
   double ABCDE[1][5] = {{0,0,0,0,0}};
   double result = 0.;
-
-  // specify the params (note strange order!)
-  params[0] = 1;                                   // only CC for now
-  params[2] = (1 - 2.0 * (kin->neutrino.pdg > 0)); // helicity
-  params[3] = int(channel/10);                     // nucleon
-  params[1] = channel % 10;                        // decay
 
   // get Q^2, W
   double Q2 =-kin->q*kin->q;
@@ -344,4 +432,63 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int channel, vect final_pion)
   result *= 4 * Pi; // Phase space!
 
   return result;
+}
+
+void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs)
+{
+  // We perform a polynomial interpolation
+  // Inspired by https://en.wikipedia.org/wiki/Polynomial_interpolation
+
+  // Create matrix of x powers
+  TMatrixD A(N,N);
+  for( int i = 0; i < N; i++ ) // rows
+  {
+    for( int j = 0; j < N; j++ ) // columns backwards
+    {
+      A[i][j] = pow(xpts[i],(N-1-j));
+    }
+  }
+
+  // Perform an LU decomposition
+  TDecompLU LU(A);
+
+  // Create a vector of y points
+  TVectorD b(N);
+  for( int i = 0; i < N; i++ )
+    b[i] = ypts[i];
+
+  // Solve the equation
+  LU.Solve(b);
+  for( int i = 0; i < N; i ++ )
+    coeffs[i] = b[i];
+}
+
+double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x)
+{
+  double result = 0.;
+  for( int i = 0; i < N; i++ )
+  {
+    result += coeffs[i]/(N-i) * (pow(x,N-i)-pow(x_min,N-i));
+  }
+  return result;
+}
+
+double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, double epsilon)
+{
+  double a = x_min, b = x_max;
+  double x, fx;
+  double y = frandom();
+
+  do
+  {
+    x = (b-a)/2 + a;
+    fx = hybrid_poly_dist(N, coeffs, x_min, x);
+    if( fx > y )
+      b = x;
+    else
+      a = x;
+  }
+  while( fabs(fx - y) > epsilon );
+
+  return x;
 }
