@@ -55,7 +55,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
   params[0] = 1;                                   // only CC for now
-  params[2] = (1 - 2.0 * (kin.neutrino.pdg > 0)); // helicity
+  params[2] = (1 - 2.0 * (kin.neutrino.pdg > 0));  // helicity
   // params[3] is the target nucleon, params[1] is the decay channel
 
   // cross section function
@@ -130,87 +130,21 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // Omega_pi^* was chosen in hadronic CMS
 
-  // Choose cos_th^* for dsdQ2dW
-  double costh_rnd;
-  // Specify all variables needed for the polyomial interpolation
-  const int costh_pts = 7;             // 3, 5, 7, 9, ...
-  double costh[costh_pts];             // Points of interpolation
-  for( int i = 0; i < costh_pts; i++ ) // Fill costh with evenly spaced points
-    costh[i] = -cos( Pi / (costh_pts-1) * i );
-  // ABCDE contains 5 functions per each costh
-  double ABCDE[costh_pts][5]; double A[costh_pts];
-  // Fitted polynomial
-  double poly_coeffs[costh_pts];
+  // // Choose cos_theta^* for dsdQ2dW, in Adler frame
+  // double costh_rnd = hybrid_sample_costh(kin.neutrino.E(), -kin.q*kin.q, kin.W, params);
 
-  if( true ) // resample costh^*
-  {
-    // Get ABCDE
-    hybrid_ABCDE(kin.neutrino.E(), -kin.q*kin.q, kin.W, costh, costh_pts, params, ABCDE);
-    for( int i = 0; i < costh_pts; i++ )
-      A[i] = ABCDE[i][0];
+  // // Choose phi^* for dsdQ2dWdcosth, in Adler frame
+  // double phi_rnd = hybrid_sample_phi(kin.neutrino.E(), -kin.q*kin.q, kin.W, params, costh_rnd);
 
-    // Fit a polynomial to given number of points in A(costh)
-    hybrid_poly_fit(costh_pts, costh, A, poly_coeffs);
+  // // Modify final hadron directions as specified in the Adler frame
+  // vect nu  = kin.neutrino; nu.boost(-kin.hadron_speed); 
+  // vect lep = kin.lepton;  lep.boost(-kin.hadron_speed);
+  // vec dir_rnd = hybrid_dir_from_adler(costh_rnd, phi_rnd, nu, lep);
 
-    // Normalize the coefficients for a cumulative distribuant
-    double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
-    for( int i = 0; i < costh_pts; i++ )
-      poly_coeffs[i] /= norm;
-
-    costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.001);
-  }
-
-  // Choose phi^* for dsdQ2dW
-  double phi_rnd;
-  costh[0] = costh_rnd; // reuse the costh and ABCDE arrays
-  // Specify all variables needed for the polyomial interpolation
-  const int phi_pts = 7;             // 3, 5, 7, 9, ...
-  double phi[phi_pts];               // Points of interpolation
-  for( int i = 0; i < phi_pts; i++ ) // Fill costh with evenly spaced points
-    phi[i] = 2*Pi / (phi_pts-1) * i - Pi;
-  // Tab with dsdQ2dWdcosth
-  double phi_ds[phi_pts];
-  // Fitted polynomial
-  double poly_coeffs2[phi_pts];
-
-  if( true ) // resample phi^*
-  {
-    // Get ABCDE
-    hybrid_ABCDE(kin.neutrino.E(), -kin.q*kin.q, kin.W, costh, 1, params, ABCDE);
-
-    // Fill phi_ds
-    for( int i = 0; i < phi_pts; i++ )
-      phi_ds[i] = ABCDE[0][0] + ABCDE[0][1]*cos(phi[i]) + ABCDE[0][2]*cos(2*phi[i])
-                              + ABCDE[0][3]*sin(phi[i]) + ABCDE[0][4]*sin(2*phi[i]);
-
-    // Fit a polynomial to given number of points in dsdQ2dWdcosth
-    hybrid_poly_fit(phi_pts, phi, phi_ds, poly_coeffs2);
-
-    // Normalize the coefficients for a cumulative distribuant
-    double norm = hybrid_poly_dist(phi_pts, poly_coeffs2, phi[0], phi[phi_pts-1]);
-    for( int i = 0; i < phi_pts; i++ )
-      poly_coeffs2[i] /= norm;
-
-    phi_rnd = hybrid_poly_rnd(phi_pts, poly_coeffs2, phi[0], phi[phi_pts-1], 0.001);
-  }
-
-  // here we have costh_rnd and phi_rnd
-  if( true )
-  {
-    vect k = kin.neutrino;  //
-    vect kp= kin.lepton;    // They are in target rest frame!
-    vect q = kin.q;         //
-    k.boost (-kin.hadron_speed);
-    kp.boost(-kin.hadron_speed);
-    q.boost (-kin.hadron_speed);
-    vec Zast = q;
-    vec Yast = vecprod(k,kp);
-    vec Xast = vecprod(Yast,q);
-    Zast.normalize(); Yast.normalize(); Xast.normalize();
-
-    vec kierunek = costh_rnd * Zast + sqrt(1 - costh_rnd*costh_rnd) * (cos(phi_rnd) * Xast + sin(phi_rnd) * Yast);
-    kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, -kierunek);
-  }
+  // // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
+  // double momentum = final_nucleon.momentum();
+  // final_nucleon = vect(final_nucleon.E(), -momentum * dir_rnd.x, -momentum * dir_rnd.y, -momentum * dir_rnd.z);
+  // final_pion = vect(final_pion.E(), momentum * dir_rnd.x, momentum * dir_rnd.y, momentum * dir_rnd.z);
 
   // set event weight
   e.weight = xsec_inclusive;
@@ -231,6 +165,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   final_pion.p4() = final_pion.boost(kin.target.v());
 
   // save final state hadrons
+  // warning: the order is essential
   e.out.push_back(final_pion);
   e.out.push_back(final_nucleon);
 
@@ -434,6 +369,71 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
   return result;
 }
 
+double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
+{
+  // Choosing cos_th^* from dsdQ2dWdcosth
+  double costh_rnd;
+
+  // Specify points for the polynomial interpolation
+  const int costh_pts = 3;             // 3, 5, 7, 9, ...
+  double costh[costh_pts];             // Points of interpolation
+  for( int i = 0; i < costh_pts; i++ ) // Fill costh with evenly spaced points
+    costh[i] = -cos( Pi / (costh_pts-1) * i );
+
+  // Get the A function, \propto dsdQ2dWdcosth
+  double ABCDE[costh_pts][5]; double ds[costh_pts];
+  hybrid_ABCDE(Enu, Q2, W, costh, costh_pts, params, ABCDE);
+  for( int i = 0; i < costh_pts; i++ )
+    ds[i] = ABCDE[i][0];
+
+  // Fit a polynomial to given number of points in ds(costh)
+  double poly_coeffs[costh_pts];
+  hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
+
+  // Normalize the coefficients to obtain a probability density
+  double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
+  for( int i = 0; i < costh_pts; i++ )
+    poly_coeffs[i] /= norm;
+
+  // Choose a value for costh_rnd
+  costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.001);
+
+  return costh_rnd;
+}
+
+double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double costh_rnd)
+{
+  // Choosing phi^* from dsdQ2dWdOm
+  double phi_rnd;
+
+  // Specify points for the polynomial interpolation
+  const int phi_pts = 7;             // 3, 5, 7, 9, ...
+  double phi[phi_pts];               // Points of interpolation
+  for( int i = 0; i < phi_pts; i++ ) // Fill phi with evenly spaced points
+    phi[i] = 2*Pi / (phi_pts-1) * i - Pi;
+
+  // Get the ABCDE combination, \propto dsdQ2dWdOm
+  double ABCDE[1][5]; double ds[phi_pts];
+  hybrid_ABCDE(Enu, Q2, W, &costh_rnd, 1, params, ABCDE);
+  for( int i = 0; i < phi_pts; i++ )
+    ds[i] = ABCDE[0][0] + ABCDE[0][1]*cos(phi[i]) + ABCDE[0][2]*cos(2*phi[i])
+                        + ABCDE[0][3]*sin(phi[i]) + ABCDE[0][4]*sin(2*phi[i]);
+
+  // Fit a polynomial to given number of points in ds(phi)
+  double poly_coeffs[phi_pts];
+  hybrid_poly_fit(phi_pts, phi, ds, poly_coeffs);
+
+  // Normalize the coefficients to obtain a probability density
+  double norm = hybrid_poly_dist(phi_pts, poly_coeffs, phi[0], phi[phi_pts-1]);
+  for( int i = 0; i < phi_pts; i++ )
+    poly_coeffs[i] /= norm;
+
+  // Choose a value for phi_rnd
+  phi_rnd = hybrid_poly_rnd(phi_pts, poly_coeffs, phi[0], phi[phi_pts-1], 0.001);
+
+  return phi_rnd;
+}
+
 void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs)
 {
   // We perform a polynomial interpolation
@@ -491,4 +491,96 @@ double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, 
   while( fabs(fx - y) > epsilon );
 
   return x;
+}
+
+vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp)
+{
+  vec Zast = k - kp;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,Zast);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+
+  vec kierunek = costh * Zast + sqrt(1 - costh*costh) * (cos(phi) * Xast + sin(phi) * Yast);
+
+  return kierunek;
+}
+
+void resevent_dir_hybrid(event& e)
+{
+  // get all 4-vectors from the event and boost them to the N-rest frame
+  vect target   = e.in[1];  
+  target.t     -= get_binding_energy (e.par, target);
+  vect neutrino = e.in[0];  neutrino.boost(-target.v());
+  vect lepton   = e.out[0]; lepton.boost  (-target.v());
+  vect pion     = e.out[1]; pion.boost    (-target.v());
+  vect nucleon  = e.out[2]; nucleon.boost (-target.v());
+
+  // calculate hadron_speed and boost to CMS
+  vect q = neutrino - lepton;
+  double Mef = min(sqrt(target * target), res_kinematics::avg_nucleon_mass);
+  double q3  = sqrt(pow(Mef + q.t,2) - e.W()*e.W());
+  vec hadron_speed = q / sqrt(e.W()*e.W() + q3 * q3);
+  neutrino.boost (-hadron_speed);
+  lepton.boost   (-hadron_speed);
+  pion.boost     (-hadron_speed);
+  nucleon.boost  (-hadron_speed);
+
+  // generate params for the Ghent code
+  int params[4];
+  params[0] = 1;                                   // only CC for now
+  params[2] = (1 - 2.0 * (e.out[0].pdg > 0));
+  if( e.in[0].pdg > 0 ) // neutrino
+  {
+    if( e.in[1].pdg == PDG::pdg_proton )
+    {
+      params[3] = 1; params[1] = 1;
+    }
+    else
+    {
+      params[3] = 2;
+      if( e.out[1].pdg == PDG::pdg_pi )
+        params[1] = 1;
+      else
+        params[1] = 2;
+    }
+  }
+  else                   // antineutrino
+  {
+    if( e.in[1].pdg == PDG::pdg_neutron )
+    {
+      params[3] = 2; params[1] = 2;
+    }
+    else
+    {
+      params[3] = 1;
+      if( e.out[1].pdg == PDG::pdg_pi )
+        params[1] = 1;
+      else
+        params[1] = 2;
+    }
+  }
+
+  // Choose cos_theta^* for dsdQ2dW, in Adler frame
+  double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+
+  // Choose phi^* for dsdQ2dWdcosth, in Adler frame
+  double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+
+  // Modify final hadron directions as specified in the Adler frame
+  vec dir_rnd = hybrid_dir_from_adler(costh_rnd, phi_rnd, neutrino, lepton);
+
+  // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
+  double momentum = nucleon.length();
+  nucleon = vect(nucleon.t, -momentum * dir_rnd.x, -momentum * dir_rnd.y, -momentum * dir_rnd.z);
+  pion = vect(pion.t, momentum * dir_rnd.x, momentum * dir_rnd.y, momentum * dir_rnd.z);
+
+  // Boost hadrons back
+  nucleon.boost(hadron_speed);
+  nucleon.boost(target.v());
+  pion.boost   (hadron_speed);
+  pion.boost   (target.v());
+
+  // Correct the particles in the out vector
+  e.out[1].p4() = pion;
+  e.out[2].p4() = nucleon;
 }
