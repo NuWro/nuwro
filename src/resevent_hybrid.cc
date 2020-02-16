@@ -28,6 +28,14 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(1500)) return;
 
+  const double our_W_val  = 1230;
+  const double our_W_wid  =    1;
+  if( fabs(kin.W-our_W_val) > our_W_wid ) return;
+
+  const double our_Q2_val = 100000;
+  const double our_Q2_wid =    100;
+  if( fabs((-kin.q*kin.q)-our_Q2_val) > our_Q2_wid ) return;
+
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
   final_lepton.boost(kin.target.v());
