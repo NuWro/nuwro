@@ -28,13 +28,13 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(1500)) return;
 
-  const double our_W_val  = 1230;
-  const double our_W_wid  =    1;
-  if( fabs(kin.W-our_W_val) > our_W_wid ) return;
+  // const double our_W_val  = 1230;
+  // const double our_W_wid  =    1;
+  // if( fabs(kin.W-our_W_val) > our_W_wid ) return;
 
-  const double our_Q2_val = 100000;
-  const double our_Q2_wid =    100;
-  if( fabs((-kin.q*kin.q)-our_Q2_val) > our_Q2_wid ) return;
+  // const double our_Q2_val = 100000;
+  // const double our_Q2_wid =    100;
+  // if( fabs((-kin.q*kin.q)-our_Q2_val) > our_Q2_wid ) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -415,7 +415,7 @@ double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double 
   double phi_rnd;
 
   // Specify points for the polynomial interpolation
-  const int phi_pts = 7;             // 3, 5, 7, 9, ...
+  const int phi_pts = 3;             // 3, 5, 7, 9, ...
   double phi[phi_pts];               // Points of interpolation
   for( int i = 0; i < phi_pts; i++ ) // Fill phi with evenly spaced points
     phi[i] = 2*Pi / (phi_pts-1) * i - Pi;
@@ -528,8 +528,6 @@ void resevent_dir_hybrid(event& e)
   double Mef = min(sqrt(target * target), res_kinematics::avg_nucleon_mass);
   double q3  = sqrt(pow(Mef + q.t,2) - e.W()*e.W());
   vec hadron_speed = q / sqrt(e.W()*e.W() + q3 * q3);
-  neutrino.boost (-hadron_speed);
-  lepton.boost   (-hadron_speed);
   pion.boost     (-hadron_speed);
   nucleon.boost  (-hadron_speed);
 
@@ -568,13 +566,15 @@ void resevent_dir_hybrid(event& e)
     }
   }
 
-  // Choose cos_theta^* for dsdQ2dW, in Adler frame
+  // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
   double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
 
-  // Choose phi^* for dsdQ2dWdcosth, in Adler frame
+  // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
 
   // Modify final hadron directions as specified in the Adler frame
+  neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS
+  lepton.boost   (-hadron_speed); // This is needed to properly specify the Adler frame
   vec dir_rnd = hybrid_dir_from_adler(costh_rnd, phi_rnd, neutrino, lepton);
 
   // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
