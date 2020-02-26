@@ -3,9 +3,6 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
-//#include <stdlib.h>
-//#include <string>
-//#include <string.h>
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////

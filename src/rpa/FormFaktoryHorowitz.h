@@ -1,9 +1,8 @@
 #ifndef _FormFaktoryHorowitz_h_
 #define _FormFaktoryHorowitz_h_
-#include<iostream.h>
-#include <cmath.h>
+#include <iostream>
+#include <cmath>
 #include "jednostki.h"
-#include "stale_rpa.h"
 
 namespace rpa
 {

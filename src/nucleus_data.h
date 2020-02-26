@@ -29,7 +29,7 @@ class nucleus_data
     nucleus_data(int p0, int n0, 
 				 double (*fun)(double[],double),
 		         double * par=NULL
-		        ): _p(p0),_n(n0),dens_fun(fun),dens_params(par),_r(0),_kF(0),_Mf(0),_max_rr_dens(0)
+		        ): _p(p0),_n(n0),_r(0),dens_fun(fun),dens_params(par),_max_rr_dens(0),_kF(0),_Mf(0)
 	{   
 	}
 	

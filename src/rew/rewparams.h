@@ -160,9 +160,9 @@ struct RewParams
 		ncNorm ("ncNorm"   ,1,0,0,"rewDyn"),
 		antyNorm("antyNorm",1,0,0,"rewDyn"),
 
+		dynNorm0("dynNorm0",1,0,0,"rewDyn"),
 		dynNorm1("dynNorm1",1,0,0,"rewDyn"),
 		dynNorm2("dynNorm2",1,0,0,"rewDyn"),
-		dynNorm0("dynNorm0",1,0,0,"rewDyn"),
 		dynNorm3("dynNorm3",1,0,0,"rewDyn"),
 		dynNorm4("dynNorm4",1,0,0,"rewDyn"),
 		dynNorm5("dynNorm5",1,0,0,"rewDyn"),
@@ -231,7 +231,7 @@ struct RewParams
 
 		delta_s("delta_s", -0.15, 0.1, 0.1, "rewQEL"),
 		
-		qel_cc_vector_mass("qel_cc_vector_mass", 1000, 0.16, 0.16, "rewQEL"),
+		qel_cc_vector_mass("qel_cc_vector_mass", 840, 0.16, 0.16, "rewQEL"),
 		qel_cc_axial_mass("qel_cc_axial_mass", 1200, 0.16, 0.16, "rewQEL"),
 		qel_nc_axial_mass("qel_nc_axial_mass", 1350, 0.16, 0.16, "rewQEL"),
 		qel_s_axial_mass("qel_s_axial_mass", 1200, 0.16, 0.16, "rewQEL"),

@@ -1,7 +1,6 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
-#include "calgauss20.h"
 #include "util2.h"
 #include "calga5.h"
 //#include "myfermi.h"

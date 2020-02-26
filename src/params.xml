@@ -110,6 +110,12 @@
 	    <description><![CDATA[Histogram name for nutaub]]></description>
 	  </param>
 	</condition>
+        <condition value="7" description="Atmosferic neutrinos">
+          <param name="beam_atmo_files" type="text" ctype="line" default="">
+            <description></description>
+          </param>
+          <paramclone name="beam_direction" />
+        </condition>
     </conditions>
   </param>
   <param name="beam_test_only" type="hidden" ctype="int" default="0">
@@ -280,7 +286,7 @@
   <param name="delta_s" type="text" ctype="double" default="0">
     <description><![CDATA[[Delta s parameter in the strange form factor]]></description>
   </param>
-    <param name="qel_cc_vector_mass" type="text" ctype="double" default="1000">
+    <param name="qel_cc_vector_mass" type="text" ctype="double" default="840">
       <description><![CDATA[[MeV] vector mass]]></description>
     </param>
   <param name="qel_cc_axial_mass" type="text" ctype="double" default="1030">
@@ -386,6 +392,7 @@
       <option key="1"><![CDATA[TEM model]]></option>
       <option key="2"><![CDATA[Marteau model]]></option>
       <option key="3"><![CDATA[Nieves model]]></option>
+      <option key="5"><![CDATA[SuSAv2 model]]></option>
     </options>
   </param>
   <param name="mec_ratio_pp" type="text" ctype="double" default="0.85">

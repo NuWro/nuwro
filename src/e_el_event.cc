@@ -5,6 +5,7 @@
 #include "e_el_sigma.h"
 #include "kinematics.h"
 #include "ff.h"
+#include "dis/LeptonMass.h"
 
 double LH_(particle k, particle p, particle kprim, vect pprim);
 

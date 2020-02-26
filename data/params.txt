@@ -134,7 +134,7 @@ sf_coulomb = 1  # Coulomb correction for SF (0 - disabled, 1 - enabled)
 #     0 - average Fermi momentum
 #     1 - local Fermi momentum
 #     2 - nucleon momentum distribution given by spectral function
-sf_pb = 0
+sf_pb = 1
 
 # A little performace gain in the QEL channel 
 # can be obtained by using: cc_smoothing=1
@@ -211,6 +211,7 @@ coh_kind = 2             // Switch between Rein-Sehgal (1) and Berger Sehgal(2) 
 #mec_kind = 1  // TEM model
 #mec_kind = 2  // Marteau model
 mec_kind = 3  // Nieves model
+#mec_kind = 5  // SuSAv2 model
 
 mec_ratio_pp = 0.85
 mec_ratio_ppp = 0.8

@@ -4445,11 +4445,11 @@ void t2k_anal_calc()
 	
 	//0-6 ccqe, ccpi+, ccpi-, ccpi0, ncpi+, ncpi-, ncpi0 // 0-1 before fsi, after fsi // 0-3 see names 
 	
-	double fen[7][2][4][bins] = {{0}, {0}, {0}}; 
+	double fen[7][2][4][bins] = {{{{0}}}}; 
 
-	double fmom[7][2][4][bins] = {{0}, {0}, {0}}; 
+	double fmom[7][2][4][bins] = {{{{0}}}}; 
 
-	double fang[7][2][4][abins] = {{0}, {0}, {0}}; 
+	double fang[7][2][4][abins] = {{{{0}}}}; 
 	
 	double normen[4][bins]   = {{0}};
 	double normmom[4][bins]  = {{0}};

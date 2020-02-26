@@ -10,12 +10,12 @@ using namespace std;
 nucleus::nucleus(params &par):
 	p   (par.nucleus_p),
 	n   (par.nucleus_n),
-	_Eb  (par.nucleus_E_b*MeV),
-	_kf  (par.nucleus_kf*MeV),
-	kMomDist(par.nucleus_target),
 	spectator(NULL),
 	d(NULL),
-	i(NULL)
+	i(NULL),
+	_Eb  (par.nucleus_E_b*MeV),
+	_kf  (par.nucleus_kf*MeV),
+	kMomDist(par.nucleus_target)
 {
 	using namespace PDG;
 	pr=p;
