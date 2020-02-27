@@ -442,6 +442,29 @@ double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double 
   return phi_rnd;
 }
 
+double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], double costh_rnd)
+{
+  // Choosing phi^* from dsdQ2dWdOm
+  double phi_rnd;
+
+  // Get the ABCDE combination, \propto dsdQ2dWdOm
+  double ABCDE[1][5];
+  hybrid_ABCDE(Enu, Q2, W, &costh_rnd, 1, params, ABCDE);
+
+  // Integral is
+  // A*x + B*sinx + 0.5*C*sin2x - D*cosx - 0.5*E*cos2x
+
+  // Normalize the coefficients to obtain a probability density
+  double norm = ABCDE[0][0]*2*Pi;
+  for( int i = 0; i < 5; i++ )
+    ABCDE[0][i] /= norm;
+
+  // Choose a value for phi_rnd
+  phi_rnd = hybrid_dcmp_rnd(ABCDE, -Pi, Pi, 0.001);
+
+  return phi_rnd;
+}
+
 void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs)
 {
   // We perform a polynomial interpolation
@@ -491,6 +514,27 @@ double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, 
   {
     x = (b-a)/2 + a;
     fx = hybrid_poly_dist(N, coeffs, x_min, x);
+    if( fx > y )
+      b = x;
+    else
+      a = x;
+  }
+  while( fabs(fx - y) > epsilon );
+
+  return x;
+}
+
+double hybrid_dcmp_rnd(double (*ABCDE)[5], double x_min, double x_max, double epsilon)
+{
+  double a = x_min, b = x_max;
+  double x, fx;
+  double y = frandom();
+
+  do
+  {
+    x = (b-a)/2 + a;
+    fx = ABCDE[0][0]*(x-x_min) + ABCDE[0][1]*(sin(x)-sin(x_min)) + ABCDE[0][2]*(sin(2*x)-sin(2*x_min))/2
+                               - ABCDE[0][3]*(cos(x)-cos(x_min)) - ABCDE[0][4]*(cos(2*x)-cos(2*x_min))/2;
     if( fx > y )
       b = x;
     else
@@ -570,7 +614,8 @@ void resevent_dir_hybrid(event& e)
   double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
-  double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+  double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
 
   // Modify final hadron directions as specified in the Adler frame
   neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS

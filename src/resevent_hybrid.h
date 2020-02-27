@@ -34,7 +34,8 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion);
 double hybrid_sample_costh(double Enu, double Q2, double W, int params[4]);
 
 // Sample phi_theta^* using ABCDE decomposition
-double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double costh_rnd);
+double hybrid_sample_phi  (double Enu, double Q2, double W, int params[4], double costh_rnd);
+double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], double costh_rnd);
 
 // Fit polynomial to given points
 void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs);
@@ -44,6 +45,9 @@ double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x);
 
 // Random variable from plynomial using bisection
 double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, double epsilon);
+
+// Random variable directly from ABCDE decomposition using bisection
+double hybrid_dcmp_rnd(double (*ABCDE)[5], double x_min, double x_max, double epsilon);
 
 // Modify final hadron directions as specified in the Adler frame (k, kp in CMS)
 vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp);
