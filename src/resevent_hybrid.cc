@@ -590,6 +590,7 @@ double hybrid_dcmp_rnd(double (*ABCDE)[5], double x_min, double x_max, double ep
 
 double hybrid_dcmp_rnd_2(double (*ABCDE)[5], double x_min, double x_max, double epsilon)
 {
+  double a = x_min, b = x_max;
   double x, fx, fxp;
   double y = frandom();
 
@@ -601,7 +602,21 @@ double hybrid_dcmp_rnd_2(double (*ABCDE)[5], double x_min, double x_max, double 
                                - ABCDE[0][3]*(cos(x)-cos(x_min)) - ABCDE[0][4]*(cos(2*x)-cos(2*x_min))/2;
     fxp = ABCDE[0][0] + ABCDE[0][1]*cos(x) + ABCDE[0][2]*cos(2*x)
                       + ABCDE[0][3]*sin(x) + ABCDE[0][4]*sin(2*x);
-    x -= (fx - y)/fxp;
+    double new_x = x - (fx - y)/fxp;
+    // if the function is very flat and the next step go out of bounds
+    // use one bisective step to get out
+    if( fabs(fxp) < epsilon || new_x < a || new_x > b )
+    {
+      if( fx > y )
+        b = x;
+      else
+        a = x;
+      x = (b-a)/2 + a;
+    }
+    else
+    {
+      x = new_x;
+    }
   }
   while( fabs(fx - y) > epsilon );
 
