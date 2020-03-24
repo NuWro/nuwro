@@ -23,28 +23,29 @@ const int    cthbin_hybrid=(cthmax_hybrid-cthmin_hybrid)/cthspc_hybrid+1;
 void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
-// In terms of tabularized hadronic responses
+// - in terms of tabularized hadronic responses
 double hybrid_dsdQ2dW_tab(res_kinematics* kin, int params[4], vect final_pion=NULL);
 
 // Three-fold differential cross section in CMS without LAB factors
-// In terms of the ABCDE decomposition
+// - in terms of the ABCDE decomposition
 double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion);
-// In terms of tabularized hadronic responses
+// - in terms of tabularized hadronic responses
 double hybrid_dsdQ2dWdcth_tab(res_kinematics* kin, int params[4], vect final_pion);
 
 // Four-fold differential cross section in CMS without LAB factors
-// In terms of the ABCDE decomposition
+//  - in terms of the ABCDE decomposition
 double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion);
 
 // Sample cos_theta_pi^* using ABCDE decomposition
-double hybrid_sample_costh(double Enu, double Q2, double W, int params[4]);
+// - using ABCDE decomposition, fitting a polynomial, inverting using bisection
+double hybrid_sample_costh  (double Enu, double Q2, double W, int params[4]);
 
 // Sample phi_theta^* using ABCDE decomposition
-// - fit polynomial, inverting using bisection
+// - fitting a polynomial, inverting using bisection
 double hybrid_sample_phi  (double Enu, double Q2, double W, int params[4], double costh_rnd);
-// - integrate analytically, inverting using bisection
+// - integrating analytically, inverting using bisection
 double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], double costh_rnd);
-// - integrate analytically, inverting using Newton's method
+// - integrating analytically, inverting using Newton's method
 double hybrid_sample_phi_3(double Enu, double Q2, double W, int params[4], double costh_rnd);
 
 // Fit polynomial to given points
