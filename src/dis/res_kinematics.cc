@@ -33,6 +33,8 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
 
   // choose random invariant mass (uniformly from [Wmin, Wmax])
   W = Wmin + (Wmax - Wmin) * frandom();
+  // or fix W (for tests)
+  //W = 1232;
   W2 = W * W;
 
   // TODO: we integrate over z - what is its definition?
@@ -53,6 +55,9 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
 
   // get random energy transfer
   q.t = q0_min + (q0_max - q0_min) * z * z;  // enhance low energy transfers are preferred
+  // or fix Q2 (tests), remember to remove 2*z from the jacobian
+  //double Q2 = 123000;
+  //q.t = (W2 - effective_mass2 + Q2)/2/effective_mass;
 
   // calculate jacobian
   jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian

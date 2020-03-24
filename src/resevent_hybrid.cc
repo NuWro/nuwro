@@ -10,6 +10,7 @@ This function calculates RES events from the Hybrid model
 #include "vect.h"
 #include "dis/LeptonMass.h"
 #include "hybrid_RES.h"
+#include "hybrid_RES2.h"
 #include "hybrid/hybrid_gateway.h"
 #include "TMatrixD.h"
 #include "TDecompLU.h"
@@ -59,6 +60,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // choose a random direction in CMS
   vec kierunek = rand_dir();
+  // or fix the direction in the Adler frame (tests)
+  //vec kierunek = -hybrid_dir_from_adler(0, 0, kin.neutrino, kin.lepton);
 
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
@@ -67,8 +70,9 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // params[3] is the target nucleon, params[1] is the decay channel
 
   // cross section function
-  double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dW;
+  double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dW_tab;
   //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth_tab;
   //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdOm;
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
@@ -181,7 +185,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
 }
 
-double hybrid_dsdQ2dW(res_kinematics *kin, int params[4], vect final_pion)
+double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 {
   double *hybrid_grid;
 
@@ -249,45 +253,45 @@ double hybrid_dsdQ2dW(res_kinematics *kin, int params[4], vect final_pion)
 
   // cut for comparisons
   if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+  //if( W > 1400 ) return 0;
 
-  // interpolating the nuclear tensor elements
-  double w00=0;
-  double w03=0;
-  double w33=0;
-  double w11=0;
-  double w12=0;
+  // interpolate the nuclear tensor elements
+  double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
 
-  //if( Q2 < Q2min_hybrid ) Q2 = Q2min_hybrid;
-  //if( Q2 <= Q2max_hybrid && W >= Wmin_hybrid && W <= Wmax_hybrid )
+  // if the variables are within the grid
   if( Q2 >= Q2min_hybrid && Q2 <= Q2max_hybrid && W >= Wmin_hybrid && W <= Wmax_hybrid )
   {
-    int m=int((Q2-Q2min_hybrid)/Q2spc_hybrid);
-    int n=int((W-Wmin_hybrid)/Wspc_hybrid);
-    int pos=(n*Q2bin_hybrid+m)*5;
+    // bilinear interpolation in axis: x(Q2), y(W), each field is 5 numbers
+    int    Q2f = int((Q2-Q2min_hybrid)/Q2spc_hybrid); // number of bin in Q2 (floor)
+    double Q2d = Q2-Q2min_hybrid-Q2f*Q2spc_hybrid;    // distance from the previous point
+           Q2d/= Q2spc_hybrid;                        // normalized
+    int     Wf = int((W-Wmin_hybrid)/Wspc_hybrid); // number of bin in W (floor)
+    double  Wd = W-Wmin_hybrid-Wf*Wspc_hybrid;     // distance from the prefious point
+            Wd/= Wspc_hybrid;                      // normalized
 
-    int a=pos;
-    int b=a+5;
-    int c=pos+Q2bin_hybrid*5;
-    int d=c+5;
+    // 4 points surrounding the desired point
+    int p00 = (Wf*Q2bin_hybrid+Q2f)*5; // bottom left
+    int p10 = p00+5;                   // bottom right
+    int p01 = p00+Q2bin_hybrid*5;      // top left
+    int p11 = p01+5;                   // top right
 
-    double H1=W-Wmin_hybrid-n*Wspc_hybrid;
-    double H2=Q2-Q2min_hybrid-m*Q2spc_hybrid;
-
-    w00=(H2*(H1*hybrid_grid[d]+(Wspc_hybrid-H1)*hybrid_grid[b])/Wspc_hybrid+(Q2spc_hybrid-H2)*(H1*hybrid_grid[c]+(Wspc_hybrid-H1)*hybrid_grid[a])/Wspc_hybrid)/Q2spc_hybrid;
-    w03=(H2*(H1*hybrid_grid[d+1]+(Wspc_hybrid-H1)*hybrid_grid[b+1])/Wspc_hybrid+(Q2spc_hybrid-H2)*(H1*hybrid_grid[c+1]+(Wspc_hybrid-H1)*hybrid_grid[a+1])/Wspc_hybrid)/Q2spc_hybrid;
-    w33=(H2*(H1*hybrid_grid[d+2]+(Wspc_hybrid-H1)*hybrid_grid[b+2])/Wspc_hybrid+(Q2spc_hybrid-H2)*(H1*hybrid_grid[c+2]+(Wspc_hybrid-H1)*hybrid_grid[a+2])/Wspc_hybrid)/Q2spc_hybrid;
-    w11=(H2*(H1*hybrid_grid[d+3]+(Wspc_hybrid-H1)*hybrid_grid[b+3])/Wspc_hybrid+(Q2spc_hybrid-H2)*(H1*hybrid_grid[c+3]+(Wspc_hybrid-H1)*hybrid_grid[a+3])/Wspc_hybrid)/Q2spc_hybrid;
-    w12=(H2*(H1*hybrid_grid[d+4]+(Wspc_hybrid-H1)*hybrid_grid[b+4])/Wspc_hybrid+(Q2spc_hybrid-H2)*(H1*hybrid_grid[c+4]+(Wspc_hybrid-H1)*hybrid_grid[a+4])/Wspc_hybrid)/Q2spc_hybrid;
+    // interpolate
+    for( int i = 0; i < 5; i++ )
+      w[i] = bilinear_interp(hybrid_grid[p00+i], hybrid_grid[p10+i],
+                             hybrid_grid[p01+i], hybrid_grid[p11+i], Q2d, Wd);
   }
 
-  double l00 = (2.*kl_inc[0]*kl[0] - kl_inc_dot_kl);
-  double l03 = (-kl_inc[0]*kl[3] + -kl[0]*kl_inc[3]);
-  double l33 = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
-  double l11 = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
-  double l22 = (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
-  double l12 = (kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  // calculate the leptonic tensor elements
+  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
+  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
+  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
+  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
+  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
+  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
 
-  result = l00*w00 + 2*l03*w03 + l33*w33 + 0.5*(l11+l22)*w11 - 2*l12*w12;
+  // contract the tensors
+  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
 
   return result;
 }
@@ -327,8 +331,145 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
   // get ABCDE
   hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
 
-  result = 2*Pi*ABCDE[0][0];
-  result *= pion_momentum / pow(2*Pi,4);
+  result  = ABCDE[0][0];                 // *2Pi
+  result *= pion_momentum / pow(2*Pi,3); // /2Pi
+  result *= 2; // Phase space!
+
+  return result;
+}
+
+double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pion)
+{
+  double *hybrid_grid;
+
+  if(kin->neutrino.pdg > 0)
+  {
+    switch (params[3]*10 + params[1])
+    {
+      case 11:
+        hybrid_grid = hybrid_grid2_11;
+        break;
+
+      case 21:
+        hybrid_grid = hybrid_grid2_21;
+        break;
+
+      case 22:
+        hybrid_grid = hybrid_grid2_22;
+        break;
+
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
+  }
+  else
+  {
+    switch (params[3]*10 + params[1])
+    {
+      case 11:  // anu_11 has the tables of nu_21
+        hybrid_grid = hybrid_grid2_21;
+        break;
+
+      case 12:  // anu_12 has the tables of nu_22
+        hybrid_grid = hybrid_grid2_22;
+        break;
+
+      case 22:  // anu_22 has the tables of nu_11
+        hybrid_grid = hybrid_grid2_11;
+        break;
+
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
+  }
+
+  double result = 0.;
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
+  // find proper angle costh_pi^ast
+  double pion_momentum = final_pion.length();
+  vect k = kin->neutrino;  //
+  vect kp= kin->lepton;    // They are in target rest frame!
+  vect q = kin->q;         //
+  k.boost (-kin->hadron_speed);
+  kp.boost(-kin->hadron_speed);
+  q.boost (-kin->hadron_speed);
+  vec Zast = q;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,q);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+
+  // we build leptonic tensor in CMS with q along z, see JES paper App. A
+  vect kl_inc_lab = kin->neutrino.p4();   //
+  vect kl_lab     = kin->lepton.p4();     //  They are not in LAB, but in target rest frame!
+  vect q_lab      = kin->q;               //
+
+  double v = q_lab.length() / (q_lab[0] + res_kinematics::avg_nucleon_mass);
+  double g = 1 / sqrt(1 - v*v);
+  double c = (kl_inc_lab.length() - kl_lab[3]) / q_lab.length();
+  double s = sqrt(pow(kl_lab.length(),2) - pow(kl_lab[3],2)) / q_lab.length();
+
+  vect kl_inc (g*(kl_inc_lab[0] - v*kl_inc_lab.length()*c), kl_inc_lab.length()*s,
+               0, g*(-v*kl_inc_lab[0] + kl_inc_lab.length()*c));
+  vect kl     (g*(kl_lab[0] - v*(kl_inc_lab.length()*c - q_lab.length())), kl_inc_lab.length()*s,
+               0, g*(-v*kl_lab[0] + kl_inc_lab.length()*c - q_lab.length()));
+
+  double kl_inc_dot_kl = kl_inc * kl;
+
+  // cut for comparisons
+  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+
+  // interpolate the nuclear tensor elements
+  double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
+
+  // if the variables are within the grid
+  if( Q2 >= Q2min_hybrid && Q2 <= Q2max_hybrid && W >= Wmin_hybrid && W <= Wmax_hybrid &&
+      pion_cos_theta >= cthmin_hybrid && pion_cos_theta <= cthmax_hybrid )
+  {
+    // trilinear interpolation in axis: x(Q2), y(W), z(costh), each field is 5 numbers
+    int     Q2f = int((Q2-Q2min_hybrid)/Q2spc_hybrid); // number of bin in Q2 (floor)
+    double  Q2d = Q2-Q2min_hybrid-Q2f*Q2spc_hybrid;    // distance from the previous point
+            Q2d/= Q2spc_hybrid;                        // normalized
+    int      Wf = int((W-Wmin_hybrid)/Wspc_hybrid); // number of bin in W (floor)
+    double   Wd = W-Wmin_hybrid-Wf*Wspc_hybrid;     // distance from the previous point
+             Wd/= Wspc_hybrid;                      // normalized
+    int    cthf = int((pion_cos_theta-cthmin_hybrid)/cthspc_hybrid); // number of bin in cth (floor)
+    double cthd = pion_cos_theta-cthmin_hybrid-cthf*cthspc_hybrid;   // distance from the previous point
+           cthd/= cthspc_hybrid;                                     // normalized
+
+    // 8 points surrounding the desired point
+    int p000 = (cthf*Wbin_hybrid*Q2bin_hybrid+Wf*Q2bin_hybrid+Q2f)*5; // bottom left close
+    int p100 = p000+5;                                                // bottom right close
+    int p010 = p000+Q2bin_hybrid*5;                                   // top left close
+    int p110 = p010+5;                                                // top right close
+    int p001 = p000+Wbin_hybrid*Q2bin_hybrid*5;                       // bottom left far
+    int p101 = p001+5;                                                // bottom right far
+    int p011 = p001+Q2bin_hybrid*5;                                   // top left far
+    int p111 = p011+5;                                                // top right far
+
+    // interpolate
+    for( int i = 0; i < 5; i++ )
+      w[i] = trilinear_interp(hybrid_grid[p000+i], hybrid_grid[p100+i],
+                              hybrid_grid[p010+i], hybrid_grid[p110+i],
+                              hybrid_grid[p001+i], hybrid_grid[p101+i],
+                              hybrid_grid[p011+i], hybrid_grid[p111+i], Q2d, Wd, cthd);
+  }
+
+  // calculate the leptonic tensor elements
+  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
+  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
+  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
+  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
+  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
+  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+
+  // contract the tensors
+  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4]; // *2Pi
+
+  result *= pion_momentum / pow(2*Pi,3);                                      // /2Pi
   result *= 2; // Phase space!
 
   return result;
@@ -715,4 +856,21 @@ void resevent_dir_hybrid(event& e)
   // Correct the particles in the out vector
   e.out[1].p4() = pion;
   e.out[2].p4() = nucleon;
+}
+
+double linear_interp(double f0, double f1, double xd)
+{
+  return f0 * (1-xd) + f1 * xd;
+}
+
+double bilinear_interp(double f00,  double f10,  double f01,  double f11,  double xd, double yd)
+{
+  return linear_interp(linear_interp(f00, f10, xd), linear_interp(f01, f11, xd), yd);
+}
+
+double trilinear_interp(double f000, double f010, double f100, double f110,
+                        double f001, double f011, double f101, double f111, double xd, double yd, double zd)
+{
+  return linear_interp(bilinear_interp(f000, f010, f100, f110, xd, yd),
+                       bilinear_interp(f001, f011, f101, f111, xd ,yd), zd);
 }

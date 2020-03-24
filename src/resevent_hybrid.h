@@ -6,25 +6,31 @@
 #include "dis/res_kinematics.h"
 
 // Cuts in Q2 and W for the hybrid model
-const double Q2max_hybrid=1.91*GeV2;
-const double Q2min_hybrid=0.01*GeV2;
-const double Q2spc_hybrid=0.10*GeV2;
-const int Q2bin_hybrid=(Q2max_hybrid-Q2min_hybrid)/Q2spc_hybrid+1;
-const double  Wmax_hybrid=1495*MeV;
-const double  Wmin_hybrid=1000*MeV;
-const double  Wspc_hybrid=   5*MeV;
-const int Wbin_hybrid=(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
+const double  Q2max_hybrid=3.91*GeV2;
+const double  Q2min_hybrid=0.01*GeV2;
+const double  Q2spc_hybrid=0.10*GeV2;
+const int     Q2bin_hybrid=(Q2max_hybrid-Q2min_hybrid)/Q2spc_hybrid+1;
+const double   Wmax_hybrid=1495*MeV;
+const double   Wmin_hybrid=1080*MeV;
+const double   Wspc_hybrid=   5*MeV;
+const int      Wbin_hybrid=(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
+const double cthmax_hybrid=     1;
+const double cthmin_hybrid=    -1;
+const double cthspc_hybrid= 2./19;
+const int    cthbin_hybrid=(cthmax_hybrid-cthmin_hybrid)/cthspc_hybrid+1;
 
 // Generate RES event
 void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
 // In terms of tabularized hadronic responses
-double hybrid_dsdQ2dW(res_kinematics* kin, int params[4], vect final_pion=NULL);
+double hybrid_dsdQ2dW_tab(res_kinematics* kin, int params[4], vect final_pion=NULL);
 
 // Three-fold differential cross section in CMS without LAB factors
 // In terms of the ABCDE decomposition
-double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion);
+double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion);
+// In terms of tabularized hadronic responses
+double hybrid_dsdQ2dWdcth_tab(res_kinematics* kin, int params[4], vect final_pion);
 
 // Four-fold differential cross section in CMS without LAB factors
 // In terms of the ABCDE decomposition
@@ -61,5 +67,11 @@ vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp);
 
 // Function to be called in finishevent to resample the hadronic angles
 void resevent_dir_hybrid(event& e);
+
+// Interpolations, axes xyz
+double    linear_interp(double f0,   double f1,   double xd);
+double  bilinear_interp(double f00,  double f10,  double f01,  double f11,  double xd, double yd);
+double trilinear_interp(double f000, double f010, double f100, double f110,
+                        double f001, double f011, double f101, double f111, double xd, double yd, double zd);
 
 #endif
