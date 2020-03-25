@@ -19,7 +19,7 @@ class args {
 
   int read(int argc, char** argv) {
     if (argc == 2 and (string(argv[1]) == "-v" or string(argv[1]) == "--version")) {
-      cout << VERSION << endl;
+      //  cout << VERSION << endl;
       exit(0);
     }
     if (argc % 2 == 0) usage();

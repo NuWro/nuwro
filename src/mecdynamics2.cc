@@ -566,6 +566,7 @@ double NN_marco (double w, double q)
     return y;
 }
 */
+
 static double DD_old (double w, double q)
 {
 	if (w>475)
@@ -2038,7 +2039,7 @@ void model_2body2 (nucleus t, double E, double w, double q, double Bin, particle
 		spowalniacz(Bin,nuc11);
 		spowalniacz(Bin,nuc22);
 	}
-
+	
 	if (fsi)
 	{
 		spowalniacz(-poten,nuc11);
@@ -2161,7 +2162,6 @@ void model_3body (nucleus t, double E, double w, double q, double Bin, particle 
 		spowalniacz(Bin,nuc22);
 		spowalniacz(Bin,nuc33);
 	}
-
 	if (fsi)
 	{
 		spowalniacz(-poten,nuc11);

@@ -19,7 +19,6 @@
 #define LOCALKF localkf_O
 
 
-
 double hypevent(params&p, event &e, nucleus &t)
 {
   /*
@@ -117,24 +116,24 @@ double hypevent(params&p, event &e, nucleus &t)
     default: _E_bind=0;
   }
 
+  //to force zero binding energy
+  // _E_bind=0; 
 
- 
-  particle N0_Eb = N0;
+  particle N0_Eb = N0; //nucleon with 4 momentum adjusted for binding energy
   N0_Eb.t -= _E_bind;
 
-  double xsec = 0; double xsec2 = 0;
-  //double jakobian=0;  // the value will be set by kinematics generator
+  double xsec = 0;
+  double jakobian=0;  // the value will be set by kinematics generator
 
   // DEPRECATED
   // double q2 = qel_kinematics(_E_bind, nu, N0, lepton, hyperon, jakobian)
   // double q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
   double q2 = scatter_2 (nu, N0_Eb, lepton, hyperon);
 
-
-  if(q2==0) return 0;
+  if(q2==0) return 0; //indicates interaction is forbidden by kinematics
 
   vect nu4 = nu;
-  nu4.boost (-N0.v());  // go to target frame
+  nu4.boost (-N0_Eb.v());  // go to target frame
   double Enu0=nu4.t;    // neutrino energy in target frame   
 
   // DEPRECATED
@@ -143,43 +142,58 @@ double hypevent(params&p, event &e, nucleus &t)
 
   // NEW CHRIS's APPROACH
   vect v1(nu);
-  vect v2(N0);
+  vect v2(N0_Eb);
   vect v3(lepton);
   vect v4(hyperon);
+
   //boost these to CMS for calculations
-  vec vcms = (vect(nu) + vect(N0)).v ();
+  vec vcms = (vect(nu) + vect(N0_Eb)).v ();
+
   v1.boost(-vcms);
   v2.boost(-vcms);
   v3.boost(-vcms);
   v4.boost(-vcms);
 
+  /////////////////////////////////////////////////////////
+  // Generate Cross Sections
+  /////////////////////////////////////////////////////////
+
   double kin = v1.length(); //incoming neutrino momentum
-  double kout = v3.length(); //outgoing lepton momentum
+  double kout = v3.length(); //outgoing lepton momentum  
+  double rs = sqrt((v1+v2)*(v1+v2));
 
-  double rs = sqrt((v1+v2)*(v1+v2)); //CMS energy sqrt(s)
-
-  double pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2; 
-double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
-  xsec = 4*dif*pf*Pi;
-
- 
-  //for testing of the sigma zero cross section calculation using the 
-  //code below, set xsec to zero
-  //xsec=0;
-
-  // if the interaction was on proton, we calculated Lambda and we still was Sigma_0
-  // we need to calcualte the cross section and weight the choice
+  //old version
+  //double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4,true);
   
-  //check if sigma production is allowed by kinematics
+  double dif = Singh_Model(-q2,Enu0,h,v1,v2,v3,v4,true);
+
+  double M2 = v2*v2;
+
+  double pf = G*G*(1-cos2thetac)/(8*Pi*Enu0*Enu0*M2);
+  jakobian = 4*kin*kout; 
+
+  xsec = dif*pf*jakobian;
+    
+/////////////////////////////////////////////////////////////////
+// for testing of the sigma zero cross section calculation using the 
+// code below, set xsec to zero
+// xsec=0;
+// if the interaction was on proton, we calculated Lambda and we still was Sigma_0
+// we need to calcualte the cross section and weight the choice
+// check if sigma production is allowed by kinematics
+
   if( h == 1 && p.hyp_sigma_zero && rs > PDG::mass(PDG::pdg_Sigma)+lepton.mass())
   {
+
+    double xsec2;
+
     // find the lepton unit vector
     vec unit_vec = v3 / v3.length();
     
     //3 momentum of outgoing sigma minus   
-  double pp = cms_momentum2(rs*rs,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));   
+    double pp = cms_momentum2(rs*rs,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));   
 
- // take new particles
+    // take new particles
     particle lepton2 = lepton;
     particle hyperon2 = hyperon;
     hyperon2.pdg = PDG::pdg_Sigma;
@@ -203,10 +217,13 @@ double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
 
     kout = sqrt(pp);
 
-    pf = (1./(4*v1*v2))*(kout/(4*rs*4*Pi*Pi))*G*G*(1-cos2thetac)/2;
-    dif  = Hyperon_Interaction(-q22,Enu0,2,v1,v2,v3,v4);
+    //double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4,true);
 
-    xsec2 = 4*dif*pf*Pi;
+    dif = Singh_Model(-q2,Enu0,2,v1,v2,v3,v4,true);
+ 
+    jakobian = 4*kin*kout; 
+    //prefactor pf is the same
+    xsec2 = dif*pf*jakobian;
 
 
     // range in q2
@@ -240,7 +257,5 @@ double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4);
   e.out.push_back(hyperon);
   e.weight=xsec/cm2;
 
-    return e.weight*cm2;
+  return e.weight*cm2;
 }
-
-

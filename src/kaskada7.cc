@@ -69,21 +69,10 @@ int kaskada::kaskadaevent()
     parts.pop();                                // remove this particle from a temp vector
     p = &p1;
 
-   
-
- //c thorpe: If hyperon cascade cutoff is switched on and KE < 30 MeV -> exit nucleus
-    if(hyperon(p->pdg) && par.hyp_kaskada_cutoff==true && p->Ek() < 30){
-      leave_nucleus();
-      }
-    
-    else
-      {
     X = prepare_interaction();                  // set the density and the total cross section
                                                 // calculate free path
     
     if (!move_particle()) continue;             // propagate particle, returns false if jailed
-        
-   
 
     if (X.r >= radius)                          // particle leaves nucleus
       leave_nucleus();
@@ -97,14 +86,11 @@ int kaskada::kaskadaevent()
       if (hyperon (p1.pdg)) e->nod[14]++;
       parts.push (*p);                          // interaction did not happend, 
                                                 // p should be further propagated 
+      }
     }
 
-      }
-
-  }
-  
   clean();  // if nucleus has evaporated the part queue may not be empty
-  
+
   return result;
 }
 
@@ -149,17 +135,14 @@ void kaskada::prepare_particles()
       
       parts.push (p1);  // put particle to a queue
     }
+
     //add C Thorpe 
     //hyperon production
-
-    //no cascade for hyperons if hyperon KE below 30 MeV (switch off  in params)
-    else if(hyperon (p1.pdg) && (p1.Ek() > 30 || par.hyp_kaskada_cutoff==false))
-    {  
-  
+    else if(hyperon (p1.pdg))
+    {
       parts.push(p1); // add particle to queue
-      
-   
     }
+
     else              // if not a nucleon nor pion or hyperon
     {
       p1.endproc=escape;
@@ -169,7 +152,7 @@ void kaskada::prepare_particles()
         e->all.push_back(p1);
     }
   }
-  
+
   for (int i = 0; i<15; i++)  // number of dynamics defined in proctable.h
     e->nod[i] = 0;
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place
