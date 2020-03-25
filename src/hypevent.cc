@@ -19,12 +19,8 @@
 #define LOCALKF localkf_O
 
 
-
 double hypevent(params&p, event &e, nucleus &t)
 {
-
- 
-
   /*
    * 
    * This is the hyperon production code. Only for antineutrino scattering.
@@ -264,7 +260,7 @@ v1.boost(-vcms);
   e.out.push_back(hyperon);
   e.weight=xsec/cm2;
 
-    return e.weight*cm2;
+  return e.weight*cm2;
 }
 
 

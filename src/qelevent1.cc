@@ -20,7 +20,6 @@
 #define LOCALKF localkf_O
 
 #include "rpa_2013.h"
-
 #include "hyperon_interaction.h"
 
 //double qelm;
@@ -108,7 +107,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	 	return 0;
 	}
 
-    
     // cross section (is 0 until the reaction occurs)   
     double xsec = 0;		
     double q2,jakobian;  
@@ -165,8 +163,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     if (q2 != 0)  		           // there was scattering
 		if(p.qel_kinematics==3)
 			N1.set_energy(N1.energy()+V(N1.momentum(), t.localkf(N1)));
-      
-       
+
 	vect nu4 = nu;
 	nu4.boost (-N0.v ());  // go to nucleon rest frame 
 	double Enu0=nu4.t;     // neutrino energy in target frame   
@@ -177,7 +174,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	// Aligarh Model for QEL (includes second class current)
 	/////////////////////////////////////////////////////////
 
-		
   vect v1(nu); //neutrino
     vect v2(N0); //initial nucleon adjusted for binding energy
     vect v3(lepton); //final lepton
@@ -203,12 +199,12 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
      xsec = pf*Singh_Model(-q2,Enu0,kind-11,v1,v2,v3,v4,anti)*jakobian;
 
-     */	
+     */
 
 	// now take into account the neutrino flux and nucleon proper time 
 	// corrections to the cross section on the whole nucleus
 	// int qel_relat=0;
-     
+
 	if(p.flux_correction)
 	{
 		double vv,vz;
@@ -216,7 +212,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		vz = N0.v() * nu.v().dir(); // this is general
 		xsec *= sqrt ( (1 - vz) * (1 - vz) );
 	} 
-
 
 	switch(p.qel_rpa) 
 	{

@@ -73,8 +73,6 @@ int kaskada::kaskadaevent()
                                                 // calculate free path
     
     if (!move_particle()) continue;             // propagate particle, returns false if jailed
-        
-   
 
     if (X.r >= radius)                          // particle leaves nucleus
       leave_nucleus();
@@ -89,11 +87,10 @@ int kaskada::kaskadaevent()
       parts.push (*p);                          // interaction did not happend, 
                                                 // p should be further propagated 
     }
-
-      }
+  }
 
   clean();  // if nucleus has evaporated the part queue may not be empty
-  
+
   return result;
 }
 
@@ -138,16 +135,12 @@ void kaskada::prepare_particles()
       
       parts.push (p1);  // put particle to a queue
     }
+
     //add C Thorpe 
     //hyperon production
-
- 
     else if(hyperon (p1.pdg))
-    {  
-  
+    {
       parts.push(p1); // add particle to queue
-      
-   
     }
     else              // if not a nucleon nor pion or hyperon
     {
@@ -158,7 +151,7 @@ void kaskada::prepare_particles()
         e->all.push_back(p1);
     }
   }
-  
+
   for (int i = 0; i<15; i++)  // number of dynamics defined in proctable.h
     e->nod[i] = 0;
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place

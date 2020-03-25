@@ -376,14 +376,11 @@ void NuWro::makeevent(event* e, params &p)
 					case 5:mecevent_SuSA (p, *e, *_nucleus, true);break;
 					default:mecevent_tem (p, *e, *_nucleus, true);break;
 				}
-			
 				for(int i=0;i<e->out.size();i++)
 				{
 					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 				}
-			
-			
 			}
 			break;
 		case 9:

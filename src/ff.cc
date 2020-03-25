@@ -144,11 +144,9 @@ double zexp_FA(const double q2, const double ma); // Z-expansion Model
 /// Calculate F1,F2
 pair<double, double> FF::f12(int kind) {
 
- 
   double Ge = 0, Gm = 0, f1 = 0, f2 = 0, F1s = 0, F2s = 0;
   const double tau = Q2 / (4 * M2);
 
- 
   //C Thorpe added Dec 2018
   //needed by hyperon production channels
   double f1p,f1n,f2p,f2n;
@@ -207,7 +205,6 @@ pair<double, double> FF::f12(int kind) {
   f1 = (Ge + tau * Gm) / (1 + tau);
   f2 = (Gm - Ge) / (1 + tau);
 
- 
   if ((kind == 1 or kind == 2) and
       strangeEM)  // strangeness in F1, F2 (only for kind!=0 i.e. nc)
     switch (strangeEM) {
@@ -318,7 +315,6 @@ FF bba03_FF(const double q2) {
 ///////////////////////////////////////////////////////////////
 FF bbba05_FForig(const double q2) {
   const double tau = -q2 / (4 * M2);
-
 
   FF ff;
   ff.Q2 = -q2;
@@ -792,19 +788,15 @@ pair<double, double> fap(double q2, int kind) {
   double hyp_mass;
   double kmass = PDG::mass_K;
 
- 
   double Ga, Fpa, Gas, Fpas;
   double Fp = 0, Fa = 0;
 
   switch (kind) {
     case 0:  // cc
-
       //Fa = Axialfromq2(q2, MA_cc); 
       Fa = Axialfromq2(q2, rew.qel_cc_axial_mass.val); 
-
       Fa *= axialcorr(axialFFset, q2);
       Fp = 2 * MM * Fa / (piMass2 - q2);
-
       break;
     case 1:  // nc proton
       //Fa = 0.5 * Axialfromq2(q2, MA_nc); 
@@ -833,22 +825,16 @@ pair<double, double> fap(double q2, int kind) {
       // Fp=2.0*M2*Fa/(piMass2 - q2) ;
       break;
 
-
     //C Thorpe added Dec 2018
     //hyperon production channels
-
 
     //Lambda zero;
     case 12:
       // need to add x=F/(F+D) value to constants file 
       // x = 0.36543014996
       //Fa = Axialfromq2(q2, MA_hyp); 
-
       Fa = Axialfromq2(q2,MA_hyp);
-     
       Fa *= (-1)*(1+2*Axial_x)/sqrt(6);
-
-      
       //SU(3) symmetry breaking
       if(sym_break == true)
       {
@@ -859,9 +845,6 @@ pair<double, double> fap(double q2, int kind) {
       //Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
       Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
       break;
-
-
-
 
     //Sigma zero
     case 13:
@@ -878,9 +861,6 @@ pair<double, double> fap(double q2, int kind) {
       hyp_mass = PDG::mass_Sigma;
       Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
       break;
-
-
-
 
     //Sigma minus
     case 14:
@@ -967,8 +947,8 @@ pair<double,double>g2(double q2,int kind){
   double Rg2 = (-1)*Rg20/(pow(1-q2/(MA_hyp*MA_hyp),2));
   double Ig2 = (-1)*Ig20/(pow(1-q2/(MA_hyp*MA_hyp),2));
 
-  switch(kind){
-
+  switch(kind)
+  {
   //Lambda zero production
   case 12:
     Rg2 *= (-1)*(1+2*Axial_x)/pow(6,0.5);
@@ -987,15 +967,13 @@ pair<double,double>g2(double q2,int kind){
     Ig2 *= (1-2*Axial_x);
     break;
   
-    //for ds=0 quasielastic do not include SCC for the time being
+  //for ds=0 quasielastic do not include SCC for the time being
   default:
-  Rg2 =0;
-  Ig2 =0;
-  break;
-
-
-
+    Rg2 =0;
+    Ig2 =0;
+    break;
   }
+
   return pair<double,double>(Rg2,Ig2);
 }
 
