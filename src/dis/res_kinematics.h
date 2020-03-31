@@ -12,6 +12,7 @@ struct res_kinematics {
   res_kinematics(const event& e);  //!< initialize basic kinmatics
 
   bool generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
+  bool generate_kinematics(const double& res_dis_cut, double _Q2, double _W);  //!< set the rest of kinematics
 
   void set_kinematics(event& e);  //!< set kinematics based on already generated event
 

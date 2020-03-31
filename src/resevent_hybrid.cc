@@ -27,15 +27,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  if (not kin.generate_kinematics(1500)) return;
-
-  // const double our_W_val  = 1230;
-  // const double our_W_wid  =    1;
-  // if( fabs(kin.W-our_W_val) > our_W_wid ) return;
-
-  // const double our_Q2_val = 100000;
-  // const double our_Q2_wid =    100;
-  // if( fabs((-kin.q*kin.q)-our_Q2_val) > our_Q2_wid ) return;
+  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -71,8 +63,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
   // cross section function
   double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dW_tab;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth;
   //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth_tab;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth;
   //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdOm;
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
@@ -293,47 +285,12 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
   // contract the tensors
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
 
-  return result;
-}
-
-double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
-{
-  // placeholders
-  double costh[1];
-  double ABCDE[1][5] = {{0,0,0,0,0}};
-  double result = 0.;
-
-  // get Q^2, W
-  double Q2 =-kin->q*kin->q;
-  double W  = kin->W;
-
-  // cut for comparisons
-  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
-
-  // find proper angles costh_pi^ast and phi_pi^ast
-  double pion_momentum = final_pion.length();
-  vect k = kin->neutrino;  //
-  vect kp= kin->lepton;    // They are in target rest frame!
-  vect q = kin->q;         //
-  k.boost (-kin->hadron_speed);
-  kp.boost(-kin->hadron_speed);
-  q.boost (-kin->hadron_speed);
-  vec Zast = q;
-  vec Yast = vecprod(k,kp);
-  vec Xast = vecprod(Yast,q);
-  Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
-  double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
-
-  // fill costh
-  costh[0] = pion_cos_theta;
-
-  // get ABCDE
-  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
-
-  result  = ABCDE[0][0];                 // *2Pi
-  result *= pion_momentum / pow(2*Pi,3); // /2Pi
-  result *= 2; // Phase space!
+  // correct the pion mass
+  double W2 = W*W; double W4 = W2*W2;
+  double nukmass2 = 881568.315821;
+  double pionmass2 = 19054.761849;
+  result /= sqrt(W4-2*W2*(pionmass2+nukmass2)+(nukmass2-pionmass2)*(nukmass2-pionmass2))/2.0/W;
+  result *= final_pion.length();
 
   return result;
 }
@@ -470,6 +427,48 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4]; // *2Pi
 
   result *= pion_momentum / pow(2*Pi,3);                                      // /2Pi
+  result *= 2; // Phase space!
+
+  return result;
+}
+
+double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
+{
+  // placeholders
+  double costh[1];
+  double ABCDE[1][5] = {{0,0,0,0,0}};
+  double result = 0.;
+
+  // get Q^2, W
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
+  // cut for comparisons
+  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+
+  // find proper angles costh_pi^ast and phi_pi^ast
+  double pion_momentum = final_pion.length();
+  vect k = kin->neutrino;  //
+  vect kp= kin->lepton;    // They are in target rest frame!
+  vect q = kin->q;         //
+  k.boost (-kin->hadron_speed);
+  kp.boost(-kin->hadron_speed);
+  q.boost (-kin->hadron_speed);
+  vec Zast = q;
+  vec Yast = vecprod(k,kp);
+  vec Xast = vecprod(Yast,q);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+  double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
+
+  // fill costh
+  costh[0] = pion_cos_theta;
+
+  // get ABCDE
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
+
+  result  = ABCDE[0][0];                 // *2Pi
+  result *= pion_momentum / pow(2*Pi,3); // /2Pi
   result *= 2; // Phase space!
 
   return result;
@@ -841,6 +840,93 @@ void resevent_dir_hybrid(event& e)
   neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS
   lepton.boost   (-hadron_speed); // This is needed to properly specify the Adler frame
   vec dir_rnd = hybrid_dir_from_adler(costh_rnd, phi_rnd, neutrino, lepton);
+
+  // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
+  double momentum = nucleon.length();
+  nucleon = vect(nucleon.t, -momentum * dir_rnd.x, -momentum * dir_rnd.y, -momentum * dir_rnd.z);
+  pion = vect(pion.t, momentum * dir_rnd.x, momentum * dir_rnd.y, momentum * dir_rnd.z);
+
+  // Boost hadrons back
+  nucleon.boost(hadron_speed);
+  nucleon.boost(target.v());
+  pion.boost   (hadron_speed);
+  pion.boost   (target.v());
+
+  // Correct the particles in the out vector
+  e.out[1].p4() = pion;
+  e.out[2].p4() = nucleon;
+}
+
+void resevent_phi_hybrid(event& e)
+{
+  // get all 4-vectors from the event and boost them to the N-rest frame
+  vect target   = e.in[1];  
+  target.t     -= get_binding_energy (e.par, target);
+  vect neutrino = e.in[0];  neutrino.boost(-target.v());
+  vect lepton   = e.out[0]; lepton.boost  (-target.v());
+  vect pion     = e.out[1]; pion.boost    (-target.v());
+  vect nucleon  = e.out[2]; nucleon.boost (-target.v());
+
+  // calculate hadron_speed and boost to CMS
+  vect q = neutrino - lepton;
+  double Mef = min(sqrt(target * target), res_kinematics::avg_nucleon_mass);
+  double q3  = sqrt(pow(Mef + q.t,2) - e.W()*e.W());
+  vec hadron_speed = q / sqrt(e.W()*e.W() + q3 * q3);
+  pion.boost     (-hadron_speed);
+  nucleon.boost  (-hadron_speed);
+
+  // generate params for the Ghent code
+  int params[4];
+  params[0] = 1;                                   // only CC for now
+  params[2] = (1 - 2.0 * (e.out[0].pdg > 0));
+  if( e.in[0].pdg > 0 ) // neutrino
+  {
+    if( e.in[1].pdg == PDG::pdg_proton )
+    {
+      params[3] = 1; params[1] = 1;
+    }
+    else
+    {
+      params[3] = 2;
+      if( e.out[1].pdg == PDG::pdg_pi )
+        params[1] = 1;
+      else
+        params[1] = 2;
+    }
+  }
+  else                   // antineutrino
+  {
+    if( e.in[1].pdg == PDG::pdg_neutron )
+    {
+      params[3] = 2; params[1] = 2;
+    }
+    else
+    {
+      params[3] = 1;
+      if( e.out[1].pdg == PDG::pdg_pi )
+        params[1] = 1;
+      else
+        params[1] = 2;
+    }
+  }
+
+  // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
+  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  vec Zast = neutrino - lepton;
+  vec Yast = vecprod(neutrino,lepton);
+  vec Xast = vecprod(Yast,Zast);
+  Zast.normalize(); Yast.normalize(); Xast.normalize();
+  double costh = Zast * vec(pion) / pion.length();
+
+  // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
+  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+  //double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+  double phi_rnd = hybrid_sample_phi_3(neutrino.t, -e.q2(), e.W(), params, costh);
+
+  // Modify final hadron directions as specified in the Adler frame
+  neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS
+  lepton.boost   (-hadron_speed); // This is needed to properly specify the Adler frame
+  vec dir_rnd = hybrid_dir_from_adler(costh, phi_rnd, neutrino, lepton);
 
   // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
   double momentum = nucleon.length();

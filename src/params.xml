@@ -497,7 +497,15 @@
   </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
-  </param>  
+  </param>
+
+  <param name="Q2" type="text" ctype="double" default="500000">
+    <description><![CDATA[Q2]]></description>
+  </param>
+  <param name="W" type="text" ctype="double" default="1230">
+    <description><![CDATA[W]]></description>
+  </param>
+
 </params>
 
 <!--

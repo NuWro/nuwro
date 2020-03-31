@@ -33,8 +33,6 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
 
   // choose random invariant mass (uniformly from [Wmin, Wmax])
   W = Wmin + (Wmax - Wmin) * frandom();
-  // or fix W (for tests)
-  //W = 1232;
   W2 = W * W;
 
   // TODO: we integrate over z - what is its definition?
@@ -55,9 +53,6 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
 
   // get random energy transfer
   q.t = q0_min + (q0_max - q0_min) * z * z;  // enhance low energy transfers are preferred
-  // or fix Q2 (tests), remember to remove 2*z from the jacobian
-  //double Q2 = 123000;
-  //q.t = (W2 - effective_mass2 + Q2)/2/effective_mass;
 
   // calculate jacobian
   jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
@@ -68,6 +63,67 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
   const double cosine = (pow2(neutrino.E()) + pow2(mom) - pow2(q3)) / 2 / neutrino.E() / mom;  // scattering angle
 
   if (abs(cosine) > 1) return false;  // impossible kinematics
+  if (pow2(neutrino.E() - q.t) - lepton_mass2 < 0) return false;
+
+  vec mom_dir;                               // the unit vector in the direction of scattered lepton
+  kinfinder(neutrino.p(), mom_dir, cosine);  // TODO: change this function!!!
+
+  // final lepton kinematics done
+  lepton = vect(neutrino.E() - q.t, mom_dir * mom);
+
+  // update momentrum transfer
+  q = neutrino.p() - lepton.p();
+
+  // calculate the speed of hadronic system
+  hadron_speed = q / sqrt(W2 + q3 * q3);
+
+  return true;
+}
+
+bool res_kinematics::generate_kinematics(const double &res_dis_cut, double _Q2, double _W) {
+  // common expression
+  const double ME2 = 2 * effective_mass * neutrino.E();
+
+  // determine max invariant mass (cannot be smaller than params::res_dis_cut)
+  const double Wmax = min(res_dis_cut, sqrt(effective_mass2 + ME2) - lepton_mass);
+
+  // choose random invariant mass (uniformly from [Wmin, Wmax])
+  //W = Wmin + (Wmax - Wmin) * frandom();
+  W = _W;
+  W2 = W * W;
+
+  // // TODO: we integrate over z - what is its definition?
+  // const double z = frandom();
+
+  // // common expression
+  // const double W2_reduced = W2 - effective_mass2 - lepton_mass2;
+  // const double Mplus = effective_mass + 2 * neutrino.E();
+
+  // // aux variables
+  // const double A = (effective_mass + neutrino.E()) * W2_reduced + ME2 * neutrino.E();
+  // const double B = neutrino.E() * sqrt(pow2(W2_reduced - ME2) - 4 * lepton_mass2 * effective_mass * Mplus);
+  // const double C = 2 * effective_mass * Mplus;
+
+  // // energy transfer bounds
+  // const double q0_min = max((A - B) / C, lepton_mass);
+  // const double q0_max = min((A + B) / C, neutrino.E() - lepton_mass);
+
+  // get random energy transfer
+  //q.t = q0_min + (q0_max - q0_min) * z * z;  // enhance low energy transfers are preferred
+  // or fix Q2 (tests), remember to change the jacobian
+  q.t = (W2 - effective_mass2 + _Q2)/2/effective_mass;
+
+  // calculate jacobian
+  //jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
+  jacobian = 1. / 2 / res_kinematics::avg_nucleon_mass;
+
+  // temp kinematics variables
+  const double q3 = sqrt(pow2(effective_mass + q.t) - W2);                                     // momentum transfer
+  const double mom = sqrt(pow2(neutrino.E() - q.t) - lepton_mass2);                            // final lepton momentum
+  const double cosine = (pow2(neutrino.E()) + pow2(mom) - pow2(q3)) / 2 / neutrino.E() / mom;  // scattering angle
+
+  if (abs(cosine) > 1) return false;  // impossible kinematics
+  if (pow2(neutrino.E() - q.t) - lepton_mass2 < 0) return false;
 
   vec mom_dir;                               // the unit vector in the direction of scattered lepton
   kinfinder(neutrino.p(), mom_dir, cosine);  // TODO: change this function!!!

@@ -27,10 +27,10 @@ void resevent_hybrid(params& p, event& e, bool cc);
 double hybrid_dsdQ2dW_tab(res_kinematics* kin, int params[4], vect final_pion=NULL);
 
 // Three-fold differential cross section in CMS without LAB factors
-// - in terms of the ABCDE decomposition
-double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion);
 // - in terms of tabularized hadronic responses
 double hybrid_dsdQ2dWdcth_tab(res_kinematics* kin, int params[4], vect final_pion);
+// - in terms of the ABCDE decomposition
+double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion);
 
 // Four-fold differential cross section in CMS without LAB factors
 //  - in terms of the ABCDE decomposition
@@ -67,7 +67,10 @@ double hybrid_dcmp_rnd_2(double (*ABCDE)[5], double x_min, double x_max, double 
 vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp);
 
 // Function to be called in finishevent to resample the hadronic angles
+// - resample the whole direction
 void resevent_dir_hybrid(event& e);
+// - resample only the phi angle
+void resevent_phi_hybrid(event& e);
 
 // Interpolations, axes xyz
 double    linear_interp(double f0,   double f1,   double xd);
