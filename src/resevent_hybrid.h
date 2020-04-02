@@ -6,18 +6,26 @@
 #include "dis/res_kinematics.h"
 
 // Cuts in Q2 and W for the hybrid model
-const double  Q2max_hybrid=3.91*GeV2;
-const double  Q2min_hybrid=0.01*GeV2;
-const double  Q2spc_hybrid=0.10*GeV2;
-const int     Q2bin_hybrid=(Q2max_hybrid-Q2min_hybrid)/Q2spc_hybrid+1;
-const double   Wmax_hybrid=1495*MeV;
-const double   Wmin_hybrid=1080*MeV;
-const double   Wspc_hybrid=   5*MeV;
-const int      Wbin_hybrid=(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
-const double cthmax_hybrid=     1;
-const double cthmin_hybrid=    -1;
-const double cthspc_hybrid= 2./19;
-const int    cthbin_hybrid=(cthmax_hybrid-cthmin_hybrid)/cthspc_hybrid+1;
+const double  Q2max_hybrid  =3.901*GeV2;
+const double  Q2min_hybrid  =0.001*GeV2;
+const double  Q2spc_hybrid  =0.100*GeV2;
+const int     Q2bin_hybrid  =(Q2max_hybrid-Q2min_hybrid)/Q2spc_hybrid+1;
+const double  Q2max_2_hybrid=0.201*GeV2;
+const double  Q2min_2_hybrid=0.001*GeV2;
+const double  Q2spc_2_hybrid=0.010*GeV2;
+const int     Q2bin_2_hybrid=(Q2max_2_hybrid-Q2min_2_hybrid)/Q2spc_2_hybrid+1;
+const double   Wmax_hybrid  =1500*MeV;
+const double   Wmin_hybrid  =1075*MeV;
+const double   Wspc_hybrid  =   5*MeV;
+const int      Wbin_hybrid  =(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
+const double   Wmax_2_hybrid=1100*MeV;
+const double   Wmin_2_hybrid=1075*MeV;
+const double   Wspc_2_hybrid=   1*MeV;
+const int      Wbin_2_hybrid=(Wmax_2_hybrid-Wmin_2_hybrid)/Wspc_2_hybrid+1;
+const double cthmax_hybrid  =     1;
+const double cthmin_hybrid  =    -1;
+const double cthspc_hybrid  = 2./19;
+const int    cthbin_hybrid  =(cthmax_hybrid-cthmin_hybrid)/cthspc_hybrid+1;
 
 // Generate RES event
 void resevent_hybrid(params& p, event& e, bool cc);

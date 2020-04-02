@@ -27,6 +27,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
+  //if (not kin.generate_kinematics(1500)) return;
   if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
@@ -179,52 +180,96 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
 
 double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 {
+  double result = 0.;
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
   double *hybrid_grid;
+  double Q2min,Q2max,Q2spc,Q2bin;
+  double  Wmin, Wmax, Wspc, Wbin;
 
-  if(kin->neutrino.pdg > 0)
+  if(Q2 <= Q2max_2_hybrid && W <= Wmax_2_hybrid)
   {
-    switch (params[3]*10 + params[1])
+    Q2min = Q2min_2_hybrid; Q2max = Q2max_2_hybrid;
+    Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
+     Wmin =  Wmin_2_hybrid;  Wmax =  Wmax_2_hybrid;
+     Wspc =  Wspc_2_hybrid;  Wbin =  Wbin_2_hybrid;
+    if(kin->neutrino.pdg > 0)
     {
-      case 11:
-        hybrid_grid = hybrid_grid_11;
-        break;
-
-      case 21:
-        hybrid_grid = hybrid_grid_21;
-        break;
-
-      case 22:
-        hybrid_grid = hybrid_grid_22;
-        break;
-
-      default:
-        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      switch (params[3]*10 + params[1])
+      {
+        case 11:
+          hybrid_grid = hybrid_grid_dQ2dW_2_11;
+          break;
+        case 21:
+          hybrid_grid = hybrid_grid_dQ2dW_2_21;
+          break;
+        case 22:
+          hybrid_grid = hybrid_grid_dQ2dW_2_22;
+          break;
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
+    }
+    else
+    {
+      switch (params[3]*10 + params[1])
+      {
+        case 11:  // anu_11 has the tables of nu_21
+          hybrid_grid = hybrid_grid_dQ2dW_2_21;
+          break;
+        case 12:  // anu_12 has the tables of nu_22
+          hybrid_grid = hybrid_grid_dQ2dW_2_22;
+          break;
+        case 22:  // anu_22 has the tables of nu_11
+          hybrid_grid = hybrid_grid_dQ2dW_2_11;
+          break;
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
     }
   }
   else
   {
-    switch (params[3]*10 + params[1])
+    Q2min = Q2min_hybrid; Q2max = Q2max_hybrid;
+    Q2spc = Q2spc_hybrid; Q2bin = Q2bin_hybrid;
+     Wmin =  Wmin_hybrid;  Wmax =  Wmax_hybrid;
+     Wspc =  Wspc_hybrid;  Wbin =  Wbin_hybrid;
+    if(kin->neutrino.pdg > 0)
     {
-      case 11:  // anu_11 has the tables of nu_21
-        hybrid_grid = hybrid_grid_21;
-        break;
-
-      case 12:  // anu_12 has the tables of nu_22
-        hybrid_grid = hybrid_grid_22;
-        break;
-
-      case 22:  // anu_22 has the tables of nu_11
-        hybrid_grid = hybrid_grid_11;
-        break;
-
-      default:
-        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      switch (params[3]*10 + params[1])
+      {
+        case 11:
+          hybrid_grid = hybrid_grid_dQ2dW_11;
+          break;
+        case 21:
+          hybrid_grid = hybrid_grid_dQ2dW_21;
+          break;
+        case 22:
+          hybrid_grid = hybrid_grid_dQ2dW_22;
+          break;
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
+    }
+    else
+    {
+      switch (params[3]*10 + params[1])
+      {
+        case 11:  // anu_11 has the tables of nu_21
+          hybrid_grid = hybrid_grid_dQ2dW_21;
+          break;
+        case 12:  // anu_12 has the tables of nu_22
+          hybrid_grid = hybrid_grid_dQ2dW_22;
+          break;
+        case 22:  // anu_22 has the tables of nu_11
+          hybrid_grid = hybrid_grid_dQ2dW_11;
+          break;
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
     }
   }
-
-  double result = 0.;
-  double Q2 =-kin->q*kin->q;
-  double W  = kin->W;
 
   // we build leptonic tensor in CMS with q along z, see JES paper App. A
   vect kl_inc_lab = kin->neutrino.p4();   //
@@ -244,7 +289,7 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
   double kl_inc_dot_kl = kl_inc * kl;
 
   // cut for comparisons
-  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
   //if( W > 1400 ) return 0;
 
   // interpolate the nuclear tensor elements
@@ -254,18 +299,18 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
   if( Q2 >= Q2min_hybrid && Q2 <= Q2max_hybrid && W >= Wmin_hybrid && W <= Wmax_hybrid )
   {
     // bilinear interpolation in axis: x(Q2), y(W), each field is 5 numbers
-    int    Q2f = int((Q2-Q2min_hybrid)/Q2spc_hybrid); // number of bin in Q2 (floor)
-    double Q2d = Q2-Q2min_hybrid-Q2f*Q2spc_hybrid;    // distance from the previous point
-           Q2d/= Q2spc_hybrid;                        // normalized
-    int     Wf = int((W-Wmin_hybrid)/Wspc_hybrid); // number of bin in W (floor)
-    double  Wd = W-Wmin_hybrid-Wf*Wspc_hybrid;     // distance from the prefious point
-            Wd/= Wspc_hybrid;                      // normalized
+    int    Q2f = int((Q2-Q2min)/Q2spc); // number of bin in Q2 (floor)
+    double Q2d = Q2-Q2min-Q2f*Q2spc;    // distance from the previous point
+           Q2d/= Q2spc;                 // normalized
+    int     Wf = int((W-Wmin)/Wspc);    // number of bin in W (floor)
+    double  Wd = W-Wmin-Wf*Wspc;        // distance from the prefious point
+            Wd/= Wspc;                  // normalized
 
     // 4 points surrounding the desired point
-    int p00 = (Wf*Q2bin_hybrid+Q2f)*5; // bottom left
-    int p10 = p00+5;                   // bottom right
-    int p01 = p00+Q2bin_hybrid*5;      // top left
-    int p11 = p01+5;                   // top right
+    int p00 = (Wf*Q2bin+Q2f)*5; // bottom left
+    int p10 = p00+5;            // bottom right
+    int p01 = p00+Q2bin*5;      // top left
+    int p11 = p01+5;            // top right
 
     // interpolate
     for( int i = 0; i < 5; i++ )
@@ -297,52 +342,112 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 
 double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pion)
 {
+  double result = 0.;
+  double Q2 =-kin->q*kin->q;
+  double W  = kin->W;
+
   double *hybrid_grid;
+  double  Q2min,  Q2max,  Q2spc,  Q2bin;
+  double   Wmin,   Wmax,   Wspc,   Wbin;
+  double cthmin, cthmax, cthspc, cthbin;
 
-  if(kin->neutrino.pdg > 0)
+  cthmin = cthmin_hybrid; cthmax = cthmax_hybrid;
+  cthspc = cthspc_hybrid; cthbin = cthbin_hybrid;
+
+  if(Q2 <= Q2max_2_hybrid && W <= Wmax_2_hybrid)
   {
-    switch (params[3]*10 + params[1])
+    Q2min = Q2min_2_hybrid; Q2max = Q2max_2_hybrid;
+    Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
+     Wmin =  Wmin_2_hybrid;  Wmax =  Wmax_2_hybrid;
+     Wspc =  Wspc_2_hybrid;  Wbin =  Wbin_2_hybrid;
+    if(kin->neutrino.pdg > 0)
     {
-      case 11:
-        hybrid_grid = hybrid_grid2_11;
-        break;
+      switch (params[3]*10 + params[1])
+      {
+        case 11:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_11;
+          break;
 
-      case 21:
-        hybrid_grid = hybrid_grid2_21;
-        break;
+        case 21:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_21;
+          break;
 
-      case 22:
-        hybrid_grid = hybrid_grid2_22;
-        break;
+        case 22:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_22;
+          break;
 
-      default:
-        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
+    }
+    else
+    {
+      switch (params[3]*10 + params[1])
+      {
+        case 11:  // anu_11 has the tables of nu_21
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_21;
+          break;
+
+        case 12:  // anu_12 has the tables of nu_22
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_22;
+          break;
+
+        case 22:  // anu_22 has the tables of nu_11
+          hybrid_grid = hybrid_grid_dQ2dWdcth_2_11;
+          break;
+
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
     }
   }
   else
   {
-    switch (params[3]*10 + params[1])
+    Q2min = Q2min_hybrid; Q2max = Q2max_hybrid;
+    Q2spc = Q2spc_hybrid; Q2bin = Q2bin_hybrid;
+     Wmin =  Wmin_hybrid;  Wmax =  Wmax_hybrid;
+     Wspc =  Wspc_hybrid;  Wbin =  Wbin_hybrid;
+    if(kin->neutrino.pdg > 0)
     {
-      case 11:  // anu_11 has the tables of nu_21
-        hybrid_grid = hybrid_grid2_21;
-        break;
+      switch (params[3]*10 + params[1])
+      {
+        case 11:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_11;
+          break;
 
-      case 12:  // anu_12 has the tables of nu_22
-        hybrid_grid = hybrid_grid2_22;
-        break;
+        case 21:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_21;
+          break;
 
-      case 22:  // anu_22 has the tables of nu_11
-        hybrid_grid = hybrid_grid2_11;
-        break;
+        case 22:
+          hybrid_grid = hybrid_grid_dQ2dWdcth_22;
+          break;
 
-      default:
-        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
+    }
+    else
+    {
+      switch (params[3]*10 + params[1])
+      {
+        case 11:  // anu_11 has the tables of nu_21
+          hybrid_grid = hybrid_grid_dQ2dWdcth_21;
+          break;
+
+        case 12:  // anu_12 has the tables of nu_22
+          hybrid_grid = hybrid_grid_dQ2dWdcth_22;
+          break;
+
+        case 22:  // anu_22 has the tables of nu_11
+          hybrid_grid = hybrid_grid_dQ2dWdcth_11;
+          break;
+
+        default:
+          cerr << "[WARNING]: no hybrid inclusive grid!\n";
+      }
     }
   }
-
-  double result = 0.;
-  double Q2 =-kin->q*kin->q;
-  double W  = kin->W;
 
   // find proper angle costh_pi^ast
   double pion_momentum = final_pion.length();
@@ -376,7 +481,7 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   double kl_inc_dot_kl = kl_inc * kl;
 
   // cut for comparisons
-  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
   // interpolate the nuclear tensor elements
   double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
@@ -386,25 +491,25 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
       pion_cos_theta >= cthmin_hybrid && pion_cos_theta <= cthmax_hybrid )
   {
     // trilinear interpolation in axis: x(Q2), y(W), z(costh), each field is 5 numbers
-    int     Q2f = int((Q2-Q2min_hybrid)/Q2spc_hybrid); // number of bin in Q2 (floor)
-    double  Q2d = Q2-Q2min_hybrid-Q2f*Q2spc_hybrid;    // distance from the previous point
-            Q2d/= Q2spc_hybrid;                        // normalized
-    int      Wf = int((W-Wmin_hybrid)/Wspc_hybrid); // number of bin in W (floor)
-    double   Wd = W-Wmin_hybrid-Wf*Wspc_hybrid;     // distance from the previous point
-             Wd/= Wspc_hybrid;                      // normalized
-    int    cthf = int((pion_cos_theta-cthmin_hybrid)/cthspc_hybrid); // number of bin in cth (floor)
-    double cthd = pion_cos_theta-cthmin_hybrid-cthf*cthspc_hybrid;   // distance from the previous point
-           cthd/= cthspc_hybrid;                                     // normalized
+    int     Q2f = int((Q2-Q2min)/Q2spc);               // number of bin in Q2 (floor)
+    double  Q2d = Q2-Q2min-Q2f*Q2spc;                  // distance from the previous point
+            Q2d/= Q2spc;                               // normalized
+    int      Wf = int((W-Wmin)/Wspc);                  // number of bin in W (floor)
+    double   Wd = W-Wmin-Wf*Wspc;                      // distance from the previous point
+             Wd/= Wspc;                                // normalized
+    int    cthf = int((pion_cos_theta-cthmin)/cthspc); // number of bin in cth (floor)
+    double cthd = pion_cos_theta-cthmin-cthf*cthspc;   // distance from the previous point
+           cthd/= cthspc;                              // normalized
 
     // 8 points surrounding the desired point
-    int p000 = (cthf*Wbin_hybrid*Q2bin_hybrid+Wf*Q2bin_hybrid+Q2f)*5; // bottom left close
-    int p100 = p000+5;                                                // bottom right close
-    int p010 = p000+Q2bin_hybrid*5;                                   // top left close
-    int p110 = p010+5;                                                // top right close
-    int p001 = p000+Wbin_hybrid*Q2bin_hybrid*5;                       // bottom left far
-    int p101 = p001+5;                                                // bottom right far
-    int p011 = p001+Q2bin_hybrid*5;                                   // top left far
-    int p111 = p011+5;                                                // top right far
+    int p000 = (cthf*Wbin*Q2bin+Wf*Q2bin+Q2f)*5;       // bottom left close
+    int p100 = p000+5;                                 // bottom right close
+    int p010 = p000+Q2bin*5;                           // top left close
+    int p110 = p010+5;                                 // top right close
+    int p001 = p000+Wbin*Q2bin*5;                      // bottom left far
+    int p101 = p001+5;                                 // bottom right far
+    int p011 = p001+Q2bin*5;                           // top left far
+    int p111 = p011+5;                                 // top right far
 
     // interpolate
     for( int i = 0; i < 5; i++ )
@@ -444,7 +549,7 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
   double W  = kin->W;
 
   // cut for comparisons
-  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
   // find proper angles costh_pi^ast and phi_pi^ast
   double pion_momentum = final_pion.length();
@@ -486,7 +591,7 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
   double W  = kin->W;
 
   // cut for comparisons
-  if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
+  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
   // find proper angles costh_pi^ast and phi_pi^ast
   double pion_momentum = final_pion.length();
