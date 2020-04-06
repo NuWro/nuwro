@@ -43,6 +43,8 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion);
 // Sample cos_theta_pi^* using ABCDE decomposition
 // - using ABCDE decomposition, fitting a polynomial, inverting using bisection
 double hybrid_sample_costh  (double Enu, double Q2, double W, int params[4]);
+// - using tabulated A functions, accept-or-reject
+double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vect neutrino, vect lepton);
 
 // Sample phi_theta^* using ABCDE decomposition
 // - fitting a polynomial, inverting using bisection
@@ -83,6 +85,6 @@ double trilinear_interp(double f000, double f010, double f100, double f110,
                         double f001, double f011, double f101, double f111, double xd, double yd, double zd);
 
 // Helper to choose the grid
-int hybrid_grid_idx(int neutrino_pdg, int channel);
+int hybrid_grid_idx(int helicity, int channel);
 
 #endif

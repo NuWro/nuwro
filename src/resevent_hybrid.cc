@@ -186,7 +186,7 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 
   double *hybrid_grid[] = {hybrid_grid_dQ2dW_11,   hybrid_grid_dQ2dW_22,   hybrid_grid_dQ2dW_21,
                            hybrid_grid_dQ2dW_2_11, hybrid_grid_dQ2dW_2_22, hybrid_grid_dQ2dW_2_21};
-  int hg_idx = hybrid_grid_idx(kin->neutrino.pdg, params[3]*10 + params[1]);
+  int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
 
   double Q2min,Q2max,Q2spc,Q2bin;
   double  Wmin, Wmax, Wspc, Wbin;
@@ -220,6 +220,15 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 
   double kl_inc_dot_kl = kl_inc * kl;
 
+  // calculate the leptonic tensor elements
+  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
+  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
+  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
+  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
+  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
+  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+
   // cut for comparisons
   //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
   //if( W > 1400 ) return 0;
@@ -250,15 +259,6 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
                              hybrid_grid[hg_idx][p01+i], hybrid_grid[hg_idx][p11+i], Q2d, Wd);
   }
 
-  // calculate the leptonic tensor elements
-  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
-  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
-  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
-  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
-  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
-  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
-  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
-
   // contract the tensors
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
 
@@ -280,7 +280,7 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
 
   double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
                            hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
-  int hg_idx = hybrid_grid_idx(kin->neutrino.pdg, params[3]*10 + params[1]);
+  int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
 
   double  Q2min,  Q2max,  Q2spc,  Q2bin;
   double   Wmin,   Wmax,   Wspc,   Wbin;
@@ -331,6 +331,15 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
 
   double kl_inc_dot_kl = kl_inc * kl;
 
+  // calculate the leptonic tensor elements
+  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
+  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
+  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
+  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
+  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
+  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+
   // cut for comparisons
   //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
@@ -369,15 +378,6 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
                               hybrid_grid[hg_idx][p001+i], hybrid_grid[hg_idx][p101+i],
                               hybrid_grid[hg_idx][p011+i], hybrid_grid[hg_idx][p111+i], Q2d, Wd, cthd);
   }
-
-  // calculate the leptonic tensor elements
-  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
-  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
-  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
-  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
-  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
-  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
-  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
 
   // contract the tensors
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4]; // *2Pi
@@ -501,6 +501,117 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
 
   // Choose a value for costh_rnd
   costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.001);
+
+  return costh_rnd;
+}
+
+double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vect kl_inc_lab, vect kl_lab)
+{
+  // Choosing cos_th^* from dsdQ2dWdcosth
+  double costh_rnd;
+
+  // Specify all details needed for arrays
+  double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
+                           hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
+
+  double  Q2min,  Q2max,  Q2spc,  Q2bin;
+  double   Wmin,   Wmax,   Wspc,   Wbin;
+  double cthmin, cthmax, cthspc, cthbin;
+
+  Q2min  =  Q2min_hybrid; Q2max  =  Q2max_hybrid;
+  Q2spc  =  Q2spc_hybrid; Q2bin  =  Q2bin_hybrid;
+  Wmin   =   Wmin_hybrid; Wmax   =   Wmax_hybrid;
+  Wspc   =   Wspc_hybrid; Wbin   =   Wbin_hybrid;
+  cthmin = cthmin_hybrid; cthmax = cthmax_hybrid;
+  cthspc = cthspc_hybrid; cthbin = cthbin_hybrid;
+
+  if(Q2 < Q2max_2_hybrid) // switch to the denser mesh
+  {
+    hg_idx += 3;
+    Q2min = Q2min_2_hybrid; Q2max = Q2max_2_hybrid;
+    Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
+  }
+
+  // we build leptonic tensor in CMS with q along z, see JES paper App. A
+  // vect kl_inc_lab = kin->neutrino.p4(); //
+  // vect kl_lab     = kin->lepton.p4();   //  They are not in LAB, but in target rest frame!
+  vect q_lab  = kl_inc_lab - kl_lab;       //
+
+  double v = q_lab.length() / (q_lab[0] + res_kinematics::avg_nucleon_mass);
+  double g = 1 / sqrt(1 - v*v);
+  double c = (kl_inc_lab.length() - kl_lab[3]) / q_lab.length();
+  double s = sqrt(pow(kl_lab.length(),2) - pow(kl_lab[3],2)) / q_lab.length();
+
+  vect kl_inc (g*(kl_inc_lab[0] - v*kl_inc_lab.length()*c), kl_inc_lab.length()*s,
+               0, g*(-v*kl_inc_lab[0] + kl_inc_lab.length()*c));
+  vect kl     (g*(kl_lab[0] - v*(kl_inc_lab.length()*c - q_lab.length())), kl_inc_lab.length()*s,
+               0, g*(-v*kl_lab[0] + kl_inc_lab.length()*c - q_lab.length()));
+
+  double kl_inc_dot_kl = kl_inc * kl;
+
+  // A function placeholder
+  int A[cthbin_hybrid] = {0};
+
+  // calculate the leptonic tensor elements
+  double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
+  l[0] = (2*kl_inc[0]*kl[0] - kl_inc_dot_kl);
+  l[1] = ( -kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+  l[2] = (2*kl_inc[3]*kl[3] + kl_inc_dot_kl);
+  l[3] = (2*kl_inc[1]*kl[1] + kl_inc_dot_kl);
+  l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
+  l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
+
+  // interpolate the nuclear tensor elements
+  double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
+
+  // if the variables are within the grid
+  if( Q2 >= Q2min_hybrid && Q2 <= Q2max_hybrid && W >= Wmin_hybrid && W <= Wmax_hybrid )
+  {
+    // trilinear interpolation in axis: x(Q2), y(W), z(costh), each field is 5 numbers
+    int     Q2f = int((Q2-Q2min)/Q2spc);               // number of bin in Q2 (floor)
+    double  Q2d = Q2-Q2min-Q2f*Q2spc;                  // distance from the previous point
+            Q2d/= Q2spc;                               // normalized
+    int      Wf = int((W-Wmin)/Wspc);                  // number of bin in W (floor)
+    double   Wd = W-Wmin-Wf*Wspc;                      // distance from the previous point
+             Wd/= Wspc;                                // normalized
+
+    for( int cthf = 0; cthf < cthbin_hybrid; cthf++ ) // for all cth points
+    {
+      // 4 points surrounding the desired point
+      int p00 = (cthf*Wbin*Q2bin+Wf*Q2bin+Q2f)*5; // bottom left
+      int p10 = p00+5;                            // bottom right
+      int p01 = p00+Q2bin*5;                      // top left
+      int p11 = p01+5;                            // top right
+
+      // interpolate
+      for( int i = 0; i < 5; i++ )
+        w[i] = bilinear_interp(hybrid_grid[hg_idx][p00+i], hybrid_grid[hg_idx][p10+i],
+                               hybrid_grid[hg_idx][p01+i], hybrid_grid[hg_idx][p11+i], Q2d, Wd);
+      // contract the tensors
+      A[cthf] = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
+    }
+  }
+
+  // find maximum
+  double maximum = -1;
+  for( int i = 0; i < cthbin_hybrid; i++ )
+  {
+    if( A[i] > maximum )
+      maximum = A[i];
+  }
+
+  // accept-or-reject
+  double A_value;
+  do
+  {
+      costh_rnd = frandom();
+    int    cthf = int((costh_rnd-cthmin)/cthspc); // number of bin in cth (floor)
+    double cthd = costh_rnd-cthmin-cthf*cthspc;   // distance from the previous point
+           cthd/= cthspc;                         // normalized
+        A_value = linear_interp(A[cthf], A[cthf+1], cthd);
+  }
+  while( A_value/maximum < frandom() );
 
   return costh_rnd;
 }
@@ -785,7 +896,8 @@ void resevent_dir_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  // double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
@@ -917,11 +1029,11 @@ double trilinear_interp(double f000, double f010, double f100, double f110,
                        bilinear_interp(f001, f011, f101, f111, xd ,yd), zd);
 }
 
-int hybrid_grid_idx(int neutrino_pdg, int channel)
+int hybrid_grid_idx(int helicity, int channel)
 {
   int hg_idx = -1;
 
-  if(neutrino_pdg > 0)
+  if( helicity < 0)
   {
     switch (channel)
     {
