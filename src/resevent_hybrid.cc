@@ -27,8 +27,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  //if (not kin.generate_kinematics(1500)) return;
-  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  if (not kin.generate_kinematics(1500)) return;
+  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -184,91 +184,23 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  double *hybrid_grid;
+  double *hybrid_grid[] = {hybrid_grid_dQ2dW_11,   hybrid_grid_dQ2dW_22,   hybrid_grid_dQ2dW_21,
+                           hybrid_grid_dQ2dW_2_11, hybrid_grid_dQ2dW_2_22, hybrid_grid_dQ2dW_2_21};
+  int hg_idx = hybrid_grid_idx(kin->neutrino.pdg, params[3]*10 + params[1]);
+
   double Q2min,Q2max,Q2spc,Q2bin;
   double  Wmin, Wmax, Wspc, Wbin;
 
-  if(Q2 <= Q2max_2_hybrid && W <= Wmax_2_hybrid)
+  Q2min = Q2min_hybrid; Q2max = Q2max_hybrid;
+  Q2spc = Q2spc_hybrid; Q2bin = Q2bin_hybrid;
+  Wmin  =  Wmin_hybrid;  Wmax =  Wmax_hybrid;
+  Wspc  =  Wspc_hybrid;  Wbin =  Wbin_hybrid;
+
+  if(Q2 < Q2max_2_hybrid) // switch to the denser mesh
   {
+    hg_idx += 3;
     Q2min = Q2min_2_hybrid; Q2max = Q2max_2_hybrid;
     Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
-     Wmin =  Wmin_2_hybrid;  Wmax =  Wmax_2_hybrid;
-     Wspc =  Wspc_2_hybrid;  Wbin =  Wbin_2_hybrid;
-    if(kin->neutrino.pdg > 0)
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:
-          hybrid_grid = hybrid_grid_dQ2dW_2_11;
-          break;
-        case 21:
-          hybrid_grid = hybrid_grid_dQ2dW_2_21;
-          break;
-        case 22:
-          hybrid_grid = hybrid_grid_dQ2dW_2_22;
-          break;
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-    else
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:  // anu_11 has the tables of nu_21
-          hybrid_grid = hybrid_grid_dQ2dW_2_21;
-          break;
-        case 12:  // anu_12 has the tables of nu_22
-          hybrid_grid = hybrid_grid_dQ2dW_2_22;
-          break;
-        case 22:  // anu_22 has the tables of nu_11
-          hybrid_grid = hybrid_grid_dQ2dW_2_11;
-          break;
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-  }
-  else
-  {
-    Q2min = Q2min_hybrid; Q2max = Q2max_hybrid;
-    Q2spc = Q2spc_hybrid; Q2bin = Q2bin_hybrid;
-     Wmin =  Wmin_hybrid;  Wmax =  Wmax_hybrid;
-     Wspc =  Wspc_hybrid;  Wbin =  Wbin_hybrid;
-    if(kin->neutrino.pdg > 0)
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:
-          hybrid_grid = hybrid_grid_dQ2dW_11;
-          break;
-        case 21:
-          hybrid_grid = hybrid_grid_dQ2dW_21;
-          break;
-        case 22:
-          hybrid_grid = hybrid_grid_dQ2dW_22;
-          break;
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-    else
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:  // anu_11 has the tables of nu_21
-          hybrid_grid = hybrid_grid_dQ2dW_21;
-          break;
-        case 12:  // anu_12 has the tables of nu_22
-          hybrid_grid = hybrid_grid_dQ2dW_22;
-          break;
-        case 22:  // anu_22 has the tables of nu_11
-          hybrid_grid = hybrid_grid_dQ2dW_11;
-          break;
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
   }
 
   // we build leptonic tensor in CMS with q along z, see JES paper App. A
@@ -314,8 +246,8 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
 
     // interpolate
     for( int i = 0; i < 5; i++ )
-      w[i] = bilinear_interp(hybrid_grid[p00+i], hybrid_grid[p10+i],
-                             hybrid_grid[p01+i], hybrid_grid[p11+i], Q2d, Wd);
+      w[i] = bilinear_interp(hybrid_grid[hg_idx][p00+i], hybrid_grid[hg_idx][p10+i],
+                             hybrid_grid[hg_idx][p01+i], hybrid_grid[hg_idx][p11+i], Q2d, Wd);
   }
 
   // calculate the leptonic tensor elements
@@ -346,107 +278,26 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  double *hybrid_grid;
+  double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
+                           hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  int hg_idx = hybrid_grid_idx(kin->neutrino.pdg, params[3]*10 + params[1]);
+
   double  Q2min,  Q2max,  Q2spc,  Q2bin;
   double   Wmin,   Wmax,   Wspc,   Wbin;
   double cthmin, cthmax, cthspc, cthbin;
 
+  Q2min  =  Q2min_hybrid; Q2max  =  Q2max_hybrid;
+  Q2spc  =  Q2spc_hybrid; Q2bin  =  Q2bin_hybrid;
+  Wmin   =   Wmin_hybrid; Wmax   =   Wmax_hybrid;
+  Wspc   =   Wspc_hybrid; Wbin   =   Wbin_hybrid;
   cthmin = cthmin_hybrid; cthmax = cthmax_hybrid;
   cthspc = cthspc_hybrid; cthbin = cthbin_hybrid;
 
-  if(Q2 <= Q2max_2_hybrid && W <= Wmax_2_hybrid)
+  if(Q2 < Q2max_2_hybrid) // switch to the denser mesh
   {
+    hg_idx += 3;
     Q2min = Q2min_2_hybrid; Q2max = Q2max_2_hybrid;
     Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
-     Wmin =  Wmin_2_hybrid;  Wmax =  Wmax_2_hybrid;
-     Wspc =  Wspc_2_hybrid;  Wbin =  Wbin_2_hybrid;
-    if(kin->neutrino.pdg > 0)
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_11;
-          break;
-
-        case 21:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_21;
-          break;
-
-        case 22:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_22;
-          break;
-
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-    else
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:  // anu_11 has the tables of nu_21
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_21;
-          break;
-
-        case 12:  // anu_12 has the tables of nu_22
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_22;
-          break;
-
-        case 22:  // anu_22 has the tables of nu_11
-          hybrid_grid = hybrid_grid_dQ2dWdcth_2_11;
-          break;
-
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-  }
-  else
-  {
-    Q2min = Q2min_hybrid; Q2max = Q2max_hybrid;
-    Q2spc = Q2spc_hybrid; Q2bin = Q2bin_hybrid;
-     Wmin =  Wmin_hybrid;  Wmax =  Wmax_hybrid;
-     Wspc =  Wspc_hybrid;  Wbin =  Wbin_hybrid;
-    if(kin->neutrino.pdg > 0)
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_11;
-          break;
-
-        case 21:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_21;
-          break;
-
-        case 22:
-          hybrid_grid = hybrid_grid_dQ2dWdcth_22;
-          break;
-
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
-    else
-    {
-      switch (params[3]*10 + params[1])
-      {
-        case 11:  // anu_11 has the tables of nu_21
-          hybrid_grid = hybrid_grid_dQ2dWdcth_21;
-          break;
-
-        case 12:  // anu_12 has the tables of nu_22
-          hybrid_grid = hybrid_grid_dQ2dWdcth_22;
-          break;
-
-        case 22:  // anu_22 has the tables of nu_11
-          hybrid_grid = hybrid_grid_dQ2dWdcth_11;
-          break;
-
-        default:
-          cerr << "[WARNING]: no hybrid inclusive grid!\n";
-      }
-    }
   }
 
   // find proper angle costh_pi^ast
@@ -513,10 +364,10 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
 
     // interpolate
     for( int i = 0; i < 5; i++ )
-      w[i] = trilinear_interp(hybrid_grid[p000+i], hybrid_grid[p100+i],
-                              hybrid_grid[p010+i], hybrid_grid[p110+i],
-                              hybrid_grid[p001+i], hybrid_grid[p101+i],
-                              hybrid_grid[p011+i], hybrid_grid[p111+i], Q2d, Wd, cthd);
+      w[i] = trilinear_interp(hybrid_grid[hg_idx][p000+i], hybrid_grid[hg_idx][p100+i],
+                              hybrid_grid[hg_idx][p010+i], hybrid_grid[hg_idx][p110+i],
+                              hybrid_grid[hg_idx][p001+i], hybrid_grid[hg_idx][p101+i],
+                              hybrid_grid[hg_idx][p011+i], hybrid_grid[hg_idx][p111+i], Q2d, Wd, cthd);
   }
 
   // calculate the leptonic tensor elements
@@ -1064,4 +915,34 @@ double trilinear_interp(double f000, double f010, double f100, double f110,
 {
   return linear_interp(bilinear_interp(f000, f010, f100, f110, xd, yd),
                        bilinear_interp(f001, f011, f101, f111, xd ,yd), zd);
+}
+
+int hybrid_grid_idx(int neutrino_pdg, int channel)
+{
+  int hg_idx = -1;
+
+  if(neutrino_pdg > 0)
+  {
+    switch (channel)
+    {
+      case 11: hg_idx = 0; break;
+      case 22: hg_idx = 1; break;
+      case 21: hg_idx = 2; break;
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
+  }
+  else
+  {
+    switch (channel)
+    {
+      case 11: hg_idx = 2; break; // anu_11 has the tables of nu_21
+      case 12: hg_idx = 1; break; // anu_12 has the tables of nu_22
+      case 22: hg_idx = 0; break; // anu_22 has the tables of nu_11
+      default:
+        cerr << "[WARNING]: no hybrid inclusive grid!\n";
+    }
+  }
+
+  return hg_idx;
 }

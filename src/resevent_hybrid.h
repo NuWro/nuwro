@@ -15,13 +15,9 @@ const double  Q2min_2_hybrid=0.001*GeV2;
 const double  Q2spc_2_hybrid=0.010*GeV2;
 const int     Q2bin_2_hybrid=(Q2max_2_hybrid-Q2min_2_hybrid)/Q2spc_2_hybrid+1;
 const double   Wmax_hybrid  =1500*MeV;
-const double   Wmin_hybrid  =1075*MeV;
+const double   Wmin_hybrid  =1080*MeV;
 const double   Wspc_hybrid  =   5*MeV;
 const int      Wbin_hybrid  =(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;
-const double   Wmax_2_hybrid=1100*MeV;
-const double   Wmin_2_hybrid=1075*MeV;
-const double   Wspc_2_hybrid=   1*MeV;
-const int      Wbin_2_hybrid=(Wmax_2_hybrid-Wmin_2_hybrid)/Wspc_2_hybrid+1;
 const double cthmax_hybrid  =     1;
 const double cthmin_hybrid  =    -1;
 const double cthspc_hybrid  = 2./19;
@@ -85,5 +81,8 @@ double    linear_interp(double f0,   double f1,   double xd);
 double  bilinear_interp(double f00,  double f10,  double f01,  double f11,  double xd, double yd);
 double trilinear_interp(double f000, double f010, double f100, double f110,
                         double f001, double f011, double f101, double f111, double xd, double yd, double zd);
+
+// Helper to choose the grid
+int hybrid_grid_idx(int neutrino_pdg, int channel);
 
 #endif
