@@ -803,6 +803,7 @@ double hybrid_dcmp_rnd_2(double (*ABCDE)[5], double x_min, double x_max, double 
 
   x = (x_max-x_min)/2 + x_min;
 
+  int stp = 0;
   do
   {
     fx = ABCDE[0][0]*(x-x_min) + ABCDE[0][1]*(sin(x)-sin(x_min)) + ABCDE[0][2]*(sin(2*x)-sin(2*x_min))/2
@@ -812,18 +813,21 @@ double hybrid_dcmp_rnd_2(double (*ABCDE)[5], double x_min, double x_max, double 
     double new_x = x - (fx - y)/fxp;
     // if the function is very flat and the next step go out of bounds
     // use one bisective step to get out
-    if( fabs(fxp) < epsilon || new_x < a || new_x > b )
+    if( fabs(fxp) < epsilon || new_x < a || new_x > b || stp > 9 )
     {
       if( fx > y )
         b = x;
       else
         a = x;
       x = (b-a)/2 + a;
+      stp = 0;
     }
     else
     {
       x = new_x;
+      stp++;
     }
+    //assert(stp<20);
   }
   while( fabs(fx - y) > epsilon );
 
