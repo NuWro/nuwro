@@ -605,7 +605,7 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
   double A_value;
   do
   {
-      costh_rnd = frandom();
+      costh_rnd = frandom()*(cthmax-cthmin)+cthmin;
     int    cthf = int((costh_rnd-cthmin)/cthspc); // number of bin in cth (floor)
     double cthd = costh_rnd-cthmin-cthf*cthspc;   // distance from the previous point
            cthd/= cthspc;                         // normalized
