@@ -505,6 +505,9 @@
   <param name="W" type="text" ctype="double" default="1230">
     <description><![CDATA[W]]></description>
   </param>
+  <param name="costh" type="text" ctype="double" default="0">
+    <description><![CDATA[costh]]></description>
+  </param>
 
 </params>
 

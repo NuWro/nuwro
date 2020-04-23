@@ -27,8 +27,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  if (not kin.generate_kinematics(1500)) return;
-  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  //if (not kin.generate_kinematics(1500)) return;
+  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -52,9 +52,9 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   double xsec_pip=0, xsec_pi0=0, xsec_pim=0, xsec_inclusive=0; // cross sections
 
   // choose a random direction in CMS
-  vec kierunek = rand_dir();
+  //vec kierunek = rand_dir();
   // or fix the direction in the Adler frame (tests)
-  //vec kierunek = -hybrid_dir_from_adler(0, 0, kin.neutrino, kin.lepton);
+  vec kierunek = -hybrid_dir_from_adler(p.costh, frandom()*2*Pi, kin.neutrino, kin.lepton);
 
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
@@ -500,7 +500,7 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
     poly_coeffs[i] /= norm;
 
   // Choose a value for costh_rnd
-  costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.001);
+  costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
 
   return costh_rnd;
 }
