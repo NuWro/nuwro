@@ -33,6 +33,7 @@
 #include "nucleusmaker.h"
 #include "Interaction.h"
 #include "rew/rewparams.h"
+#include "lepevent.h"
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
@@ -223,12 +224,17 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6 || dyn>=10)
+	if(dyn<6 || (dyn>=10 && dyn<12))
 	{
-								 // insert target nucleon
+		// insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
 		e->in[0].r=e->in[1].r;
 		assert(e->in[1]*e->in[1]>0);
+	}
+	else if(dyn>=12 && dyn<14)
+	{
+		// insert target electron
+		e->in.push_back(particle(PDG::pdg_e, PDG::mass_e));
 	}
 
 	e->weight=0;
@@ -245,6 +251,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.coh = false;
 	e->flag.mec = false;
 	e->flag.hip = false;
+	e->flag.lep = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -416,7 +423,23 @@ void NuWro::makeevent(event* e, params &p)
 			{
 				hipevent (p, *e, *_nucleus, false); // Sigma
 			}
-			break;		
+			break;
+		case 12:
+			e->flag.lep=e; //->flag.cc=true;
+			if (p.dyn_lep) // Neutrino-lepton
+			{
+				lepevent (p, *e); //, true);
+			}
+			break;	
+		/*			 
+		case 13:
+			e->flag.lep=e->flag.nc=true;
+			if (p.dyn_lep_nc) // lep nc
+			{
+				lepevent (p, *e, false);
+			}
+			break;
+		*/
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{
@@ -481,8 +504,7 @@ void NuWro::finishevent(event* e, params &p)
 	//e->nr=_nucleus->Nr(); 	// 2. powoduje break, segmentation fault
 
 								 // copy particle from out to post if coherent interaction
-	
-	if (!e->flag.coh )
+	if (!e->flag.coh && !e->flag.lep)
 	{
 		kaskada k(p, *e, &input);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true
@@ -594,7 +616,6 @@ void NuWro::test_events(params & p)
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
-			
 				
 			_procesy.add (k, e->weight, bias);
 			e->weight/=_procesy.ratio(k); // make avg(weight)= total cross section

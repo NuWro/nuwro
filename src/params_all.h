@@ -51,6 +51,7 @@ PARAM(bool,dyn_mec_cc,0)\
 PARAM(bool,dyn_mec_nc,0)\
 PARAM(bool,dyn_hip_la,0)\
 PARAM(bool,dyn_hip_si,0)\
+PARAM(bool,dyn_lep,0)\
 PARAM(bool,dyn_e_el,0)\
 PARAM(bool,dyn_e_spp,0)\
 PARAM(double,eel_theta_lab,90)\
@@ -110,4 +111,5 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
+PARAM(bool,nue2nue,0)\
 

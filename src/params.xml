@@ -215,13 +215,16 @@
     <description>Meson exchange charged current</description>
   </param>
   <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
-    <description>Meson exchange charged current</description>
+    <description>Meson exchange neutral current</description>
   </param>
   <param name="dyn_hip_la" type="checkbox" ctype="bool" default="0">
     <description>Lambda hiperon quasielastic production</description>
   </param>
   <param name="dyn_hip_si" type="checkbox" ctype="bool" default="0">
     <description>Sigma hiperon quasielastic production</description>
+  </param>
+  <param name="dyn_lep" type="checkbox" ctype="bool" default="0">
+    <description>Neutrino-lepton</description>
   </param>
   <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
     <description>Elastic electron scattering</description>
@@ -501,6 +504,9 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>  
+  <param name="nue2nue" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[True for the channels without muon or tau lepton]]></description>
+  </param>
 </params>
 
 <!--

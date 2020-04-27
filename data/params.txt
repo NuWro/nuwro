@@ -7,11 +7,11 @@
 
 # The number of events used to calculate the cross sections: 
 
-number_of_test_events = 2000000
+number_of_test_events = 200000
 
 # The number of equally weighted events to be saved:
 
-number_of_events   = 500000
+number_of_events   = 5000
  
 # Control the random seed persistence:
 
@@ -29,7 +29,7 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 
 beam_type = 0       // single flavor beam
 beam_energy = 1000  // monoenergetic (in MeV)
-beam_particle = 14    // neutrino PDG
+beam_particle = 12    // neutrino PDG
 
 # It is convenient to include one of the predefined beam specifications
 # with the @ char
@@ -70,6 +70,7 @@ dyn_coh_cc =1      // Coherent charged current
 dyn_coh_nc =0      // Coherent neutral current
 dyn_mec_cc =1      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
+dyn_lep    =1      // Neutrino-lepton
 
 dyn_e_el   =0      // Elastic electron scattering
 

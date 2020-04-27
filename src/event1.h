@@ -17,6 +17,7 @@ class flags
 		bool coh;        ///< coherent              (coh == dyn/2==3)
 		bool mec;        ///< meson exhange current (mec == dyn/2==4)
 		bool hip;        ///< hiperon production    
+		bool lep;        ///< neutrino-lepton
                          
 		bool nc;         ///< neutral current       (nc == dyn%2)     
 		bool cc;         ///< charged current       (cc == !nc)
@@ -45,12 +46,14 @@ class event:public TObject
 		double norm;            ///< norm of the initial neutrino (for weighted beams; not used) 
 		vec r;                  ///< position of the event inside the detector
 		double density;         ///< density of the detector matter in point of the interaction
-		int dyn;		        ///< dynamics channel of the primary vertex. Possible values are:
-		                        ///< 0,1 - qel  cc/nc - (quasi) elastic
-		                        ///< 2,3 - res  cc/nc - resonant (via delta) with some background
-		                        ///< 4,5 - dis  cc/nc - deep inelastric
-		                        ///< 6,7 - coh  cc/nc - coherent 
-		                        ///< 8,9 - mec  cc/nc - meson exhchange current   
+		int dyn;		        		///< dynamics channel of the primary vertex. Possible values are:
+		                        ///<  0, 1 - qel  cc/nc - (quasi) elastic
+		                        ///<  2, 3 - res  cc/nc - resonant (via delta) with some background
+		                        ///<  4, 5 - dis  cc/nc - deep inelastric
+		                        ///<  6, 7 - coh  cc/nc - coherent 
+		                        ///<  8, 9 - mec  cc/nc - meson exhchange current
+														///< 10,11 - hip  la/si - hiperon production
+														///< 12,13 - lep  cc/nc - neutrino-lepton interaction
 		                        ///< 20 -  eel  nc - elastic electron scattering 
 
 		int nod[14];            ///< number of rescattering interactions of given type:
