@@ -30,10 +30,6 @@ double lepevent(params& p, event& e) //, bool cc)
   int switch_sigma = 1; //1 for now 
   // 1 - single subchannel, 2 - second option in double subchannel, 3 - third option in triple subchannel
 
-double weight_tot = 0; // weight of given channel
-// nue2nue = true for the channels without muon or tau lepton: \nu + e -> \nu + e (e.g., for MINERvA)
-if (p.nue2nue == false)
-{
   int switch_sigma_max = 1;
   if ((kind == 14 && E0nu>threshold_mu) || (kind == 16 && E0nu>threshold_tau) || (kind == -12 && E0nu>threshold_mu && E0nu<=threshold_tau))
     switch_sigma_max = 2;
@@ -41,6 +37,7 @@ if (p.nue2nue == false)
     switch_sigma_max = 3;
 
 
+double weight_tot = 0; // weight of given (multiple) channel
 double weight_[switch_sigma_max];
 for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
 {
@@ -73,7 +70,7 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
     else switch_sigma = 2;
   }
 // ****************************
-}
+//}
 
   kinemat_out(kind, switch_sigma, m_prime, lept_out, neut_out);
   delta_m2 = m_prime*m_prime - me*me;
@@ -93,7 +90,6 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
 	//double cos_theta1 = (E0nu*Enu + me*(Enu-E0nu))/E0nu/Enu;
   double cos_theta1 = (2.0*E0nu*Enu + 2.0*me*(Enu-E0nu) + (m_prime*m_prime-me*me))/2.0/E0nu/Enu;
 	double sin_theta1 = sqrt(1.0 - cos_theta1*cos_theta1);
-
 
 
 // final neutrino energy in target electron frame
@@ -118,12 +114,6 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
   lept_out.set_momentum (P_4);
 
 
-
-  // calculate cross section in proper units (cm^2)
-  if (p.nue2nue == true)
-	  weight_tot = nu_e_el_sigma (E0nu, t_ratio, kind, neut_in.pdg<0, elec_in.mass(), switch_sigma, m_prime, delta_m2 );
-  
-
   e.weight = weight_tot*p.nucleus_p/(p.nucleus_p+p.nucleus_n);
   //p.target_content
 
@@ -136,7 +126,7 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
 }
 
 
-// Returning multiple values Using References
+// Returning multiple values of out-state, Using References
 void kinemat_out(int kind_, int switch_sigma_, double &m_prime_, particle &lept_out_, particle &neut_out_) 
 { 
       // E0nu>=threshold_mu
