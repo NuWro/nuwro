@@ -492,8 +492,8 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
 
   // Fit a polynomial to given number of points in ds(costh)
   double poly_coeffs[costh_pts];
-  //hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
-  hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs);
+  hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
+  //hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs);
 
   // Normalize the coefficients to obtain a probability density
   double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
@@ -501,7 +501,10 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
     poly_coeffs[i] /= norm;
 
   // Choose a value for costh_rnd
-  costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
+  //costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
+  costh_rnd = hybrid_poly_rnd_2(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
+  if( fabs(costh_rnd) > 1 )
+    costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
 
   return costh_rnd;
 }
@@ -727,6 +730,8 @@ void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs)
 
 void hybrid_poly_fit_2(const int N, double* xpts, double* ypts, double* coeffs)
 {
+  assert( N == 3 );
+
   // Calculate the constants in A*x^2 + B*x + C = 0 going through 3 points
   // whose x,y values are in the input arrays
 
@@ -772,24 +777,68 @@ double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, 
   return x;
 }
 
-double hybrid_poly_rnd_2(const int N, double* coeffs, double x_min, double x_max, double epsilon)
+double hybrid_poly_rnd_2(const int N, double* coeffs, double x_min, double x_max)
 {
-  double a = x_min, b = x_max;
-  double x, fx;
-  double y = frandom();
+  assert( N == 3 );
 
-  do
+  double a = coeffs[0] / 3;
+  double b = coeffs[1] / 2;
+  double c = coeffs[2];
+  double d = a - b + c;
+  d -= frandom();
+
+  double sol;
+
+  // Solving a cubic equation using the discriminant approach
+  // We only need real solutions, no complex parts are calculated.
+  // Moreover, the real solution should be between -1 and 1 (this is not garanteed!)
+  b /= a;
+  c /= a;
+  d /= a;
+
+  double disc, q, r, dum1, s, t, term1, r13;
+  q  = (3.0*c - (b*b))/9.0;
+  r  = -(27.0*d) + b*(9.0*c - 2.0*(b*b));
+  r /= 54.0;
+  disc  = q*q*q + r*r;
+  term1 = (b/3.0);
+
+  double x1_real, x2_real, x3_real;
+  if (disc > 0)   // One root real, two are complex
   {
-    x = (b-a)/2 + a;
-    fx = hybrid_poly_dist(N, coeffs, x_min, x);
-    if( fx > y )
-      b = x;
-    else
-      a = x;
+    s = r + sqrt(disc);
+    s = s<0 ? -cbrt(-s) : cbrt(s);
+    t = r - sqrt(disc);
+    t = t<0 ? -cbrt(-t) : cbrt(t);
+    sol = -term1 + s + t;
   }
-  while( fabs(fx - y) > epsilon );
+  // The remaining options are all real
+  else if (disc == 0)  // All roots real, at least two are equal.
+  {
+    r13 = r<0 ? -cbrt(-r) : cbrt(r);
+    x1_real = -term1 + 2.0*r13;
+    if (abs(x1_real) <= 1)
+    {
+      sol = x1_real;
+    }else{
+      sol = -(r13 + term1);
+    }
+  }
+  // Only option left is that all roots are real and unequal (to get here, q < 0)
+  else
+  {
+    q = -q;
+    dum1 = q*q*q;
+    dum1 = acos(r/sqrt(dum1));
+    r13 = 2.0*sqrt(q);
+    x1_real = -term1 + r13*cos(dum1/3.0);
+    x2_real = -term1 + r13*cos((dum1 + 2.0*Pi)/3.0);
+    if (abs(x1_real) <= 1.){sol = x1_real;}
+    else if( abs(x2_real) <= 1){sol = x2_real;}
+    else{sol = -term1 + r13*cos((dum1 + 4.0*Pi)/3.0);}
+  }
 
-  return x;
+  return sol;
 }
 
 double hybrid_dcmp_rnd(double (*ABCDE)[5], double x_min, double x_max, double epsilon)

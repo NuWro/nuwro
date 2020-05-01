@@ -63,8 +63,11 @@ void hybrid_poly_fit_2(const int N, double* xpts, double* ypts, double* coeffs);
 // Cumulative distribuant of a polynomial
 double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x);
 
-// Random variable from plynomial using bisection
-double hybrid_poly_rnd(const int N, double* coeffs, double x_min, double x_max, double epsilon);
+// Random variable from a plynomial
+// - using bisection
+double hybrid_poly_rnd  (const int N, double* coeffs, double x_min, double x_max, double epsilon);
+// - analytical (3 points)
+double hybrid_poly_rnd_2(const int N, double* coeffs, double x_min, double x_max);
 
 // Random variable directly from ABCDE decomposition
 // - using bisection
