@@ -55,7 +55,10 @@ double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], doubl
 double hybrid_sample_phi_3(double Enu, double Q2, double W, int params[4], double costh_rnd);
 
 // Fit polynomial to given points
-void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs);
+// - using Root methods
+void hybrid_poly_fit  (const int N, double* xpts, double* ypts, double* coeffs);
+// - direct calculation (3 points)
+void hybrid_poly_fit_2(const int N, double* xpts, double* ypts, double* coeffs);
 
 // Cumulative distribuant of a polynomial
 double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x);

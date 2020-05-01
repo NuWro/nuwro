@@ -52,9 +52,9 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   double xsec_pip=0, xsec_pi0=0, xsec_pim=0, xsec_inclusive=0; // cross sections
 
   // choose a random direction in CMS
-  //vec kierunek = rand_dir();
+  vec kierunek = rand_dir();
   // or fix the direction in the Adler frame (tests)
-  vec kierunek = -hybrid_dir_from_adler(p.costh, frandom()*2*Pi, kin.neutrino, kin.lepton);
+  //vec kierunek = -hybrid_dir_from_adler(p.costh, frandom()*2*Pi, kin.neutrino, kin.lepton);
 
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
@@ -492,7 +492,8 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
 
   // Fit a polynomial to given number of points in ds(costh)
   double poly_coeffs[costh_pts];
-  hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
+  //hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
+  hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs);
 
   // Normalize the coefficients to obtain a probability density
   double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
@@ -724,6 +725,23 @@ void hybrid_poly_fit(const int N, double* xpts, double* ypts, double* coeffs)
     coeffs[i] = b[i];
 }
 
+void hybrid_poly_fit_2(const int N, double* xpts, double* ypts, double* coeffs)
+{
+  // Calculate the constants in A*x^2 + B*x + C = 0 going through 3 points
+  // whose x,y values are in the input arrays
+
+  double denom = (xpts[0] - xpts[1]) * (xpts[0] - xpts[2]) * (xpts[1] - xpts[2]);
+  coeffs[0]    = (xpts[2] * (ypts[1] - ypts[0])
+                + xpts[1] * (ypts[0] - ypts[2])
+                + xpts[0] * (ypts[2] - ypts[1])) / denom;
+  coeffs[1]    = (xpts[2] * xpts[2] * (ypts[0] - ypts[1])
+                + xpts[1] * xpts[1] * (ypts[2] - ypts[0])
+                + xpts[0] * xpts[0] * (ypts[1] - ypts[2])) / denom;
+  coeffs[2]    = (xpts[1] * xpts[2] * (xpts[1] - xpts[2]) * ypts[0]
+                + xpts[2] * xpts[0] * (xpts[2] - xpts[0]) * ypts[1]
+                + xpts[0] * xpts[1] * (xpts[0] - xpts[1]) * ypts[2]) / denom;
+}
+
 double hybrid_poly_dist(const int N, double* coeffs, double x_min, double x)
 {
   double result = 0.;
@@ -900,8 +918,8 @@ void resevent_dir_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  // double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
-  double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
+  double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  // double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
