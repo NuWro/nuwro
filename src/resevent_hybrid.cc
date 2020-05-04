@@ -27,8 +27,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  //if (not kin.generate_kinematics(1500)) return;
-  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  if (not kin.generate_kinematics(1500)) return;
+  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -479,32 +479,52 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
   double costh_rnd;
 
   // Specify points for the polynomial interpolation
-  const int costh_pts = 3;             // 3, 5, 7, 9, ...
-  double costh[costh_pts];             // Points of interpolation
-  for( int i = 0; i < costh_pts; i++ ) // Fill costh with evenly spaced points
-    costh[i] = -cos( Pi / (costh_pts-1) * i );
+  const int costh_mem = 4;             // maximum number of points: 3, 5, 7, 9, ...
+        int costh_pts = 3;             // actual number of points:  3, 5, 7, 9, ...
+  double costh[costh_mem];             // Points of interpolation
+
+  // 3 points for low W and 4 points for high W
+  if( params[3] == 1 && W > 1300 )
+  {
+    costh_pts = 4;
+  }
+  if( params[3] == 2 )
+  {
+    if( params[1] == 1 && W > 1400 )
+    {
+      costh_pts = 4;
+    }
+    if( params[1] == 2 && W > 1350 )
+    {
+      costh_pts = 4;
+    }
+  }
+
+  for( int i = 0; i < costh_pts; i++ )           // Fill costh with evenly spaced points
+    costh[i] = -0.75 + i * 1.5/(costh_pts-1);    // from -0.75 to 0.75
+    //costh[i] = -cos( Pi / (costh_pts-1) * i ); // from -1 to 1
 
   // Get the A function, \propto dsdQ2dWdcosth
-  double ABCDE[costh_pts][5]; double ds[costh_pts];
+  double ABCDE[costh_mem][5]; double ds[costh_mem];
   hybrid_ABCDE(Enu, Q2, W, costh, costh_pts, params, ABCDE);
   for( int i = 0; i < costh_pts; i++ )
     ds[i] = ABCDE[i][0];
 
   // Fit a polynomial to given number of points in ds(costh)
-  double poly_coeffs[costh_pts];
-  hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);
-  //hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs);
+  double poly_coeffs[costh_mem];
+  hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);     // use Root methods
+  //hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs); // analytical
 
   // Normalize the coefficients to obtain a probability density
-  double norm = hybrid_poly_dist(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
+  double norm = hybrid_poly_dist(costh_pts, poly_coeffs, cthmin_hybrid, cthmax_hybrid);
   for( int i = 0; i < costh_pts; i++ )
     poly_coeffs[i] /= norm;
 
   // Choose a value for costh_rnd
-  //costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
-  costh_rnd = hybrid_poly_rnd_2(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1]);
-  if( fabs(costh_rnd) > 1 )
-    costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, costh[0], costh[costh_pts-1], 0.00001);
+  if( costh_pts == 3 ) // analytical
+    costh_rnd = hybrid_poly_rnd_2(costh_pts, poly_coeffs, cthmin_hybrid, cthmax_hybrid);
+  if( costh_pts > 3 || fabs(costh_rnd) > 1 ) // bisection
+    costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, cthmin_hybrid, cthmax_hybrid, 0.00001);
 
   return costh_rnd;
 }

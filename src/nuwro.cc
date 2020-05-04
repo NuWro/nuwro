@@ -463,7 +463,7 @@ void NuWro::makeevent(event* e, params &p)
 
 void NuWro::finishevent(event* e, params &p)
 {
-  // Resample invariant variables not used for event acceptance
+  // Resample independent variables not used for event acceptance
   if( e->flag.res && e->flag.cc )
   {
     if( p.res_kind == 2 )
