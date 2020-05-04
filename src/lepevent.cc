@@ -7,9 +7,8 @@
 //#include "generatormt.h" // frand
 
 double lepevent(params& p, event& e) //, bool cc)
-{
+{// scattering of neutrino on electron at rest
   e.weight = 0;
-
   particle neut_in = e.in[0]; // e.in[0] is neutrino
   particle elec_in = e.in[1]; // e.in[1] is electron
 
@@ -39,19 +38,19 @@ double lepevent(params& p, event& e) //, bool cc)
 
 double weight_tot = 0; // weight of given (multiple) channel
 double weight_[switch_sigma_max];
-for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
+for (int ii = 1; ii<=switch_sigma_max; ii++) // ii -> switch_sigma
 {
-  kinemat_out(kind, switch_sigma, m_prime, lept_out, neut_out);
+  out_state(kind, ii, neut_in, m_prime, lept_out, neut_out);
   delta_m2 = m_prime*m_prime - me*me;
 
-  if (switch_sigma==1)
+  if (ii==1)
     t_ratio = me/(me+2.0*E0nu) + 2.0*E0nu/(me+2.0*E0nu)*frandom();
-  else if (switch_sigma==2 || switch_sigma==3)
+  else if (ii==2 || ii==3)
     t_ratio = (me/(me+2.0*E0nu) - delta_m2/2.0/(me+2.0*E0nu)/E0nu) 
             + (2.0*E0nu/(me+2.0*E0nu) - delta_m2/me/(me+2.0*E0nu))*frandom();
 
-  weight_[switch_sigma] = nu_e_el_sigma (E0nu, t_ratio, kind, neut_in.pdg<0, elec_in.mass(), switch_sigma, m_prime, delta_m2 );
-  weight_tot = weight_tot + weight_[switch_sigma];
+  weight_[ii] = nu_e_el_sigma (E0nu, t_ratio, kind, neut_in.pdg<0, elec_in.mass(), ii, m_prime, delta_m2 );
+  weight_tot = weight_tot + weight_[ii];
 }
 
 // *** Subchannel chooser *****
@@ -70,9 +69,9 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
     else switch_sigma = 2;
   }
 // ****************************
-//}
 
-  kinemat_out(kind, switch_sigma, m_prime, lept_out, neut_out);
+  out_state(kind, switch_sigma, neut_in, m_prime, lept_out, neut_out);
+  
   delta_m2 = m_prime*m_prime - me*me;
 
   if (switch_sigma==1)
@@ -117,47 +116,47 @@ for (switch_sigma = 1; switch_sigma<=switch_sigma_max; switch_sigma++)
   e.weight = weight_tot*p.nucleus_p/(p.nucleus_p+p.nucleus_n);
   //p.target_content
 
-  // put final particles into "out" vector
-  e.out.push_back(neut_out);
-  // e.out.push_back(elec_out);
-  e.out.push_back(lept_out);
+    e.out.push_back(neut_out);
+    e.out.push_back(lept_out);
 
   return e.weight;
 }
 
 
 // Returning multiple values of out-state, Using References
-void kinemat_out(int kind_, int switch_sigma_, double &m_prime_, particle &lept_out_, particle &neut_out_) 
+void out_state(int kind, int switch_sigma, particle neut_in, double &m_prime_, particle &lept_out_, particle &neut_out_) 
 { 
       // E0nu>=threshold_mu
-  if(kind_ == 14 && switch_sigma_ == 2)
+  if(kind == 14 && switch_sigma == 2)
   {
     m_prime_ = mass_mu;
-    particle lept_out_(PDG::pdg_mu, PDG::mass_mu); // final charged lepton = muon
-    particle neut_out_(PDG::pdg_nu_e, PDG::mass_nu_e); // final neutrino = nu_e
+    lept_out_ = particle(PDG::pdg_mu, PDG::mass_mu); // final charged lepton = muon
+    neut_out_ = particle(PDG::pdg_nu_e, PDG::mass_nu_e); // final neutrino = nu_e
   }
-  else if(kind_ == -12 && switch_sigma_ == 2)
+  else if(kind == -12 && switch_sigma == 2)
   {
     m_prime_ = mass_mu;
-    particle lept_out_(PDG::pdg_mu, PDG::mass_mu); // final charged lepton = muon
-    particle neut_out_(-PDG::pdg_nu_mu, PDG::mass_nu_mu); // final neutrino = anu_mu
+    lept_out_ = particle(PDG::pdg_mu, PDG::mass_mu); // final charged lepton = muon
+    neut_out_ = particle(-PDG::pdg_nu_mu, PDG::mass_nu_mu); // final neutrino = anu_mu
   }
   // E0nu>=threshold_tau
-  else if (kind_ == 16 && switch_sigma_ == 2)
+  else if (kind == 16 && switch_sigma == 2)
   {
     m_prime_ = mass_tau;
-    particle lept_out_(PDG::pdg_tau, PDG::mass_tau); // final charged lepton = tau lepton
-    particle neut_out_(PDG::pdg_nu_e, PDG::mass_nu_e); // final neutrino = nu_e
+    lept_out_ = particle(PDG::pdg_tau, PDG::mass_tau); // final charged lepton = tau lepton
+    neut_out_ = particle(PDG::pdg_nu_e, PDG::mass_nu_e); // final neutrino = nu_e
   }
-  else if (switch_sigma_ == 3)
+  else if (switch_sigma == 3)
   {
     m_prime_ = mass_tau;
-    particle lept_out_(PDG::pdg_tau, PDG::mass_tau); // final charged lepton = tau lepton
-    particle neut_out_(-PDG::pdg_nu_tau, PDG::mass_nu_tau); // final neutrino = anu_tau
+    lept_out_ = particle(PDG::pdg_tau, PDG::mass_tau); // final charged lepton = tau lepton
+    neut_out_ = particle(-PDG::pdg_nu_tau, PDG::mass_nu_tau); // final neutrino = anu_tau
   }
   // no energy threshold
   else 
   {
     m_prime_ = mass_e;
+    lept_out_ = particle(PDG::pdg_e, PDG::mass_e); // final charged lepton = electron
+    neut_out_ = neut_in; // final neutrino = initial neutrino
   } 
 } 
