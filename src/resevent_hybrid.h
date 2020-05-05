@@ -28,17 +28,17 @@ void resevent_hybrid(params& p, event& e, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
 // - in terms of tabularized hadronic responses
-double hybrid_dsdQ2dW_tab(res_kinematics* kin, int params[4], vect final_pion=NULL);
+double hybrid_dsdQ2dW_tab    (res_kinematics* kin, int params[4], vect final_pion, double pion_momentum);
 
 // Three-fold differential cross section in CMS without LAB factors
 // - in terms of tabularized hadronic responses
-double hybrid_dsdQ2dWdcth_tab(res_kinematics* kin, int params[4], vect final_pion);
+double hybrid_dsdQ2dWdcth_tab(res_kinematics* kin, int params[4], vect final_pion, double pion_momentum);
 // - in terms of the ABCDE decomposition
-double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion);
+double hybrid_dsdQ2dWdcth    (res_kinematics* kin, int params[4], vect final_pion, double pion_momentum);
 
 // Four-fold differential cross section in CMS without LAB factors
 //  - in terms of the ABCDE decomposition
-double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion);
+double hybrid_dsdQ2dWdOm     (res_kinematics* kin, int params[4], vect final_pion, double pion_momentum);
 
 // Sample cos_theta_pi^* using ABCDE decomposition
 // - using ABCDE decomposition, fitting a polynomial, inverting using bisection

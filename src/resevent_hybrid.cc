@@ -63,29 +63,32 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // params[3] is the target nucleon, params[1] is the decay channel
 
   // cross section function
-  double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dW_tab;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth_tab;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdcth;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect) = hybrid_dsdQ2dWdOm;
+  double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dW_tab;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdcth_tab;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdcth;
+  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdOm;
+
+  // pion momentum if masses were averaged
+  double pion_momentum;
 
   switch (final_charge) { // calculate the cross section with only the CMS variables
     case  2:  // pi+ + proton (nu_11)
       {params[3] = 1; params[1] = 1;
        final_pion.set_pdg_and_mass( PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
-       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pip = hybrid_xsec(&kin, params, final_pion);}
+       pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pip = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       xsec_inclusive = xsec_pip;
       if ( not (xsec_inclusive > 0) ) return;
       break;
     case  1:  // pi+ + neutron (nu_22) or pi0 + proton (nu_21)
       {params[3] = 2; params[1] = 2;
        final_pion.set_pdg_and_mass( PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pip = hybrid_xsec(&kin, params, final_pion);}
+       pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pip = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       {params[3] = 2; params[1] = 1;
        final_pion2.set_pdg_and_mass( PDG::pdg_pi ); final_nucleon2.set_pdg_and_mass( PDG::pdg_proton );
-       kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
-       xsec_pi0 = hybrid_xsec(&kin, params, final_pion2);}
+       pion_momentum = kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
+       xsec_pi0 = hybrid_xsec(&kin, params, final_pion2, pion_momentum);}
       xsec_inclusive = xsec_pip + xsec_pi0;
       if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pip / xsec_inclusive < frandom() ) // random selection, switch to "2"
@@ -102,12 +105,12 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
     case  0:  // pi0 + neutron (anu_11) or pi- + proton (anu_12)
       {params[3] = 1; params[1] = 1;
        final_pion.set_pdg_and_mass( PDG::pdg_pi ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pi0 = hybrid_xsec(&kin, params, final_pion);}
+       pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pi0 = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       {params[3] = 1; params[1] = 2;
        final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
-       kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
-       xsec_pim = hybrid_xsec(&kin, params, final_pion2);}
+       pion_momentum = kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
+       xsec_pim = hybrid_xsec(&kin, params, final_pion2, pion_momentum);}
       xsec_inclusive = xsec_pi0 + xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
       if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection, switch to "2"
@@ -124,8 +127,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
     case -1:  // pi- + neutron (anu_22)
       {params[3] = 2; params[1] = 2;
        final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
-       kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
-       xsec_pim = hybrid_xsec(&kin, params, final_pion);}
+       pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
+       xsec_pim = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       xsec_inclusive = xsec_pim;
       if ( not (xsec_inclusive > 0) ) return;
       break;
@@ -178,7 +181,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
 }
 
-double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
+double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, double pion_momentum)
 {
   double result = 0.;
   double Q2 =-kin->q*kin->q;
@@ -263,16 +266,16 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion)
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
 
   // correct the pion mass
-  double W2 = W*W; double W4 = W2*W2;
-  double nukmass2 = 881568.315821;
-  double pionmass2 = 19054.761849;
-  result /= sqrt(W4-2*W2*(pionmass2+nukmass2)+(nukmass2-pionmass2)*(nukmass2-pionmass2))/2.0/W;
-  result *= final_pion.length();
+  // double W2 = W*W; double W4 = W2*W2;
+  // double nukmass2 = 881568.315821;
+  // double pionmass2 = 19054.761849;
+  // result /= sqrt(W4-2*W2*(pionmass2+nukmass2)+(nukmass2-pionmass2)*(nukmass2-pionmass2))/2.0/W;
+  // result *= final_pion.length();
 
   return result;
 }
 
-double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pion)
+double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pion, double pion_momentum)
 {
   double result = 0.;
   double Q2 =-kin->q*kin->q;
@@ -301,7 +304,6 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   }
 
   // find proper angle costh_pi^ast
-  double pion_momentum = final_pion.length();
   vect k = kin->neutrino;  //
   vect kp= kin->lepton;    // They are in target rest frame!
   vect q = kin->q;         //
@@ -312,7 +314,7 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   vec Yast = vecprod(k,kp);
   vec Xast = vecprod(Yast,q);
   Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+  double pion_cos_theta = Zast * vec(final_pion) / final_pion.length();
 
   // we build leptonic tensor in CMS with q along z, see JES paper App. A
   vect kl_inc_lab = kin->neutrino.p4();   //
@@ -388,7 +390,7 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   return result;
 }
 
-double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
+double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion, double pion_momentum)
 {
   // placeholders
   double costh[1];
@@ -403,7 +405,6 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
   //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
   // find proper angles costh_pi^ast and phi_pi^ast
-  double pion_momentum = final_pion.length();
   vect k = kin->neutrino;  //
   vect kp= kin->lepton;    // They are in target rest frame!
   vect q = kin->q;         //
@@ -414,7 +415,7 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
   vec Yast = vecprod(k,kp);
   vec Xast = vecprod(Yast,q);
   Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+  double pion_cos_theta = Zast * vec(final_pion) / final_pion.length();
   double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
 
   // fill costh
@@ -430,7 +431,7 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion)
   return result;
 }
 
-double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
+double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, double pion_momentum)
 {
   // placeholders
   double costh[1];
@@ -445,7 +446,6 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
   //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
 
   // find proper angles costh_pi^ast and phi_pi^ast
-  double pion_momentum = final_pion.length();
   vect k = kin->neutrino;  //
   vect kp= kin->lepton;    // They are in target rest frame!
   vect q = kin->q;         //
@@ -456,7 +456,7 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
   vec Yast = vecprod(k,kp);
   vec Xast = vecprod(Yast,q);
   Zast.normalize(); Yast.normalize(); Xast.normalize();
-  double pion_cos_theta = Zast * vec(final_pion) / pion_momentum;
+  double pion_cos_theta = Zast * vec(final_pion) / final_pion.length();
   double pion_phi = atan2(Yast*vec(final_pion),Xast*vec(final_pion));
 
   // fill costh
@@ -465,8 +465,8 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion)
   // get ABCDE
   hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
 
-  result = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
-                       + ABCDE[0][3]*sin(pion_phi) + ABCDE[0][4]*sin(2*pion_phi);
+  result  = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
+                        + ABCDE[0][3]*sin(pion_phi) + ABCDE[0][4]*sin(2*pion_phi);
   result *= pion_momentum / pow(2*Pi,4);
   result *= 4 * Pi; // Phase space!
 

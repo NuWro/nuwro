@@ -137,7 +137,7 @@ double Do_Fivefold_Calc( Reaction_parameters *Reac, Lepton_kin* Lep, Hadron_prim
 // 		decay = 1 or 2 --> n + pi^-
 // 	nucleon = 1 --> proton initial state
 // 		decay = 1 --> n + pi^0
-// 		decay = 2 --> p + pi^+
+// 		decay = 2 --> p + pi^-
 // //    
 // process = 0   EM interaction --> photon induced 1-pion production 
 // 	nucleon = 1 --> proton initial state 
