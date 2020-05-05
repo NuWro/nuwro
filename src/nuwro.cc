@@ -464,14 +464,14 @@ void NuWro::makeevent(event* e, params &p)
 void NuWro::finishevent(event* e, params &p)
 {
   // Resample independent variables not used for event acceptance
-  if( e->flag.res && e->flag.cc )
-  {
-    if( p.res_kind == 2 )
-    {
-      resevent_dir_hybrid(*e);
-      //resevent_phi_hybrid(*e);
-    }
-  }
+  // if( e->flag.res && e->flag.cc )
+  // {
+  //   if( p.res_kind == 2 )
+  //   {
+  //     resevent_dir_hybrid(*e);
+  //     //resevent_phi_hybrid(*e);
+  //   }
+  // }
 
 	for(int i=0;i<1/* e->in.size()*/;i++)
 	{

@@ -108,7 +108,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
        pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
        xsec_pi0 = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       {params[3] = 1; params[1] = 2;
-       final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_proton );
+       final_pion2.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon2.set_pdg_and_mass( PDG::pdg_proton );
        pion_momentum = kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
        xsec_pim = hybrid_xsec(&kin, params, final_pion2, pion_momentum);}
       xsec_inclusive = xsec_pi0 + xsec_pim;
@@ -124,7 +124,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
         params[3] = 1; params[1] = 1;
       }
       break;
-    case -1:  // pi- + neutron (anu_22)
+    case -1:  // pi- + neutron (anu_21)
       {params[3] = 2; params[1] = 2;
        final_pion.set_pdg_and_mass( -PDG::pdg_piP ); final_nucleon.set_pdg_and_mass( PDG::pdg_neutron );
        pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
@@ -263,7 +263,7 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, d
   }
 
   // contract the tensors
-  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
+  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] + 2*params[2]*l[4]*w[4];
 
   // correct the pion mass
   // double W2 = W*W; double W4 = W2*W2;
@@ -382,9 +382,9 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   }
 
   // contract the tensors
-  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4]; // *2Pi
+  result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] + 2*params[2]*l[4]*w[4]; // *2Pi
 
-  result *= pion_momentum / pow(2*Pi,3);                                      // /2Pi
+  result *= pion_momentum / pow(2*Pi,3);                                                // /2Pi
   result *= 2; // Phase space!
 
   return result;
@@ -1141,7 +1141,7 @@ int hybrid_grid_idx(int helicity, int channel)
     {
       case 11: hg_idx = 2; break; // anu_11 has the tables of nu_21
       case 12: hg_idx = 1; break; // anu_12 has the tables of nu_22
-      case 22: hg_idx = 0; break; // anu_22 has the tables of nu_11
+      case 22: hg_idx = 0; break; // anu_21 has the tables of nu_11
       default:
         cerr << "[WARNING]: no hybrid inclusive grid!\n";
     }
