@@ -27,8 +27,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  if (not kin.generate_kinematics(1500)) return;
-  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  //if (not kin.generate_kinematics(1500)) return;
+  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -613,7 +613,7 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
         w[i] = bilinear_interp(hybrid_grid[hg_idx][p00+i], hybrid_grid[hg_idx][p10+i],
                                hybrid_grid[hg_idx][p01+i], hybrid_grid[hg_idx][p11+i], Q2d, Wd);
       // contract the tensors
-      A[cthf] = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] - 2*l[4]*w[4];
+      A[cthf] = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] + 2*params[2]*l[4]*w[4];
     }
   }
 
