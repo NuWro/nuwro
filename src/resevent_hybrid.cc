@@ -27,8 +27,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  //if (not kin.generate_kinematics(1500)) return;
-  if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  if (not kin.generate_kinematics(1500)) return;
+  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -484,21 +484,21 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
   double costh[costh_mem];             // Points of interpolation
 
   // 3 points for low W and 4 points for high W
-  if( params[3] == 1 && W > 1300 )
-  {
-    costh_pts = 4;
-  }
-  if( params[3] == 2 )
-  {
-    if( params[1] == 1 && W > 1400 )
-    {
-      costh_pts = 4;
-    }
-    if( params[1] == 2 && W > 1350 )
-    {
-      costh_pts = 4;
-    }
-  }
+  // if( W > 1300 && ((params[2] == -1 && params[3] == 1) || (params[2] == 1 && params[3] == 2)) )
+  // {
+  //   costh_pts = 4;
+  // }
+  // if( ((params[2] == -1 && params[3] == 2) || (params[2] == 1 && params[3] == 1)) )
+  // {
+  //   if( W > 1350 && params[1] == 1 )
+  //   {
+  //     costh_pts = 4;
+  //   }
+  //   if( W > 1400 && params[1] == 2 )
+  //   {
+  //     costh_pts = 4;
+  //   }
+  // }
 
   for( int i = 0; i < costh_pts; i++ )           // Fill costh with evenly spaced points
     costh[i] = -0.75 + i * 1.5/(costh_pts-1);    // from -0.75 to 0.75
@@ -987,8 +987,8 @@ void resevent_dir_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
-  // double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
+  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
