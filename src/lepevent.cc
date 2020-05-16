@@ -35,6 +35,8 @@ double lepevent(params& p, event& e) //, bool cc)
   else if (kind == -12 && E0nu>threshold_tau)
     switch_sigma_max = 3;
 
+  double rand1 = frandom();
+  double rand2 = frandom();
 
 double weight_tot = 0; // weight of given (multiple) channel
 double weight_[switch_sigma_max];
@@ -44,27 +46,28 @@ for (int ii = 1; ii<=switch_sigma_max; ii++) // ii -> switch_sigma
   delta_m2 = m_prime*m_prime - me*me;
 
   if (ii==1)
-    t_ratio = me/(me+2.0*E0nu) + 2.0*E0nu/(me+2.0*E0nu)*frandom();
+    t_ratio = me/(me+2.0*E0nu) + 2.0*E0nu/(me+2.0*E0nu)*rand1;
   else if (ii==2 || ii==3)
     t_ratio = (me/(me+2.0*E0nu) - delta_m2/2.0/(me+2.0*E0nu)/E0nu) 
-            + (2.0*E0nu/(me+2.0*E0nu) - delta_m2/me/(me+2.0*E0nu))*frandom();
+            + (2.0*E0nu/(me+2.0*E0nu) - delta_m2/me/(me+2.0*E0nu))*rand1;
 
   weight_[ii] = nu_e_el_sigma (E0nu, t_ratio, kind, neut_in.pdg<0, elec_in.mass(), ii, m_prime, delta_m2 );
   weight_tot = weight_tot + weight_[ii];
 }
 
 // *** Subchannel chooser *****
+  double rand_chooser = frandom();
   if (switch_sigma_max == 2)
   {
-    if (frandom() <= weight_[1]/weight_tot) //(weight_[1]+weight_[2]))
+    if (rand_chooser <= weight_[1]/weight_tot) //(weight_[1]+weight_[2]))
       switch_sigma = 1;
     else switch_sigma = 2;
   }
   else if (switch_sigma_max == 3)
   {
-    if (frandom() <= weight_[1]/weight_tot) //(weight_[1]+weight_[2]+weight_[3]))
+    if (rand_chooser <= weight_[1]/weight_tot) //(weight_[1]+weight_[2]+weight_[3]))
       switch_sigma = 1;
-    else if (frandom() > (weight_[1]+weight_[2])/weight_tot) //(weight_[1]+weight_[2]+weight_[3]))
+    else if (rand_chooser > (weight_[1]+weight_[2])/weight_tot)
       switch_sigma = 3;
     else switch_sigma = 2;
   }
@@ -75,14 +78,14 @@ for (int ii = 1; ii<=switch_sigma_max; ii++) // ii -> switch_sigma
   delta_m2 = m_prime*m_prime - me*me;
 
   if (switch_sigma==1)
-    t_ratio = me/(me+2.0*E0nu) + 2.0*E0nu/(me+2.0*E0nu)*frandom();
+    t_ratio = me/(me+2.0*E0nu) + 2.0*E0nu/(me+2.0*E0nu)*rand1;
   else if (switch_sigma==2 || switch_sigma==3)
     t_ratio = (me/(me+2.0*E0nu) - delta_m2/2.0/(me+2.0*E0nu)/E0nu) 
-            + (2.0*E0nu/(me+2.0*E0nu) - delta_m2/me/(me+2.0*E0nu))*frandom();
+            + (2.0*E0nu/(me+2.0*E0nu) - delta_m2/me/(me+2.0*E0nu))*rand1;
 
 
 	double Enu = E0nu*t_ratio;
-  double phi = 2.0*Pi*frandom();
+  double phi = 2.0*Pi*rand2;
   double Ep = E0nu - Enu + me;
 	double p_out = sqrt(Ep*Ep - m_prime*m_prime);
 
