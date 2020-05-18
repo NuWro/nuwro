@@ -16,21 +16,21 @@ class target_mixer;
 class NuWro
 {
 	public:
-		geomy* make_detector(params &p);
-		void makeevent(event* e, params &p);
-		void finishevent(event* e, params &p);
+		geomy* make_detector();
+		void makeevent(event* e);
+		void finishevent(event* e);
 		void raport(double i, double n, const char* text, int precision=1000, int k=-1, bool toFile=false);
 		void init  (int argc, char **argv);
-		void test_events(params &p);
-		void user_events(params &p);
-		void UserAction(params& p);
-		void real_events(params &p);
+		void test_events();
+		void user_events();
+		void UserAction();
+		void real_events();
 		void kaskada_redo(string input, string output);
 		void main (int argc, char **argv);
 		inline int proces() {return _procesy.choose();}
-		void set (params &p);
-		void refresh_target (params &p);
-		void refresh_dyn (params &p);
+		void set (params &par);
+		void refresh_target ();
+		void refresh_dyn ();
 		void pot_report(ostream&);
 		NuWro ();
 		~NuWro();
