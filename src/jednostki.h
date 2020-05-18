@@ -174,7 +174,7 @@ static const double joule = kg*m*m/(s*s);
 
 //static const double     electronvolt = e_SI*joule;
 
-static const double     electronvolt = eV;;
+static const double     electronvolt = eV;
 static const double kiloelectronvolt = 1.e+3*electronvolt;
 static const double megaelectronvolt = 1.e+6*electronvolt; 
 static const double gigaelectronvolt = 1.e+9*electronvolt;
