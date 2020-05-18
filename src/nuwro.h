@@ -3,13 +3,15 @@
 #include "event1.h"
 #include "params.h"
 #include "args.h"
-#include "geomy.h"
-#include "target_mixer.h"
-#include "beam.h"
 #include <ostream>
-#include "nucleus.h"
 #include "chooser.h"
 #include "input_data.h"
+
+// Forward declarations
+class geomy;
+class beam;
+class nucleus;
+class target_mixer;
 
 class NuWro
 {
