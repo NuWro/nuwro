@@ -239,16 +239,5 @@ public:
     std::ofstream out (filename.c_str ());
     list (out);
   }
-
-  void list(vector<string> & list_of_params, vector<string> list_of_types) {
-      list_of_params.resize(0);
-      list_of_types.resize(0);
-#define PARAM(type, name, default_value) \
-      list_of_params.push_back(#name);\
-      list_of_types.push_back(#type);
-      PARAMS_ALL();
-#undef PARAM
-  }
-
 };
 #endif
