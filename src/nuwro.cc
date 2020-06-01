@@ -122,16 +122,12 @@ geomy* NuWro::make_detector()
 
 }
 
-void NuWro::init (int argc, char **argv)
+// Initialize, assuming params & args have been set
+// already
+void NuWro::init()
 {
-	//dismode=false;
 	dismode=true;
 	set_dirs(argv[0]);
-	a.read (argc, argv);
-	p.read (a.input);
-	p.read (a.params, "command line");
-	p.list (cout);
-	p.list (string(a.output)+".par");
 	p1=&p;
 	rew.init(p);
 	_progress.open(a.progress);
@@ -169,6 +165,22 @@ void NuWro::init (int argc, char **argv)
 
 	ff_configure(p);
 	refresh_dyn();	
+
+}
+
+// Initialize from command line args
+void NuWro::init (int argc, char **argv)
+{
+	//dismode=false;
+	a.read (argc, argv);
+	p.read (a.input);
+	p.read (a.params, "command line");
+	p.list (cout);
+	p.list (string(a.output)+".par");
+
+	init();
+
+
 }
 
 void NuWro::makeevent(event* e)

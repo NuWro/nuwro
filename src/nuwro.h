@@ -20,6 +20,7 @@ class NuWro
 		void makeevent(event* e);
 		void finishevent(event* e);
 		void raport(double i, double n, const char* text, int precision=1000, int k=-1, bool toFile=false);
+		void init  ();
 		void init  (int argc, char **argv);
 		void test_events();
 		void user_events();
@@ -34,9 +35,9 @@ class NuWro
 		void pot_report(ostream&);
 		NuWro ();
 		~NuWro();
+		params p;
 
 	private:
-		params p;
 		args a;
 		chooser _procesy;
 		ofstream _progress;
