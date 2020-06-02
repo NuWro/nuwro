@@ -28,6 +28,7 @@ class NuWro
 		void UserAction();
 		void real_events();
 		void kaskada_redo(string input, string output);
+		void set_param_file(const char* fn);
 		void main (int argc, char **argv);
 		inline int proces() {return _procesy.choose();}
 		void set (params &par);

@@ -129,7 +129,6 @@ geomy* NuWro::make_detector()
 void NuWro::init()
 {
 	dismode=true;
-	set_dirs(argv[0]);
 	p1=&p;
 	rew.init(p);
 	_progress.open(a.progress);
@@ -170,16 +169,21 @@ void NuWro::init()
 
 }
 
+void NuWro::set_param_file(const char* fn) {
+    p.read(fn);
+}
+
 // Initialize from command line args
 void NuWro::init (int argc, char **argv)
 {
 	//dismode=false;
 	a.read (argc, argv);
-	p.read (a.input);
+	set_param_file(a.input);
 	p.read (a.params, "command line");
 	p.list (cout);
 	p.list (string(a.output)+".par");
 
+	set_dirs(argv[0]);
 	init();
 
 
