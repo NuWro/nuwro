@@ -13,6 +13,7 @@ class beam;
 class nucleus;
 class target_mixer;
 
+namespace NSNWRO {
 class NuWro
 {
 	public:
@@ -48,6 +49,5 @@ class NuWro
 		bool dismode;
 		input_data input;
 };
-
-extern NuWro nuwro;
+}
 #endif

@@ -1,6 +1,6 @@
 #include "Reweighters.h"
 
-double calcDummy(event & e, params &p, nucleus &t)
+double calcDummy(NSNWRO::event & e, params &p, nucleus &t)
 {	
 	return 1;
 }

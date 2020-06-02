@@ -1,4 +1,5 @@
 #include "mecevent_tem.h"
+using namespace NSNWRO;
 
 void mecevent_tem (params & p, event & e, nucleus & t, bool cc)
 {

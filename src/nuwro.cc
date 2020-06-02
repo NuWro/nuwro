@@ -46,6 +46,8 @@ params *p1=NULL;
 string data_dir;
 #include "nuwro.h"
 
+using namespace NSNWRO;
+
 NuWro::~NuWro()
 {		
 	delete _mixer;

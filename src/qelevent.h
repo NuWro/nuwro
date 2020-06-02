@@ -4,6 +4,7 @@
 #include "event1.h"
 #include "nucleus.h"
 
+using namespace NSNWRO;
 //double qelevent(params &p,event &e,nucleus &t,bool);     
 double qelevent1(params &p,event &e,nucleus &t,bool);     
 

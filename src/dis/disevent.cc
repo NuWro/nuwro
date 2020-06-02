@@ -25,6 +25,7 @@
 #include "pauli.h"
 #include "nucleus.h"
 
+using namespace NSNWRO;
 TPythia6 *pythia22 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);
 

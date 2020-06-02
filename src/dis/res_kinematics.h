@@ -2,6 +2,7 @@
 #define _RES_KINEMATICS_H
 
 #include "event1.h"
+using namespace NSNWRO;
 
 //! store kinematics used by RES
 struct res_kinematics {

@@ -13,7 +13,7 @@
 //#pragma link C++ class part+;
 #pragma link C++ class vector<particle>+;
 //#pragma link C++ class vector<part>+;
-#pragma link C++ class event+;
+#pragma link C++ class NSNWRO::event+;
 #pragma link C++ global GeV;
 #pragma link C++ global GeV2;
 #pragma link C++ global MeV;

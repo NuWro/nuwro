@@ -20,6 +20,8 @@
 
 #include "rpa_2013.h"
 
+using namespace NSNWRO;
+
 //double qelm;
 
 //static double E_b(int choice,ped,

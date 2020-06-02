@@ -7,6 +7,7 @@
 #include "../ff.h"
 #include "../nucleus.h"
 
+using namespace NSNWRO;
 typedef double (*RewCalc)(event & e, params &p, nucleus &t);
 
 double calcDummy(event & e, params &p, nucleus &t);

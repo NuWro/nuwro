@@ -10,6 +10,7 @@
 #include "TFile.h"
 #include "pdg.h"
 #include "generatormt.h"
+using namespace NSNWRO;
 
 bool FileExists(string strFilename) {
   struct stat stFileInfo;

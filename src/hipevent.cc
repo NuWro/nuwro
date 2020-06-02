@@ -15,6 +15,7 @@
 #include "hiperon_sigma.h"
 #define LOCALKF localkf_O
 
+using namespace NSNWRO;
 
 
 double hipevent(params&p, event & e, nucleus &t,bool lambda)

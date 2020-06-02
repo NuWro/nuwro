@@ -16,6 +16,7 @@
 
 // Data file with hadronic tensor elements
 #include "SuSA_MEC.h"
+using namespace NSNWRO;
 
 // Cut in momentum transfer for SuSA model
 const double qmax_SuSA=2*GeV;

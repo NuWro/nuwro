@@ -7,6 +7,7 @@
 #include "hist.h"
 
 using namespace std;
+using namespace NSNWRO;
 
 struct ev1
 {

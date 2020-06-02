@@ -1,6 +1,8 @@
 #include "nuwro.h"
 
-NuWro nuwro;
+using namespace NSNWRO;
+
+NSNWRO::NuWro nuwro;
 
 #include "tests.h"
 int main(int argc, char** argv)

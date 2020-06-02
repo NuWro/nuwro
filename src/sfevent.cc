@@ -10,6 +10,7 @@
 #include "sf/GConstants.h"
 #include "sfevent.h"
 
+using namespace NSNWRO;
 static inline double pow2(double x) { return x * x; }
 
 // main function to generate event using spectral function

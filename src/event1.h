@@ -6,6 +6,7 @@
 #include "TObject.h"
 #include "particle.h"
 #include "params.h"
+namespace NSNWRO {
 
 class flags
 {
@@ -26,9 +27,8 @@ class flags
 		bool res_delta;  ///< true if RES pion comes from Delta
 };
 
-using namespace std;
 
-class event:public TObject
+class event: public TObject
 {
 	public:
 		flags flag;               ///< flags for convenient filtering of the events in root scripts  
@@ -147,7 +147,7 @@ class event:public TObject
 		inline vect particle_max_mom_withincosine (int pdg, bool fsi, double kosinus);
 		inline vect particle_max_mom_withincosine_withinmomentum (int pdg, bool fsi, double kosinus, double threshold_min, double threshold_max);
 		inline double total_hadr_post();
-		ClassDef (event, 1);
+		ClassDef (NSNWRO::event, 1);
 };
 
 /// add particle to a list and set its id to position in the list.
@@ -1155,5 +1155,6 @@ void registration (vector<particle>& list, particle &p)
 	list.push_back(p);
 }
 
+}
 
 #endif
