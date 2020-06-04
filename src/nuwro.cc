@@ -779,7 +779,6 @@ void NuWro::real_events()
 		output=output+".root";
 	TFile *ff = new TFile (output.c_str(), "recreate");
 	TTree *tf = new TTree ("treeout", "Tree of events");
-	delete e;
     tf->Branch ("e", "NSNWRO::event", &e);
 	TH1 * xsections= new TH1D("xsections","xsections",_procesy.size(),0,_procesy.size());
 	for(int i=0;i<_procesy.size();i++)
@@ -804,13 +803,12 @@ void NuWro::real_events()
 				TFile *f1 = new TFile (filename, "recreate");
 				TTree *t1 = new TTree ("treeout", "Tree of events");
 
-				e = new event ();
-				delete e;
+                *e = event();
                 t1->Branch ("e", "NSNWRO::event", &e);
 
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
-					e = new event ();
+                    *e = event();
 					e->dyn = _procesy.dyn(k);
 
 					if(_mixer)
@@ -827,7 +825,6 @@ void NuWro::real_events()
 							//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
 						t1->Fill ();
 					}
-					delete e;
 
 					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
 				}
@@ -842,10 +839,9 @@ void NuWro::real_events()
 					int start = nn-_procesy.desired(k);
 					for (int jj = start; jj < nn; jj++)
 					{
-						e = new event();
+                        *e = event();
 						t1->GetEntry (jj);
 						tf->Fill ();
-						delete e;
 						raport(jj-start+1,nn-start," % events copied...",100,_procesy.dyn(k),bool(a.progress));
 					}
 					cout<<endl;
@@ -867,8 +863,8 @@ void NuWro::real_events()
 		TTree *t[_procesy.size()];
 		int n[_procesy.size()],u[_procesy.size()];
 		int ile=0;
-		e=new event();
 		for (int k = 0; k < _procesy.size(); k++)
+        *e = event();
 			if((u[k]=_procesy.desired(k))>0)
 		{
 			sprintf(filename,"%s.%d.part",a.output,k);
@@ -897,7 +893,6 @@ void NuWro::real_events()
 			u[i]--;
 			raport(nn-ile,nn," % events copied...",100,i,bool(a.progress));
 		}
-		delete e;
 		for (int k = 0; k < _procesy.size(); k++)
 			if(_procesy.desired(k))
 		{
