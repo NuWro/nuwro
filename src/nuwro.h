@@ -27,6 +27,7 @@ class NuWro
 		void user_events();
 		void UserAction();
 		void real_events();
+		void simulate_event(event*e);
 		bool accept(int k, double weight, double bias);
 		void kaskada_redo(string input, string output);
 		void set_param_file(const char* fn);

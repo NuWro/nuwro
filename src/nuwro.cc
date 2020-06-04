@@ -748,9 +748,14 @@ void NuWro::user_events()
 	delete A;
 }
 
-event simulate_event() {
-    event ret;
-    return ret;
+void NuWro::simulate_event(event* e) {
+    int process = proces();
+    e->dyn = process;
+    makeevent(e);
+
+        if(accept(process, e->weight, 1)) {
+            finishevent(e);
+        }
 }
 
 bool NuWro::accept(int k, double weight, double bias) {
