@@ -4,7 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class flags+;
+#pragma link C++ class NSNWRO::flags+;
 #pragma link C++ class vec+;
 #pragma link C++ class vect+;
 #pragma link C++ class params+;
