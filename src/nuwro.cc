@@ -746,6 +746,8 @@ void NuWro::user_events()
 	}	// end of analyser loop
 	A->final_report();
 	delete A;
+}
+
 event simulate_event() {
     event ret;
     return ret;
