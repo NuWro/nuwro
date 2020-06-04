@@ -746,8 +746,14 @@ void NuWro::user_events()
 	}	// end of analyser loop
 	A->final_report();
 	delete A;
+event simulate_event() {
+    event ret;
+    return ret;
 }
 
+bool NuWro::accept(int k, double weight, double bias) {
+    return _procesy.accept(k, weight, bias);
+}
 
 void NuWro::real_events()
 {
