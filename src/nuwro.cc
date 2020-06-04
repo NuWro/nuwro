@@ -594,7 +594,7 @@ void NuWro::test_events()
 			te=new TFile((string("weighted.")+a.output).c_str(),"recreate");						
 			t1 = new TTree ("treeout", "Tree of events");
 			e = new event ();
-			t1->Branch ("e", "event", &e);
+			t1->Branch ("e", "NSNWRO::event", &e);
 			delete e;
 		}
 
@@ -777,8 +777,8 @@ void NuWro::real_events()
 		output=output+".root";
 	TFile *ff = new TFile (output.c_str(), "recreate");
 	TTree *tf = new TTree ("treeout", "Tree of events");
-	tf->Branch ("e", "event", &e);
 	delete e;
+    tf->Branch ("e", "NSNWRO::event", &e);
 	TH1 * xsections= new TH1D("xsections","xsections",_procesy.size(),0,_procesy.size());
 	for(int i=0;i<_procesy.size();i++)
 	{
@@ -803,8 +803,8 @@ void NuWro::real_events()
 				TTree *t1 = new TTree ("treeout", "Tree of events");
 
 				e = new event ();
-				t1->Branch ("e", "event", &e);
 				delete e;
+                t1->Branch ("e", "NSNWRO::event", &e);
 
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
@@ -936,7 +936,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 	TFile *ff= new TFile(output.c_str(),"recreate");
 	TTree *tf = new TTree("treeout","Tree of events");
-	tf->Branch("e","event",&e);
+    tf->Branch("e","NSNWRO::event",&e);
 
 	int nn = ti->GetEntries ();
 	for (int i = 0; i < nn; i++)
