@@ -60,6 +60,8 @@ BIN=bin
 
 all:            $(TRGTS)
 
+lib: $(BIN)/libnuwro.a
+
 $(BIN)/whist: src/whist.o $(EVENT_OBJS) 
 		$(LINK.cc) $^ -o $@
 
@@ -155,6 +157,14 @@ $(BIN)/test_makehist:    src/test_makehist.o src/nd280stats.o
 
 $(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
 		$(LINK.cc) $^ -o $@
+
+$(BIN)/libnuwro.a:   $(addprefix src/,\
+        pauli.o cohevent2.o cohdynamics2.o qelevent1.o hipevent.o e_el_event.o e_el_sigma.o\
+        qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o\
+        nucleus_data.o isotopes.o elements.o rew/PythiaQuiet.o hipevent.o rew/rewparams.o\
+        nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o  main.o) \
+        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(ESPP_OBJS) $(MEC_OBJS)
+	ar rc $@ $^
 
 clean:;         @rm -f *.o *.d src/event1Dict.* src/event1Dict_rdict.pcm core\
 		 src/*.o src/*.d src/*/*.o src/*/*.d  src/gui/moc_*
