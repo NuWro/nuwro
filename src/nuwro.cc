@@ -748,19 +748,26 @@ void NuWro::user_events()
 	delete A;
 }
 
-void NuWro::simulate_event(event* e) {
-    int process = proces();
-    e->dyn = process;
+bool NuWro::simulate_event(event* e, int k) {
+    *e = event();
+    if(k < 0) {
+        k = proces();
+    }
+    e->dyn = _procesy.dyn(k);
     makeevent(e);
 
-        if(accept(process, e->weight, 1)) {
-            finishevent(e);
-        }
+    double bias = 1;
+    if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6) {
+        bias=e->in[0].t;
+    }
+    if(_procesy.accept(k, e->weight, bias)) {
+        finishevent(e);
+        e->weight=_procesy.total();
+        return true;
+    }
+    return false;
 }
 
-bool NuWro::accept(int k, double weight, double bias) {
-    return _procesy.accept(k, weight, bias);
-}
 
 void NuWro::real_events()
 {
@@ -813,23 +820,12 @@ void NuWro::real_events()
 
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
-                    *e = event();
-					e->dyn = _procesy.dyn(k);
-
 					if(_mixer)
 						_mixer->prepare(p);
-					makeevent(e);
-					double bias=1;
-					if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6)
-						bias=e->in[0].t;
-					if (_procesy.accept(k,e->weight,bias))
-					{
-						finishevent(e);
-						e->weight=_procesy.total();
-						//~ if(_detector and _beam->nu_per_POT() != 0)
-							//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
-						t1->Fill ();
-					}
+                    *e = event();
+                    if(simulate_event(e, k)) {
+                        t1->Fill ();
+                    }
 
 					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
 				}
