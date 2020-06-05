@@ -28,7 +28,7 @@ class flags
 };
 
 
-class event: public TObject
+class event:public TObject
 {
 	public:
 		flags flag;               ///< flags for convenient filtering of the events in root scripts  

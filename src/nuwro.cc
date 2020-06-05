@@ -166,7 +166,6 @@ void NuWro::init()
 
 	ff_configure(p);
 	refresh_dyn();	
-
 }
 
 void NuWro::set_param_file(const char* fn) {
@@ -185,8 +184,6 @@ void NuWro::init (int argc, char **argv)
 
 	set_dirs(argv[0]);
 	init();
-
-
 }
 
 void NuWro::makeevent(event* e)
@@ -749,23 +746,23 @@ void NuWro::user_events()
 }
 
 bool NuWro::simulate_event(event* e, int k) {
-    *e = event();
-    if(k < 0) {
-        k = proces();
-    }
-    e->dyn = _procesy.dyn(k);
-    makeevent(e);
+	*e = event();
+	if(k < 0) {
+		k = proces();
+	}
+	e->dyn = _procesy.dyn(k);
+	makeevent(e);
 
-    double bias = 1;
-    if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6) {
-        bias=e->in[0].t;
-    }
-    if(_procesy.accept(k, e->weight, bias)) {
-        finishevent(e);
-        e->weight=_procesy.total();
-        return true;
-    }
-    return false;
+	double bias = 1;
+	if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6) {
+		bias=e->in[0].t;
+	}
+	if(_procesy.accept(k, e->weight, bias)) {
+		finishevent(e);
+		e->weight=_procesy.total();
+		return true;
+	}
+	return false;
 }
 
 
@@ -777,7 +774,7 @@ void NuWro::real_events()
 	
 	/// calculate desired number of events for each dynamics
 	_procesy.calculate_counts(p.number_of_events);
-	{							 /// Write cross sections and counts to screen and file
+    {							 /// Write cross sections and counts to screen and file
 		ofstream f((string(a.output)+".txt").c_str());
 		_procesy.short_report(cout);
 		_procesy.short_report(f);
@@ -815,17 +812,17 @@ void NuWro::real_events()
 				TFile *f1 = new TFile (filename, "recreate");
 				TTree *t1 = new TTree ("treeout", "Tree of events");
 
-                *e = event();
-                t1->Branch ("e", "NSNWRO::event", &e);
+				*e = event();
+				t1->Branch ("e", "NSNWRO::event", &e);
 
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
 					if(_mixer)
 						_mixer->prepare(p);
-                    *e = event();
-                    if(simulate_event(e, k)) {
-                        t1->Fill ();
-                    }
+					*e = event();
+					if(simulate_event(e, k)) {
+						t1->Fill ();
+					}
 
 					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
 				}
@@ -840,7 +837,7 @@ void NuWro::real_events()
 					int start = nn-_procesy.desired(k);
 					for (int jj = start; jj < nn; jj++)
 					{
-                        *e = event();
+						*e = event();
 						t1->GetEntry (jj);
 						tf->Fill ();
 						raport(jj-start+1,nn-start," % events copied...",100,_procesy.dyn(k),bool(a.progress));
@@ -854,7 +851,8 @@ void NuWro::real_events()
 				delete f1;
 				if(p.mixed_order==0)
 					unlink(filename);
-			};
+				}
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	//                    end of the main loop in NPROC
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -864,8 +862,8 @@ void NuWro::real_events()
 		TTree *t[_procesy.size()];
 		int n[_procesy.size()],u[_procesy.size()];
 		int ile=0;
+		*e = event();
 		for (int k = 0; k < _procesy.size(); k++)
-        *e = event();
 			if((u[k]=_procesy.desired(k))>0)
 		{
 			sprintf(filename,"%s.%d.part",a.output,k);
@@ -934,7 +932,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 	TFile *ff= new TFile(output.c_str(),"recreate");
 	TTree *tf = new TTree("treeout","Tree of events");
-    tf->Branch("e","NSNWRO::event",&e);
+	tf->Branch("e","NSNWRO::event",&e);
 
 	int nn = ti->GetEntries ();
 	for (int i = 0; i < nn; i++)
