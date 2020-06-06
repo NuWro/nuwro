@@ -1,6 +1,6 @@
 #include "FormFactors.h"
 #include "params.h"
-extern params *p1;
+extern NSNWRO::params *p1;
 double FA(const double q2) //axial form factor
 { 
 	double MA=p1->qel_cc_axial_mass;

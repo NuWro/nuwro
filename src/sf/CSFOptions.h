@@ -14,7 +14,7 @@ typedef double (*DFormFactorPtr)(const double);
 class CSFOptions
 {
 public:
-	CSFOptions(params &p, bool cc,bool is_proton,bool anty);
+	CSFOptions(NSNWRO::params &p, bool cc,bool is_proton,bool anty);
 	~CSFOptions()
 	{//delete f;
 	}

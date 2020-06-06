@@ -7,7 +7,7 @@
 #pragma link C++ class NSNWRO::flags+;
 #pragma link C++ class vec+;
 #pragma link C++ class vect+;
-#pragma link C++ class params+;
+#pragma link C++ class NSNWRO::params+;
 #pragma link C++ class particle+;
 #pragma link C++ class line+;
 //#pragma link C++ class part+;

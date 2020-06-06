@@ -66,7 +66,7 @@ class chooser
     void do_distrib(); // initialize    
  public:
     chooser():N(0){}
-    void reset(params &p);                     ///< initialize active dynamics
+    void reset(NSNWRO::params &p);                     ///< initialize active dynamics
     int size(){return N;}                      ///< number of chanels
     void add(int i,double x, double bias=1);   ///< add x to i-th channel
     int choose();			                   ///< choose bin number (according to bin weight)
@@ -103,7 +103,7 @@ inline void chooser::do_distrib()
 }
 
 ////////////////////////////////////////////////////////////////////////
-inline void chooser::reset(params &p)
+inline void chooser::reset(NSNWRO::params &p)
 {
     proc.clear();
     if(p.dyn_qel_cc) proc.push_back(Dyn(0,"QELcc"));

@@ -3,6 +3,6 @@
 
 #include "params.h"
 
-void singlepion (params & p);//produce SPP table
+void singlepion (NSNWRO::params & p);//produce SPP table
 #endif
 

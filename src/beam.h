@@ -25,7 +25,7 @@ public:
 
 
 /// create new beam object
-beam * create_beam(params &p,geomy * detector);
+beam * create_beam(NSNWRO::params &p,geomy * detector);
 
 
 #endif	/// __BEAM_H_

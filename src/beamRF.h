@@ -106,7 +106,7 @@ class BeamRF : public beam
 	
 public:
 	
-	BeamRF(params &p,geomy *detector=NULL):
+	BeamRF(NSNWRO::params &p,geomy *detector=NULL):
 		folder(p.beam_folder),
 		first(p.beam_file_first),
 		limit(p.beam_file_limit)

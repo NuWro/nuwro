@@ -48,7 +48,7 @@ double SPP[2][2][2][3][40];
 double sppweight;
 
 void
-singlepion (params & p)		//produce SPP table
+singlepion (NSNWRO::params & p)		//produce SPP table
 {
   double M2 = M12 * M12;
   int ile = p.spp_precision;

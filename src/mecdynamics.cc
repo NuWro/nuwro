@@ -290,7 +290,7 @@ void model_2body (double E, double w, double q, double Bin, particle &meclep, pa
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight (double E, bool nu, nucleus& t, params &p, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, bool fsi, double poten)
+double mecweight (double E, bool nu, nucleus& t, NSNWRO::params &p, particle &meclepton, particle &mecnucleon1, particle &mecnucleon2, bool fsi, double poten)
 {
 	int pdg1=nu ? PDG::pdg_proton:PDG::pdg_neutron;
 	int pdg2=nu ? PDG::pdg_neutron:PDG::pdg_proton;

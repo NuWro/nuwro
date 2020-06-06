@@ -7,6 +7,7 @@
 #include "data_container.h"
 #include "params.h"
 
+using NSNWRO::params;
 
 //! Manager of the input data needed in NuWro.
 /*! This class is resposible for the management of the input data files. It creates proper

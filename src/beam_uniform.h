@@ -21,7 +21,7 @@ protected:
    int pdg;
    double mass;
 public:   
-   beam_uniform(params& p):g(p.beam_energy),dir(p.beam_direction.dir()),pdg(p.beam_particle), mass(PDG::mass(p.beam_particle))
+   beam_uniform(NSNWRO::params& p):g(p.beam_energy),dir(p.beam_direction.dir()),pdg(p.beam_particle), mass(PDG::mass(p.beam_particle))
    {
    }
    /// get next particle form the beam

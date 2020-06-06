@@ -2,7 +2,7 @@
 #include "form_factory_nnff.h"
 #include "ff.h"
 
-extern params p;
+extern NSNWRO::params p;
 
 
 void CSFOptions::set_formFactors(int choice)
@@ -57,7 +57,7 @@ const  inline int fun(int a,int b,int c, int d)
 }
 
 	
-CSFOptions::CSFOptions(params &p, bool cc,bool is_proton,bool anty)
+CSFOptions::CSFOptions(NSNWRO::params &p, bool cc,bool is_proton,bool anty)
                       :m_proton(is_proton),
                        m_switchAntineut(anty)
 {  
