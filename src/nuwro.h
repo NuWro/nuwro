@@ -30,6 +30,10 @@ class NuWro
 		bool simulate_event(event*e, int k=-1);
 		void kaskada_redo(string input, string output);
 		void set_param_file(const char* fn);
+		void set_param_int(string key, int value);
+		void set_param_vec(string key, double x, double y, double z);
+		void set_param_float(string key, double value);
+		void set_param_string(string key, string value);
 		void main (int argc, char **argv);
 		inline int proces() {return _procesy.choose();}
 		void set (params &par);

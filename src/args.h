@@ -17,6 +17,10 @@ class args {
   args(const char* p = "nuwro", const char* i = "params.txt", const char* o = "eventsout.root")
       : program(p), input(i), output(o) {}
 
+  void add_param(string param) {
+        params << param << endl;
+  }
+
   int read(int argc, char** argv) {
     if (argc == 2 and (string(argv[1]) == "-v" or string(argv[1]) == "--version")) {
       cout << VERSION << endl;
@@ -31,7 +35,7 @@ class args {
       else if (string(argv[i]) == "-progress" and argv[i + 1][0] != '-')
         progress = argv[++i];
       else if (string(argv[i]) == "-p" and argv[i + 1][0] != '-')
-        params << argv[++i] << endl;
+        add_param(string(argv[++i]));
       else
         usage();
     }

@@ -124,11 +124,43 @@ geomy* NuWro::make_detector()
 
 }
 
-// Initialize, assuming params & args have been set
-// already
+
+void NuWro::set_param_file(const char* fn) {
+    p.read(fn);
+}
+
+void NuWro::set_param_int(string key, int value) {
+    stringstream param_line;
+    param_line << key <<"="<< value << endl;
+    a.add_param(param_line.str());
+}
+
+void NuWro::set_param_float(string key, double value) {
+    stringstream param_line;
+    param_line << key <<"="<< value << endl;
+    a.add_param(param_line.str());
+}
+
+void NuWro::set_param_string(string key, string value) {
+    stringstream param_line;
+    param_line << key <<"="<< value << endl;
+    a.add_param(param_line.str());
+}
+
+// Don't use the "vec" class here so that the API can stay 'clean'
+void NuWro::set_param_vec(string key, double x, double y, double z) {
+    stringstream param_line;
+    param_line << key <<"="<< x << " "<< y << " "<<z << endl;
+    a.add_param(param_line.str());
+}
+
+// Initialize, assuming params & args have been set already
 void NuWro::init()
 {
 	dismode=true;
+	p.read (a.params, "command line");
+	p.list (cout);
+	p.list (string(a.output)+".par");
 	p1=&p;
 	rew.init(p);
 	_progress.open(a.progress);
@@ -168,19 +200,12 @@ void NuWro::init()
 	refresh_dyn();	
 }
 
-void NuWro::set_param_file(const char* fn) {
-    p.read(fn);
-}
-
 // Initialize from command line args
 void NuWro::init (int argc, char **argv)
 {
 	//dismode=false;
 	a.read (argc, argv);
 	set_param_file(a.input);
-	p.read (a.params, "command line");
-	p.list (cout);
-	p.list (string(a.output)+".par");
 
 	set_dirs(argv[0]);
 	init();
