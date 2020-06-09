@@ -208,10 +208,10 @@ void NuWro::init()
 void NuWro::init (int argc, char **argv)
 {
 	//dismode=false;
+	set_path(argv[0]);
 	a.read (argc, argv);
 	set_param_file(a.input);
 
-	set_path(argv[0]);
 	init();
 }
 
