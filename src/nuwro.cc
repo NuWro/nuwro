@@ -133,26 +133,8 @@ void NuWro::set_path(char* path) {
     set_dirs(path);
 }
 
-void NuWro::set_param_int(string key, int value) {
-    stringstream param_line;
-    param_line << key <<"="<< value << endl;
-    a.add_param(param_line.str());
-}
-
-void NuWro::set_param_float(string key, double value) {
-    stringstream param_line;
-    param_line << key <<"="<< value << endl;
-    a.add_param(param_line.str());
-}
-
-void NuWro::set_param_string(string key, string value) {
-    stringstream param_line;
-    param_line << key <<"="<< value << endl;
-    a.add_param(param_line.str());
-}
-
 // Don't use the "vec" class here so that the API can stay 'clean'
-void NuWro::set_param_vec(string key, double x, double y, double z) {
+void NuWro::set_param(string key, double x, double y, double z) {
     stringstream param_line;
     param_line << key <<"="<< x << " "<< y << " "<<z << endl;
     a.add_param(param_line.str());
@@ -803,7 +785,7 @@ void NuWro::real_events()
 	
 	/// calculate desired number of events for each dynamics
 	_procesy.calculate_counts(p.number_of_events);
-    {							 /// Write cross sections and counts to screen and file
+	{							 /// Write cross sections and counts to screen and file
 		ofstream f((string(a.output)+".txt").c_str());
 		_procesy.short_report(cout);
 		_procesy.short_report(f);
