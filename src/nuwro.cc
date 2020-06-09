@@ -129,6 +129,10 @@ void NuWro::set_param_file(const char* fn) {
     p.read(fn);
 }
 
+void NuWro::set_path(char* path) {
+    set_dirs(path);
+}
+
 void NuWro::set_param_int(string key, int value) {
     stringstream param_line;
     param_line << key <<"="<< value << endl;
@@ -207,7 +211,7 @@ void NuWro::init (int argc, char **argv)
 	a.read (argc, argv);
 	set_param_file(a.input);
 
-	set_dirs(argv[0]);
+	set_path(argv[0]);
 	init();
 }
 
