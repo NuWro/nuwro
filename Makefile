@@ -34,7 +34,7 @@ FC            = gfortran
 
 TRGTS = $(addprefix $(BIN)/,\
         nuwro kaskada myroot glue event1.so nuwro2neut nuwro2nuance nuwro2rootracker\
-        dumpParams reweight_to reweight_along whist ) 
+        dumpParams reweight_to reweight_along whist ) lib
 		# test_beam_rf test_makehist test_nucleus test_beam 
         # fsi niwg ladek_topologies test mb_nce_run ganalysis 
         # )
