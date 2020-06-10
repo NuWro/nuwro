@@ -10,6 +10,7 @@
 #include <stack>
 
 using namespace std;
+using namespace NUWRO;
 
 /// this class implements the target nucleus
 /// it should take into account of the its radius, charge ,

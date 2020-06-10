@@ -1,6 +1,8 @@
 #include "particle.h"
 #define echo(x)
 
+using namespace NUWRO;
+
 /// particle decay;
 /// p4 is totalfourmomentum 
 /// p1, p2 particles to decay into (their masses must be set beforehand)

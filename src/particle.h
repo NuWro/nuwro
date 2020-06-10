@@ -14,6 +14,7 @@ using namespace PDG;
 /// elementary particle on a mass shell is represented as a lorentz fourvector
 /// and a pdg number. the position r-is included for tracting it in the nucleous
 /// ks and orgi are introduced by Jarek for compatibility with the HEP-event structure
+namespace NUWRO {
 class particle : public vect
 {
 
@@ -104,6 +105,8 @@ public:
 	   return out<<"["<<p.pdg<<"/"<<p._mass<<"]"<<vect(p)<<"@"<<p.r/fermi;
 	}
 };// class particle
+}
+using namespace NUWRO;
 
 bool decay(vect v, particle & p1, particle & p2);  /// the total momentum is enough
 bool decay2 (vect k,vect p4, particle & p1, particle & p2,double &coef);
