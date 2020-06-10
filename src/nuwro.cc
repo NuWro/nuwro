@@ -922,6 +922,7 @@ void NuWro::real_events()
 	{   ofstream  potinfo("POTinfo.txt");
 		pot_report(potinfo);
 	}
+	delete e;
 
 	cout << "Output file: \"" << output << "\"" << endl;
 
