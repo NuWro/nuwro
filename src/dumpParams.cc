@@ -4,7 +4,7 @@
 #include "args.h"
 #include "dirs.h"
 
-using NSNWRO::params;
+using NUWRO::params;
 int main(int argc, char** argv){
 	set_dirs(argv[0]);
 	params p;

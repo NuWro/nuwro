@@ -22,7 +22,7 @@
 #include "TBits.h"
 #include "pdg.h"
 #include "generatormt.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 bool FileExists(string strFilename) {
   struct stat stFileInfo;

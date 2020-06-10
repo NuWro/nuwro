@@ -10,7 +10,7 @@
 #include "nucleus.h"
 #include "mecdynamics.h"
 #include "event1.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 //      MEC
 //      Implementation of the TEM

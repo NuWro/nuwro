@@ -7,7 +7,7 @@
 #include "nucleusmaker.h"
 #include "dirs.h"
 #include "input_data.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 int main(int argc,  char** argv)
 {

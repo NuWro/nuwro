@@ -13,7 +13,7 @@ class beam;
 class nucleus;
 class target_mixer;
 
-namespace NSNWRO {
+namespace NUWRO {
 class NuWro
 {
 	public:

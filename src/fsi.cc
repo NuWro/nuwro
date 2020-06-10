@@ -6,7 +6,7 @@
 #include <TFile.h>
 #include <TTree.h>
 
-using namespace NSNWRO;
+using namespace NUWRO;
 
 bool expr_on[nof_expr];
 bool fz_on[nof_fz];

@@ -13,7 +13,7 @@
 void CreateNewHistogram( int dimsizes[5], string hist_out );
 
 
-beam * create_beam(NSNWRO::params &p, geomy *detector)
+beam * create_beam(NUWRO::params &p, geomy *detector)
 {   
 	int pdg = p.beam_particle;
 	if (!(pdg == 12 or pdg == 14 or pdg == 16 or pdg == -12 or pdg == -14 or pdg == -16 or pdg==11))

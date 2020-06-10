@@ -4,5 +4,5 @@
 #include "event1.h"
 
 
-ClassImp(NSNWRO::event);
+ClassImp(NUWRO::event);
 

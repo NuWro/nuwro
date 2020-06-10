@@ -5,7 +5,7 @@
 #include "nucleus.h"
 #include "event1.h"
 
-using namespace NSNWRO;
+using namespace NUWRO;
 
 double e_el_event(params&p, event & e, nucleus &t, bool nc);
 double e_el_event2(params&p, event & e, nucleus &t, bool nc);

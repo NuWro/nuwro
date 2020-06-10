@@ -6,7 +6,7 @@
 #include "TFile.h"
 
 using namespace std;
-using namespace NSNWRO;
+using namespace NUWRO;
 int main (int argc, char* argv[])
 {
 

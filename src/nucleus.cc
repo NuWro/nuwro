@@ -7,7 +7,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 /// Construct nucleus from params given in the input file 
 ///////////////////////////////////////////////////////////////////////////////
-nucleus::nucleus(NSNWRO::params &par):
+nucleus::nucleus(NUWRO::params &par):
 	p   (par.nucleus_p),
 	n   (par.nucleus_n),
 	spectator(NULL),

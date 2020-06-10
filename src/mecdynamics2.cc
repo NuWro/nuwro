@@ -2193,7 +2193,7 @@ void model_3body (nucleus t, double E, double w, double q, double Bin, particle 
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-double mecweight2 (double E, bool nu, bool cc, nucleus& t, NSNWRO::params &p, particle &meclepton, particle &mecnucleon1,
+double mecweight2 (double E, bool nu, bool cc, nucleus& t, NUWRO::params &p, particle &meclepton, particle &mecnucleon1,
 		   particle &mecnucleon2, particle &mecnucleon3, particle &mecnucini1, 
 		   particle &mecnucini2, particle &mecnucini3,
 bool fsi, double poten, bool nowy)

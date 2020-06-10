@@ -5,7 +5,7 @@
 #include "params.h"
 #include "target.h"
 #include "event1.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 ////////////////////////////////////////////////////////////////////////
 void mecevent2(params &p, event &e, target &t, bool prad, bool nowy);

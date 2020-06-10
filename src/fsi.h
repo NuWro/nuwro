@@ -8,7 +8,7 @@
 #include "event1.h"
 
 using namespace std;
-using namespace NSNWRO;
+using namespace NUWRO;
 
 const int nof_expr = 19;
 const int nof_fz = 12;

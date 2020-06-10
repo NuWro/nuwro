@@ -285,7 +285,7 @@ struct RewParams
 				o<<"\t"<<p->name<<"="<<p->val<<"\n";
 	}
 
-	RewParams &init(NSNWRO::params &p)
+	RewParams &init(NUWRO::params &p)
 	{
 		delta_s.set(p.delta_s);		
 		qel_cc_vector_mass.set(p.qel_cc_vector_mass);  // TODO: remove?

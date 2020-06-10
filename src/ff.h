@@ -10,7 +10,7 @@ using namespace std;
 //_______________________________________________________________
 
 /// Form Factor configuration
-void ff_configure(NSNWRO::params& p);
+void ff_configure(NUWRO::params& p);
 
 /// Calculate F1, F2 form factors
 /// usage: list(F1,F2)=f12(q2,  kind);

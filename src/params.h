@@ -101,7 +101,7 @@ write (line a, ostream & s)
 /// the type of the paremeter must be string, vector or
 /// any type with friend operator>>(istream&,type&) operator defined
 /// all the parameters (type, name  are defined here
-namespace NSNWRO {
+namespace NUWRO {
 class params
 {				//public fields
 public:

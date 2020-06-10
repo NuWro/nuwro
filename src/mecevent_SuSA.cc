@@ -1,5 +1,5 @@
 #include "mecevent_SuSA.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 void mecevent_SuSA (params & p, event & e, nucleus & t, bool cc)
 {

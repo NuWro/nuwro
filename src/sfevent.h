@@ -3,7 +3,7 @@
 #include "event1.h"
 #include "nucleus.h"
 #include "params.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 // TODO: can't include sf/CSpectralFunc.h because of double M2 global
 class CSpectralFunc;

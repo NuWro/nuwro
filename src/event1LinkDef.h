@@ -4,16 +4,16 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class NSNWRO::flags+;
+#pragma link C++ class NUWRO::flags+;
 #pragma link C++ class vec+;
 #pragma link C++ class vect+;
-#pragma link C++ class NSNWRO::params+;
+#pragma link C++ class NUWRO::params+;
 #pragma link C++ class particle+;
 #pragma link C++ class line+;
 //#pragma link C++ class part+;
 #pragma link C++ class vector<particle>+;
 //#pragma link C++ class vector<part>+;
-#pragma link C++ class NSNWRO::event+;
+#pragma link C++ class NUWRO::event+;
 #pragma link C++ global GeV;
 #pragma link C++ global GeV2;
 #pragma link C++ global MeV;

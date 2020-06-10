@@ -10,7 +10,7 @@
 #include "nucleus.h"
 #include "mecdynamics2.h"
 #include "event1.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 //      MEC
 //      Implementation of the np-nh

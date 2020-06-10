@@ -16,7 +16,7 @@
 
 // Data file with hadronic tensor elements
 #include "Nieves_MEC.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 // Cut in momentum transfer for Valencia model
 const double qmax_Nieves=1.2*GeV;

@@ -45,7 +45,7 @@ Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/ne
 #include "res_xsec.h"
 #include "singlepion.h"
 #include "vect.h"
-using namespace NSNWRO;
+using namespace NUWRO;
 
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];

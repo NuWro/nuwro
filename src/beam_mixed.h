@@ -19,7 +19,7 @@ protected:
    double w1[10];
    double w2[10];
 public:   
-   beam_mixed(NSNWRO::params& p):n(0),dir(p.beam_direction.dir())
+   beam_mixed(NUWRO::params& p):n(0),dir(p.beam_direction.dir())
    { stringstream s(p.beam_content);
      while (s)
      {

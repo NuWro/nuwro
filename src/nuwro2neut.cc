@@ -10,7 +10,7 @@
 //#include "nucleus.h"
 #include "generatormt.h"
 
-using namespace NSNWRO;
+using namespace NUWRO;
 
 
 

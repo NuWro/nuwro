@@ -6,7 +6,7 @@
 #include "TObject.h"
 #include "particle.h"
 #include "params.h"
-namespace NSNWRO {
+namespace NUWRO {
 
 class flags
 {
@@ -147,7 +147,7 @@ class event:public TObject
 		inline vect particle_max_mom_withincosine (int pdg, bool fsi, double kosinus);
 		inline vect particle_max_mom_withincosine_withinmomentum (int pdg, bool fsi, double kosinus, double threshold_min, double threshold_max);
 		inline double total_hadr_post();
-		ClassDef (NSNWRO::event, 1);
+		ClassDef (NUWRO::event, 1);
 };
 
 /// add particle to a list and set its id to position in the list.

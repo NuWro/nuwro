@@ -20,7 +20,7 @@
 
 #include "rpa_2013.h"
 
-using namespace NSNWRO;
+using namespace NUWRO;
 
 //double qelm;
 
