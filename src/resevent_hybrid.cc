@@ -18,7 +18,8 @@ This function calculates RES events from the Hybrid model
 #include "TH1D.h"
 
 
-void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
+void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
+{
   e.weight = 0;           // if kinematically forbidden
 
   res_kinematics kin(e);  // kinematics variables
@@ -27,8 +28,8 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  if (not kin.generate_kinematics(1500)) return;
-  //if (not kin.generate_kinematics(1500, p.Q2, p.W)) return;
+  if (not kin.generate_kinematics(Wmax_hybrid)) return;
+  //if (not kin.generate_kinematics(p.Q2, p.W)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -54,7 +55,7 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // choose a random direction in CMS
   vec kierunek = rand_dir();
   // or fix the direction in the Adler frame (tests)
-  //vec kierunek = -hybrid_dir_from_adler(p.costh, frandom()*2*Pi, kin.neutrino, kin.lepton);
+  //vec kierunek = -hybrid_dir_from_adler(frandom()*2-1, frandom()*2*Pi-Pi, kin.neutrino, kin.lepton);
 
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
@@ -232,10 +233,6 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, d
   l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
   l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
 
-  // cut for comparisons
-  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
-  //if( W > 1400 ) return 0;
-
   // interpolate the nuclear tensor elements
   double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
 
@@ -264,13 +261,6 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, d
 
   // contract the tensors
   result = l[0]*w[0] + 2*l[1]*w[1] + l[2]*w[2] + 0.5*l[3]*w[3] + 2*params[2]*l[4]*w[4];
-
-  // correct the pion mass
-  // double W2 = W*W; double W4 = W2*W2;
-  // double nukmass2 = 881568.315821;
-  // double pionmass2 = 19054.761849;
-  // result /= sqrt(W4-2*W2*(pionmass2+nukmass2)+(nukmass2-pionmass2)*(nukmass2-pionmass2))/2.0/W;
-  // result *= final_pion.length();
 
   return result;
 }
@@ -342,9 +332,6 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   l[3]+= (2*kl_inc[2]*kl[2] + kl_inc_dot_kl);
   l[4] = (  kl_inc[0]*kl[3] - kl[0]*kl_inc[3]);
 
-  // cut for comparisons
-  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
-
   // interpolate the nuclear tensor elements
   double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
 
@@ -401,9 +388,6 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion, d
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  // cut for comparisons
-  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
-
   // find proper angles costh_pi^ast and phi_pi^ast
   vect k = kin->neutrino;  //
   vect kp= kin->lepton;    // They are in target rest frame!
@@ -442,9 +426,6 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, do
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  // cut for comparisons
-  //if( Q2 > 1.91*GeV2 || W > 1400 ) return 0;
-
   // find proper angles costh_pi^ast and phi_pi^ast
   vect k = kin->neutrino;  //
   vect kp= kin->lepton;    // They are in target rest frame!
@@ -479,26 +460,9 @@ double hybrid_sample_costh(double Enu, double Q2, double W, double m, int params
   double costh_rnd;
 
   // Specify points for the polynomial interpolation
-  const int costh_mem = 4;             // maximum number of points: 3, 5, 7, 9, ...
+  const int costh_mem = 3;             // maximum number of points: 3, 5, 7, 9, ...
         int costh_pts = 3;             // actual number of points:  3, 5, 7, 9, ...
   double costh[costh_mem];             // Points of interpolation
-
-  // 3 points for low W and 4 points for high W
-  // if( W > 1300 && ((params[2] == -1 && params[3] == 1) || (params[2] == 1 && params[3] == 2)) )
-  // {
-  //   costh_pts = 4;
-  // }
-  // if( ((params[2] == -1 && params[3] == 2) || (params[2] == 1 && params[3] == 1)) )
-  // {
-  //   if( W > 1350 && params[1] == 1 )
-  //   {
-  //     costh_pts = 4;
-  //   }
-  //   if( W > 1400 && params[1] == 2 )
-  //   {
-  //     costh_pts = 4;
-  //   }
-  // }
 
   for( int i = 0; i < costh_pts; i++ )           // Fill costh with evenly spaced points
     costh[i] = -0.75 + i * 1.5/(costh_pts-1);    // from -0.75 to 0.75
@@ -558,9 +522,7 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
   }
 
   // we build leptonic tensor in CMS with q along z, see JES paper App. A
-  // vect kl_inc_lab = kin->neutrino.p4(); //
-  // vect kl_lab     = kin->lepton.p4();   //  They are not in LAB, but in target rest frame!
-  vect q_lab  = kl_inc_lab - kl_lab;       //
+  vect q_lab  = kl_inc_lab - kl_lab;       // They are not in LAB, but in target rest frame!
 
   double v = q_lab.length() / (q_lab[0] + res_kinematics::avg_nucleon_mass);
   double g = 1 / sqrt(1 - v*v);

@@ -80,41 +80,16 @@ bool res_kinematics::generate_kinematics(const double &res_dis_cut) {
   return true;
 }
 
-bool res_kinematics::generate_kinematics(const double &res_dis_cut, double _Q2, double _W) {
-  // common expression
-  const double ME2 = 2 * effective_mass * neutrino.E();
-
-  // determine max invariant mass (cannot be smaller than params::res_dis_cut)
-  const double Wmax = min(res_dis_cut, sqrt(effective_mass2 + ME2) - lepton_mass);
-
-  // choose random invariant mass (uniformly from [Wmin, Wmax])
-  //W = Wmin + (Wmax - Wmin) * frandom();
+bool res_kinematics::generate_kinematics(double _Q2, double _W)
+{
+  // fix invariant mass (for tests)
   W = _W;
   W2 = W * W;
 
-  // // TODO: we integrate over z - what is its definition?
-  // const double z = frandom();
-
-  // // common expression
-  // const double W2_reduced = W2 - effective_mass2 - lepton_mass2;
-  // const double Mplus = effective_mass + 2 * neutrino.E();
-
-  // // aux variables
-  // const double A = (effective_mass + neutrino.E()) * W2_reduced + ME2 * neutrino.E();
-  // const double B = neutrino.E() * sqrt(pow2(W2_reduced - ME2) - 4 * lepton_mass2 * effective_mass * Mplus);
-  // const double C = 2 * effective_mass * Mplus;
-
-  // // energy transfer bounds
-  // const double q0_min = max((A - B) / C, lepton_mass);
-  // const double q0_max = min((A + B) / C, neutrino.E() - lepton_mass);
-
-  // get random energy transfer
-  //q.t = q0_min + (q0_max - q0_min) * z * z;  // enhance low energy transfers are preferred
-  // or fix Q2 (tests), remember to change the jacobian
+  // fix Q2 (for tests)
   q.t = (W2 - effective_mass2 + _Q2)/2/effective_mass;
 
   // calculate jacobian
-  //jacobian = (q0_max - q0_min) * (Wmax - Wmin) * 2 * z;  // but compesated by this jakobian
   jacobian = 1. / 2 / res_kinematics::avg_nucleon_mass;
 
   // temp kinematics variables
