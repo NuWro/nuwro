@@ -46,18 +46,9 @@ void Gamma_WNP11( int nucleon, int process, int decay, int cross, double Qsq, do
   int Vff = 1;
   
   if( Vff == 1 ){
-// // // // Lalakulich 2006   // I changed all signs respect to Lalakulich2006
-//     F1p = -2.3/( DipV * (1.+ QsqGeV/(4.3*MV2)) );
-//     F2p = 0.76/DipV*( 1.- 0.28*log(1.+QsqGeV/1.0) ); // There is a relative sign in this form factor respect to Hernandez08 and Leitner09. It introduces huge differences at backward scattering angles for the lepton (high Q2)
-//     F1n = -F1p;
-//     F2n = -F2p;
-//   
-//     GA0 = 0.51 / ( DipA * (1. + QsqGeV/(3.*MA2)) ) ;
-// // // // // // // // // // // // //   
-    
-// // // Lalakulich 2006   // I changed all signs respect to Lalakulich2006
+// // // Lalakulich 2006   // oppositer signs wrt Lalakulich2006
     F1p = -2.3/( DipV * (1.+ QsqGeV/(4.3*MV2)) );
-    F2p = -0.76/DipV*( 1.- 0.28*log(1.+QsqGeV/1.0) ); // I changed the relative sign in this form factor, see previous comment
+    F2p = -0.76/DipV*( 1.- 0.28*log(1.+QsqGeV/1.0) );
     F1n = -F1p;
     F2n = -F2p;
   
@@ -66,10 +57,8 @@ void Gamma_WNP11( int nucleon, int process, int decay, int cross, double Qsq, do
     
   }
   else if( Vff == 2 ){
-//   double W2 = pow(kResonance[0],2) - pow(kResonance[1],2) - pow(kResonance[2],2) - pow(kResonance[3],2);
    double W = sqrt(s);
-//   if( W2 > 0. ){ W = sqrt( W ); }else{ W = MP11; }
-// // // Hernandez 2008  WARNING : F1V, F2V and therefore F1n, F2n depend on W. However, W is only well define for diract terms (s-channel), for cross terms (u-channels) W2 may be negative and W would be imaginary!! Therefore: don't use this prescription!!
+// // // Hernandez 2008  WARNING : F1V, F2V and therefore F1n, F2n depend on W. However, W is only well define for diract terms (s-channel), for cross terms (u-channels) W2 may be negative and W would be imaginary!! Therefore: don't use this prescription in cross!!
 // 
     F1p = -5.7/(DipV*(1. + QsqGeV/(1.4*MV2)));
     F2p = -0.64/DipV*( 1. - 2.47*log(1.+QsqGeV/1.0) );
@@ -81,7 +70,6 @@ void Gamma_WNP11( int nucleon, int process, int decay, int cross, double Qsq, do
     F2n = F2p - F2V;
   
     GA0 = 0.63 / DipA;
-//     GP0 = xmu/(Qsq + pow(Mpi,2)) * GA0; //MeV^-1
 // // // // // // // // // // // //   
   }
   
@@ -192,23 +180,9 @@ if( process == 1 ){
 GP0 = xmu/(Qsq + pow(Mpi,2)) * GA0; //MeV^-1
     
   
-//   Matrix WNR_V[4];
-//   Matrix WNR_A[4];
-
-//   Matrix QSlash;
-//   QSlash = Q[0]*Gamma[0] - Q[1]*Gamma[1] - Q[2]*Gamma[2] - Q[3]*Gamma[3];
-// 
-// QSlash.M[0][0]=Q[0]       , QSlash.M[0][1]=0.         , QSlash.M[0][2]=-Q[3]        , QSlash.M[0][3]=-Q[1]+I*Q[2],
-// QSlash.M[1][0]=0.         , QSlash.M[1][1]=Q[0]       , QSlash.M[1][2]=-Q[1]-I*Q[2], QSlash.M[1][3]=Q[3],
-// QSlash.M[2][0]=Q[3]       , QSlash.M[2][1]=Q[1]-I*Q[2], QSlash.M[2][2]=-Q[0]       , QSlash.M[2][3]=0.,
-// QSlash.M[3][0]=Q[1]+I*Q[2], QSlash.M[3][1]=-Q[3]      , QSlash.M[3][2]=0.          , QSlash.M[3][3]=-Q[0];  
-
-  
   
 if( process == 1 || process == 2 ){
     for(int i=0; i<4; i++){
-//       WNR_V[i] = F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]);
-//       WNR_A[i] = GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5;
         WNR[i] = ( F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) ) - ( GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5 ) ;
     }
 }
@@ -231,19 +205,6 @@ else{
 
 void S_P11prop( int cross, double W2, double kResonance[], Matrix kresSlash, Matrix &Rprop ){
   
-//   double kResonance[4];
-//   if(cross==0){
-//     for( int i=0; i<4; i++ ){kResonance[i] = sMan[i];} 
-//   }else{
-//     for( int i=0; i<4; i++ ){kResonance[i] = uMan[i];} 
-//   }
-//   
-//   double s = pow(sMan[0],2) - pow(sMan[1],2) - pow(sMan[2],2) - pow(sMan[3],2);
-//   double u = pow(uMan[0],2) - pow(uMan[1],2) - pow(uMan[2],2) - pow(uMan[3],2);
-//   double W = sqrt(s);
-  
-//   double Mpi2 = Mpi*Mpi;
-//   double MN2 = MN*MN;
   double MP112 = MP11*MP11;
   double P11_Width;
   
@@ -264,7 +225,6 @@ void S_P11prop( int cross, double W2, double kResonance[], Matrix kresSlash, Mat
   }
   
 
-//   Rprop = (1./( W2 - MP112 + I*MP11*P11_Width)) * ( kResonance[0]*Gamma[0] - kResonance[1]*Gamma[1] - kResonance[2]*Gamma[2] - kResonance[3]*Gamma[3] + MP11*Id );
   Rprop = (1./( W2 - MP112 + I*MP11*P11_Width)) * ( kresSlash + MP11*Id );      
       
 }
@@ -272,8 +232,6 @@ void S_P11prop( int cross, double W2, double kResonance[], Matrix kresSlash, Mat
 
 void P11P_current( int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double W2, double Q[], double kResonance[], Matrix kpiSlash, Matrix QSlash, Matrix kresSlash, Matrix Op_R[] )
 {
-  
-//   double s = pow(sMan[0],2) - pow(sMan[1],2) - pow(sMan[2],2) - pow(sMan[3],2);
   
 // // // // // // // // ISOSPIN FACTORS // // // // // // // 
 // // // // NOTATION // // // // 
@@ -366,11 +324,6 @@ else if( cross == 1 ){
 icR = icNP;
 
 
-// if( icR == 0 ){
-//   for( int i=0; i<4; i++ ){
-//     Op_R[i] = 0*Id;
-//   }
-// }
 if( icR != 0 ){
 //       // -W N R- vertex      
       Matrix WNR[4];
@@ -489,11 +442,6 @@ else if( cross == 1 ){
 icR = icNP;
 
 
-// if( icR == 0 ){
-//   for( int i=0; i<4; i++ ){
-//     Op_R_cross[i] = 0*Id;
-//   } 
-// }
 if( icR != 0 ){
 //       // -W N R- vertex      
       Matrix WNR_cross[4];

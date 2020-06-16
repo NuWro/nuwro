@@ -1,12 +1,4 @@
 #include "Delta_free.h"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <cstdarg>
-
-// // // for the interpolations // // //
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 
 using namespace std;
@@ -20,20 +12,15 @@ using namespace std;
 
 // // Oset and Salcedo medium modification of the delta width
 void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
-// void OSMM( int medmod, const double &s, const double &r, complex<double> &f_OSMM)
 {
     
     f_OSMM = 1.;
-//     cout << "smedmod" << s << endl;
     medmod=0; 
     if( medmod == 2 ){
         
-//         double MN2 = MN*MN;
-//         double Mpi2 = Mpi*Mpi;
         double MDelta2 = MDelta*MDelta;
         
         double W = sqrt(s);
-// 	cout << "Wedmod" << W << endl;
         double EN = ( s - Mpi2 + MN2 )/( 2.*W );
 
         double qcm2 = EN*EN - MN2;
@@ -111,7 +98,6 @@ void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
       
 // //  density profile:
       double rho;
-      //     rho=0.5;
       double Anum = 12.;
       double rho0 = 0.17; //!fm^-3
       double c = 1.07*pow(Anum,1/3.); //!fm
@@ -129,7 +115,6 @@ void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
       double Corr_Width, Corr_Width_Pion;
 	Corr_Width = Pauli_Width + QE + A_2 + A_3;
 	Corr_Width_Pion = Pauli_Width + QE;
-      //     cout << Pauli_Width << "   " << QE << "   " << Corr_Width_Pion << endl;
 
       double Delta_Mass= MDelta;
         // Delta_Mass = MDelta+ 40.*rho_rho0;
@@ -138,14 +123,11 @@ void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
       // rescale decay coupling to pion part of MM Delta width
       // Notice:    fDelta_scaled = fDelta * sqrt( Corr_Width_Pion / Delta_Width ); //This is the fDelta that should enter in the N-pi_Delta vertex. However, to avoid modify that vertex, we define the quantity "scale = fDelta_scaled / fDelta" and multiply by the PROPAGATOR.
       double scale = sqrt( Corr_Width_Pion / Delta_Width );
-      //     cout << scale << " " << qcm << " " << fDelta << endl;
 
       complex<double> Fac_Prop_FF_free = -1./( s - MDelta2 + I*MDelta*Delta_Width );
       
-      //     Prop_FF = scale * (-1.)/ ( s - pow(Delta_Mass,2) + I*Delta_Mass*Corr_Width ) *( kRSlash + MDelta*Id );
       complex<double> Fac_Prop_FF = scale * (-1.)/ ( s - pow(Delta_Mass,2) + I*Delta_Mass*Corr_Width );
 
-//     	cout << "fac prop" << Fac_Prop_FF << endl;  
       f_OSMM = Fac_Prop_FF/Fac_Prop_FF_free ;
         
     } //medmod==2
@@ -153,8 +135,6 @@ void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
 }
 
 void Delta_ff(double s, double u, double &Deltaff){
-// void Delta_ff(const double &s, const double &u, double &Deltaff){
-    
   double cut_off = 800.;
   double Lam_piND = cut_off; 
   
@@ -179,28 +159,16 @@ void Delta_ff(double s, double u, double &Deltaff){
 
 
 void Gamma_WNDelta(int cross, int process,  double Qsq, double s, double Q[], double kResonance[], double ki[], Matrix WNDelta[][4] )
-// void Gamma_WNDelta(int cross, int process, const double &w, const double &q, const double &s, double Q[], double kResonance[], double ki[], Matrix WNDelta[][4] )
 {
-
-  
-
-// double MN2 = MN*MN;
-// cout << Q[0] << endl;
-
-// define the squared momentum transfer and the invariant hadronic mass
-// double Qsq = pow( q, 2 ) - pow( w, 2 );
 
 double Wrec2 = s;
 
-// cout << Wrec2 << endl;
-  
 // // // // PHASES (arXiv:1510.06266v2 [hep-ph] 23 Dec 2015)// // // //
 complex<double> PhiV, PhiA;
   PhiV = 1., PhiA = 1.;
 
 int Phases = 1; //Phases == 1 to include phases (and, partially, recover unitarity)
-
-if(Phases == 1 /*&& cross != 1*/){ //COMMENTED HERE !
+if(Phases == 1 ){ 
 
   double WGeV = sqrt(Wrec2)/1000;    
       
@@ -214,32 +182,21 @@ if(Phases == 1 /*&& cross != 1*/){ //COMMENTED HERE !
   
   double ePhiV = 5*ow*( 8.3787 + (2.7315-25.5185*ow)/(0.05308416+pow(0.62862-5*ow,2)) + 301.925*ow - 985.80*pow(ow,2) + 862.025*pow(ow,3) ) * ( pow(1+0.14163*Q2GeV,-2) + (0.066192 + ow*(-0.34057 + 1.631475*ow))*Q2GeV );
       
-  // PhiV = exp(I*(ePhiV*Pi/180));
   PhiV = cos(ePhiV*Pi/180) + I*sin(ePhiV*Pi/180);
 
   double ePhiA_fitA = 5*ow*(5.2514 + (2.9102-26.5085*ow)/(0.0531901969+pow(0.63033-5*ow,2)) + 266.565*ow - 814.575*pow(ow,2) + 624.05*pow(ow,3) ) * ( pow(1+0.088539*Q2GeV,-2) + (0.026654 + ow*(-1.17305 + 3.66475*ow))*Q2GeV );
 
   // double ePhiA_fitB = 5*ow*(4.9703 + (2.929-26.6295*ow)/(0.0531256401+pow(0.63051-5*ow,2)) + 264.27*ow - 798.525*pow(ow,2) + 598.85*pow(ow,3) ) * ( pow(1+0.10152*Q2GeV,-2) + (0.041484 + ow*(-1.20715 + 3.7545*ow))*Q2GeV );
 
-  // PhiA = exp(I*(ePhiA_fitA*Pi/180));
   PhiA = cos(ePhiA_fitA*Pi/180.) + I*sin(ePhiA_fitA*Pi/180.);
 
 }
 // // // // // // // // // // // // // // // // // // // // // // // //
 
 
-  //cout << "Qsq is " << Qsq << " and W is " << W << endl;
-
-//   double ki[4];
-// 
-//   ki[0] = kResonance[0] - Q[0];
-//   ki[1] = kResonance[1] - Q[1];
-//   ki[2] = kResonance[2] - Q[2];
-//   ki[3] = kResonance[3] - Q[3];
-
   /*  
       Now, we get the form factor values, along Lalakulich (PRD 71, 074003) and Leitner (Dipl. Thesis).  
-      CVC is already assumed, meaning C6_V = 0.   
+      CVC is assumed, meaning C6_V = 0.   
   */
   
 
@@ -289,7 +246,6 @@ else if( process == 2 ){
     C4_V = qw_v*C4_V; 
     C5_V = qw_v*C5_V;
     
-//the axial form factors of WNC are the same as the ones of CC
 }
   
   /*
@@ -301,7 +257,6 @@ else if( process == 2 ){
   Matrix NDelta_Ax[4][4];
 
   Matrix q_slash;       //ATTENTION this quantity is not the same for delta_cross and delta, we pass -Q[] and Q[], respectively.
-//   q_slash = Q[0]*Gamma[0] - Q[1]*Gamma[1] - Q[2]*Gamma[2] - Q[3]*Gamma[3];
     q_slash.M[0][0]=Q[0]       , q_slash.M[0][1]=0.         , q_slash.M[0][2]=-Q[3]        , q_slash.M[0][3]=-Q[1]+I*Q[2],
     q_slash.M[1][0]=0.         , q_slash.M[1][1]=Q[0]       , q_slash.M[1][2]=-Q[1]-I*Q[2], q_slash.M[1][3]=Q[3],
     q_slash.M[2][0]=Q[3]       , q_slash.M[2][1]=Q[1]-I*Q[2], q_slash.M[2][2]=-Q[0]       , q_slash.M[2][3]=0.,
@@ -313,53 +268,27 @@ else if( process == 2 ){
 
   
   double sign;
-//   Matrix block3[4][4];
   double block4[4][4];
 
   complex<double> c3v_mn=C3_V/MN, c4v_mn=C4_V/MN2, c5v_mn=C5_V/MN2;
   
-//   for(int i=0; i<4; i++){
-//     if(i == 0){sign = 1.;}else{sign = -1.;}
-// 
-//       NDelta_Vect[i][i] = (c3v_mn  *(sign*q_slash - Q[i]*Gamma[i])) + (c4v_mn *(sign*q_dot_kD - Q[i]*kResonance[i]) + c5v_mn *(sign*q_dot_ki - Q[i]*ki[i]))*Id;
-// 
-//   }
-// 
-//  
-//   double temp, temp2, temp3;
-//   for(int i=0; i<4; i++){
-//     temp = c3v_mn  *(-Q[i]);
-//     temp2 = c4v_mn *(-Q[i]);
-//     temp3 = c5v_mn *(-Q[i]);
-//     for(int j=0; j<4; j++){
-//        if( j != i ){
-// 	
-// 	NDelta_Vect[i][j] = temp *Gamma[j] + (temp2*kResonance[j] + temp3*ki[j])*Id;
-//         
-//        }
-//     }
-//   }
-
   for(int i=0; i<4; i++){
     if(i == 0){sign = 1.;}else{sign = -1.;}
 
-//       block3[i][i] = C3_V/MN  *(sign*q_slash - Q[i]*Gamma[i]);
       block4[i][i] = 1./MN2 *(sign*q_dot_kD - Q[i]*kResonance[i]);
       
       NDelta_Vect[i][i] = (c3v_mn  *(sign*q_slash - Q[i]*Gamma[i])) + (C4_V*block4[i][i] + c5v_mn *(sign*q_dot_ki - Q[i]*ki[i]))*Id;
   }
 
   
-  complex<double> temp, /*temp2,*/ temp3;
+  complex<double> temp, temp3;
   double temp4;
   for(int i=0; i<4; i++){
     temp = c3v_mn  *(-Q[i]);
-//     temp2 = c4v_mn *(-Q[i]);
     temp3 = c5v_mn *(-Q[i]);
     temp4 = -Q[i]/MN2;
     for(int j=0; j<4; j++){
        if( j != i ){
-// 	block3[i][j] = (C3_V/MN  *(-Q[i])) *Gamma[j];
 	block4[i][j] = temp4*kResonance[j];
 	
 	NDelta_Vect[i][j] = temp *Gamma[j] + (C4_V*block4[i][j] + temp3*ki[j])*Id;
@@ -370,7 +299,7 @@ else if( process == 2 ){
 
     complex<double> c6a_mn;
     if( process==1 || process==2 ){
-        // Assuming C3_A = 0...
+        // C3_A = 0...
         double gmunu;
         for(int i=0; i<4; i++){
             c6a_mn = C6_A/MN2 * Q[i];
@@ -393,7 +322,6 @@ else if( process == 2 ){
                 
         for(int i=0; i<4; i++){
             for(int j=0; j<4; j++){
-//                 WNDelta[i][j] = NDelta_Vect[i][j]*Gamma5;
                 
                 WNDelta[i][j].M[0][0] = NDelta_Vect[i][j].M[0][2],
                 WNDelta[i][j].M[0][1] = NDelta_Vect[i][j].M[0][3],
@@ -423,7 +351,6 @@ else if( process == 2 ){
         for(int i=0; i<4; i++){
             for(int j=0; j<4; j++){
 
-//                WNDelta[i][j] = NDelta_Vect[i][j]*Gamma5;
  		              
                 WNDelta[i][j].M[0][0] = NDelta_Vect[i][j].M[0][2] + NDelta_Ax[i][j].M[0][0],
                 WNDelta[i][j].M[0][1] = NDelta_Vect[i][j].M[0][3] + NDelta_Ax[i][j].M[0][1],
@@ -461,37 +388,19 @@ void S_Delta( int medmod, int cross, double W2, double kResonance[], Matrix kRSl
 // void S_Delta( int medmod, int cross, const double &s, const double &u, double kResonance[], Matrix Delta[][4] )
 {
   
-//   double MN2 = MN*MN;
-//   double Mpi2 = Mpi*Mpi;
   double MDelta2 = MDelta*MDelta;
-
-//   double kResonance[4];
-//   if(cross==0){
-//     for( int i=0; i<4; i++ ){kResonance[i] = sMan[i];} 
-//   }else{
-//     for( int i=0; i<4; i++ ){kResonance[i] = uMan[i];} 
-//   }
-
-//   Matrix kRSlash;
-// //     kRSlash = kResonance[0]*Gamma[0] - kResonance[1]*Gamma[1] - kResonance[2]*Gamma[2] - kResonance[3]*Gamma[3] ;
-// kRSlash.M[0][0]=kResonance[0]               , kRSlash.M[0][1]=0.                     , kRSlash.M[0][2]=-kResonance[3]          , kRSlash.M[0][3]=-kResonance[1]+I*kResonance[2],
-// kRSlash.M[1][0]=0.                          , kRSlash.M[1][1]=kResonance[0]          , kRSlash.M[1][2]=-kResonance[1]-I*kResonance[2], kRSlash.M[1][3]=kResonance[3],
-// kRSlash.M[2][0]=kResonance[3]               , kRSlash.M[2][1]=kResonance[1]-I*kResonance[2], kRSlash.M[2][2]=-kResonance[0]          , kRSlash.M[2][3]=0.,
-// kRSlash.M[3][0]=kResonance[1]+I*kResonance[2], kRSlash.M[3][1]=-kResonance[3]         , kRSlash.M[3][2]=0.                , kRSlash.M[3][3]=-kResonance[0];
 
   complex<double> Fac_Prop_FF;
   Matrix Prop_FF;
   double Delta_Width;
 
-  //   double W = sqrt( pow(kResonance[0],2) - pow(kResonance[1],2) - pow(kResonance[2],2) - pow(kResonance[3],2) );
 
   //   // Definition of the energy-dependent Delta decay width \Gamma(W) "Delta_Width"
 
   if( cross == 1 ){ //the delta-decay width is zero (this is always the case in the Delta-cross pole)
 
-//     Delta_Width = 0.;
     Fac_Prop_FF = -1./( W2 - MDelta2 );
-    //       
+
   }
   if( cross == 0 ){ // we compute the delta-decay width
 
@@ -499,7 +408,6 @@ void S_Delta( int medmod, int cross, double W2, double kResonance[], Matrix kRSl
 
     double EN = ( W2 - Mpi2 + MN2 )/( 2.*W );
 
-//     double qcm2 = EN*EN - MN2;
     double qcm = sqrt(EN*EN - MN2);
 
     // free decay width
@@ -515,20 +423,14 @@ void S_Delta( int medmod, int cross, double W2, double kResonance[], Matrix kRSl
       
   } // //if cross==0
 
-  Prop_FF = (Fac_Prop_FF/3.) *( kRSlash + MDelta*Id ); //The factor 1/3. here is from the Rarita propagator, we move it here for computational reasons
-//   Prop_FF = Fac_Prop_FF *( kRSlash + MDelta*Id ); 
+  Prop_FF = (Fac_Prop_FF/3.) *( kRSlash + MDelta*Id ); //The factor 1/3. here is from the Rarita propagator
 
-  
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //   
   Matrix Rarita[4][4];
 
-//   Rarita[0][0] = (  2./3. - 2./(3.*MDelta2)*pow(kResonance[0],2) ) *Id ; 
-//   Rarita[1][1] = ( -2./3. - 2./(3.*MDelta2)*pow(kResonance[1],2) ) *Id ; 
-//   Rarita[2][2] = ( -2./3. - 2./(3.*MDelta2)*pow(kResonance[2],2) ) *Id ; 
-//   Rarita[3][3] = ( -2./3. - 2./(3.*MDelta2)*pow(kResonance[3],2) ) *Id ; 
-  
   double a0=2. - 2./MDelta2 *pow(kResonance[0],2), a1=-2 - 2./MDelta2 *pow(kResonance[1],2), a2 = -2. - 2./MDelta2 *pow(kResonance[2],2), a3 = -2. - 2./MDelta2 *pow(kResonance[3],2);
 
+Matrix Sym, Asym;
   for(int i=0; i<4; i++){
   
     Rarita[0][0].M[i][i] = a0 ; 
@@ -536,15 +438,13 @@ void S_Delta( int medmod, int cross, double W2, double kResonance[], Matrix kRSl
     Rarita[2][2].M[i][i] = a2 ; 
     Rarita[3][3].M[i][i] = a3 ; 
       
-    for(int j=0; j<4; j++){
-
-      if( j != i ){
-          
-// 	Rarita[i][j] = -(1./3.)*Gamma_munu[i][j] - 2./(3.*MDelta2)*kResonance[i]*kResonance[j]*Id + 1./(3.*MDelta)*( kResonance[i]*Gamma[j] - kResonance[j]*Gamma[i]);
-
-	Rarita[i][j] = mGamma_munu[i][j] - (2./MDelta2*kResonance[i]*kResonance[j])*Id + ( (kResonance[i]/MDelta)*Gamma[j] - (kResonance[j]/MDelta)*Gamma[i]);
+    for(int j=i+1; j<4; j++){
+    
+    Sym = (-2./MDelta2*kResonance[i]*kResonance[j])*Id;
+    Asym= ( (kResonance[i]/MDelta)*Gamma[j] - (kResonance[j]/MDelta)*Gamma[i]);
+	Rarita[i][j] = mGamma_munu[i][j] + Sym + Asym;
+    Rarita[j][i] = mGamma_munu[j][i] + Sym - Asym;
         
-      }
 
     }
   }
@@ -556,29 +456,6 @@ void S_Delta( int medmod, int cross, double W2, double kResonance[], Matrix kRSl
 
     }
   }
-// // // // // // // // // // // // // // // // // 
-
-// // // // // // // // // Another way of doing the same, but we dont win time...
-//   double a0=2. - 2./MDelta2 *pow(kResonance[0],2), a1=-2 - 2./MDelta2 *pow(kResonance[1],2), a2 = -2. - 2./MDelta2 *pow(kResonance[2],2), a3 = -2. - 2./MDelta2 *pow(kResonance[3],2);
-// 
-//     Delta[0][0] = a0*Prop_FF ; 
-//     Delta[1][1] = a1*Prop_FF ; 
-//     Delta[2][2] = a2*Prop_FF ; 
-//     Delta[3][3] = a3*Prop_FF ; 
-// 
-//   for(int i=0; i<4; i++){
-//       
-//     for(int j=0; j<4; j++){
-// 
-//       if( j != i ){
-// 
-// 	Delta[i][j] = Prop_FF * mGamma_munu[i][j] - (2./MDelta2*kResonance[i]*kResonance[j])*Prop_FF + Prop_FF * ( (kResonance[i]/MDelta)*Gamma[j] - (kResonance[j]/MDelta)*Gamma[i]);
-//         
-//       }
-// 
-//     }
-//   }
-// // // // // // // // // // 
 
 }
 
@@ -592,14 +469,8 @@ The vertex used by J. Weda (PhD thesis) is taken.  In view of the consistency
 of this interaction, this seems a good choice.
 ***************************************************************************/
 
-// void Gamma_DeltaNpi( const double &s, const double &fDeltaNpi, double kResonance[], double kpi[], Matrix DeltaNpi[] ){
 void Gamma_DeltaNpi( double s, double fDeltaNpi, double kResonance[], double kpi[], Matrix DeltaNpi[] ){
 
-// 
-//   if(s < 0.){
-//   cout << s << endl;
-//   }
-// if(Pascalutsa==1){  
   int epsilon[4][4][4][4];
      for(int i=0; i<4; i++){
      for(int j=0; j<4; j++){
@@ -630,7 +501,6 @@ void Gamma_DeltaNpi( double s, double fDeltaNpi, double kResonance[], double kpi
 // // //  covariant vertex       
       
     for(int i=0; i<4; i++){
-//       DeltaNpi[i] = 0.*Gamma5;
       for(int j=0; j<4; j++){
 	if(j != i){
 	  for(int k=0; k<4; k++){
@@ -647,42 +517,9 @@ void Gamma_DeltaNpi( double s, double fDeltaNpi, double kResonance[], double kpi
 	}
       }
     }
-//   
-
-// // CONTRAVARIANT vertex 
-
-    for(int i=1; i<4; i++){
-      DeltaNpi[i] = (-1.)*DeltaNpi[i];
-    }
-// // // // // // // 
-
-// }else{
-//   
-// //   DeltaNpi[0] = (fDeltaNpi)/(Mpi*MDelta)*(kpi[1]*kResonance[3]*Gamma[2]*Gamma5 - kpi[1]*kResonance[2]*Gamma[3]*Gamma5 - kpi[2]*kResonance[3]*Gamma[1]*Gamma5 
-// //     + kpi[2]*kResonance[1]*Gamma[3]*Gamma5 + kpi[3]*kResonance[2]*Gamma[1]*Gamma5 - kpi[3]*kResonance[1]*Gamma[2]*Gamma5);
-// // 
-// //   DeltaNpi[1] = (fDeltaNpi)/(Mpi*MDelta)*(kpi[0]*kResonance[3]*Gamma[2]*Gamma5 - kpi[0]*kResonance[2]*Gamma[3]*Gamma5 - kpi[2]*kResonance[3]*Gamma[0]*Gamma5
-// //     + kpi[2]*kResonance[0]*Gamma[3]*Gamma5 + kpi[3]*kResonance[2]*Gamma[0]*Gamma5 - kpi[3]*kResonance[0]*Gamma[2]*Gamma5);
-// // 
-// //   DeltaNpi[2] = (fDeltaNpi)/(Mpi*MDelta)*(-kpi[0]*kResonance[3]*Gamma[1]*Gamma5 + kpi[0]*kResonance[1]*Gamma[3]*Gamma5 + kpi[1]*kResonance[3]*Gamma[0]*Gamma5
-// //     - kpi[1]*kResonance[0]*Gamma[3]*Gamma5 - kpi[3]*kResonance[1]*Gamma[0]*Gamma5 + kpi[3]*kResonance[0]*Gamma[1]*Gamma5);
-// // 
-// //   DeltaNpi[3] = (fDeltaNpi)/(Mpi*MDelta)*(kpi[0]*kResonance[2]*Gamma[1]*Gamma5 - kpi[0]*kResonance[1]*Gamma[2]*Gamma5 - kpi[1]*kResonance[2]*Gamma[0]*Gamma5
-// //     + kpi[1]*kResonance[0]*Gamma[2]*Gamma5 + kpi[2]*kResonance[1]*Gamma[0]*Gamma5 - kpi[2]*kResonance[0]*Gamma[1]*Gamma5);
-//   
-// 
-//   DeltaNpi[0] = ( fDeltaNpi/Mpi )*kpi[0]*Id;
-// 
-//   DeltaNpi[1] = ( fDeltaNpi/Mpi )*kpi[1]*Id;
-// 
-//   DeltaNpi[2] = ( fDeltaNpi/Mpi )*kpi[2]*Id;
-// 
-//   DeltaNpi[3] = ( fDeltaNpi/Mpi )*kpi[3]*Id;
-// }
 
 }
 
-// void DP_current( int medmod, int Pascalutsa, int process, int nucleon, int decay, int Helicity, int cross, const double &w, const double &q, const double &s, const double &u, double Q[], double sMan[], double uMan[], double ki[], double kpi[], Matrix Op_delta[] )
 void DP_current( int medmod, int Pascalutsa, int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double s, double u, double Q[], double kResonance[], double ki[], double kpi[], Matrix kRSlash, Matrix Op_delta[] )
 {
     double W2 = s;
@@ -749,12 +586,6 @@ else if( process == 0 || process == 2 ){
 }
 
 
-// //       Matrix Op_delta[4];
-// if( icD == 0 ){
-//   for( int i=0; i<4; i++ ){
-//     Op_delta[i] = 0*Id;
-//   }  
-// }else{ 
 
 if( icD != 0 ){
 //       // -W N Delta- vertex 
@@ -780,15 +611,6 @@ if( icD != 0 ){
       double fDeltaNpi = icD*fDelta*sqrt(2.);
       Gamma_DeltaNpi( W2, fDeltaNpi, kResonance, kpi, DeltaNpi );
       }
-// // 
-      
-//       for( int i=0; i<4; i++ ){
-// 	for( int k=0; k<4; k++ ){
-// 	  for( int l=0; l<4; l++ ){
-// 	    Op_delta[i] = Op_delta[i] + DeltaNpi[k]*Delta[k][l]*WNDelta[l][i];
-// 	  }
-// 	}
-//       }
 
     Matrix temp;
     for( int k=0; k<4; k++ ){
@@ -807,15 +629,117 @@ if( icD != 0 ){
 }
 
 
+void DP_current_pre( int medmod, int Pascalutsa, int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double s, double u, double Q[], double kResonance[], double ki[], double kpi[], Matrix kRSlash,
+ const Matrix WNDelta[][4],
+ const Matrix PropDelta[][4],
+Matrix Op_delta[] )
+{
+    double W2 = s;
+// // // // NOTATION // // // // 
+// process = 1   CC interaction
+//   HELICITY == -1 --> W^+ induced 1-pion production 
+// 	nucleon = 1 --> proton initial state
+// 		decay = 1 or 2 --> p + pi^+
+// 	nucleon = 2 --> neutron initial state
+// 		decay = 1 --> p + pi^0
+// 		decay = 2 --> n + pi^+
+//   
+//   HELICITY == 1 --> W^- induced 1-pion production 
+// 	nucleon = 2 --> neutron initial state
+// 		decay = 1 or 2 --> n + pi^-
+// 	nucleon = 1 --> proton initial state
+// 		decay = 1 --> n + pi^0
+// 		decay = 2 --> p + pi^-
+// //    
+// process = 0   EM interaction --> photon induced 1-pion production 
+// 	nucleon = 1 --> proton initial state 
+// 		decay = 1 --> p + pi^0
+// 		decay = 2 --> n + pi^+
+// 	nucleon = 2 --> neutron initial state
+// 		decay = 1 --> n + pi^0
+// 		decay = 2 --> p + pi^-
+// // // // // // // // // // //
+  
+// // //  Delta 
+      double icD;
+if( process == 1 ){
+  
+  if(Helicity == -1){ //neutrino
+      if( nucleon == 1 ){ 
+	icD = sqrt(3./2.);
+      }
+      else{ 
+	if( decay == 1 ){ 
+	  icD = -sqrt(1./3.); 
+	}else{ 
+	  icD = sqrt(1./6.); 
+	} 
+      }
+  }
+  else if(Helicity == 1){ //antineutrino
+      if( nucleon == 2 ){ 
+	icD = sqrt(3./2.);
+      }
+      else{ 
+	if( decay == 1 ){ icD = sqrt(1./3.); }else{ icD = sqrt(1./6.); } 
+      }
+  }
+  
+}
+else if( process == 0 || process == 2 ){
+  
+  if( nucleon == 1 ){
+    if( decay == 1 ){ icD = sqrt(1./3.);}else{ icD = -sqrt(1./6.) ;}
+  }
+  else if( nucleon == 2 ){
+    if( decay == 1 ){ icD = sqrt(1./3.);}else{ icD = sqrt(1./6.) ;}
+  }
+  
+}
+
+
+ if( icD == 0 ){
+   for( int i=0; i<4; i++ ){
+     Op_delta[i] = 0*Id;
+   }  
+ }
+
+if( icD != 0 ){
+//       // -Delta pi N- vertex   
+      Matrix DeltaNpi[4];
+      
+      if(Pascalutsa == 0){
+	for( int i=0; i<4; i++ ){ 
+	  DeltaNpi[i] =  (icD* fDelta*sqrt(2.)/Mpi *kpi[i])*Id; 
+	}     
+      }
+      if(Pascalutsa == 1){
+      double fDeltaNpi = icD*fDelta*sqrt(2.);
+      Gamma_DeltaNpi( W2, fDeltaNpi, kResonance, kpi, DeltaNpi );
+      }
+
+    Matrix temp;
+    for( int k=0; k<4; k++ ){
+        for( int l=0; l<4; l++ ){
+            temp = DeltaNpi[k]*PropDelta[k][l];
+            for( int i=0; i<4; i++ ){
+        
+                Op_delta[i] = Op_delta[i] + temp*WNDelta[l][i];
+            
+	  }
+	}
+      }
+    
+      
+  } //icD different than cero
+}
+
 
 void CDP_current( int medmod, int Pascalutsa, int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double s, double u, double minusQ[], double kResonance[], double kN[], double kpi[], Matrix kRSlash, Matrix Op_delta_cross[] )
-// void CDP_current( int medmod, int Pascalutsa, int process, int nucleon, int decay, int Helicity, int cross, const double &w, const double &q, const double &s, const double &u, double minusQ[], double sMan[], double uMan[], double kN[], double kpi[], Matrix Op_delta_cross[] )
 {      
 
     double W2 = u;
     
-//   int Pascalutsa = 1;
-  
 // // Delta crossed contribution
       double icD;
 if( process == 1 ){
@@ -859,11 +783,6 @@ else if( process == 0 || process == 2 ){
 
 
 
-// if(icD == 0){
-//   for( int i=0; i<4; i++ ){
-//     Op_delta_cross[i] = 0.*Id;
-//   } 
-// }else{
 
 if(icD != 0){
 //       // -W N Delta- vertex
@@ -873,7 +792,7 @@ if(icD != 0){
 //       // Delta propagator
       Matrix Delta_cross[4][4];     
       S_Delta( medmod, cross, W2, kResonance, kRSlash, Delta_cross );
-// Comment: Delta_cross[i][j] has been defined in CONTRAVARIANT (upper indices) notation but we need it in covariant (down indices)
+// Delta_cross[i][j] has been defined in CONTRAVARIANT (upper indices) notation but we need it in covariant (down indices)
       for( int i=1; i<4; i++ ){
 	  Delta_cross[0][i] = (-1.)*Delta_cross[0][i];
 	  Delta_cross[i][0] = (-1.)*Delta_cross[i][0];
@@ -885,20 +804,12 @@ if(icD != 0){
 	for( int i=0; i<4; i++ ){ 
 	  DeltaNpi_cross[i] =  ( icD*fDelta*sqrt(2.)/Mpi *kpi[i])*Id; 
 	}    
-      }
-      if(Pascalutsa == 1){
+    }
+   if(Pascalutsa == 1){
         double fDeltaNpi = icD*fDelta*sqrt(2.);
         Gamma_DeltaNpi( W2, fDeltaNpi, kResonance, kpi, DeltaNpi_cross );
       }	
       
-//       Matrix block_delta_c[4][4];
-//       for( int i=0; i<4; i++ ){
-// 	for( int j=0; j<4; j++ ){
-// // 	  block_delta_c[i][j] = Gamma[0] * ConjMatrix( WNDelta_cross[j][i] ) * Gamma[0];  
-// // => Gamma0 * ( {a,b}, {c,d} ) * Gamma0 =  {a,-b},{-c,d}
-// 	}
-//       }
-//       
       Matrix block_delta_c[4][4];
       for( int i=0; i<4; i++ ){
 	for( int j=0; j<4; j++ ){
@@ -917,13 +828,6 @@ if(icD != 0){
 	}
       }
       
-//       for( int i=0; i<4; i++ ){
-// 	for( int k=0; k<4; k++ ){
-// 	  for( int l=0; l<4; l++ ){
-// 	    Op_delta_cross[i] = Op_delta_cross[i] + block_delta_c[i][l]*Delta_cross[l][k]*DeltaNpi_cross[k];
-// 	  }
-// 	}
-//       }  
 
     Matrix temp;
     for( int k=0; k<4; k++ ){

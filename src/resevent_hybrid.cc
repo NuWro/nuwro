@@ -139,10 +139,10 @@ void resevent_hybrid(params &p, event &e, bool cc) {      // free nucleon only!
   // Omega_pi^* was chosen in hadronic CMS
 
   // // Choose cos_theta^* for dsdQ2dW, in Adler frame
-  // double costh_rnd = hybrid_sample_costh(kin.neutrino.E(), -kin.q*kin.q, kin.W, params);
+  // double costh_rnd = hybrid_sample_costh(kin.neutrino.E(), -kin.q*kin.q, kin.W, kin.lepton_mass, params);
 
   // // Choose phi^* for dsdQ2dWdcosth, in Adler frame
-  // double phi_rnd = hybrid_sample_phi(kin.neutrino.E(), -kin.q*kin.q, kin.W, params, costh_rnd);
+  // double phi_rnd = hybrid_sample_phi(kin.neutrino.E(), -kin.q*kin.q, kin.W, kin.lepton_mass, params, costh_rnd);
 
   // // Modify final hadron directions as specified in the Adler frame
   // vect nu  = kin.neutrino; nu.boost(-kin.hadron_speed); 
@@ -422,7 +422,7 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion, d
   costh[0] = pion_cos_theta;
 
   // get ABCDE
-  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, costh, 1, params, ABCDE, ABCDE);
 
   result  = ABCDE[0][0];                 // *2Pi
   result *= pion_momentum / pow(2*Pi,3); // /2Pi
@@ -463,7 +463,7 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, do
   costh[0] = pion_cos_theta;
 
   // get ABCDE
-  hybrid_ABCDE(kin->neutrino.E(), Q2, W, costh, 1, params, ABCDE);
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, costh, 1, params, ABCDE, ABCDE);
 
   result  = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
                         + ABCDE[0][3]*sin(pion_phi) + ABCDE[0][4]*sin(2*pion_phi);
@@ -473,7 +473,7 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, do
   return result;
 }
 
-double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
+double hybrid_sample_costh(double Enu, double Q2, double W, double m, int params[4])
 {
   // Choosing cos_th^* from dsdQ2dWdcosth
   double costh_rnd;
@@ -506,7 +506,7 @@ double hybrid_sample_costh(double Enu, double Q2, double W, int params[4])
 
   // Get the A function, \propto dsdQ2dWdcosth
   double ABCDE[costh_mem][5]; double ds[costh_mem];
-  hybrid_ABCDE(Enu, Q2, W, costh, costh_pts, params, ABCDE);
+  hybrid_ABCDE(Enu, Q2, W, m, costh, costh_pts, params, ABCDE, ABCDE);
   for( int i = 0; i < costh_pts; i++ )
     ds[i] = ABCDE[i][0];
 
@@ -640,7 +640,7 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
   return costh_rnd;
 }
 
-double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double costh_rnd)
+double hybrid_sample_phi(double Enu, double Q2, double W, double m, int params[4], double costh_rnd)
 {
   // Choosing phi^* from dsdQ2dWdOm
   double phi_rnd;
@@ -653,7 +653,7 @@ double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double 
 
   // Get the ABCDE combination, \propto dsdQ2dWdOm
   double ABCDE[1][5]; double ds[phi_pts];
-  hybrid_ABCDE(Enu, Q2, W, &costh_rnd, 1, params, ABCDE);
+  hybrid_ABCDE(Enu, Q2, W, m, &costh_rnd, 1, params, ABCDE, ABCDE);
   for( int i = 0; i < phi_pts; i++ )
     ds[i] = ABCDE[0][0] + ABCDE[0][1]*cos(phi[i]) + ABCDE[0][2]*cos(2*phi[i])
                         + ABCDE[0][3]*sin(phi[i]) + ABCDE[0][4]*sin(2*phi[i]);
@@ -673,14 +673,14 @@ double hybrid_sample_phi(double Enu, double Q2, double W, int params[4], double 
   return phi_rnd;
 }
 
-double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], double costh_rnd)
+double hybrid_sample_phi_2(double Enu, double Q2, double W, double m, int params[4], double costh_rnd)
 {
   // Choosing phi^* from dsdQ2dWdOm
   double phi_rnd;
 
   // Get the ABCDE combination, \propto dsdQ2dWdOm
   double ABCDE[1][5];
-  hybrid_ABCDE(Enu, Q2, W, &costh_rnd, 1, params, ABCDE);
+  hybrid_ABCDE(Enu, Q2, W, m, &costh_rnd, 1, params, ABCDE, ABCDE);
 
   // Integral is
   // A*x + B*sinx + 0.5*C*sin2x - D*cosx - 0.5*E*cos2x
@@ -696,14 +696,14 @@ double hybrid_sample_phi_2(double Enu, double Q2, double W, int params[4], doubl
   return phi_rnd;
 }
 
-double hybrid_sample_phi_3(double Enu, double Q2, double W, int params[4], double costh_rnd)
+double hybrid_sample_phi_3(double Enu, double Q2, double W, double m, int params[4], double costh_rnd)
 {
   // Choosing phi^* from dsdQ2dWdOm
   double phi_rnd;
 
   // Get the ABCDE combination, \propto dsdQ2dWdOm
   double ABCDE[1][5];
-  hybrid_ABCDE(Enu, Q2, W, &costh_rnd, 1, params, ABCDE);
+  hybrid_ABCDE(Enu, Q2, W, m, &costh_rnd, 1, params, ABCDE, ABCDE);
 
   // Integral is
   // A*x + B*sinx + 0.5*C*sin2x - D*cosx - 0.5*E*cos2x
@@ -987,13 +987,13 @@ void resevent_dir_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params);
   double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
-  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
-  //double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
-  double phi_rnd = hybrid_sample_phi_3(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
+  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
+  //double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
+  double phi_rnd = hybrid_sample_phi_3(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
 
   // Modify final hadron directions as specified in the Adler frame
   neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS
@@ -1070,7 +1070,7 @@ void resevent_phi_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), params);
+  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params);
   vec Zast = neutrino - lepton;
   vec Yast = vecprod(neutrino,lepton);
   vec Xast = vecprod(Yast,Zast);
@@ -1078,9 +1078,9 @@ void resevent_phi_hybrid(event& e)
   double costh = Zast * vec(pion) / pion.length();
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
-  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
-  //double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), params, costh_rnd);
-  double phi_rnd = hybrid_sample_phi_3(neutrino.t, -e.q2(), e.W(), params, costh);
+  //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
+  //double phi_rnd = hybrid_sample_phi_2(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
+  double phi_rnd = hybrid_sample_phi_3(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh);
 
   // Modify final hadron directions as specified in the Adler frame
   neutrino.boost (-hadron_speed); // Neutrino and lepton have to be boosted to CMS

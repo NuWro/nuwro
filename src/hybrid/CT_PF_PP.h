@@ -2,7 +2,7 @@
 #define CT_PF_PP_H
 
 
-void formfactor(double Qsq, double Q[], double kpi[], double t, double &F1V, double &F2V, double &F1p, double &F1n, double &F2p, double &F2n, double &F_rho)
+void formfactor(double Qsq, double t, double &F1V, double &F2V, double &F1p, double &F1n, double &F2p, double &F2n, double &F_rho)
 {
     
   double QsqGeV, xmu, tau;
@@ -10,8 +10,6 @@ void formfactor(double Qsq, double Q[], double kpi[], double t, double &F1V, dou
   xmu = 2.*MN;
   tau = Qsq/(xmu*xmu);
     
-//   double W = sqrt( pow(kResonance[0],2) - pow(kResonance[1],2) - pow(kResonance[2],2) - pow(kResonance[3],2) );
-  
   double DipV, DipA, MA2, MV2;
   MA2 = 1.1025; //MA=1.05 GeV
   MV2 = 0.7100; //MV=0.84 GeV
@@ -59,8 +57,6 @@ void formfactor(double Qsq, double Q[], double kpi[], double t, double &F1V, dou
 // // // // // // // //     
     
     double mrho = 775.8; // MeV    
-//     double Q_kpi_sq;
-//     Q_kpi_sq = pow(Q[0]-kpi[0],2) - pow(Q[1]-kpi[1],2) - pow(Q[2]-kpi[2],2) - pow(Q[3]-kpi[3],2);
     
     F_rho = 1./( 1. - t/(mrho*mrho) );
 
@@ -70,10 +66,10 @@ void formfactor(double Qsq, double Q[], double kpi[], double t, double &F1V, dou
 void CT_PF_PP( int process, int nucleon, int decay, int Helicity, double Q[], double kpi[], double t, double Qsq, Matrix QSlash, Matrix Op_CT[], Matrix Op_PF[], Matrix Op_PP[] )
 {
   
-double Mpi2 = Mpi*Mpi, MN2 = MN*MN;
+//double Mpi2 = Mpi*Mpi, MN2 = MN*MN;
 
 double F1V, F2V, F_rho, F1p, F1n, F2p, F2n;
-      formfactor(Qsq, Q, kpi, t, F1V, F2V, F1p, F1n, F2p, F2n, F_rho);
+      formfactor(Qsq, t, F1V, F2V, F1p, F1n, F2p, F2n, F_rho);
       
 double F_CT, F_PF;
 
@@ -153,16 +149,18 @@ if( icCT == 0 ){
     Op_CT[i] = 0.*Id;
   }
 }else{
-  if( process == 1 || process == 2 ){
     for( int i=0; i<4; i++ ){
-      Op_CT[i] =  (fact_ct*gA*F_CT) * Gamma_mu5[i] - (fact_ct*F_rho) * Gamma[i];
+      for (int l=0; l < 4;l++)
+      {
+        for (int k=0;k<4;k++)
+        {
+          Op_CT[i].M[l][k] = (fact_ct*gA*F_CT) * (Gamma_mu5[i].M[l][k]);
+          if( process == 1 || process == 2 ){
+              Op_CT[i].M[l][k] -= (fact_ct*F_rho) * (Gamma[i].M[l][k]);
+          }
+        }
+      }
     }
-  }
-  if( process == 0 ){
-    for( int i=0; i<4; i++ ){
-      Op_CT[i] = (fact_ct * gA*F_CT) * Gamma_mu5[i];
-    }    
-  }
 }
 // // // // // // // // // // // // // // 
 
@@ -173,10 +171,16 @@ if( icPP == 0 ){
     Op_PP[i] = 0.*Id;
   }
 }else{
-  Matrix fact_pp;
-  fact_pp = (-icPP/(sqrt(2.)*fpi)*F_rho/(-Qsq-Mpi2))* QSlash;
+  double fact_pp;
+  fact_pp = (-icPP/(sqrt(2.)*fpi)*F_rho/(-Qsq-Mpi2));
   for( int i=0; i<4; i++ ){
-    Op_PP[i] = Q[i] * fact_pp ;
+    for( int l=0 ; l<4 ; l++)
+    {
+        for( int k=0 ; k < 4; k++)
+        {
+            Op_PP[i].M[l][k] = Q[i] * fact_pp * (QSlash.M[l][k]);
+        }
+    }
   }
 }
 // // // // // // // // // // // // // // 
@@ -188,14 +192,19 @@ if( icPF == 0 ){
 }else{
   double fact_pf = -icPF*gA/(sqrt(2.)*fpi)*F_PF / (t-Mpi2);
   
-  Matrix Q_kpi_Slash_5;
-  Q_kpi_Slash_5 = (Q[0]-kpi[0])*Gamma_mu5[0] - (Q[1]-kpi[1])*Gamma_mu5[1]- (Q[2]-kpi[2])*Gamma_mu5[2]- (Q[3]-kpi[3])*Gamma_mu5[3] ;
+    complex<double> tslashmu5 = 0;
+    for (int l=0;l<4;l++)
+    {
+        for(int k=0; k<4; k++)
+        {
+            tslashmu5= (Q[0]-kpi[0])*Gamma_mu5[0].M[l][k] - (Q[1]-kpi[1])*Gamma_mu5[1].M[l][k] - (Q[2]-kpi[2])*Gamma_mu5[2].M[l][k] - (Q[3]-kpi[3])*Gamma_mu5[3].M[l][k];
+            for( int i=0; i<4; i++ ){
+            Op_PF[i].M[l][k] = (fact_pf *(2.*kpi[i]-Q[i])) *tslashmu5;
 
-  for( int i=0; i<4; i++ ){
-    Op_PF[i] = (fact_pf *(2.*kpi[i]-Q[i])) * Q_kpi_Slash_5;
+            }
+        }
+    }
   }
-}
-
 
 }
 

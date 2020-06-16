@@ -1,4 +1,4 @@
-#ifndef MATRIX_H     // use preprocessor wrapper (Deitel p. 747)
+#ifndef MATRIX_H     
 #define MATRIX_H
 
 #include <complex>
@@ -21,9 +21,8 @@ a copy-constructor is defined, next to a constructor with and w/o
 parameters.      
                                                                     
 *********************************************************************/
-
-class Spr;  // use forward declaration 
-class TSpr;
+//A: Matrix has been changed from persistent memory assignment to stack memory and fixed size of 4x4. 
+//Much faster but with some downsides when it comes to user-friendliness.
 
 class Matrix{
   friend Matrix ConjMatrix( Matrix );
@@ -38,9 +37,6 @@ class Matrix{
   friend Matrix operator-( Matrix, Matrix );
   friend ostream &operator<<( ostream &, Matrix );
 
-  friend Spr operator*( Matrix, Spr ); 
-  friend Matrix operator*( Spr, TSpr );
-  friend TSpr operator*( TSpr, Matrix );
 
  public:
   Matrix( const Matrix & );  // copy constructor
@@ -57,50 +53,5 @@ class Matrix{
 
 
 void Construct_GammaMatrices( Matrix &, Matrix [] );
-
-// Matrix Dagger( double [], Matrix [] );
-
-
-// // // // Nuevo
-
-class Spr{
-  complex<double> N[4]={};
-public:
-  Spr(const Spr &n);
-  Spr(complex<double> B[4]);
-  Spr();
-  ~Spr();
-  friend Spr operator*(complex<double> op1, Spr op2);
-  friend Spr operator+(Spr op1, Spr op2);
-  friend ostream &operator<<(ostream &stream, Spr n);
-
-  friend TSpr ConjSpr1(Spr n);
-  friend Spr ConjSpr2(TSpr n);
-  friend complex<double> operator*(TSpr op1, Spr op2);
-
-  friend Spr operator*(Matrix op1, Spr op2);
-  friend Matrix operator*(Spr op1, TSpr op2);
-};
-
-class TSpr{
-  complex<double> Nt[4]={};
-public:
-  TSpr(const TSpr &n);
-  TSpr(complex<double> B[4]);
-  TSpr();
-  ~TSpr();
-  friend TSpr operator*(complex<double> op1, TSpr op2);
-  friend TSpr operator+(TSpr op1, TSpr op2);
-  friend ostream &operator<<(ostream &stream, TSpr n);
-
-  friend TSpr ConjSpr1(Spr n);
-  friend Spr ConjSpr2(TSpr n);
-  friend complex<double> operator*(TSpr op1, Spr op2);
-
-  friend Matrix operator*(Spr op1, TSpr op2);
-  friend TSpr operator*(TSpr op1, Matrix op2);
-
-  const TSpr &operator=( const TSpr & );
-};
 
 #endif

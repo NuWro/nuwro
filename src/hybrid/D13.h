@@ -2,7 +2,6 @@
 #define D13_H
 
 void D13_ff( double s, double u, double &D13ff)
-// void D13_ff( const double &s, const double &u, double &D13ff)
 {
     
   double cut_off = 800.;
@@ -29,14 +28,8 @@ void D13_ff( double s, double u, double &D13ff)
 ***************************************************************************/
 
 
-// void Gamma_WND13( int nucleon, int process, int decay, int cross, const double &w, const double &q, double Q[], double kResonance[], double ki[], Matrix WND13[][4] )
 void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, double Q[], double kResonance[], double ki[], Matrix WND13[][4] )
 {
-
-  // define the squared momentum transfer and the invariant hadronic mass
-//   double Qsq = pow( q, 2 ) - pow( w, 2 );
-//   double MN2 = MN*MN;
-
 
   double QsqGeV = Qsq/1.E6;
   double C3_Vp, C4_Vp, C5_Vp; 
@@ -47,12 +40,12 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
   DipV = pow(1.+QsqGeV/M_V2,2);
   double C5_A0;
   
+  int vff = 1; //choice for vector form factors
 // //   choose: vff=1--> Lalakulich 2006, vff=2--> Leitner 2009
 
-  int vff = 1;
   
   if( vff == 1 ){
-// // //   Lalakulich 2006 (we change the sign of proton and neutron contributions, not sure but I think it is the right way...)
+// // //   Lalakulich 2006 
     double temp=DipV*(1.+QsqGeV/(8.9*M_V2));
     
   C3_Vp = -2.95/temp;
@@ -65,9 +58,9 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
 // // //   
   C5_A0 = -2.1;  //we keep the sign here as in Lalakulich
   
-// //   with all this, the convention agrees with Hernandez2010 and Leitner2009
+// //   with this, the convention agrees with Hernandez2010 and Leitner2009
   }
-  else if( vff == 2 ){ // WARNING PRODUCE SIMILAR RESULTS AT LOW Q2 (FORWARD SCATTERING ANGLES) LOT OF PROBLEMS AT HIGH Q2 !!! NOT USE THIS
+  else if( vff == 2 ){ // WARNING: PRODUCES SIMILAR RESULTS AT LOW Q2 (FORWARD SCATTERING ANGLES) LOT OF PROBLEMS AT HIGH Q2 !!! NOT USE THIS
 // // // Leitner 2009 (the same as in Hernandez et al. PRD 87, 113009 (2013) )
     C3_Vp = -2.70/pow((1.+QsqGeV/(1.4*M_V2)),2); 
     C4_Vp = 2.62/(DipV*(1.+QsqGeV/(3.7*M_V2))); 
@@ -81,7 +74,6 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
   }
   
   double DipA,M_A2;
-//   M_A2 = pow(1.0,2);
   M_A2 = 1.0;
   DipA = pow(1.+QsqGeV/M_A2,2);
 
@@ -215,10 +207,7 @@ if( process == 1 ){
   Matrix ND13_Vect[4][4];
   Matrix ND13_Ax[4][4];
   
-//   Matrix q_slash;
-//   q_slash = Q[0]*Gamma[0] - Q[1]*Gamma[1] - Q[2]*Gamma[2] - Q[3]*Gamma[3];
   Matrix q_slash;       //ATTENTION this quantity is not the same for delta_cross and delta, we pass -Q[] and Q[], respectively.
-//   q_slash = Q[0]*Gamma[0] - Q[1]*Gamma[1] - Q[2]*Gamma[2] - Q[3]*Gamma[3];
     q_slash.M[0][0]=Q[0]       , q_slash.M[0][1]=0.         , q_slash.M[0][2]=-Q[3]        , q_slash.M[0][3]=-Q[1]+I*Q[2],
     q_slash.M[1][0]=0.         , q_slash.M[1][1]=Q[0]       , q_slash.M[1][2]=-Q[1]-I*Q[2], q_slash.M[1][3]=Q[3],
     q_slash.M[2][0]=Q[3]       , q_slash.M[2][1]=Q[1]-I*Q[2], q_slash.M[2][2]=-Q[0]       , q_slash.M[2][3]=0.,
@@ -262,7 +251,7 @@ if( process == 1 ){
   
 // // // // axial part 
   if( process==1 || process==2 ){
-   // Assuming C3_A = C4_A = 0...
+   // C3_A = C4_A = 0...
    
     double gmunu;
     double temp3;
@@ -303,26 +292,9 @@ if( process == 1 ){
 ***********************************************************************/
 
 void S_D13( int cross, double W2, double kResonance[], Matrix kRSlash, Matrix D13[][4] )
-// void S_D13( int cross, const double &W2, double kResonance[], Matrix D13[][4] )
-{
-//   double kResonance[4];
-//   if(cross==0){
-//     for( int i=0; i<4; i++ ){kResonance[i] = sMan[i];} 
-//   }else{
-//     for( int i=0; i<4; i++ ){kResonance[i] = uMan[i];} 
-//   }
-  
-//   double s = pow(sMan[0],2) - pow(sMan[1],2) - pow(sMan[2],2) - pow(sMan[3],2);
-//   double u = pow(uMan[0],2) - pow(uMan[1],2) - pow(uMan[2],2) - pow(uMan[3],2);
-  
-//   Matrix kRSlash;
-//   kRSlash = kResonance[0]*Gamma[0] - kResonance[1]*Gamma[1] - kResonance[2]*Gamma[2] - kResonance[3]*Gamma[3] ;
-  
+{ 
   Matrix Prop_FF;
   double D13_Width;
-    
-//   double Mpi2 = pow(Mpi,2);
-//   double MN2 = pow(MN,2);
   double MD13_2 = pow(MD13,2);
   
     if( cross == 1 ){ 
@@ -344,13 +316,10 @@ void S_D13( int cross, double W2, double kResonance[], Matrix kRSlash, Matrix D1
     Prop_FF = (-1./(3.*( W2 - MD13_2 + I*MD13*D13_Width )))*( kRSlash + MD13*Id ); //the factor 1/3 is from the propagator
  
     Matrix Rarita[4][4];
-//     Rarita[0][0] = ( 2. - 2./MD13_2*pow(kResonance[0],2) ) *Id ; 
-//     Rarita[1][1] = ( -2. - 2./MD13_2*pow(kResonance[1],2) ) *Id ; 
-//     Rarita[2][2] = ( -2. - 2./MD13_2*pow(kResonance[2],2) ) *Id ; 
-//     Rarita[3][3] = ( -2. - 2./MD13_2*pow(kResonance[3],2) ) *Id ; 
     
   double a0=2. - 2./MD13_2 *pow(kResonance[0],2), a1=-2 - 2./MD13_2 *pow(kResonance[1],2), a2 = -2. - 2./MD13_2 *pow(kResonance[2],2), a3 = -2. - 2./MD13_2 *pow(kResonance[3],2);
 
+Matrix Sym, Asym;
   for(int i=0; i<4; i++){
         
     Rarita[0][0].M[i][i] = a0 ; 
@@ -358,11 +327,12 @@ void S_D13( int cross, double W2, double kResonance[], Matrix kRSlash, Matrix D1
     Rarita[2][2].M[i][i] = a2 ; 
     Rarita[3][3].M[i][i] = a3 ; 
       
-    for(int j=0; j<4; j++){
+    for(int j=i+1; j<4; j++){
       
-      if( j != i ){
-	Rarita[i][j] = mGamma_munu[i][j] - (2./MD13_2*kResonance[i]*kResonance[j])*Id + ( (kResonance[i]/MD13)*Gamma[j] - (kResonance[j]/MD13)*Gamma[i]);
-      }
+        Sym = (-2./MD13_2*kResonance[i]*kResonance[j])*Id;
+        Asym= ( (kResonance[i]/MD13)*Gamma[j] - (kResonance[j]/MD13)*Gamma[i]);
+        Rarita[i][j] = mGamma_munu[i][j] + Sym + Asym;
+        Rarita[j][i] = mGamma_munu[j][i] + Sym - Asym;
 
     }
     
@@ -380,7 +350,6 @@ void S_D13( int cross, double W2, double kResonance[], Matrix kRSlash, Matrix D1
 
 
 
-// void D13P_current( int process, int nucleon, int decay, int Helicity, int cross, const double &w, const double &q, const double &W2, double Q[], double sMan[], double uMan[], double ki[], double kpi[], Matrix Op_D13[] )
 void D13P_current( int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double W2, double Q[], double kResonance[], double ki[], double kpi[], Matrix kRSlash, Matrix Op_D13[] )
 {
 // // // // // // // // ISOSPIN FACTORS // // // // // // // 
@@ -487,7 +456,7 @@ else{
 //       // D13 propagator
       Matrix D13[4][4];
       S_D13( cross, W2, kResonance, kRSlash, D13 ); 
-// //  D13[i][j] has been defined in CONTRAVARIANT (upper indices) notation but we need it in covariant (down indices)
+// //  D13[i][j] has been defined in CONTRAVARIANT (upper indices) notation but we need it in covariant
       for( int i=1; i<4; i++ ){
 	  D13[0][i] = (-1.)*D13[0][i];
 	  D13[i][0] = (-1.)*D13[i][0];
@@ -500,16 +469,6 @@ else{
 	D13Npi[i] =  kpi[i]*fact;
       }
       
-// // // 
-
-//       for( int i=0; i<4; i++ ){
-// 	for( int k=0; k<4; k++ ){
-// 	  for( int l=0; l<4; l++ ){
-// 	    Op_D13[i] = Op_D13[i] + D13Npi[k]*D13[k][l]*WND13[l][i];
-// 	  }
-// 	}
-//       }
-
     Matrix temp;
     for( int k=0; k<4; k++ ){
         for( int l=0; l<4; l++ ){
@@ -528,7 +487,6 @@ else{
 
 
 
-// void CD13P_current( int process, int nucleon, int decay, int Helicity, int cross, const double &w, const double &q, const double &W_cross2, double minusQ[], double sMan[], double uMan[], double kN[], double kpi[], Matrix Op_D13_cross[] )
 void CD13P_current( int process, int nucleon, int decay, int Helicity, int cross, double Qsq, double W2, double Q[], double kResonance[], double kN[], double kpi[], Matrix kRSlash, Matrix Op_D13_cross[] )
 {  
 // // // // // // // // ISOSPIN FACTORS // // // // // // // 
@@ -631,7 +589,6 @@ if( icD13 == 0 ){
       Matrix WND13_cross[4][4]; 
       Gamma_WND13( nucleon, process, decay, cross, Qsq, Q, kResonance, kN, WND13_cross );
       
-//       for( int i=0; i<4; i++ ){ for( int j=0; j<4; j++ ){ cout << WND13_cross[i][j] << endl; } }
 // // D13 propagator
       Matrix D13_cross[4][4];
       S_D13( cross, W2, kResonance, kRSlash, D13_cross );
@@ -649,12 +606,6 @@ if( icD13 == 0 ){
 	D13Npi_cross[i] = kpi[i] * fact;
       }
  
-//       Matrix block_D13_c[4][4];
-//       for( int i=0; i<4; i++ ){
-// 	for( int j=0; j<4; j++ ){
-// 	  block_D13_c[i][j] = Gamma[0] * ConjMatrix( WND13_cross[j][i] ) * Gamma[0];
-// 	}
-//       }
       Matrix block_D13_c[4][4];
       for( int i=0; i<4; i++ ){
 	for( int j=0; j<4; j++ ){
@@ -674,15 +625,6 @@ if( icD13 == 0 ){
       }
 
 
-
-//       for( int i=0; i<4; i++ ){
-// 	for( int k=0; k<4; k++ ){
-// 	  for( int l=0; l<4; l++ ){
-// 	    Op_D13_cross[i] = Op_D13_cross[i] + block_D13_c[i][l]*D13_cross[l][k]*D13Npi_cross[k];
-// 	  }
-// 	}
-//       }
-      
     Matrix temp;
     for( int k=0; k<4; k++ ){
         for( int l=0; l<4; l++ ){

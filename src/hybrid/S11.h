@@ -34,8 +34,6 @@ void Gamma_WNS11( int nucleon, int process, int decay, int cross, double Qsq, do
   QsqGeV = Qsq/1.E6;
   xmu = MN + MS11;
   
-//   double W = sqrt( pow(kResonance[0],2) - pow(kResonance[1],2) - pow(kResonance[2],2) - pow(kResonance[3],2) );
-  
   double DipV, DipA, MA2, MV2;
   MA2 = 1.1025; //MA=1.05 GeV
   MV2 = 0.7100; //MV=0.84 GeV
@@ -166,44 +164,6 @@ else if( process == 1 ){
 
   
   
-//   Matrix QSlash; 
-// //   QSlash = Q[0]*Gamma[0] - Q[1]*Gamma[1] - Q[2]*Gamma[2] - Q[3]*Gamma[3];
-// 
-// QSlash.M[0][0]=Q[0]       , QSlash.M[0][1]=0.         , QSlash.M[0][2]=-Q[3]        , QSlash.M[0][3]=-Q[1]+I*Q[2],
-// QSlash.M[1][0]=0.         , QSlash.M[1][1]=Q[0]       , QSlash.M[1][2]=-Q[1]-I*Q[2], QSlash.M[1][3]=Q[3],
-// QSlash.M[2][0]=Q[3]       , QSlash.M[2][1]=Q[1]-I*Q[2], QSlash.M[2][2]=-Q[0]       , QSlash.M[2][3]=0.,
-// QSlash.M[3][0]=Q[1]+I*Q[2], QSlash.M[3][1]=-Q[3]      , QSlash.M[3][2]=0.          , QSlash.M[3][3]=-Q[0];  
-  
-//   Matrix WNR_V[4];
-//   Matrix WNR_A[4];  
-// // // // // // // Vector part // // // // // // // // // // // // // // 
-//   for(int i=0; i<4; i++){
-//     WNR_V[i] = F1/(pow(xmu,2)) * (Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]);
-//   }
-//   
-//   
-// // // // // // // Axial part // // // // // // // // // // // // // // 
-// 
-//   if( process == 1 || process == 2 ){
-//     for(int i=0; i<4; i++){
-//       WNR_A[i] = GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5;
-//     }
-//   }
-// // // // // // // // // // // // // // // // // // // // // // // // // // 
-//   for(int i=0; i<4; i++){
-// 
-//     if( process == 0 ){
-//       WNR[i] = WNR_V[i]*Gamma5 ;
-//     }
-//     if( process == 1 || process == 2 ){    
-//       WNR[i] = ( WNR_V[i] - WNR_A[i] )*Gamma5;
-//     }
-//     
-//   }  
-     
-
-
-
     if( process == 0 ){
         
   for(int i=0; i<4; i++){
@@ -229,19 +189,6 @@ else if( process == 1 ){
 
 void S_S11prop( int cross, double W2, double kResonance[], Matrix kresSlash, Matrix &Rprop ){
   
-//   double kResonance[4];
-//   if(cross==0){
-//     for( int i=0; i<4; i++ ){kResonance[i] = sMan[i];} 
-//   }else{
-//     for( int i=0; i<4; i++ ){kResonance[i] = uMan[i];} 
-//   }
-//   
-//   double s = pow(sMan[0],2) - pow(sMan[1],2) - pow(sMan[2],2) - pow(sMan[3],2);
-//   double u = pow(uMan[0],2) - pow(uMan[1],2) - pow(uMan[2],2) - pow(uMan[3],2);
-//   double W = sqrt(s);
-  
-//   double Mpi2 = Mpi*Mpi;
-//   double MN2 = MN*MN;
   double MS112 = MS11*MS11;
   double S11_Width;
   
@@ -261,7 +208,6 @@ void S_S11prop( int cross, double W2, double kResonance[], Matrix kresSlash, Mat
   
   }
 
-//   Rprop = (1./( W2 - MS112 + I*MS11*S11_Width)) *( kResonance[0]*Gamma[0] - kResonance[1]*Gamma[1] - kResonance[2]*Gamma[2] - kResonance[3]*Gamma[3] + MS11*Id );
   Rprop = (1./( W2 - MS112 + I*MS11*S11_Width)) * ( kresSlash + MS11*Id );         
       
 }
@@ -359,12 +305,6 @@ else if( cross == 1 ){
 icR = icNP;
 
 
-// if( icR == 0 ){
-//   for( int i=0; i<4; i++ ){
-//     Op_R[i] = 0*Id;
-//   }
-// }
-// else{
 if( icR != 0 ){
 //       // -W N R- vertex      
       Matrix WNR[4];
@@ -480,12 +420,6 @@ if( cross == 1 ){
 icR = icNP;
 
 
-// if( icR == 0 ){
-//   for( int i=0; i<4; i++ ){
-//     Op_R_cross[i] = 0*Id;
-//   } 
-// }
-// else{
 if( icR != 0){
 //       // -W N R- vertex      
       Matrix WNR_cross[4];
