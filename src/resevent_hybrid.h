@@ -42,7 +42,7 @@ double hybrid_dsdQ2dWdOm     (res_kinematics* kin, int params[4], vect final_pio
 
 // Sample cos_theta_pi^* using ABCDE decomposition
 // - using ABCDE decomposition, fitting a polynomial, inverting using bisection
-double hybrid_sample_costh  (double Enu, double Q2, double W, double m, int params[4]);
+double hybrid_sample_costh  (double Enu, double Q2, double W, double m, int params[4], int points);
 // - using tabulated A functions, accept-or-reject
 double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vect neutrino, vect lepton);
 
@@ -80,7 +80,7 @@ vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp);
 
 // Function to be called in finishevent to resample the hadronic angles
 // - resample the whole direction
-void resevent_dir_hybrid(event& e);
+void resevent_dir_hybrid(event& e, int method);
 // - resample only the phi angle
 void resevent_phi_hybrid(event& e);
 

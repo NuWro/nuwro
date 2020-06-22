@@ -468,8 +468,10 @@ void NuWro::finishevent(event* e, params &p)
   {
     if( p.res_kind == 2 )
     {
-      resevent_dir_hybrid(*e);
-      //resevent_phi_hybrid(*e);
+      if( p.res_hybrid_sampling == 1 )
+        resevent_dir_hybrid(*e, p.res_hybrid_resampling);
+      else if( p.res_hybrid_sampling < 4 )
+        resevent_phi_hybrid(*e);
     }
   }
 

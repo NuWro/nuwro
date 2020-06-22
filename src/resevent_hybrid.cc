@@ -29,7 +29,7 @@ void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
 
   // generate random kinematics (return false in the case of impossible kinematics)
   if (not kin.generate_kinematics(Wmax_hybrid)) return;
-  //if (not kin.generate_kinematics(p.Q2, p.W)) return;
+  //if (not kin.generate_kinematics(100000, 1310)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
   particle final_lepton = kin.lepton;
@@ -55,7 +55,7 @@ void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
   // choose a random direction in CMS
   vec kierunek = rand_dir();
   // or fix the direction in the Adler frame (tests)
-  //vec kierunek = -hybrid_dir_from_adler(frandom()*2-1, frandom()*2*Pi-Pi, kin.neutrino, kin.lepton);
+  //vec kierunek = -hybrid_dir_from_adler(0, frandom()*2*Pi-Pi, kin.neutrino, kin.lepton);
 
   // specify the params needed for ABCDE (note strange order!)
   int params[4];
@@ -64,10 +64,15 @@ void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
   // params[3] is the target nucleon, params[1] is the decay channel
 
   // cross section function
-  double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dW_tab;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdcth_tab;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdcth;
-  //double (*hybrid_xsec)(res_kinematics*, int*, vect, double) = hybrid_dsdQ2dWdOm;
+  double (*hybrid_xsec)(res_kinematics*, int*, vect, double);
+  switch(p.res_hybrid_sampling)
+  {
+    case 1: hybrid_xsec = hybrid_dsdQ2dW_tab; break;
+    case 2: hybrid_xsec = hybrid_dsdQ2dWdcth_tab; break;
+    case 3: hybrid_xsec = hybrid_dsdQ2dWdcth; break;
+    case 4: hybrid_xsec = hybrid_dsdQ2dWdOm; break;
+    default:hybrid_xsec = hybrid_dsdQ2dW_tab; break;
+  }
 
   // pion momentum if masses were averaged
   double pion_momentum;
@@ -454,28 +459,34 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, do
   return result;
 }
 
-double hybrid_sample_costh(double Enu, double Q2, double W, double m, int params[4])
+double hybrid_sample_costh(double Enu, double Q2, double W, double m, int params[4], int costh_pts)
 {
   // Choosing cos_th^* from dsdQ2dWdcosth
   double costh_rnd;
 
   // Specify points for the polynomial interpolation
-  const int costh_mem = 3;             // maximum number of points: 3, 5, 7, 9, ...
-        int costh_pts = 3;             // actual number of points:  3, 5, 7, 9, ...
-  double costh[costh_mem];             // Points of interpolation
+  //const int costh_mem = 3;             // maximum number of points: 3, 5, 7, 9, ...
+  //int costh_pts = 3;                   // actual number of points:  3, 5, 7, 9, ...
+  //double costh[costh_mem];             // Points of interpolation
+
+  // Allocate memory dynamically
+  double *costh = new double[costh_pts];
 
   for( int i = 0; i < costh_pts; i++ )           // Fill costh with evenly spaced points
     costh[i] = -0.75 + i * 1.5/(costh_pts-1);    // from -0.75 to 0.75
     //costh[i] = -cos( Pi / (costh_pts-1) * i ); // from -1 to 1
 
   // Get the A function, \propto dsdQ2dWdcosth
-  double ABCDE[costh_mem][5]; double ds[costh_mem];
+  //double ABCDE[costh_mem][5]; double ds[costh_mem];
+  double (*ABCDE)[5] = new double[costh_pts][5];
+  double *ds = new double[costh_pts];
   hybrid_ABCDE(Enu, Q2, W, m, costh, costh_pts, params, ABCDE, ABCDE);
   for( int i = 0; i < costh_pts; i++ )
     ds[i] = ABCDE[i][0];
 
   // Fit a polynomial to given number of points in ds(costh)
-  double poly_coeffs[costh_mem];
+  //double poly_coeffs[costh_mem];
+  double *poly_coeffs = new double[costh_pts];
   hybrid_poly_fit(costh_pts, costh, ds, poly_coeffs);     // use Root methods
   //hybrid_poly_fit_2(costh_pts, costh, ds, poly_coeffs); // analytical
 
@@ -489,6 +500,12 @@ double hybrid_sample_costh(double Enu, double Q2, double W, double m, int params
     costh_rnd = hybrid_poly_rnd_2(costh_pts, poly_coeffs, cthmin_hybrid, cthmax_hybrid);
   if( costh_pts > 3 || fabs(costh_rnd) > 1 ) // bisection
     costh_rnd = hybrid_poly_rnd(costh_pts, poly_coeffs, cthmin_hybrid, cthmax_hybrid, 0.00001);
+
+  // Free dynamically allocated memory
+  delete [] costh;
+  delete [] ABCDE;
+  delete [] ds;
+  delete [] poly_coeffs;
 
   return costh_rnd;
 }
@@ -895,7 +912,7 @@ vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp)
   return kierunek;
 }
 
-void resevent_dir_hybrid(event& e)
+void resevent_dir_hybrid(event& e, int method)
 {
   // get all 4-vectors from the event and boost them to the N-rest frame
   vect target   = e.in[1];  
@@ -949,8 +966,11 @@ void resevent_dir_hybrid(event& e)
   }
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
-  //double costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params);
-  double costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
+  double costh_rnd;
+  if( method > 0 )
+    costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, method);
+  else
+    costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);

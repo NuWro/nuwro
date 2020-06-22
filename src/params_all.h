@@ -82,6 +82,8 @@ PARAM(int,spp_precision,500)\
 PARAM(double,res_dis_cut,1600)\
 PARAM(double,bkgrscaling,0.0)\
 PARAM(int,res_kind,1)\
+PARAM(int,res_hybrid_sampling,1)\
+PARAM(int,res_hybrid_resampling,0)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(int,coh_kind,2)\
@@ -110,7 +112,4 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
-PARAM(double,Q2,500000)\
-PARAM(double,W,1230)\
-PARAM(double,costh,0)\
 
