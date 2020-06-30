@@ -95,6 +95,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		default: _E_bind=0;
 	}
 
+  if(t.A() == 1) _E_bind = 0;
+
 	vect aa;
 	aa = vect (N0);
 	aa.t-=_E_bind;
@@ -196,7 +198,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	e.out.push_back(N1);
 	e.weight=xsec/cm2;
 
-	if(!nc)
+	if(!nc && t.A() > 1)
 	{
 		bool new_ver=true;
 		switch(p.qel_rpa)
