@@ -1,0 +1,4 @@
+beam_type = 2
+beam_folder = /home/lar/cthorpe/NuWro_Hyp_Geom/nuwro/beams/tests/ 
+beam_file_first = 0
+beam_file_limit = 1

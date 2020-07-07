@@ -1,0 +1,11 @@
+beam_type = 2
+beam_folder = /home/lar/cthorpe/NuWro_Geom/nuwro/beams/booster_fhc/ 
+beam_file_first = 0
+beam_file_limit = 1
+
+
+#units of position values in flux file
+beam_length_units=cm
+
+#set to -1 to use default ND280 setting
+beam_pot_per_file = 5e9
