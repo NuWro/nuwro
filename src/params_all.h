@@ -13,6 +13,10 @@ PARAM(line,beam_content,"")\
 PARAM(string,beam_folder,"flux")\
 PARAM(int,beam_file_first,1)\
 PARAM(int,beam_file_limit,0)\
+PARAM(double,beam_pot_per_file,-1)\
+PARAM(string,geom_length_units,"cm")\
+PARAM(double,geom_density_convert,1.0)\
+PARAM(string,beam_length_units,"cm")\
 PARAM(bool,beam_weighted,0)\
 PARAM(vec,beam_offset,"0 0 0")\
 PARAM(int,beam_placement,0)\

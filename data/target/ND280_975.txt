@@ -5,3 +5,10 @@ geo_name=ND280Geometry_v9r7p5
 geo_o = 0 0 0 // coordinates of the center of the box: ox oy oz
 geo_d = 2000 2000 5000 // half dimension of the box: dx dy dx
 nucleus_target=2
+
+#converts density used in geometry file into g/cm3
+geom_density_convert=6.24151e+18
+
+
+geom_length_units=mm
+

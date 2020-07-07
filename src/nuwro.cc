@@ -34,6 +34,8 @@
 #include "Interaction.h"
 #include "rew/rewparams.h"
 
+
+
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
 extern "C" {
@@ -102,10 +104,11 @@ geomy* NuWro::make_detector(params &p)
 	{
 		try
 		{
+
 			if(p.geo_d.norm2()==0)
-				return new geomy(p.geo_file,p.geo_name);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert);
 			else
-				return new geomy(p.geo_file,p.geo_name,p.geo_volume,p.geo_d,p.geo_o);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert,p.geo_volume,p.geo_d,p.geo_o);
 		}
 		catch(...)
 		{
@@ -137,9 +140,7 @@ void NuWro::init (int argc, char **argv)
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
-  // load the input data
-  input.initialize( p );
-  input.load_data();
+  
 
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
@@ -166,6 +167,13 @@ void NuWro::init (int argc, char **argv)
 
 
 	}
+
+
+// load the input data
+  input.initialize( p );
+  input.load_data();
+
+
 	ff_configure(p);
 	refresh_dyn(p);	
 }
@@ -376,11 +384,14 @@ void NuWro::makeevent(event* e, params &p)
 					case 5:mecevent_SuSA (p, *e, *_nucleus, true);break;
 					default:mecevent_tem (p, *e, *_nucleus, true);break;
 				}
+			
 				for(int i=0;i<e->out.size();i++)
 				{
 					e->out[i].r=e->in[1].r;
 					e->out[i].set_momentum(e->out[i].p().fromZto(e->in[0].p()));
 				}
+			
+			
 			}
 			break;
 		case 9:
@@ -523,7 +534,9 @@ void NuWro::pot_report(ostream& o)
 	double tot=0;
 	if(_detector)
 	{
+	  //CT: Something wrong with this calculation for uB
 		double pd=_detector->nucleons_per_cm2();
+
 		for(int i=0;i<_procesy.size();i++)
 		if(_procesy.avg(i)>0)
 		{	
@@ -533,16 +546,22 @@ void NuWro::pot_report(ostream& o)
 			o  <<"       POT per event = "<<1/epp<<endl;
 		}
 		double epp=tot*pd*_beam->nu_per_POT();
-			
+		
+
+	
 		o<<"Total: events per POT= "<<epp<<endl
-		 <<"       POT per event = "<<1/epp<<endl<<endl;
+		 <<"       POT per event = "<<1/epp<<endl;
 		o<<" BOX nuclons per cm2 = "<<pd<<endl;
 		o<<"Total cross section  = "<<tot<<" cm2"<<endl;
 		o<<"Reaction probability = "<<tot*pd<<endl;
 		o<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;
-		o<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
-		o<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
 		
+		o<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
+
+		o<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
+
+	o << "Total POT: " << p.number_of_events/epp << std::endl;
+
 	}
 }
 

@@ -67,6 +67,30 @@
           <param name="beam_file_limit" type="text" ctype="int" default="0">
             <description></description>
           </param>
+
+	<!-- C Thorpe: New beam pot per file parameter - if set to -1 will use old ND280 setup -->
+
+	<param name="beam_pot_per_file" type="text" ctype="double" default="-1">
+	 <description>Beam POT per file</description>
+	</param>
+	
+	<!-- Defaults are ND280 conventions -->
+
+	<param name="geom_length_units" type="text" ctype="string" default="cm">
+	<description>Length units used by geometry</description>
+	</param>
+	
+	<param name="geom_density_convert" type="text" ctype="double" default="1.0">
+	<description>Factor to convert geometry density units to g/cm3</description>
+	</param>
+
+	<param name="beam_length_units" type="text" ctype="string" default="cm">
+	<description>Length units used by beam</description>
+	</param>
+
+
+
+
           <param name="beam_weighted" type="checkbox" ctype="bool" default="0">
             <description></description>
           </param>
@@ -510,9 +534,14 @@
   <param name="pauli_blocking" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
   </param>
+
+
+
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param> 
+
+
 
 <!-- Cascade hyperon KE cutoff -->
 <!--

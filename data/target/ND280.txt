@@ -6,3 +6,7 @@ geo_o = 0 0 0 // coordinates of the center of the box: ox oy oz
 #geo_d = 1200 1200 3200 // half dimension of the box: dx dy dx
 geo_d = 1500 1500 3200 // half dimension of the box: dx dy dx
 nucleus_target=2
+
+
+geom_length_units=mm
+
