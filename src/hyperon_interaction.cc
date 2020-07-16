@@ -244,6 +244,7 @@ double Singh_Model(double Q2, double E_nu, int h, vect k1, vect p1, vect k2, vec
  //assume input particles are on shell
   //set Hyperon mass
   double My = sqrt(p2*p2);
+  //std::cout << My << std::endl;
   //set nucleon mass
   double Mp = sqrt(p1*p1);
 
@@ -271,6 +272,8 @@ double Singh_Model(double Q2, double E_nu, int h, vect k1, vect p1, vect k2, vec
   double t = (k1-k2)*(k1-k2);
   double ml = sqrt(k2*k2);
   double Delta = My - Mp;
+
+
 
   //also have M = Mp+My
 

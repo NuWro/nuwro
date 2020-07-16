@@ -42,6 +42,9 @@ nucleus::nucleus(params &par):
 	{
 		_kf=par.nucleus_kf;
 	}
+	//set hyperon binding energy
+	Y_Eb = par.hyp_Eb;
+
 }
 
 double nucleus::density (double r)

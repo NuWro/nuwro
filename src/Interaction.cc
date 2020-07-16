@@ -185,10 +185,16 @@ for(int i=0;i<nD;i++)
 
 void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_parameters &X)
 {
+
+ 
+
   // Pandharipande & Piper procedure for the in-medium cross section modification (added by JTS)
   X.p2 = t.get_nucleon (p1.r);    // target nucleon (stored in the interaction_parameters)
                                   // note! the further calculations (P&P) are isospin independent,
                                   //       it will be chosen precisely in the interaction itself
+
+
+
   // Include Fermi motion of the target nucleon
   vec vvv = X.p2.v();
   p1.p4().boost2 (vvv);
@@ -203,31 +209,51 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   double beta = -116.0*dens_wrt_00;
   double lambda = (3.29 - 0.373*dens_wrt_00)/fermi;
 
-  double effmass1 = Masssa/
-  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
-  double effmass2 = Masssa/
+  //effmass2 effective mass of struck nucleon
+
+  double effmass1,effmass2,effmass3;
+
+
+  double k1minusk2, k1minusk2star;
+
+  double mod;
+
+  //struck nucleon eff mass
+ effmass2 = Masssa/
   (1 - 2.0*Masssa*beta/lambda/lambda/( 1+X.p2.momentum2()/lambda/lambda )/( 1+X.p2.momentum2()/lambda/lambda ) );
-  double effmass3 = Masssa/
+
+
+      //incident nucleon effective mass
+  effmass1 = Masssa/
+  (1 - 2.0*Masssa*beta/lambda/lambda/( 1+p1.momentum2()/lambda/lambda )/( 1+p1.momentum2()/lambda/lambda ) );
+
+ 
+  effmass3 = Masssa/
   (1 - 2.0*Masssa*beta/lambda/lambda
   /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda )
   /( 1+ (p1.momentum2()+ X.p2.momentum2())/2.0/lambda/lambda ) );
 
-  double k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
-  double k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length(); 
+  k1minusk2 = ( p1.p()-X.p2.p() ).length()/Masssa;
+   k1minusk2star = ( 1.0/effmass1*p1.p() - 1.0/effmass2*X.p2.p() ).length();
 
-  double mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the elastic cross section
+ mod = k1minusk2/k1minusk2star*effmass3/Masssa; // in-medium modification of the elastic cross section
+
 
   // Other procedure for the in-medium inelastic cross section modification
   // Parametrized with eta = 0.2
   double mod2 = (1 - 0.2*dens_wrt_00); // in-medium modification of the inelastic cross section
 
   // Find the fraction of inelastic cross section
+  
+
+  double inel_ii,inel_ij;
+
   NN_inel->set_input_point( X.Ekeff );
-  double inel_ii = NN_inel->get_value( 1 );
-  double inel_ij = NN_inel->get_value( 2 );
+  inel_ii = NN_inel->get_value( 1 );
+inel_ij = NN_inel->get_value( 2 );
   if( X.Ekeff <= 280. )                // inelastic threshold
   {inel_ii = 0.;inel_ij =0.;}
-
+  
   switch (X.pdg)
   {
     case pdg_neutron:
@@ -252,9 +278,12 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
     case pdg_Sigma:
     case pdg_SigmaP:
     case pdg_SigmaM:
+
+
+ //std::cout << mod  << std::endl;
       // new method added below to house nucleon/hyperon scattering cross section
       // a new parameter was added to Interaction.h to store the pdg code of the hyperon
-      get_hyp_xsec(X.Ekeff,X.xsec_n,X.xsec_p,X.p2,p1,X.sigma,X.hyp_state);
+      get_hyp_xsec(X.xsec_n,X.xsec_p,X.p2,p1,X.sigma,X.hyp_state);
       break;
 
     default: // rest is pions!
@@ -406,7 +435,7 @@ sigma[] array of cross sections for up to 6 possible reactions
 hyp_state indicates starting nucleon and hyperon                                       
 */
 
-void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,particle Y,
+void Interaction::get_hyp_xsec(double &nY, double &pY,particle N,particle Y,
 			       double sigma[], int &hyp_state)
 {
 
@@ -425,14 +454,16 @@ void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,parti
     break;
   }
 
-  //Calculate momenta of lambda in nucloen rest frame                                   
+  
+
+  //Calculate momenta of lambda in nucleon rest frame                                   
   vec v = vect(N).v();
 
   //boost to nucleon rest frame                                                         
-  N.boost(-v);
-  Y.boost(-v);
+   N.boost(-v);
+   Y.boost(-v);
 
-  double Plab = sqrt(Y.x*Y.x + Y.y*Y.y + Y.z*Y.z);
+   double Plab = sqrt(Y.x*Y.x + Y.y*Y.y + Y.z*Y.z);
 
   v = (vect(N) + vect(Y)).v();
 
@@ -441,16 +472,14 @@ void Interaction::get_hyp_xsec(double Ek,double &nY, double &pY,particle N,parti
 
   double E = sqrt((N+Y)*(N+Y));
 
-  // std::cout << E - N.mass() - Y.mass() << std::endl;                                
-
-  //set 6 cross section values                                                          
-  //function in hyperon_cascade.cc                                                     
-
   hyperon_exp_xsec(E,Plab,sigma,hyp_state);
+
+
 
   pY = (sigma[0] + sigma[1] + sigma[2]); //total cross section for hyperon + proton     
   nY = (sigma[3] + sigma[4] + sigma[5]); //total cross section for hyperon + neutron    
     
+
 
 }
 
@@ -654,6 +683,7 @@ bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, i
   // selects the final state for the hyperons
   hyperon_state(hyp_state,sigma,ij,p);
 
+  
   if(ij == 0 || ij == 1){
 
     vec v = p2.v();
@@ -672,13 +702,15 @@ bool Interaction::hyperon_scattering(int hyp_state,particle& p1, particle& p2, i
   }
   else
     {
-      //     std::cout << p1.pdg << "  " << p2.pdg << std::endl;                       
 
       res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
     }
-
   
-  return  res;
+  
+//set the binding energy of the hyperon
+p[0].set_fermi(p1.his_fermi);
+
+   return  res;
 
 }
 /////////////////////////////////////////////                                                                                                  

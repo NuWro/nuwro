@@ -16,9 +16,13 @@ kaskada::kaskada(params &p, event &e1, input_data *input)
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
+
   I = new Interaction(input->get_data_container(0), input->get_data_container(1), input->get_data_container(2),
                       par.kaskada_piN_xsec);
   corr_func = input->get_nucl_data_container(0, par.nucleus_p, par.nucleus_n);
+
+
+
 }
 
 ////////////////////////////////////////
@@ -33,6 +37,8 @@ kaskada::~kaskada()
 
 int kaskada::kaskadaevent()
 { 
+
+  //std::cout << "New Event" << std::endl;
   int result = 0;
   
   if (e->weight <= 0)
@@ -71,13 +77,18 @@ int kaskada::kaskadaevent()
 
     X = prepare_interaction();                  // set the density and the total cross section
                                                 // calculate free path
+
+
+
     
     if (!move_particle()) continue;             // propagate particle, returns false if jailed
+        
+   
 
     if (X.r >= radius)                          // particle leaves nucleus
       leave_nucleus();
     else if(  max_step < X.freepath             // no interaction during max_step 
-              or !make_interaction()            // or unable to generate kinematics or Pauli blocking
+	        or !make_interaction()            // or unable to generate kinematics or Pauli blocking
               or !finalize_interaction()        // or there was problem with finalizing interaction
            ) 
       {
@@ -87,10 +98,11 @@ int kaskada::kaskadaevent()
       parts.push (*p);                          // interaction did not happend, 
                                                 // p should be further propagated 
     }
-  }
+
+      }
 
   clean();  // if nucleus has evaporated the part queue may not be empty
-
+  
   return result;
 }
 
@@ -135,13 +147,27 @@ void kaskada::prepare_particles()
       
       parts.push (p1);  // put particle to a queue
     }
-
     //add C Thorpe 
     //hyperon production
+
+ 
     else if(hyperon (p1.pdg))
-    {
-      parts.push(p1); // add particle to queue
-    }
+      {  
+	p1.set_fermi(nucl->hyp_BE(p1.r.length()));
+
+	//if hyperon energy less than BE it is jailed
+	if(p1.Ek() < p1.his_fermi){
+
+	  p1.endproc=jailed;
+	  if(par.kaskada_writeall) 
+            e->all.push_back(p1);
+          continue;
+	}
+
+	parts.push(p1); // add particle to queue
+      
+   
+      }
     else              // if not a nucleon nor pion or hyperon
     {
       p1.endproc=escape;
@@ -151,7 +177,7 @@ void kaskada::prepare_particles()
         e->all.push_back(p1);
     }
   }
-
+  
   for (int i = 0; i<15; i++)  // number of dynamics defined in proctable.h
     e->nod[i] = 0;
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place
@@ -174,14 +200,25 @@ interaction_parameters kaskada::prepare_interaction()
   res.dens_p = res.dens * nucl->frac_proton ();
   res.n = 2;
 
+
   I->total_cross_sections (*p, *nucl, res); // calculate cross sections xsec_p and xsec_n
 
+
+
+  double corr_ii,corr_ij,norm_ii,norm_ij;
+
+
   corr_func->set_input_point( p->travelled );
-  double corr_ii = corr_func->get_value( 1 );
-  double corr_ij = corr_func->get_value( 2 );
+
+
+
+  corr_ii = corr_func->get_value( 1 );
+  corr_ij = corr_func->get_value( 2 );
   corr_func->set_input_point( p->r.length());
-  double norm_ii = corr_func->get_value( 3 );
-  double norm_ij = corr_func->get_value( 4 );
+   norm_ii = corr_func->get_value( 3 );
+   norm_ij = corr_func->get_value( 4 );
+ 
+  // std::cout << corr_ii << std::endl;
 
   switch (res.pdg) // mean free path modifications: effective density and scaling
   {
@@ -214,11 +251,21 @@ interaction_parameters kaskada::prepare_interaction()
 
 bool kaskada::move_particle()
 { 
+
+ 
+
+  //if hyperon store BE before the step
+  //double BE_prev_step;
+
+  //if(hyperon(p->pdg)) BE_prev_step =  nucl->hyp_BE(p->r.length());
+
+
   p->krok (min (max_step, X.freepath)); // propagate by no more than max_step
 
-  if (!p->nucleon())                    // pion can not be jailed
+  if (!(p->nucleon() || hyperon(p->pdg)))                    // pion can not be jailed
     return true;
 
+  if(p->nucleon()){
   // jail nucleon if its kinetic energy is lower than binding energy
   if (p->Ek() <= par.kaskada_w + p->his_fermi)
   {
@@ -230,6 +277,26 @@ bool kaskada::move_particle()
   }
   else
     return true;                        // nucleon was not jailed
+  }
+
+  if(hyperon(p->pdg)){
+
+    //if hyperon KE falls below its potential energy -  hyperon is jailed
+    if(p->Ek() < p->his_fermi){
+      
+      p->endproc=jailed;
+      if(par.kaskada_writeall) 
+	e->all.push_back(*p);
+      return false;                       // hyperon was jailed  
+
+    }
+
+
+    return true; // hyperon was not jailed
+  }
+
+
+
 }
 
 ////////////////////////////////////////
@@ -250,7 +317,29 @@ bool kaskada::leave_nucleus()
     else
       p->set_energy(p->E() - p->his_fermi - par.kaskada_w);
   }
+
+  else if(hyperon(p->pdg))
+    {
+
+
+      //adjust hyperon for remaining binding energy
+      if(p->Ek() <  p->his_fermi )  {
+
+      p->endproc=jailed;
+ 
+      //perhaps add hyperon to nucleus here
+      if(par.kaskada_writeall) e->all.push_back(*p);
+      return false;
+      }
+      //subtract binding energy from hyperon energy and set momentum so it is on shell
+	p->set_energy(p->E() -  p->his_fermi);
     
+
+  
+    }
+    
+
+
   p->endproc=escape;
   e->post.push_back (*p);
   

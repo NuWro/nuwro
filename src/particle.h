@@ -29,7 +29,7 @@ public:
 	int endproc;     ///< id of process that destroyed the particle
 	double his_fermi;
 	bool primary;
-  
+	
 public:
 	inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
 	inline particle (int code,double mass);      ///< create particle at rest 
@@ -74,6 +74,9 @@ public:
   inline bool nucleon();            ///true if nucleon
   inline bool proton();             ///true if proton
 	inline bool neutron();						///true if neutron
+
+
+
 
 	inline particle& mom()                      ///mother particle !!! ONLY for elements of the vector all !!!
 	{  return this[mother-id];
@@ -241,6 +244,8 @@ void particle::set_energy (double E)
     }
   }
 
+
+
 vec particle::p ()
   {
     return vec(x,y,z);
@@ -325,13 +330,22 @@ double particle::Ek_in_frame (vec v)
   return plab.boost (-v).t-mass();
 }
 
+
+
+
+
+
+
+
 ////////////////////////////////////////////////////////////
 ///  M2 = squared mass of decaying particle 
 ///  ma2, mb2 = squared masses of decay products
 /// result = squared momentum of decay products (in cms) if decay possible
 ///          negative number if deacy is impossible
 inline double cms_momentum2(double M2,double ma2,double mb2)
-{ if(M2<ma2+mb2) return -1; 
+//cthorpe: I think it should be this
+{ if(M2 < ma2+mb2+2*sqrt(ma2)*sqrt(mb2)) return -1; // M^2 > (m1 + m2)^2 = m1^2 + m2^2 + 2*m1*m2
+//{ if(M2<ma2+mb2) return -1; 
   double X=M2+ma2-mb2;
   return X*X/4/M2-ma2;
 }
@@ -342,5 +356,9 @@ inline double cms_momentum(double M,double ma,double mb)
   
   return sqrt(X)/(2*M);
 }
+
+
+
+
 
 #endif

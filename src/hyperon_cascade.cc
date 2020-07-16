@@ -58,14 +58,7 @@ void hyperon_exp_xsec(double E, double Plab, double sigma[] , int hyp_state){
   if(Plab > 2.1){x = 2.1;}
   else {x=Plab;}
 
-
-
-
-  //R = ratio of CMS momenta 
-
-  //average of nucleon masses
-  // double M_N = (PDG::mass_proton + PDG::mass_neutron)/2;
-
+ 
   double M_N1; //initial nucleon mass
   double M_N2; //final nucleon mass
   double M_L = PDG::mass_Lambda; //lambda mass
@@ -75,15 +68,9 @@ void hyperon_exp_xsec(double E, double Plab, double sigma[] , int hyp_state){
   double R;
   
 
-
+  //Singh and Vicente Vacas fits
   double sigma_1 = (39.66 - 100.45*x + 92.44*x*x - 21.4*x*x*x)/(Plab)*millibarn;
-
-  //in Singh paper this formula includes a phase space ratio, check this
-  //is correctly propagated through the rest of the formulae   
- 
-  //maybe add factor of R in here then check formula is correct for other
-  //reactions
-double sigma_2 =  (31.1 - 30.94*x + 8.16*x*x)*millibarn;
+  double sigma_2 =  (31.1 - 30.94*x + 8.16*x*x)*millibarn;
   double sigma_3 = (11.77/Plab + 19.07)*millibarn;
   double sigma_4 =  (22.4/Plab - 1.08)*millibarn;
 
@@ -132,7 +119,6 @@ double sigma_2 =  (31.1 - 30.94*x + 8.16*x*x)*millibarn;
 
       	sigma[1] = 2*sigma_2*R;
 
-	//	std::cout << "sigma1: " << sigma[1] << std::endl;
  
       //////////////////////////////////
       // LAMBDA P -> SIGMA0 P
@@ -146,13 +132,10 @@ double sigma_2 =  (31.1 - 30.94*x + 8.16*x*x)*millibarn;
 	M_N2 = PDG::mass_proton;
 	M_S = PDG::mass_Sigma;
 
-	//	E = cms_energy(Plab*GeV,M_N1,M_L);
       
 	R = phase_space(E,M_S,M_N2,M_L,M_N1);
 
 	  sigma[2] = sigma_2*R;
-
-	  //	std::cout << "sigma2: " << sigma[2] << std::endl;
 
       }
       else {sigma[2] = 0;}
@@ -259,9 +242,8 @@ E = cms_energy(Plab*GeV,PDG::mass_neutron,PDG::mass_Sigma);
     //SIGMA0 N -> LAMBDA N
     ////////////////////////////////
 
-    //TODO check this is correct
     sigma[4] = sigma[1];
-    //std::cout << sigma[4] << std::endl;
+    
     ///////////////////////////////////////
     // SIGMA0 N -> SIGMA- P
     /////////////////////////////////////
@@ -456,15 +438,11 @@ void hyperon_state(int hyp_state,double sigma[],int &ij, particle p[]){
     //final state is lambda p
     else {
 
-      // std::cout << "Lambda proton -> Lambda Proton" << std::endl;
 
       ij=1;
 
       p[0].set_pdg_and_mass(PDG::pdg_Lambda,PDG::mass_Lambda);
       p[1].set_pdg_and_mass(PDG::pdg_proton,PDG::mass_proton);
-
-      //    std::cout << "Final state lambda proton" << std::endl;
-      //    std::cout << p[0].pdg << "  " << p[1].pdg << std::endl;
 
 
     }
@@ -528,7 +506,6 @@ else  if(hyp_state == 1){
       p[0].set_pdg_and_mass(PDG::pdg_Lambda,PDG::mass_Lambda);
       p[1].set_pdg_and_mass(PDG::pdg_proton,PDG::mass_proton);
 
-      // std::cout << "initial state sigma proton" << std::endl;
 
     }
     //final state is sigma 0 proton
@@ -657,7 +634,6 @@ else  if(hyp_state == 1){
   else 
     { 
 
-      //   std::cout << "Hyperon scatter error" << std::endl;
       ij=3; 
 
 
@@ -695,6 +671,9 @@ double phase_space(double rs, double M1a, double M2a, double M1b, double M2b){
 
     double a = cms_momentum2(rs*rs,M1a*M1a,M2a*M2a);
   double b = cms_momentum2(rs*rs,M1b*M1b,M2b*M2b);
+
+//if either process is forbidden
+if(a < 0 || b < 0) return 0;
 
   //a =  pow(rs,4) + pow(M1a,4) + pow(M2a,4) - 2*(rs*rs*M1a*M1a + rs*rs*M2a*M2a + M1a*M1a*M2a*M2a);
   //b = pow(rs,4) + pow(M1b,4) + pow(M2b,4) - 2*(rs*rs*M1b*M1b + rs*rs*M2b*M2b + M1b*M1b*M2b*M2b);
