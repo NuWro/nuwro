@@ -2,8 +2,8 @@
 target_type=2
 geo_file=target/MicroBooNEGeometry.root
 geo_name=MicroBooNEGeometry
-#geo_o = 128.175 0 518.5
-#geo_d = 170 170 800 // half dimension of the box: dx dy dx
+geo_o = 128.175 0 518.5
+geo_d = 170 170 800 // half dimension of the box: dx dy dx
 
 
 
