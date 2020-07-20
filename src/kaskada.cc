@@ -10,13 +10,15 @@
 
 int main(int argc,  char** argv)
 {
+  // initialize the simulation
   set_dirs(argv[0]);
   args a("kaskada","kaskada.txt","kaskada.root");
-  a.read(argc,argv);
+  a.read (argc, argv);
   params p;
-  p.read(a.input);
-  p.read(a.params,"Command line");
-  p.list();
+  p.read (a.input);
+  p.read (a.params, "command line");
+  p.list (cout);
+  p.list (string(a.output)+".par");
   frandom_init(p.random_seed);
   
   // load the input data
@@ -26,35 +28,37 @@ int main(int argc,  char** argv)
     input.initialize( p );
     input.load_data();
   }
-  catch( char const* ex )
+  catch(char const* ex)
   {
-    cout << ex << endl;
+    cout << "Exception: " << ex << endl;
     return 1;
   }
 
-  event *e=new event;
-  TFile *f= new TFile(a.output,"recreate");
-  TTree * t2=new TTree("treeout","Tree of events");
+  // prepare the root output
+  event *e = new event;
+  TFile *f = new TFile(a.output,"recreate");
+  TTree *t2= new TTree("treeout","Tree of events");
   t2->Branch("e","event",&e);   // tree1 has only one branch (branch of events)
 
+  // make the nucleus and beam
   try
   {
     nucleus* nucl= make_nucleus(p);
     beam_uniform b(p);
     b.check_energy();
   }
-  catch(const char* w)
+  catch(const char* ex)
   {
-    cout<<endl<<"Exception:     "<<w<<endl<<endl;
+    cout << "Exception: " << ex << endl;
     return 1;
   }
 
-  beam_uniform b(p);
-  nucleus* nucl= make_nucleus(p); 
+  beam_uniform b(p);                // WTF?
+  nucleus* nucl= make_nucleus(p);   // WTF?
 
   for(int i=0;i<p.number_of_events;i++)
   {
-    cout<<"event="<<i<<" begin      \r"; 
+    cout<<"event="<<i<<" begin      \r";
     e=new event;
     e->weight = 1;
     e->par = p;

@@ -44,12 +44,13 @@ Currently involved in the project:
 
 * Jan Sobczyk
 * Cezary Juszczak
-* [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
 * [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
 * [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
+* Dmitry Zhuridov
 
 Former members:
 
+* [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
 * [Jarosław Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
 * Jakub Żmuda
 
