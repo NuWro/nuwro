@@ -89,7 +89,7 @@ double hypevent(params&p, event &e, nucleus &t)
   hyperon.set_mass(PDG::mass(hyperon.pdg));
   lepton.set_mass(PDG::mass(lepton.pdg));
 
-    double _E_bind=0; //binding energy
+  double _E_bind=0; //binding energy
 
   /*
   # 0 is free target; 
@@ -106,16 +106,13 @@ double hypevent(params&p, event &e, nucleus &t)
   { 
     switch(p.nucleus_target)
     {
-      case 0: _E_bind=0;        break;
-      case 1: _E_bind= p.nucleus_E_b; break;
-      case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
-      case 3: _E_bind=0;              break;         //temporary
-      case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
-           //in the future it is possible to add SF for other nuclei as well  
-           //cout<<ped<<"  "<<_E_bind<<endl;//SF
-           break;
-      case 5: _E_bind= deuter_binen (N0.p());break; //deuterium 
-      case 6: _E_bind= p.nucleus_E_b;      break; //deuterium like Fermi gas
+      case 0: _E_bind = 0;        break;
+      case 1: _E_bind = p.nucleus_E_b; break;
+      case 2: _E_bind = t.Ef(N0) + p.kaskada_w;break; //temporary
+      case 3: _E_bind = bodek_binding_energy(N0, t.A()); break;
+      case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n); break;
+      case 5: _E_bind = deuter_binen (N0.p());break; //deuterium 
+      case 6: _E_bind = p.nucleus_E_b;      break; //deuterium like Fermi gas
       default: _E_bind=0;
     }
   }
