@@ -46,6 +46,8 @@ class nucleus
 						  /// 4 - spectral function (for carbon and oxygen, else lFG); 
 						  /// 5 - deuterium (forced for H2); 
 						  /// 6 - proton in deuterium (for tests only);
+	//hyperon potential at r=0
+	double Y_Eb;
 		 
 	public:
 
@@ -78,6 +80,8 @@ class nucleus
 	bool pauli_blocking (particle & pa);     ///< true if the particle is blocked
 	bool pauli_blocking (particle p[], int n); ///< true if any of p[0]..p[n-1] is blocked (used in cascade)
 	bool pauli_blocking_old (particle &pa, double p0); ///< TRUE = PARTICLE IS BLOCKED (p0 - momentum of initial nucleon)
+
+	double hyp_BE(double r);
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -227,6 +231,11 @@ inline double nucleus::V(particle &p)
 {
 	double lkf = localkf(p);
 	return (sqrt(p.mass2() + lkf*lkf) - p.mass());// + 7*MeV);// + 5*MeV;
+}
+
+inline double nucleus::hyp_BE(double r)
+{
+  return Y_Eb*density(r)/density(0);
 }
 
 #endif

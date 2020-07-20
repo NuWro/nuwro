@@ -100,35 +100,56 @@ double hypevent(params&p, event &e, nucleus &t)
   # 5 is deuterium; 
   # 6 is deuterium with constant binding energy nucleus_E_b (for tests only!)
   */
-  
-  switch(p.nucleus_target)
-  {
-    case 0: _E_bind=0;        break;
-    case 1: _E_bind= p.nucleus_E_b; break;
-    case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
-    case 3: _E_bind=0;              break;         //temporary
-    case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
-         //in the future it is possible to add SF for other nuclei as well  
-         //cout<<ped<<"  "<<_E_bind<<endl;//SF
-         break;
-    case 5: _E_bind= deuter_binen (N0.p());break; //deuterium 
-    case 6: _E_bind= p.nucleus_E_b;      break; //deuterium like Fermi gas
-    default: _E_bind=0;
+
+  // if nucleus conains more than one nucleon, calculate binding energy
+  if(t.p + t.n > 1)
+  { 
+    switch(p.nucleus_target)
+    {
+      case 0: _E_bind=0;        break;
+      case 1: _E_bind= p.nucleus_E_b; break;
+      case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
+      case 3: _E_bind=0;              break;         //temporary
+      case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
+           //in the future it is possible to add SF for other nuclei as well  
+           //cout<<ped<<"  "<<_E_bind<<endl;//SF
+           break;
+      case 5: _E_bind= deuter_binen (N0.p());break; //deuterium 
+      case 6: _E_bind= p.nucleus_E_b;      break; //deuterium like Fermi gas
+      default: _E_bind=0;
+    }
   }
 
-  //to force zero binding energy
+  // to force zero binding energy
   // _E_bind=0; 
 
-  particle N0_Eb = N0; //nucleon with 4 momentum adjusted for binding energy
+  particle N0_Eb = N0; // nucleon with 4 momentum adjusted for binding energy
   N0_Eb.t -= _E_bind;
+
+  //generate hyperon binding energy as a function of 
+  //local nuclear density
+
+  double Y_Eb=0;
+
+  if(p.hyp_Eb && p.nucleus_target && t.p + t.n > 1) Y_Eb = t.hyp_BE(hyperon.r.length());
 
   double xsec = 0;
   double jakobian=0;  // the value will be set by kinematics generator
 
+  //need to ensure the sigma is also gnerated going in the same direction in the cms for 
+  //comparison of differentials, to do this generate a unit vector in the cms and boost into the
+  //modified cms (defined in scatter.cc). Modified cms is the same frame for both sigma
+  //and lambda production, record the direction of this unit vector in the modified cms
+
+  vec cms_dir; //scattering angle in bound CMS
+
+  // double q2_BE = scatter2_with_BE_SC(nu,N0_Eb,lepton,hyperon_Eb,Y_Eb);
+  double q2 = scatter2_with_BE(nu,N0_Eb,lepton,hyperon,Y_Eb,cms_dir);
+
   // DEPRECATED
   // double q2 = qel_kinematics(_E_bind, nu, N0, lepton, hyperon, jakobian)
   // double q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, hyperon, jakobian); // simplest choice for hiperon
-  double q2 = scatter_2 (nu, N0_Eb, lepton, hyperon);
+  // double q2 = scatter_2 (nu, N0_Eb, lepton, hyperon);
 
   if(q2==0) return 0; //indicates interaction is forbidden by kinematics
 
@@ -174,61 +195,55 @@ double hypevent(params&p, event &e, nucleus &t)
 
   xsec = dif*pf*jakobian;
     
-/////////////////////////////////////////////////////////////////
-// for testing of the sigma zero cross section calculation using the 
-// code below, set xsec to zero
-// xsec=0;
-// if the interaction was on proton, we calculated Lambda and we still was Sigma_0
-// we need to calcualte the cross section and weight the choice
-// check if sigma production is allowed by kinematics
+  /////////////////////////////////////////////////////////////////
+  // for testing of the sigma zero cross section calculation using the 
+  // code below, set xsec to zero
+  // xsec=0;
+  // if the interaction was on proton, we calculated Lambda and we still was Sigma_0
+  // we need to calcualte the cross section and weight the choice
+  // check if sigma production is allowed by kinematics
 
-  if( h == 1 && p.hyp_sigma_zero && rs > PDG::mass(PDG::pdg_Sigma)+lepton.mass())
+  if(h==1 && p.hyp_sigma_zero)
   {
 
-    double xsec2;
-
-    // find the lepton unit vector
-    vec unit_vec = v3 / v3.length();
-    
-    //3 momentum of outgoing sigma minus   
-    double pp = cms_momentum2(rs*rs,lepton.mass2(),PDG::mass(PDG::pdg_Sigma)*PDG::mass(PDG::pdg_Sigma));   
+    double xsec2=0;
 
     // take new particles
     particle lepton2 = lepton;
     particle hyperon2 = hyperon;
     hyperon2.pdg = PDG::pdg_Sigma;
     hyperon2.set_mass(PDG::mass(hyperon2.pdg));
-    // adjust momentum
-    lepton2.set_momentum (unit_vec * sqrt(pp));
-    hyperon2.set_momentum (-unit_vec * sqrt(pp));
-    // boost to LAB
-    lepton2.boost (vcms);
-    hyperon2.boost (vcms);
 
-    // calculate q2
-    vect p13 = nu - lepton2;
-    double q22 = p13 * p13;
+    //generate cms blob
+    vect cms_Eb = vect(N0_Eb) + vect(nu);
 
-    // calculate the cross section
+    // bool rescale = rescale_momenta(cms_Eb,cms_dir,lepton2,hyperon2,Y_Eb);
 
-    //4 momenta of outgoing lepton and hyperon in cms
-    v3 = vect(sqrt(lepton2.mass()*lepton2.mass()+pp),unit_vec*sqrt(pp));
-    v4 = vect(sqrt(hyperon2.mass()*hyperon2.mass()+pp),-unit_vec*sqrt(pp));
+    //reuturns false if sigma0 prod forbidden by kinematics
 
-    kout = sqrt(pp);
+    //try to solve kinematics for new hyperon, returns false if forbidden
+    if( rescale_momenta(cms_Eb,cms_dir,lepton2,hyperon2,Y_Eb) )
+    {
+      v3 = vect(lepton2);
+      v4 = vect(hyperon2);
 
-    //double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4,true);
+      v3.boost(-vcms);
+      v4.boost(-vcms);
 
-    dif = Singh_Model(-q2,Enu0,2,v1,v2,v3,v4,true);
+      kout = v3.length();
+
+      // calculate q2
+      vect p13 = nu - lepton2;
+      double q22 = p13 * p13;
+
+      // calculate the cross section
+      dif = Singh_Model(-q22,Enu0,2,v1,v2,v3,v4,true);
  
-    jakobian = 4*kin*kout; 
-    //prefactor pf is the same
-    xsec2 = dif*pf*jakobian;
+      jakobian = 4*kin*kout; 
+      //prefactor pf is the same
+      xsec2 = dif*pf*jakobian;
+    }
 
-
-    // range in q2
-    double range = 4 * nu.E() * lepton.momentum();
-    double range2 = 4 * nu.E() * lepton2.momentum();
     // choose a proper channel
     if (frandom() < xsec2/(xsec + xsec2))
     {
@@ -250,6 +265,9 @@ double hypevent(params&p, event &e, nucleus &t)
     vz = N0_Eb.v() * nu.v().dir(); // this is general
     xsec *= sqrt ( (1 - vz) * (1 - vz) );
   }
+
+  //return final particles to their mass shells
+  hyperon.set_mass(PDG::mass(hyperon.pdg));
 
   e.temp.push_back(lepton);
   e.temp.push_back(hyperon);
