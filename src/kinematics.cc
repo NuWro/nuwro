@@ -14,30 +14,44 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 double jakob(vect nu,vect N0,vect lepton)
 //////////////////////////////////////////////////////////////////////////////////////////
-{     
-      vec vcms = (vect(nu) + vect(N0)).v ();
-      if(vcms*vcms>=1)
-         return 0;
-      else
-       {
-      nu.boost (-vcms);
-      lepton.boost (-vcms);	
-      return vec (nu).length () * vec (lepton).length () * 4;
+{
+  vec vcms = (vect(nu) + vect(N0)).v ();
+  if(vcms*vcms>=1)
+     return 0;
+  else
+  {
+    nu.boost (-vcms);
+    lepton.boost (-vcms);	
+    return vec (nu).length () * vec (lepton).length () * 4;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 double bodek_kinematics(double Eb,particle nu,particle N0, particle &lepton, particle &N1,double & jakobian)
 //////////////////////////////////////////////////////////////////////////////////////////
-{    static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
-     double Ma = 56 * M12;	// Argon nucleus mass 
-     double Ma1 = Ma - M12 + Eb;  // mass of the spectator nucleus
-     N0.t = 56 * M12 - sqrt ( Ma1*Ma1 + N0.momentum2 () );
-     //if(N0*N0<0) return 0;
-     double q2 = scatter_2 (nu, N0, lepton, N1);
-     jakobian=jakob(nu,N0,lepton);
+{
+  static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
+  double Ma = 56 * M12;	// Argon nucleus mass 
+  double Ma1 = Ma - M12 + Eb;  // mass of the spectator nucleus
+  N0.t = 56 * M12 - sqrt ( Ma1*Ma1 + N0.momentum2 () );
+  //if(N0*N0<0) return 0;
+  double q2 = scatter_2 (nu, N0, lepton, N1);
+  jakobian=jakob(nu,N0,lepton);
 
-     return q2;
+  return q2;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+double bodek_binding_energy(particle N0, int A)
+//////////////////////////////////////////////////////////////////////////////////////////
+{
+  static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
+  double Ma  = A * M12;
+  double Ma1 = (A-1) * M12;
+
+  double Eb = sqrt(Ma1*Ma1 + N0.momentum2()) - Ma + sqrt(M12*M12 + N0.momentum2());
+
+  return Eb;
 }
 
 
@@ -45,10 +59,10 @@ double bodek_kinematics(double Eb,particle nu,particle N0, particle &lepton, par
 double czarek_kinematics(double Eb,particle nu,particle N0, particle &lepton, particle &N1,double &jakobian)
 //////////////////////////////////////////////////////////////////////////////////////////
 {
-    N0.t -= Eb;
-    double q2 = scatter_2 (nu, N0, lepton, N1);
-    jakobian = jakob(nu,N0,lepton);
-    return q2;
+  N0.t -= Eb;
+  double q2 = scatter_2 (nu, N0, lepton, N1);
+  jakobian = jakob(nu,N0,lepton);
+  return q2;
 }
 
 // This version os faster due to enhancement of the forward direction
@@ -57,50 +71,44 @@ double czarek_kinematics(double Eb,particle nu,particle N0, particle &lepton, pa
 double czarek_kinematics2(double Eb,particle nu,particle N0, particle &lepton, particle &N1,double &jakobian)
 //////////////////////////////////////////////////////////////////////////////////////////
 {
-    N0.t -= Eb;
-    if(not decay2(nu, nu+N0, lepton, N1,jakobian))
-       return 0;
-    jakobian *=jakob(nu,N0,lepton)/2;
-    vect q=nu-lepton;
-    return q*q;
+  N0.t -= Eb;
+  if(not decay2(nu, nu+N0, lepton, N1,jakobian))
+    return 0;
+  jakobian *=jakob(nu,N0,lepton)/2;
+  vect q=nu-lepton;
+  return q*q;
 }
-
 
 
 double kF_potencjal=200*MeV;
 double kF_P=kF_potencjal;
 double kF_N=kF_potencjal;
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 double V(double p,double kf_t)
 //////////////////////////////////////////////////////////////////////////////////////////
-{    
-    double kF=kf_t;// zeby nie mieszac w dalszych czesciach programu!!!
-    double kF2=kF*kF;
+{
+  double kF =  kf_t; // zeby nie mieszac w dalszych czesciach programu!!!
+  double kF2= kF*kF;
 
-    double p2=p*p; 
-    double p4 = p2*p2; 
-    
-    double const a = 206.; 
-    double const  a2=a*a;
+  double p2 =   p*p;
+  double p4 = p2*p2;
 
-    double const  b = 582.; 
-    double const  c =  -322.; 
-    double const  c4=c*c*c*c;
+  double const a = 206.;
+  double const a2=  a*a;
 
-    double const  d = 289. ; 
-    double const  d3=d*d*d;
+  double const b =   582.;
+  double const c =  -322.;
+  double const c4=c*c*c*c;
 
-    double const  e = 442.  ; 
-    double const  e3 = e*e*e;
+  double const d = 289.;
+  double const d3=d*d*d;
 
+  double const e =  442.; 
+  double const e3= e*e*e;
 
-    return  (-1)*a2*kF*kF*(kF+b)
-           /(c4+e3*kF+d3*p2/kF+p4);
-     
+  return (-1)*a2*kF*kF*(kF+b)/(c4+e3*kF+d3*p2/kF+p4);
 }
-
 
 
 // finds the cms momentum and sets the outgoing particles 

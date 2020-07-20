@@ -85,7 +85,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 		case 0: _E_bind=0; 				break;
 		case 1: _E_bind= p.nucleus_E_b;	break;
 		case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
-		case 3: _E_bind=0;              break;         //temporary
+		case 3: _E_bind= bodek_binding_energy(N0, t.A()); break;
 		case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
 				 //in the future it is possible to add SF for other nuclei as well	
 				 //cout<<ped<<"  "<<_E_bind<<endl;//SF
@@ -107,7 +107,6 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 	 	return 0;
 	}
 
-    
     // cross section (is 0 until the reaction occurs)   
     double xsec = 0;		
     double q2,jakobian;  
@@ -132,7 +131,11 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     case  1:    // preservation of energy momentum for the whole system 
                 // the nucleon is off shell 
 		        // binding energy used for spectator nucleus mass calculation
-                q2 = bodek_kinematics (_E_bind, nu, N0, lepton, N1,jakobian);
+
+                // Bodek-Ritchie is set up modifying the binding energy
+                // here, the standard behavior should be used
+                q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, N1,jakobian);
+                //q2 = bodek_kinematics (_E_bind, nu, N0, lepton, N1,jakobian);
  	            break;
     case  2:    // effective mass trick kinematics the most doubtful    
                 // first lower the nucleon mass down the binging energy
