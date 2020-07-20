@@ -833,12 +833,14 @@ pair<double, double> fap(double q2, int kind) {
       // need to add x=F/(F+D) value to constants file 
       // x = 0.36543014996
       //Fa = Axialfromq2(q2, MA_hyp); 
+
       Fa = Axialfromq2(q2,MA_hyp);
       Fa *= (-1)*(1+2*Axial_x)/sqrt(6);
+
       //SU(3) symmetry breaking
       if(sym_break == true)
       {
-        Fa *= 1.051;
+        Fa *= 1.072;
       }
       hyp_mass = PDG::mass_Lambda;
 
@@ -967,7 +969,7 @@ pair<double,double>g2(double q2,int kind){
     Ig2 *= (1-2*Axial_x);
     break;
   
-  //for ds=0 quasielastic do not include SCC for the time being
+  // for ds=0 quasielastic do not include SCC for the time being
   default:
     Rg2 =0;
     Ig2 =0;

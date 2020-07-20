@@ -2,9 +2,10 @@
 <params> 
   <param name="random_seed" type="text" ctype="int" default="0">
     <description>Control the random seed persistence
-    0 - use time(NULL) as a seed for random number generator
-    1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
-    other values - use given number as the seed for the generator</description>
+      0 - use time(NULL) as a seed for random number generator
+      1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
+      other values - use given number as the seed for the generator
+    </description>
   </param>
   <param name="number_of_events" type="text" ctype="int" default="100000">
     <description>The number of equally weighted events to be saved</description>
@@ -14,108 +15,121 @@
   </param>
   <param name="save_test_events" type="select" ctype="int" default="0">
     <description>
-	0 - test events are not stored (default)
-	1 - test events are finalized and stored in weighted.eventsout.root
-		avg(weight)=total cross section
-	2 - test events of nonzero weight are finalized and stored in weighted.eventsout.root
-		avg(weight)=total cross section
+      0 - test events are not stored (default)
+      1 - test events are finalized and stored in weighted.eventsout.root
+          avg(weight)=total cross section
+      2 - test events of nonzero weight are finalized and stored in weighted.eventsout.root
+          avg(weight)=total cross section
     </description>
-  <options>
-        <option key="0">0 - Make unweighted events - default</option>
-        <option key="1">1 - Make weighted events from all test events</option>
-        <option key="2">2 - Make weighted events from non-zero test events</option>
-  </options>
+    <options>
+      <option key="0">0 - Make unweighted events - default</option>
+      <option key="1">1 - Make weighted events from all test events</option>
+      <option key="2">2 - Make weighted events from non-zero test events</option>
+    </options>
   </param>
   <param name="user_events" type="hidden" ctype="int" default="0">
     <description>Enable axial mass analysis</description>
-	<conditions>
-	  <condition value="0" description="Normal nuwro run"></condition>
-	  <condition value="1" description="Fit axial mass to MiniBoone data">
-          <param name="user_params" type="hidden" ctype="line" default="">
-		<description>Parameters  for the user defined analyser</description>
-	   </param>
-	  </condition>
-        </conditions>
+    <conditions>
+      <condition value="0" description="Normal nuwro run"></condition>
+      <condition value="1" description="Fit axial mass to MiniBoone data">
+        <param name="user_params" type="hidden" ctype="line" default="">
+          <description>Parameters for the user defined analyser</description>
+        </param>
+      </condition>
+    </conditions>
   </param>
   <param name="beam_type" type="radio" ctype="int" default="0">
     <description></description>
     <conditions>
-        <condition value="0" description="0">
-          <param name="beam_energy" type="text" ctype="line" default="1000">
-            <description>beam particle energy in [MeV], (Monochromatics beam)</description>
-          </param>
-          <param name="beam_particle" type="text" ctype="int" default="14">
-            <description>PDG code of the beam particles</description>
-          </param>
-          <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
-            <description> x y z cordinates of the beam direction</description>
-          </param>
-        </condition>
-        <condition value="1" description="1">
-          <param name="beam_content" type="text" ctype="line" default="">
-            <description></description>
-          </param>
-          <paramclone name="beam_direction" />
-        </condition>
-        <condition value="2" description="2">
-          <param name="beam_folder" type="text" ctype="string" default="flux">
-            <description></description>
-          </param>
-          <param name="beam_file_first" type="text" ctype="int" default="1">
-            <description></description>
-          </param>
-          <param name="beam_file_limit" type="text" ctype="int" default="0">
-            <description></description>
-          </param>
-          <param name="beam_weighted" type="checkbox" ctype="bool" default="0">
-            <description></description>
-          </param>
-          <param name="beam_offset" type="text" ctype="vec" default="0 0 0">
-            <description></description>
-          </param>
-          <param name="beam_placement" type="text" ctype="int" default="0">
-            <description></description>
-          </param>
-        </condition>
-        <condition value="file" description="select from file" exclude="1">
-            <param name="beam" type="select" default="" path="beam/">
-                <description></description>
-            </param>
-	</condition>
-	<condition value="5" description="5">
-	  <param name="beam_inputroot" type="text" ctype="string" default="">
-	    <description><![CDATA[Path to input flux histogram file]]></description>
-	  </param>
-	  <param name="beam_inputroot_flux" type="text" ctype="string" default="">
-	    <description><![CDATA[Name of total flux histogram file]]></description>
-	  </param>
-	</condition>
-	<condition value="6" description="6">
-	  <param name="beam_inputroot_nue" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for nue]]></description>
-	  </param>
-	  <param name="beam_inputroot_nueb" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for nueb]]></description>
-	  </param>
-	  <param name="beam_inputroot_numu" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for numu]]></description>
-	  </param>
-	  <param name="beam_inputroot_numub" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for numub]]></description>
-	  </param>
-	  <param name="beam_inputroot_nutau" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for nutau]]></description>
-	  </param>
-	  <param name="beam_inputroot_nutaub" type="text" ctype="string" default="">
-	    <description><![CDATA[Histogram name for nutaub]]></description>
-	  </param>
-	</condition>
+      <condition value="0" description="0">
+        <param name="beam_energy" type="text" ctype="line" default="1000">
+          <description>beam particle energy in [MeV], (Monochromatics beam)</description>
+        </param>
+        <param name="beam_particle" type="text" ctype="int" default="14">
+          <description>PDG code of the beam particles</description>
+        </param>
+        <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
+          <description> x y z cordinates of the beam direction</description>
+        </param>
+      </condition>
+      <condition value="1" description="1">
+        <param name="beam_content" type="text" ctype="line" default="">
+          <description></description>
+        </param>
+        <paramclone name="beam_direction" />
+      </condition>
+      <condition value="2" description="2">
+        <param name="beam_folder" type="text" ctype="string" default="flux">
+          <description></description>
+        </param>
+        <param name="beam_file_first" type="text" ctype="int" default="1">
+          <description></description>
+        </param>
+        <param name="beam_file_limit" type="text" ctype="int" default="0">
+          <description></description>
+        </param>
+  <!-- C Thorpe: New beam pot per file parameter - if set to -1 will use old ND280 setup -->
+        <param name="beam_pot_per_file" type="text" ctype="double" default="-1">
+          <description>Beam POT per file</description>
+        </param>
+  <!-- Defaults are ND280 conventions -->
+        <param name="geom_length_units" type="text" ctype="string" default="cm">
+          <description>Length units used by geometry</description>
+        </param>
+        <param name="geom_density_convert" type="text" ctype="double" default="1.0">
+          <description>Factor to convert geometry density units to g/cm3</description>
+        </param>
+        <param name="beam_length_units" type="text" ctype="string" default="cm">
+          <description>Length units used by beam</description>
+        </param>
+        <param name="beam_weighted" type="checkbox" ctype="bool" default="0">
+          <description></description>
+        </param>
+        <param name="beam_offset" type="text" ctype="vec" default="0 0 0">
+          <description></description>
+        </param>
+        <param name="beam_placement" type="text" ctype="int" default="0">
+          <description></description>
+        </param>
+      </condition>
+      <condition value="file" description="select from file" exclude="1">
+        <param name="beam" type="select" default="" path="beam/">
+          <description></description>
+        </param>
+      </condition>
+      <condition value="5" description="5">
+        <param name="beam_inputroot" type="text" ctype="string" default="">
+          <description><![CDATA[Path to input flux histogram file]]></description>
+        </param>
+        <param name="beam_inputroot_flux" type="text" ctype="string" default="">
+          <description><![CDATA[Name of total flux histogram file]]></description>
+        </param>
+      </condition>
+      <condition value="6" description="6">
+        <param name="beam_inputroot_nue" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for nue]]></description>
+        </param>
+        <param name="beam_inputroot_nueb" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for nueb]]></description>
+        </param>
+        <param name="beam_inputroot_numu" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for numu]]></description>
+        </param>
+        <param name="beam_inputroot_numub" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for numub]]></description>
+        </param>
+        <param name="beam_inputroot_nutau" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for nutau]]></description>
+        </param>
+        <param name="beam_inputroot_nutaub" type="text" ctype="string" default="">
+          <description><![CDATA[Histogram name for nutaub]]></description>
+        </param>
+      </condition>
     </conditions>
   </param>
   <param name="beam_test_only" type="hidden" ctype="int" default="0">
     <description></description>
   </param>
-  
   <param name="target_type" type="radio" ctype="int" default="0">
     <description></description>
     <conditions>
@@ -126,12 +140,12 @@
           <param name="nucleus_n" type="text" ctype="int" default="6">
             <description><![CDATA[Number of neutrons]]></description>
           </param>
-		  <param name="nucleus_E_b" type="text" ctype="double" default="34">
-			<description><![CDATA[[MeV] binding energy]]></description>
-		  </param>
-		  <param name="nucleus_kf" type="text" ctype="double" default="220">
-			<description><![CDATA[[MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking]]></description>
-		  </param>
+      <param name="nucleus_E_b" type="text" ctype="double" default="34">
+      <description><![CDATA[[MeV] binding energy]]></description>
+      </param>
+      <param name="nucleus_kf" type="text" ctype="double" default="220">
+      <description><![CDATA[[MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking]]></description>
+      </param>
         </condition>
         <condition value="1" description="1">
           <param name="target_content" type="text" ctype="line" default="">
@@ -162,25 +176,25 @@
         </condition>
     </conditions>
   </param>
-	  <param name="nucleus_target" type="select" ctype="int" default="2">
-		<description><![CDATA[Models for the description of nucleus as a target]]></description>
-		<options>
-		  <option key="0"><![CDATA[free target]]></option>
-		  <option key="1"><![CDATA[Fermi gas]]></option>
-		  <option key="2"><![CDATA[local Fermi gas]]></option>
-		  <option key="3"><![CDATA[Bodek-Ritchie]]></option>
-		  <option key="4"><![CDATA["effective" spectral function (carbon or oxygen)]]></option>
-		  <option key="5"><![CDATA[deuterium]]></option>
-		  <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
-		</options>
-	  </param>
-		  <param name="nucleus_model" type="select" ctype="int" default="1">
-			<description><![CDATA[Models for the description of nucleus]]></description>
-			<options>
-			  <option key="0"><![CDATA[constant density]]></option>
-			  <option key="1"><![CDATA[realistic density profile]]></option>
-			</options>
-		  </param>
+    <param name="nucleus_target" type="select" ctype="int" default="2">
+    <description><![CDATA[Models for the description of nucleus as a target]]></description>
+    <options>
+      <option key="0"><![CDATA[free target]]></option>
+      <option key="1"><![CDATA[Fermi gas]]></option>
+      <option key="2"><![CDATA[local Fermi gas]]></option>
+      <option key="3"><![CDATA[Bodek-Ritchie]]></option>
+      <option key="4"><![CDATA["effective" spectral function (carbon or oxygen)]]></option>
+      <option key="5"><![CDATA[deuterium]]></option>
+      <option key="6"><![CDATA[deuterium with constant binding energy nucleus_E_b (for tests only!)]]></option>
+    </options>
+    </param>
+      <param name="nucleus_model" type="select" ctype="int" default="1">
+      <description><![CDATA[Models for the description of nucleus]]></description>
+      <options>
+        <option key="0"><![CDATA[constant density]]></option>
+        <option key="1"><![CDATA[realistic density profile]]></option>
+      </options>
+      </param>
   <param name="dyn_qel_cc" type="checkbox" ctype="bool" default="1">
     <description>Quasi elastic charged current</description>
   </param>
@@ -379,7 +393,7 @@
   </param>
   <param name="mec_kind" type="select" ctype="int" default="3">
     <description><![CDATA[MEC model]]></description>
-	<options>
+    <options>
       <option key="1"><![CDATA[TEM model]]></option>
       <option key="2"><![CDATA[Marteau model]]></option>
       <option key="3"><![CDATA[Nieves model]]></option>
@@ -445,14 +459,14 @@
     <options>
       <option key="fz"><![CDATA[fz - ]]></option>
       <option key="fz-new"><![CDATA[fz-new - ]]></option>
-      <option key="trans"><![CDATA[trans - ]]></option>		
-      <option key="skat8"><![CDATA[skat8 - ]]></option>		
-      <option key="cohl"><![CDATA[cohl - ]]></option>		
-      <option key="cosyn"><![CDATA[cosyn - ]]></option>		
-      <option key="ranft"><![CDATA[tranft - ]]></option>		
-      <option key="rl"><![CDATA[rl - ]]></option>		
-      <option key="delta"><![CDATA[delta - ]]></option>		
-      <option key="nofz"><![CDATA[nofz - ]]></option>		
+      <option key="trans"><![CDATA[trans - ]]></option>   
+      <option key="skat8"><![CDATA[skat8 - ]]></option>   
+      <option key="cohl"><![CDATA[cohl - ]]></option>   
+      <option key="cosyn"><![CDATA[cosyn - ]]></option>   
+      <option key="ranft"><![CDATA[tranft - ]]></option>    
+      <option key="rl"><![CDATA[rl - ]]></option>   
+      <option key="delta"><![CDATA[delta - ]]></option>   
+      <option key="nofz"><![CDATA[nofz - ]]></option>   
     </options>
   </param>
   <param name="tau" type="text" ctype="double" default="8">
@@ -513,14 +527,13 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param> 
-
-<!-- Cascade hyperon KE cutoff -->
-<!--
-<param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
-<description>Hyperon kinetic energy cutoff</description>
-</param>
- -->
-
+  <!-- Cascade hyperon KE cutoff -->
+  <!-- <param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
+    <description>Hyperon kinetic energy cutoff</description>
+  </param> -->
+  <param name="hyp_Eb" type="text" ctype="double" default="30">
+    <description>Hyperon binding energy at max density</description>
+  </param>
 </params>
 
 <!--
