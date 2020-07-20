@@ -74,7 +74,7 @@ double czarek_kinematics2(double Eb,particle nu,particle N0, particle &lepton, p
   N0.t -= Eb;
   if(not decay2(nu, nu+N0, lepton, N1,jakobian))
     return 0;
-  jakobian *=jakob(nu,N0,lepton)/2;
+  jakobian *= jakob(nu,N0,lepton)/2;
   vect q=nu-lepton;
   return q*q;
 }
