@@ -21,7 +21,7 @@ protected:
    double w2[10];
    
 public:   
-   beam_mixedroothist(params& p):n(0),dir(p.beam_direction.dir())
+   beam_mixedroothist(NUWRO::params& p):n(0),dir(p.beam_direction.dir())
    {
 
      throws = 0;

@@ -7,6 +7,7 @@
 #include "mecevent_tem.h"
 #include "mecevent_Nieves.h"
 #include "mecevent_SuSA.h"
+using namespace NUWRO;
 
 ////////////////////////////////////////////////////////////////////////
 void mecevent (params &p, event &e, nucleus &t, bool prad);

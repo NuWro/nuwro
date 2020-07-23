@@ -4,6 +4,7 @@
 #include "event1.h"
 #include "nucleus.h"
 
+using namespace NUWRO;
 
 //bool paulib(event &e,target& t);
 

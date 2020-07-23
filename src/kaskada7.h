@@ -21,6 +21,7 @@
 
 using namespace std;
 using namespace PDG;
+using namespace NUWRO;
 
 #define LOG(x) cout<< x <<endl;
 #define LOG2(x,y) cout<< x << y <<endl;

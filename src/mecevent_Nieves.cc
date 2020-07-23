@@ -1,4 +1,5 @@
 #include "mecevent_Nieves.h"
+using namespace NUWRO;
 
 void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
 {

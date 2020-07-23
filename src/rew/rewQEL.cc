@@ -7,6 +7,7 @@
 #include "rewparams.h"
 #include "../dis/LeptonMass.h"
 
+using namespace NUWRO;
 static double E_bind(params &p, nucleus &t, particle &N0) {
   /*
       Binding energy of nucleon N0 inside target nucleus t

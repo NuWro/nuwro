@@ -10,6 +10,7 @@
 #include <stack>
 
 using namespace std;
+using namespace NUWRO;
 
 /// this class implements the target nucleus
 /// it should take into account of the its radius, charge ,
@@ -49,7 +50,7 @@ class nucleus
 		 
 	public:
 
-	nucleus(params &par);                    ///< construct nucleus from params
+	nucleus(NUWRO::params &par);                    ///< construct nucleus from params
 	void reset(){pr=p;nr=n;_p4=vect();}      ///< recover  initial state
 	int  A(){return n+p;}                    ///< A initial
 	int  Z(){return p;}                      ///< Z initial

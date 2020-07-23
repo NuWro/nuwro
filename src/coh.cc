@@ -6,6 +6,7 @@
 #include "jednostki.h"
 #include "nucleus.h"
 #include "event1.h"
+using namespace NUWRO;
 
 //      Coherent single pion production
 //      Implementation of the Rein-Sehgal model

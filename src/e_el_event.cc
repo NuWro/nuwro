@@ -7,6 +7,7 @@
 #include "ff.h"
 #include "dis/LeptonMass.h"
 
+using namespace NUWRO;
 double LH_(particle k, particle p, particle kprim, vect pprim);
 
 

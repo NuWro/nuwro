@@ -5,7 +5,7 @@
 
 
 // typical useraction function
-void NuWro::UserAction(params& p)
+void NuWro::UserAction()
 {params p1=p;
  event *e;
 
@@ -29,7 +29,7 @@ void NuWro::UserAction(params& p)
        ///_____________________________________
        if(_mixer)
        	   _mixer->prepare(p);                           // OK
-       makeevent(e,p); // OK
+       makeevent(e); // OK
        ///_________________________________________  
        /// analize event fill histograms etc.
    

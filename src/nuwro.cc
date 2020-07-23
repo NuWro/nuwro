@@ -46,6 +46,8 @@ params *p1=NULL;
 string data_dir;
 #include "nuwro.h"
 
+using namespace NUWRO;
+
 NuWro::~NuWro()
 {		
 	delete _mixer;
@@ -66,34 +68,34 @@ void NuWro :: set (params &par)
 {	
 	p = par;
 	
-	frandom_init(par.random_seed);
+	frandom_init(p.random_seed);
 
 	dismode = false;
 
-	if(par.target_type == 1)
-		_mixer = new target_mixer (par);
-	_detector = make_detector (par);
+	if(p.target_type == 1)
+		_mixer = new target_mixer (p);
+	_detector = make_detector ();
 	
-	_beam = create_beam (par,_detector);
+	_beam = create_beam (p,_detector);
 
-	_nucleus = make_nucleus (par);
+	_nucleus = make_nucleus (p);
 	
-	ff_configure (par);
-	refresh_dyn (par);
+	ff_configure (p);
+	refresh_dyn ();
 }
 
-void NuWro :: refresh_target (params &par)
+void NuWro :: refresh_target ()
 {
 	delete _nucleus;
-	_nucleus = make_nucleus (par);
+	_nucleus = make_nucleus (p);
 }
 
-void NuWro :: refresh_dyn (params &par)
+void NuWro :: refresh_dyn ()
 {
-	_procesy.reset(par);
+	_procesy.reset(p);
 }
 
-geomy* NuWro::make_detector(params &p)
+geomy* NuWro::make_detector()
 {
 	if(p.target_type!=2)
 		return NULL;
@@ -122,13 +124,26 @@ geomy* NuWro::make_detector(params &p)
 
 }
 
-void NuWro::init (int argc, char **argv)
+
+void NuWro::set_param_file(const char* fn) {
+    p.read(fn);
+}
+
+void NuWro::set_path(char* path) {
+    set_dirs(path);
+}
+
+// Don't use the "vec" class here so that the API can stay 'clean'
+void NuWro::set_param(string key, double x, double y, double z) {
+    stringstream param_line;
+    param_line << key <<"="<< x << " "<< y << " "<<z << endl;
+    a.add_param(param_line.str());
+}
+
+// Initialize, assuming params & args have been set already
+void NuWro::init()
 {
-	//dismode=false;
 	dismode=true;
-	set_dirs(argv[0]);
-	a.read (argc, argv);
-	p.read (a.input);
 	p.read (a.params, "command line");
 	p.list (cout);
 	p.list (string(a.output)+".par");
@@ -150,7 +165,7 @@ void NuWro::init (int argc, char **argv)
 			_mixer=new target_mixer(p);
 		else
 			_mixer = NULL;
-		_detector=make_detector(p);
+		_detector=make_detector();
         
 		cout<<"Creating the beam ..."<<endl;
 		_beam=create_beam(p,_detector);
@@ -168,10 +183,21 @@ void NuWro::init (int argc, char **argv)
   input.load_data();
 
 	ff_configure(p);
-	refresh_dyn(p);	
+	refresh_dyn();	
 }
 
-void NuWro::makeevent(event* e, params &p)
+// Initialize from command line args
+void NuWro::init (int argc, char **argv)
+{
+	//dismode=false;
+	set_path(argv[0]);
+	a.read (argc, argv);
+	set_param_file(a.input);
+
+	init();
+}
+
+void NuWro::makeevent(event* e)
 {
 	static double max_norm=0;
 	particle nu;
@@ -455,7 +481,7 @@ void NuWro::makeevent(event* e, params &p)
 }	// end of makeevent
 
 
-void NuWro::finishevent(event* e, params &p)
+void NuWro::finishevent(event* e)
 {
 	for(int i=0;i<1/* e->in.size()*/;i++)
 	{
@@ -558,7 +584,7 @@ void NuWro::pot_report(ostream& o)
 //////////////////////////////////////////////////////////////
 //              Test events
 //////////////////////////////////////////////////////////////
-void NuWro::test_events(params & p)
+void NuWro::test_events()
 {
 
 	if(p.number_of_test_events>0  && p.beam_test_only==0)
@@ -576,11 +602,11 @@ void NuWro::test_events(params & p)
 			te=new TFile((string("weighted.")+a.output).c_str(),"recreate");						
 			t1 = new TTree ("treeout", "Tree of events");
 			e = new event ();
-			t1->Branch ("e", "event", &e);
+			t1->Branch ("e", "NUWRO::event", &e);
 			delete e;
 		}
 
-		refresh_dyn(p);
+		refresh_dyn();
 		  
 		int saved=0;
 		for (int i = 0; i < p.number_of_test_events; i++)
@@ -590,7 +616,7 @@ void NuWro::test_events(params & p)
 			e->dyn = _procesy.dyn(k); // choose dynamics
 			if(_mixer)
 				_mixer->prepare(p);
-			makeevent(e,p);
+			makeevent(e);
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
@@ -620,7 +646,7 @@ void NuWro::test_events(params & p)
 				case 0: 
 					break;
 				case 1: 
-					finishevent(e, p);
+					finishevent(e);
 					t1->Fill ();
 					break;
 				case 2:
@@ -628,7 +654,7 @@ void NuWro::test_events(params & p)
 					{
 						saved++;
 						e->weight=e->weight*saved/(i+1);
-						finishevent(e, p);
+						finishevent(e);
 						t1->Fill ();						
 					}
 					break;
@@ -684,7 +710,7 @@ void NuWro::test_events(params & p)
 }
 
 
-void NuWro::user_events(params &p)
+void NuWro::user_events()
 {
 	if(p.number_of_test_events<1 or p.user_events==0)
 		return;
@@ -694,7 +720,7 @@ void NuWro::user_events(params &p)
 		return;
 	for(A->start(); !A->end(); A->step())
 	{
-		refresh_dyn(p);
+		refresh_dyn();
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			event *e = new event ();
@@ -706,7 +732,7 @@ void NuWro::user_events(params &p)
 			if(_mixer)
 				_mixer->prepare(p);
 
-			makeevent(e,p);
+			makeevent(e);
 
 			A->process_event(*e);
 
@@ -730,8 +756,28 @@ void NuWro::user_events(params &p)
 	delete A;
 }
 
+bool NuWro::simulate_event(event* e, int k) {
+	*e = event();
+	if(k < 0) {
+		k = proces();
+	}
+	e->dyn = _procesy.dyn(k);
+	makeevent(e);
 
-void NuWro::real_events(params& p)
+	double bias = 1;
+	if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6) {
+		bias=e->in[0].t;
+	}
+	if(_procesy.accept(k, e->weight, bias)) {
+		finishevent(e);
+		e->weight=_procesy.total();
+		return true;
+	}
+	return false;
+}
+
+
+void NuWro::real_events()
 {
 	dismode=true;
 	if(p.number_of_events<1)
@@ -753,8 +799,7 @@ void NuWro::real_events(params& p)
 		output=output+".root";
 	TFile *ff = new TFile (output.c_str(), "recreate");
 	TTree *tf = new TTree ("treeout", "Tree of events");
-	tf->Branch ("e", "event", &e);
-	delete e;
+    tf->Branch ("e", "NUWRO::event", &e);
 	TH1 * xsections= new TH1D("xsections","xsections",_procesy.size(),0,_procesy.size());
 	for(int i=0;i<_procesy.size();i++)
 	{
@@ -778,30 +823,17 @@ void NuWro::real_events(params& p)
 				TFile *f1 = new TFile (filename, "recreate");
 				TTree *t1 = new TTree ("treeout", "Tree of events");
 
-				e = new event ();
-				t1->Branch ("e", "event", &e);
-				delete e;
+				*e = event();
+				t1->Branch ("e", "NUWRO::event", &e);
 
 				while(_procesy.ready(k)<_procesy.desired(k))
 				{
-					e = new event ();
-					e->dyn = _procesy.dyn(k);
-
 					if(_mixer)
 						_mixer->prepare(p);
-					makeevent(e,p);
-					double bias=1;
-					if(!p.beam_test_only && dismode && e->dyn>1 && e->dyn<6)
-						bias=e->in[0].t;
-					if (_procesy.accept(k,e->weight,bias))
-					{
-						finishevent(e, p);
-						e->weight=_procesy.total();
-						//~ if(_detector and _beam->nu_per_POT() != 0)
-							//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
+					*e = event();
+					if(simulate_event(e, k)) {
 						t1->Fill ();
 					}
-					delete e;
 
 					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
 				}
@@ -816,10 +848,9 @@ void NuWro::real_events(params& p)
 					int start = nn-_procesy.desired(k);
 					for (int jj = start; jj < nn; jj++)
 					{
-						e = new event();
+						*e = event();
 						t1->GetEntry (jj);
 						tf->Fill ();
-						delete e;
 						raport(jj-start+1,nn-start," % events copied...",100,_procesy.dyn(k),bool(a.progress));
 					}
 					cout<<endl;
@@ -831,7 +862,8 @@ void NuWro::real_events(params& p)
 				delete f1;
 				if(p.mixed_order==0)
 					unlink(filename);
-			};
+				}
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	//                    end of the main loop in NPROC
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -841,7 +873,7 @@ void NuWro::real_events(params& p)
 		TTree *t[_procesy.size()];
 		int n[_procesy.size()],u[_procesy.size()];
 		int ile=0;
-		e=new event();
+		*e = event();
 		for (int k = 0; k < _procesy.size(); k++)
 			if((u[k]=_procesy.desired(k))>0)
 		{
@@ -871,7 +903,6 @@ void NuWro::real_events(params& p)
 			u[i]--;
 			raport(nn-ile,nn," % events copied...",100,i,bool(a.progress));
 		}
-		delete e;
 		for (int k = 0; k < _procesy.size(); k++)
 			if(_procesy.desired(k))
 		{
@@ -891,6 +922,7 @@ void NuWro::real_events(params& p)
 	{   ofstream  potinfo("POTinfo.txt");
 		pot_report(potinfo);
 	}
+	delete e;
 
 	cout << "Output file: \"" << output << "\"" << endl;
 
@@ -912,7 +944,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 	TFile *ff= new TFile(output.c_str(),"recreate");
 	TTree *tf = new TTree("treeout","Tree of events");
-	tf->Branch("e","event",&e);
+	tf->Branch("e","NUWRO::event",&e);
 
 	int nn = ti->GetEntries ();
 	for (int i = 0; i < nn; i++)
@@ -920,7 +952,7 @@ void NuWro::kaskada_redo(string input,string output)
 		//		e = new event();
 		ti->GetEntry (i);
 		e->clear_fsi();
-		finishevent(e,p);
+		finishevent(e);
 		tf->Fill ();
 		//		delete e;
 		//if(i%1000==0)
@@ -954,11 +986,11 @@ void NuWro::main (int argc, char **argv)
 			if(not p.beam_test_only)
 			{
 				if(p.user_events>0)
-					user_events(p);
+					user_events();
 				else
 				{
-					test_events(p);
-					real_events(p);
+					test_events();
+					real_events();
 				}
 			}
 		}

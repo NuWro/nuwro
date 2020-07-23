@@ -2,6 +2,7 @@
 #include "rewparams.h"
 #include "../event1.h"
 #include "../nucleus.h"
+using namespace NUWRO;
 
 double calcNorm(event & e, params &p, nucleus &t)
 {

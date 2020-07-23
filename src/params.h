@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cstdlib>
+#include <vector>
 
 #include "vec.h"
 #include "dirs.h"
@@ -100,6 +101,7 @@ write (line a, ostream & s)
 /// the type of the paremeter must be string, vector or
 /// any type with friend operator>>(istream&,type&) operator defined
 /// all the parameters (type, name  are defined here
+namespace NUWRO {
 class params
 {				//public fields
 public:
@@ -108,7 +110,7 @@ public:
 #define PARAM(type,name,default_value) type name;
   PARAMS_ALL ()
 #undef PARAM
-public:
+
   string path_to_data;
 
   /// constructor
@@ -238,7 +240,6 @@ public:
     std::ofstream out (filename.c_str ());
     list (out);
   }
-
 };
-
+}
 #endif

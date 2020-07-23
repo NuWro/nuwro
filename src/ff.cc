@@ -812,7 +812,7 @@ double axialcorr(int axialFF, double q2) {
 
 ///////////////////////////////////////////////////////////////
 /// Form Factor Configuration
-void ff_configure(params & p) {
+void ff_configure(NUWRO::params & p) {
   switch (p.qel_vector_ff_set) {
     case 1:
       FFfromq2 = DipoleFF;

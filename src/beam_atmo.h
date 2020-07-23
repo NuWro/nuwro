@@ -39,7 +39,7 @@ class beam_atmo: public beam
 		}
 
 	public: 
-		beam_atmo(params &p):f(1),dir(p.beam_direction.dir()){
+		beam_atmo(NUWRO::params &p):f(1),dir(p.beam_direction.dir()){
 			dcos=0.1;
 			stringstream in(p.beam_atmo_files);
 			int pdg=0;
