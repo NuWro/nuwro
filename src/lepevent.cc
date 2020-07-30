@@ -119,6 +119,10 @@ for (int ii = 1; ii<=switch_sigma_max; ii++) // ii -> switch_sigma
   e.weight = weight_tot*p.nucleus_p/(p.nucleus_p+p.nucleus_n);
   //p.target_content
 
+// To work with large statistics (over ~10^7 events)
+  neut_out.set_momentum(neut_out.p().fromZto(neut_in.p().dir()));
+  lept_out.set_momentum(lept_out.p().fromZto(neut_in.p().dir()));
+
     e.out.push_back(neut_out);
     e.out.push_back(lept_out);
 
