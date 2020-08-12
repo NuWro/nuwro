@@ -2,6 +2,7 @@
 #define _RES_KINEMATICS_H
 
 #include "event1.h"
+#include "nucleus.h"
 
 //! store kinematics used by RES
 struct res_kinematics {
@@ -9,7 +10,7 @@ struct res_kinematics {
   static const double avg_nucleon_mass;  //!< average nucleon mass
   static const double pythia_threshold;  //!< do not use PYTHIA below this W
 
-  res_kinematics(const event& e);  //!< initialize basic kinmatics
+  res_kinematics(const event& e, nucleus& t);  //!< initialize basic kinmatics
 
   bool generate_kinematics(const double& res_dis_cut);  //!< set the rest of kinematics
 
@@ -47,6 +48,6 @@ struct res_kinematics {
 };
 
 //! get the value of binding energy according to setting from params
-double get_binding_energy(const params& p, const vec& momentum);
+double get_binding_energy(const params& p, particle& target, nucleus& t);
 
 #endif

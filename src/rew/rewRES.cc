@@ -74,7 +74,7 @@ double get_pi_fraction(const int pion_pdg, res_xsec xsec) {
 double calcRES(event &e, params &p, nucleus &t) {
   if (!e.flag.res) return 1;
 
-  res_kinematics kin(e);
+  res_kinematics kin(e, t);
   kin.set_kinematics(e);
 
   res_xsec xsec(kin, e.flag.cc);

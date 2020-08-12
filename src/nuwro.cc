@@ -301,7 +301,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
 			{
-				resevent2 (p, *e, true);
+				resevent2 (p, *e, *_nucleus, true);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
@@ -310,7 +310,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.nc=true;
 			if (p.dyn_res_nc) // res nc
 			{
-				resevent2 (p, *e, false);
+				resevent2 (p, *e, *_nucleus, false);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
