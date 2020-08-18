@@ -255,7 +255,7 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
     case pdg_SigmaM:
       // new method added below to house nucleon/hyperon scattering cross section
       // a new parameter was added to Interaction.h to store the pdg code of the hyperon
-      get_hyp_xsec(X.Ekeff,X.xsec_n,X.xsec_p,X.p2,p1,X.sigma,X.hyp_state);
+      get_hyp_xsec(X.xsec_n,X.xsec_p,X.p2,p1,X.sigma,X.hyp_state);
       break;
 
     default: // rest is pions!
@@ -668,7 +668,7 @@ bool Interaction::hyperon_scattering(int hyp_state, particle& p1, particle& p2, 
     res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
   }
 
-  / /set the binding energy of the hyperon
+  //set the binding energy of the hyperon
   p[0].set_fermi(p1.his_fermi);
 
   return  res;
