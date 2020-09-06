@@ -554,7 +554,7 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
   double kl_inc_dot_kl = kl_inc * kl;
 
   // A function placeholder
-  int A[cthbin_hybrid] = {0};
+  double *A = new double[cthbin_hybrid];
 
   // calculate the leptonic tensor elements
   double l[5] = {0,0,0,0,0}; // 00, 03, 33, 11+22, 12
@@ -615,6 +615,9 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vec
         A_value = linear_interp(A[cthf], A[cthf+1], cthd);
   }
   while( A_value/maximum < frandom() );
+
+  // Free dynamically allocated memory
+  delete [] A;
 
   return costh_rnd;
 }
@@ -1106,7 +1109,7 @@ int hybrid_grid_idx(int helicity, int channel)
 {
   int hg_idx = -1;
 
-  if( helicity < 0)
+  if(helicity < 0)
   {
     switch (channel)
     {
