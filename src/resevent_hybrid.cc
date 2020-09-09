@@ -71,8 +71,11 @@ void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
     case 2: hybrid_xsec = hybrid_dsdQ2dWdcth_tab; break;
     case 3: hybrid_xsec = hybrid_dsdQ2dWdcth; break;
     case 4: hybrid_xsec = hybrid_dsdQ2dWdOm; break;
-    default:hybrid_xsec = hybrid_dsdQ2dW_tab; break;
+    default:hybrid_xsec = hybrid_dsdQ2dWdOm; break;
   }
+  // switch from tabs to dsdQ2dWdcth above the limits
+  if(kin.W > Wmax_hybrid || -kin.q*kin.q > Q2max_hybrid)
+    hybrid_xsec = hybrid_dsdQ2dWdcth;
 
   // pion momentum if masses were averaged
   double pion_momentum;
@@ -970,10 +973,21 @@ void resevent_dir_hybrid(event& e, int method)
 
   // Choose cos_theta^* for dsdQ2dW, in Adler frame. E_nu in N-rest!
   double costh_rnd;
-  if( method > 0 )
-    costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, method);
+  if(e.W() > Wmax_hybrid || -e.q2() > Q2max_hybrid) // outside of limits, dsdQ2dWdcth was used
+  {
+    vec Zast  = neutrino - lepton;
+    vec Yast  = vecprod(neutrino,lepton);
+    vec Xast  = vecprod(Yast,Zast);
+    Zast.normalize(); Yast.normalize(); Xast.normalize();
+    costh_rnd = Zast * vec(pion) / pion.length();
+  }
   else
-    costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
+  {
+    if( method > 0 )
+      costh_rnd = hybrid_sample_costh(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, method);
+    else
+      costh_rnd = hybrid_sample_costh_2(neutrino.t, -e.q2(), e.W(), params, neutrino, lepton);
+  }
 
   // Choose phi^* for dsdQ2dWdcosth, in Adler frame. E_nu in N-rest!
   //double phi_rnd = hybrid_sample_phi(neutrino.t, -e.q2(), e.W(), e.out[0].m(), params, costh_rnd);
