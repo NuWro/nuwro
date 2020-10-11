@@ -319,7 +319,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.dis=e->flag.cc=true;
 			if (p.dyn_dis_cc) // dis cc
 			{
-				disevent (p, *e, true);
+				disevent (p, *e, *_nucleus, true);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
@@ -328,7 +328,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.dis=e->flag.nc=true;
 			if (p.dyn_dis_nc) //dis nc
 			{
-				disevent (p, *e, false);
+				disevent (p, *e, *_nucleus, false);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}

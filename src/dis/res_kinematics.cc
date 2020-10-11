@@ -96,7 +96,7 @@ double get_binding_energy(const params &p, particle& target, nucleus &t) {
       return 0;
     case 1:  // (global) Fermi gas
       return p.nucleus_E_b;
-    case 2:  // local Fermi gas TODO: why 0?
+    case 2:  // local Fermi gas
       return t.Ef(target) + p.kaskada_w;
     case 3:  // Bodek-Ritchie
       return 0;
