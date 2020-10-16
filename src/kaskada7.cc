@@ -175,15 +175,19 @@ interaction_parameters kaskada::prepare_interaction()
   double norm_ii = corr_func->get_value( 3 );
   double norm_ij = corr_func->get_value( 4 );
 
-  switch (res.pdg) // mean free path modifications: effective density and scaling
+  if( !e->out[0].nucleon() || e->number_of_interactions() || par.beam_placement != 2 )
+  // no correlations for incoming nucleons in the scattering mode (kaskada.cc)
   {
-    case pdg_neutron:
-      res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
-      res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
-    case pdg_proton:
-      res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
-      res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
-      break;
+    switch (res.pdg) // mean free path modifications: effective density and scaling
+    {
+      case pdg_neutron:
+        res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
+        res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
+      case pdg_proton:
+        res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
+        res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
+        break;
+    }
   }
 
   res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path

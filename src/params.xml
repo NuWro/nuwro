@@ -110,6 +110,12 @@
 	    <description><![CDATA[Histogram name for nutaub]]></description>
 	  </param>
 	</condition>
+        <condition value="7" description="Atmosferic neutrinos">
+          <param name="beam_atmo_files" type="text" ctype="line" default="">
+            <description></description>
+          </param>
+          <paramclone name="beam_direction" />
+        </condition>
     </conditions>
   </param>
   <param name="beam_test_only" type="hidden" ctype="int" default="0">
