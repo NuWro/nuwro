@@ -17,7 +17,7 @@ class flags
 		bool coh;        ///< coherent              (coh == dyn/2==3)
 		bool mec;        ///< meson exhange current (mec == dyn/2==4)
 		bool hip;        ///< hiperon production    
-                         
+        bool lep;        ///< neutrino-lepton; from Dmitry                 
 		bool nc;         ///< neutral current       (nc == dyn%2)     
 		bool cc;         ///< charged current       (cc == !nc)
 
@@ -50,7 +50,8 @@ class event:public TObject
 		                        ///< 2,3 - res  cc/nc - resonant (via delta) with some background
 		                        ///< 4,5 - dis  cc/nc - deep inelastric
 		                        ///< 6,7 - coh  cc/nc - coherent 
-		                        ///< 8,9 - mec  cc/nc - meson exhchange current   
+		                        ///< 8,9 - mec  cc/nc - meson exhchange current 
+		                        ///< 12 - lep  cc/nc - neutrino-lepton interaction
 		                        ///< 20 -  eel  nc - elastic electron scattering 
 
 		int nod[14];            ///< number of rescattering interactions of given type:

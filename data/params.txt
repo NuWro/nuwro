@@ -70,6 +70,7 @@ dyn_coh_cc =1      // Coherent charged current
 dyn_coh_nc =0      // Coherent neutral current
 dyn_mec_cc =1      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
+dyn_lep    =1      // Neutrino-electron
 
 dyn_e_el   =0      // Elastic electron scattering
 

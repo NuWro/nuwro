@@ -222,6 +222,9 @@
   </param>
   <param name="dyn_hip_si" type="checkbox" ctype="bool" default="0">
     <description>Sigma hiperon quasielastic production</description>
+    </param>
+  <param name="dyn_lep" type="checkbox" ctype="bool" default="0">
+    <description>Neutrino-electron scattering</description>
   </param>
   <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
     <description>Elastic electron scattering</description>
