@@ -425,7 +425,7 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 12:
-			e->flag.lep=e; //->flag.cc=true;
+			e->flag.lep=true; //->flag.cc=true;
 			if (p.dyn_lep) // Neutrino-lepton
 			{
 				lepevent (p, *e); //, true);
