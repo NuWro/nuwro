@@ -238,8 +238,8 @@ hyp_axial_mass=1000      // Hyperon axial mass
 
 hyp_effmass=0            // Use effective masses in hyperon cross section calculation
 
-hyp_Lambda_Eb=30         // Lambda-nucleus potential strength
-hyp_Sigma_Eb=-30         // Sigma-nucleus potential strength
+hyp_Lambda_Eb=0         // Lambda-nucleus potential strength
+hyp_Sigma_Eb=0         // Sigma-nucleus potential strength
 
 ################################################################
 #
