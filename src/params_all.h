@@ -102,6 +102,7 @@ PARAM(double,hyp_g2_Re_part,0)\
 PARAM(double,hyp_g2_Im_part,0)\
 PARAM(bool,hyp_su3_sym_breaking,0)\
 PARAM(double,hyp_axial_mass,1030)\
+PARAM(bool,hyp_effmass,false)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\
@@ -119,5 +120,6 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
-PARAM(double,hyp_Eb,30)\
+PARAM(double,hyp_Lambda_Eb,30)\
+PARAM(double,hyp_Sigma_Eb,30)\
 

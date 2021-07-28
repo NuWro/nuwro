@@ -52,12 +52,12 @@ particle nu_from_event(ND5Event e)
   particle p( pdg, 0.0 );
   double E=e.Enu*1000; // from GeV to MeV
 
-  //length scaling compares beam and geo units, sets beam units to match those in geo 
+  // Length scaling compares beam and geo units, sets beam units to match those in geo 
   p.r.x = e.xnu*beam_length_scaling;
   p.r.y = e.ynu*beam_length_scaling;
 
-  //read z component of neutrino position from file (in case beam window is not x-y plane)
-  //if not specified by flux file this should default to 0
+  // Read z component of neutrino position from file (in case beam window is not x-y plane)
+  // if not specified by flux file this should default to 0
   p.r.z = e.znu*beam_length_scaling;
 
   p.r.t = 0;
@@ -113,6 +113,7 @@ class BeamRF : public beam
   double minx,miny,maxx,maxy;
   double POT=0;
   int nnu=0; //total num of events  
+  double sum_weights=0; //sum of norms used
   double POT_per_file=0;
 
 public:
@@ -125,8 +126,7 @@ public:
   { 
         P_region=1;
   
-  //set length units, fix geometry units and set beam length scale accordningly
-  //ND280 uses cm for beam and mm for geo
+  // Set length units for positioning window to match those used by the geometry
   
   if(p.beam_length_units == p.geom_length_units) beam_length_scaling = 1; //if beam and geo units are same, no scaling needed
   else if(p.beam_length_units == "mm" && p.geom_length_units == "cm") beam_length_scaling = 0.1;    
@@ -135,10 +135,12 @@ public:
   else if(p.beam_length_units == "m" && p.geom_length_units == "mm") beam_length_scaling = 100;
   else if(p.beam_length_units == "cm" && p.geom_length_units == "m") beam_length_scaling = 0.1;
   else if(p.beam_length_units == "mm" && p.geom_length_units == "m") beam_length_scaling = 0.01;
-  else
-  std::cout << "Unrecognised length units: " << p.beam_length_units << " " << p.geom_length_units << std::endl
-  << "Use either mm, cm or m" << std::endl;
-
+  else {
+     std::cout << "Unrecognised length units: " << p.beam_length_units << " " << p.geom_length_units << std::endl
+               << "Use either mm, cm or m" << std::endl;
+     exit(1);
+  }  
+     
     read_events(detector);
     cout<<endl;
     acum=new double[N];
@@ -147,6 +149,7 @@ public:
     for(int i=0;i<N;i++)
       acum[i]=prev+=events[i/100000][i%100000].norm;
 
+
       prev=0;
     for(int i=0;i<N;i++)
     { 
@@ -154,11 +157,9 @@ public:
       acum2[i]=prev+=ev.norm*ev.Enu;
     }
       
-    //total POT used is the number of pot per file
-    //times number of files
-
-    //assumes each file has equal POT - might want to consider 
-    //storing the POT info in the root flux files themselves in future
+    // Total POT used is the number of pot per file x number of files.
+    // Assumes each file has equal POT - might want to consider 
+    // storing the POT info in the root flux files themselves in future
   
     POT = limit*POT_per_file;
     
@@ -166,8 +167,8 @@ public:
     cout<<" POT/nu="<<1/nu_per_POT()<<endl;
     cout<<" nfiles="<<limit<<endl;
 
-  //this asssumed flux is produced in x-y plane - not always true
-  //replace with more suitable calculation later
+  // This asssumed flux is produced in x-y plane - not always true
+  // Replace with more suitable calculation later
 
   //double surf=(maxx-minx)*(maxy-miny);
   //cout<<" Beam Surface="<<maxx-minx<<" cm x "<<maxy-miny<<" cm = "<<surf<<" cm2"<<endl;
@@ -186,6 +187,7 @@ public:
         int unsaved=0;
         double normsall=0;
         double normsbad=0;
+
     vector<string> names=root_files(folder);
     int n=names.size();
     if(first>n)
@@ -203,8 +205,11 @@ public:
                 if(detector)
                 {
                    particle nu=nu_from_event(*e);
-                   if(detector->is_hit_by(nu.p(),nu.r))
+                   if(detector->is_hit_by(nu.p(),nu.r)){
                         store(*e);
+			//adding weight calc
+			sum_weights += e->norm;
+			}
                    else
                    {
                         unsaved++;
@@ -229,9 +234,9 @@ public:
   void store( const ND5Event& e)
   {     
 
-    //C Thorpe: This does not appear to affect the POT counting calculation
-    //but the assumtion made here that the flux window is the x-y plane
-    //is no longer correct - this needs updating
+    // C Thorpe: This does not appear to affect the POT counting calculation
+    // but the assumtion made here that the flux window is the x-y plane
+    // is no longer correct - this needs updating
 
     if(N%100000==0) 
     {
@@ -258,18 +263,11 @@ public:
   
   double nu_per_POT()
   {
-/*
-  std::cout << std::endl;
-  std::cout << "total : " << nnu << std::endl;
-std::cout << "POT : " << POT << std::endl;
-  std::cout << std::endl;
-*/
+     //if POT per file has been specified
+     if(POT_per_file != -1) return sum_weights/POT;  
 
-  //if POT per file has been specified
-  if(POT_per_file != -1) return nnu/POT;    
-  
-  //otherwise assume ND280 setup
-  else return (acum[N-1]/limit)/1e21;//*P_region;
+     //otherwise assume ND280 setup
+     else return (acum[N-1]/limit)/1e21;//*P_region;
   }
 
   ////////////////////////////////////////////////////////////////////////

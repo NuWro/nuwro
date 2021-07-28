@@ -550,6 +550,22 @@ namespace PDG
         or pdg == pdg_SigmaP;
   }
 
+  //added C Thorpe Jan 2021
+  inline bool Lambda (int pdg)
+  {
+  return pdg == pdg_Lambda;
+  }
+
+
+  //added C Thorpe Jan 2021
+  inline bool Sigma (int pdg)
+  {
+  return pdg == pdg_Sigma
+      or pdg == pdg_SigmaM
+      or pdg == pdg_SigmaP;
+  }
+
+
 };
 
 

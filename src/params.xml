@@ -442,6 +442,10 @@
   <param name="hyp_axial_mass" type="text" ctype="double" default="1030">
     <description>Axial mass used in hyperon production></description>
   </param>
+ <param name="hyp_effmass" type="checkbox" ctype="bool" default="false">
+  <description>Use hyperon effective mass if cross section</description>
+</param>
+
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
@@ -531,9 +535,14 @@
   <!-- <param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
     <description>Hyperon kinetic energy cutoff</description>
   </param> -->
-  <param name="hyp_Eb" type="text" ctype="double" default="30">
-    <description>Hyperon binding energy at max density</description>
+  <param name="hyp_Lambda_Eb" type="text" ctype="double" default="30">
+    <description>Lambda binding energy at max density</description>
   </param>
+  <param name="hyp_Sigma_Eb" type="text" ctype="double" default="30">
+    <description>Sigma binding energy at max density</description>
+  </param>
+
+
 </params>
 
 <!--

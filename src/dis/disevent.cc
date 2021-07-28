@@ -29,7 +29,7 @@ TPythia6 *pythia22 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);
 
 void
-disevent (params & p, event & e, bool cc)
+disevent (params & p, event & e, nucleus &t, bool cc)
 {
 /////////////////initial parameters/////////////////////
   bool current = cc;		//cc==true for charge current , nc == false
@@ -170,8 +170,17 @@ double Meff2=Meff*Meff;
 //      Done by Jaroslaw Nowak
 //////////////////////////////////////////////
 
+
 //stabilne pi0
       pythia22->SetMDCY (pycomp_ (&pizero), 1, 0);
+
+	//C Thorpe: Stabalize hyperons
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Lambda) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Sigma) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaP) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaM) , 1, 0);
+
+
 
       pythia22->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off
       pythia22->SetMSTU (23, 1);	//It sets counter of errors at 0
@@ -306,7 +315,21 @@ double Meff2=Meff*Meff;
 	  if (ks[i] == 1)	//condition for a real particle in the final state
 	    {
 	      e.out.push_back (part);
-	    }
+        
+              // C Thorpe: If a hyperon, check if it can be moved to its potential
+              if(PDG::hyperon(part.pdg)){
+
+                if(p.nucleus_target && t.p + t.n > 1) part.set_fermi(t.hyp_BE(e.in[1].r.length(),part.pdg));
+
+                 // Check if hyperon can be generated in potential (performed at start of cascade)
+                 if( part.Ek() + part.his_fermi < 0 ){
+                    e.weight = 0.;
+                    return;
+                 }
+
+              }
+
+            }
 	}
 
     

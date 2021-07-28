@@ -24,7 +24,8 @@ double scatter2_with_BE_SC(particle p1,particle p2, particle &p3, particle &p4, 
 
 double scatter2_with_BE(particle p1,particle p2, particle &p3, particle &p4, double Y_Eb, vec &cms_dir);
 
-bool rescale_momenta(vect pcms, vec cms_dir, particle &p3, particle  &p4, double Y_Eb);
+//bool rescale_momenta(vect pcms, vec cms_dir, particle &p3, particle  &p4, double Y_Eb);
+bool rescale_momenta(vect pcms, vec cms_dir, particle &p3, particle  &p4);
 
 #endif
 

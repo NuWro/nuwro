@@ -40,6 +40,11 @@ const int Delta_plus = 2214;
 const int Delta_plusplus = 2224;
 const int Delta_minus = 1114;
 
+const int Lambda = 3122;
+const int Sigma = 3212;
+const int SigmaP = 3222;
+const int SigmaM = 3212;
+
 const int e = 11;
 const int nu_e = 12;
 const int mu = 13;
@@ -62,6 +67,9 @@ const double Dsplus_mass = 1.968;
 const double Dzero_mass = 1.8646;
 const double Dplus_mass = 1.8694;
 const double Lambda_mass = 1.1157;
+const double SigmaP_mass = 1.18937;
+const double SigmaM_mass = 1.19745;
+const double Sigma_mass = 1.19264;
 const double mass_e = 0.000510999 * 1000;
 const double mass_mu = 0.105658 * 1000;
 const double mass_tau = 1.77699 * 1000;

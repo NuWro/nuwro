@@ -67,20 +67,23 @@ class geomy
 	TGeoElement* ele1;
 
 
-//C Thorpe: reads in length units from params file, used in density calculations
+// C Thorpe: reads in length units from params file, used in density calculations
 public:
 	geomy(std::string _filename, std::string _geoname,std::string geom_length_units, double geom_density_convert, std::string volume="", vec _d = vec(0,0,0), vec _o = vec(0,0,0) )
 	{		
 
-	//C Thorpe: Factor to convert density to g/cm3 - required value has been added to ND280 geom.txt file
+	// C Thorpe: Factor to convert density to g/cm3 - required value has been added to ND280 geom.txt file
+	// Default value is 1
 	density_convert=geom_density_convert;
 		
-	//set length scaling based on units provided
+	// Set length scaling based on units provided
 	if(geom_length_units == "mm") length_scale = 0.1;
 	else if(geom_length_units == "cm") length_scale = 1;
 	else if(geom_length_units == "m") length_scale = 10;
-	else
-	std::cout << "Unrecognised geometry length units: " << geom_length_units  << std::endl<< "Use either mm, cm or m" << std::endl;
+	else {
+	std::cout << "Unrecognised geometry length units: " << geom_length_units  << std::endl << "Use either mm, cm or m" << std::endl;
+        exit(1);
+        }
 
 	pots=npots=0;
 
@@ -174,9 +177,6 @@ public:
 			}
 
 			  	
-			for(int i=0;i<n;i++){
-			  //  std::cout << mix1->GetAmixt()[i] << "   " << mix1->GetZmixt()[i] << "   " << w[i] << std::endl;
-			}
 			
 
 			tam.A = mix1->GetAmixt()[c];
@@ -185,7 +185,6 @@ public:
 		}
 		else	//if(ele1 == NULL)
 		{
-		  //  std::cout << "Not mixture" << std::endl;
 			tam.A = mat1->GetA();
 			tam.Z = mat1->GetZ();
 			tam.N = d_round(tam.A) - tam.Z;
@@ -193,16 +192,15 @@ public:
 		
 
 
-		//	double CLHEP_g_cm3=6.24151e+18;
+		//double CLHEP_g_cm3=6.24151e+18;
 			
-		//conversion factor to get density in g/cm3	
-		//for ND280 density_convert = 6.24151e+18;
+		// Conversion factor to get density in g/cm3	
+		// for ND280 density_convert = 6.24151e+18;
 		tam.w_density = mat1->GetDensity()/density_convert;
 
 		dens+=tam.w_density;
 		ndens++;
 		max_density = max(max_density,tam.w_density);
-//		std::cout << nuc[0] << std::endl;
 		nuc[0]+=tam.N*tam.w_density/(tam.N+tam.Z);
 		nuc[1]+=tam.Z*tam.w_density/(tam.N+tam.Z);
 		tam.r = r;
@@ -214,6 +212,8 @@ public:
 		double x,dx,y,dy,z,dz;
 	    x=y=z=0;
 	    dx=dy=dz=1e40;
+		
+
 		if(dir.x!=0)
 		{  x=(orig.x-start.x)/dir.x;
 		   dx=abs(dxyz.x/dir.x);
@@ -256,9 +256,9 @@ public:
 		double tb=min(x+dx,min(y+dy,z+dz));
 		if(tb>ta)
 		 { 
-			//C Thorpe: Check geom units, convert to cm
+			// C Thorpe: Check geom units, convert to cm
 			 
-			double len=dir.length()*(tb-ta)*length_scale; //length scale takes geom length units and converts to cm
+			double len=dir.length()*(tb-ta)*length_scale; // Length scale takes geom length units and converts to cm
 	
 		    if(len>frandom()*max_length)
 		      {
@@ -270,19 +270,15 @@ public:
 		 }
 		double mol=6.02214129e23 ;
 
-		/* density is in g/cm3 
-		*  length is in cm
+		/* Density is in g/cm3 
+		*  Length is in cm
 		*  mol = number of nucleons per gram
 		*  pots is in nucleons/cm2
 		*/ 
-		//CT: this density is wrong - off by many OM
-		// max_length is in cm, tam.w_density is in g/cm3
 		
 		pots+=tam.w_density*max_length*mol;
 		npots++;  
 		
-
-		//	std::cout << npots << std::endl;
 		//~ cout<<tam.w_density/CLHEP_g_cm3<<'\t';
 		//~ cout<<tam.A<<'\t';
 		//~ cout<<tam.Z<<'\t';
@@ -315,10 +311,8 @@ public:
 	
 	double vol_mass()
 	{
-	 	//C Thorpe: Lengths should be in cm and density in g/cm3 for all configurations 
-	 
-	return 8*dxyz.x*dxyz.y*dxyz.z*density()*length_scale*length_scale*length_scale*cm3; 
-
+           // C Thorpe: Lengths should be in cm and density in g/cm3 for all configurations 	 
+           return 8*dxyz.x*dxyz.y*dxyz.z*density()*length_scale*length_scale*length_scale*cm3; 
 	}
 
 	double frac_proton()

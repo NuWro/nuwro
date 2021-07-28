@@ -23,6 +23,8 @@ static const double MA_cc_mec =
 static const double MA_nc_mec = 1014 * MeV;
 static double MA_s = 1030 * MeV;
 static double MA_hyp = 1030 * MeV; // C Thorpe Added Hyperon axial mass parameter
+
+static const double Dipole_Lambda = 5.6; //C Thorpe: Lambda parameter used in dipole form factors
                                    // default 1030 MeV // March 2019
 static double delta_s = 0;
 static const double mu_p = 2.793;   // moment dipolowy protonu
@@ -269,11 +271,14 @@ FF DipoleFF(const double q2)  // dipole electric form factor G_E^V
 {
   double a = 1.0 - q2 / MV2;
   double a2 = a * a;
+  double tau = -q2 / (4 * M2);
 
   FF ff;
   ff.Q2 = -q2;
   ff.GEp = 1.0 / a2;
-  ff.GEn = 0;
+  //  ff.GEn = 0;
+  //C Thorpe: Updated dipole FFs
+  ff.GEn = (-1)*mu_n*tau/(1+Dipole_Lambda*tau)/a2;
   ff.GMp = mu_p / a2;
   ff.GMn = mu_n / a2;
 
