@@ -224,7 +224,7 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6 || (dyn>=10 && dyn<12))
+	if(dyn<6 || (dyn>=10 && dyn<12) || dyn==20)
 	{
 								 // insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
@@ -434,17 +434,19 @@ void NuWro::makeevent(event* e, params &p)
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{
-		switch(dyn)
+       	switch(dyn)
 		{
 			case 20:
 				e->flag.nc=true;
-			    if(p.eel_alg=="old")
+			    /*if(p.eel_alg=="old")
                     e_el_event(p,*e,*_nucleus,false); 
 			    else 	
                 if(p.eel_alg=="fast")
                     e_el_event2orig(p,*e,*_nucleus,false); 
                 else   // all remaining algorithms  
-                    e_el_event2(p,*e,*_nucleus,false); 
+                    e_el_event2(p,*e,*_nucleus,false); */
+                
+                qelevent1 (p, *e, *_nucleus, true);
 			    break;
 
 			case 21: 

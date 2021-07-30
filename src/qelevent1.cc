@@ -66,6 +66,11 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
         break;
     }
   } 
+  
+  if (nu.pdg==11 && N0.pdg==pdg_proton)
+      kind=10;
+  if (nu.pdg==11 && N0.pdg==pdg_neutron)
+      kind=11;//will be used when FF are selected in the file ff.cc
 
   double _E_bind=0; //binding energy
 
@@ -85,7 +90,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     {
       case 0: _E_bind=0;        break;
       case 1: _E_bind= p.nucleus_E_b; break;
-      case 2: _E_bind= t.Ef(N0) + p.kaskada_w;break; //temporary
+      case 2: _E_bind= t.Ef(N0) + p.kaskada_w; break; //temporary
       case 3: _E_bind= bodek_binding_energy(N0, t.A()); break;
       case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n);
            //in the future it is possible to add SF for other nuclei as well  
@@ -110,7 +115,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
   // cross section (is 0 until the reaction occurs)   
   double xsec = 0;    
   double q2,jakobian;  
-
+  
   // int qel_kinematics=0;  // force standard behaviour
   // q2=qel_kin_gen(qel_kinematics,_E_bind, nu, N0,lepton, N1, jakobian);
   switch(p.qel_kinematics)
@@ -196,9 +201,23 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       case 3:e.weight *= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(),    t.Mf(), t.kF(), new_ver);break;
     } 
   }
+  
+    //cout<<lepton.z/lepton.momentum()<<endl;
+    
   if( p.pauli_blocking) // inlined mypauli_qel
     if(t.pauli_blocking_old(N1, N0.length()))
       e.weight = 0;
-
+    
+//selection of events for electron scattering using acceptance information
+    if (nu.pdg==11)
+    {
+    double kosine=lepton.z/lepton.momentum();
+    //cout<<kosine<<endl;
+  if (kosine < p.eel_theta_lab*(1-p.eel_dz/100) || kosine > p.eel_theta_lab*(1+p.eel_dz/100))
+        e.weight=0;
+  else
+      e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2;//change of propagators in weak and em processes
+    }
+    
   return e.weight*cm2;
 }

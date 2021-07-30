@@ -29,7 +29,7 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 
 beam_type = 0       // single flavor beam
 beam_energy = 1000  // monoenergetic (in MeV)
-beam_particle = 14    // neutrino PDG
+beam_particle = 14    // lepton PDG
 
 # It is convenient to include one of the predefined beam specifications
 # with the @ char
@@ -45,6 +45,23 @@ beam_particle = 14    // neutrino PDG
 # Target specification
 #
 ################################################################
+
+
+# Models for the description of nucleus as a target:
+# nucleus_target = 0 // free target; 
+# nucleus_target = 1 // Fermi gas; 
+nucleus_target = 2 // local Fermi gas; 
+# nucleus_target = 3 // Bodek-Ritchie; 
+# nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
+# nucleus_target = 5 // deuterium; 
+# nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
+
+# options below are kept only for historical reasons
+nucleus_E_b         =  34   // [MeV] binding energy 
+# used in qelevent.cc, target.h as Eb
+nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
+
+pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 
 #@target/proton.txt
 @target/C.txt
@@ -234,19 +251,6 @@ MEC_cm_direction = 0 //in CM frame prefered directions along (>0.0) or perpendic
 nucleus_model       = 1  //"anynucleus" i.e. realistic density profile
 
 
-# options below are kept only for historical reasons
-nucleus_E_b         =  34   // [MeV] binding energy 
-# used in qelevent.cc, target.h as Eb
-nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
-
-# Models for the description of nucleus as a target:
-# nucleus_target = 0 // free target; 
-# nucleus_target = 1 // Fermi gas; 
-nucleus_target = 2 // local Fermi gas; 
-# nucleus_target = 3 // Bodek-Ritchie; 
-# nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
-# nucleus_target = 5 // deuterium; 
-# nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
 
 
 kaskada_on 	 = 1      // use (1) or not (0) the cascade 
@@ -284,5 +288,11 @@ kaskada_piN_xsec = 1  // Full sets of input data for pions: (0) Metropolis et al
 
 formation_length = 1 // formation length in fm for formation_zone = const
 
-pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
+
+################################
+# Electron scattering paremeters
+################################
+
+eel_theta_lab=0.5 // defines cosine of the scattered electron
+eel_dz=1 //defines acceptance (in %) of the scattered electron
 
