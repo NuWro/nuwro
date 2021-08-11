@@ -4,7 +4,6 @@
 #
 ################################################################
 
-
 # The number of events used to calculate the cross sections: 
 
 number_of_test_events = 2000000
@@ -46,7 +45,6 @@ beam_particle = 14    // lepton PDG
 #
 ################################################################
 
-
 # Models for the description of nucleus as a target:
 # nucleus_target = 0 // free target; 
 # nucleus_target = 1 // Fermi gas; 
@@ -54,7 +52,7 @@ nucleus_target = 2 // local Fermi gas;
 # nucleus_target = 3 // Bodek-Ritchie; 
 # nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
 # nucleus_target = 5 // deuterium; 
-# nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
+# nucleus_target = 6 // effective potential
 
 # options below are kept only for historical reasons
 nucleus_E_b         =  34   // [MeV] binding energy 
@@ -90,7 +88,6 @@ dyn_mec_nc =0      // Meson exchange neutral current
 dyn_lep    =1      // Neutrino-electron
 
 dyn_e_el   =0      // Elastic electron scattering
-
 
 ################################################################
 # Dynamics details and form factor parameters
@@ -159,30 +156,14 @@ sf_pb = 1
 cc_smoothing=0 
 #cc_smoothing=1 // dont't try impossible qel reaction: nu+n
 
-# The default
-# qel_kinematics   = 0  // relativistic (default)
-# qel_kinematics   = 1  //
-# qel_kinematics   = 2  //
-# qel_kinematics   = 3  // momentum dependent kinematics
-# qel_kinematics   = 4  // momentum dependent kinematics with outgoing nucleon energy edjustment
-#   The choice of the kinematics for the qel interaction vertex  
-#   	0 - relativistic  
-#       1 - 
-#       2 - bodek 
-#       3 - momentum dependent potential
-#       4 - Fermi gas with 
-
-
 # qel_rpa = 0    // Don't use rpa
 qel_rpa = 1    // Use rpa without effective mass of nucleon
 # qel_rpa = 2    // Use effectove mass without rpa (test only)
 # qel_rpa = 3    // Use rpa with effective mass of nucleon (test only) 
 
-
 ################################################################
 #   RES
 ################################################################
-
 
 # The choice of Delta production FF:
 
@@ -213,11 +194,9 @@ spp_precision= 500
 res_dis_cut = 1600	//res dis boundary in MeV, should be 1600
 bkgrscaling = 0.0  //non-resonant background scaling; should be from -1.3 ... +1.3; default value is 0.0
 
-
 ################################################################
 #   COH
 ################################################################
-
 
 coh_mass_correction = 1  // Rein Sehgal correction to CC coherent single pion production
 coh_kind = 2             // Switch between Rein-Sehgal (1) and Berger Sehgal(2) models
@@ -249,9 +228,6 @@ MEC_cm_direction = 0 //in CM frame prefered directions along (>0.0) or perpendic
 # Models for the description of nucleus in the cascade
 #nucleus_model       = 0  //"flatnucleus" ball with constant density
 nucleus_model       = 1  //"anynucleus" i.e. realistic density profile
-
-
-
 
 kaskada_on 	 = 1      // use (1) or not (0) the cascade 
 
@@ -288,11 +264,9 @@ kaskada_piN_xsec = 1  // Full sets of input data for pions: (0) Metropolis et al
 
 formation_length = 1 // formation length in fm for formation_zone = const
 
-
 ################################
 # Electron scattering paremeters
 ################################
 
 eel_theta_lab=0.5 // defines cosine of the scattered electron
-eel_dz=1 //defines acceptance (in %) of the scattered electron
-
+eel_dz=1 //defines acceptance (in %) of the scattered electron ( eel_theta_lab*(1+-eel_dz) )

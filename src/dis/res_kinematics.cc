@@ -98,13 +98,14 @@ double get_binding_energy(const params &p, particle& target, nucleus &t) {
       return p.nucleus_E_b;
     case 2:  // local Fermi gas
       return t.Ef(target) + p.kaskada_w;
-    case 3:  // Bodek-Ritchie
-      return 0;
+    case 3:  // Bodek-Ritchie; temporary prescription taken from GFG
+      return p.nucleus_E_b;
     case 4:  // effective spectral function
       return binen(target.p(), p.nucleus_p, p.nucleus_n);
     case 5:  // deuterium
       return deuter_binen(target.p());
-    case 6:  // deuterium with constant binding energy
+    case 6:  // effective potential
+        assert ( !"For a moment effective potential cannot be used for RES" );
       return p.nucleus_E_b;
     default:
       return 0;
