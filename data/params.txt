@@ -269,4 +269,4 @@ formation_length = 1 // formation length in fm for formation_zone = const
 ################################
 
 eel_theta_lab=0.5 // defines cosine of the scattered electron
-eel_dz=1 //defines acceptance (in %) of the scattered electron ( eel_theta_lab*(1+-eel_dz) )
+eel_dz=1 //defines angular acceptance for the scattered electron ( it is for the cosine from (eel_theta_lab - eel_dz) to (eel_theta_lab + eel_dz), the width is 2*eel_dz! )

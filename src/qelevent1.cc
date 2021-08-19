@@ -26,7 +26,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 {
   e.weight=0;
 
-  particle nu=e.in[0];               // neutrino
+  particle nu=e.in[0];               // neutrino (or electron)
   particle N0=e.in[1];               // initial nucleon
   particle lepton;  
   particle N1;
@@ -159,7 +159,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     {
     double kosine=lepton.z/lepton.momentum();
     
-  if (kosine < p.eel_theta_lab*(1-p.eel_dz/100) || kosine > p.eel_theta_lab*(1+p.eel_dz/100))
+  if ( kosine < (p.eel_theta_lab-p.eel_dz)  || kosine > (p.eel_theta_lab+p.eel_dz) )
         e.weight=0;
   else
       e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2;//change of propagators in weak and em processes
