@@ -30,6 +30,7 @@ const int piplus = 211;
 const int piminus = -211;
 const int Kplus = 321;
 const int Kzero = 311;
+const int Kminus = -321;
 const int Dsplus = 431;
 const int Dsminus = -431;
 const int Dzero = 421;

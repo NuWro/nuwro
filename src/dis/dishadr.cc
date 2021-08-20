@@ -35,6 +35,12 @@ dishadr (event & e, bool current, double hama, double entra)
   pythia2->SetMDCY (pycomp_ (&SigmaP), 1, 0);
   pythia2->SetMDCY (pycomp_ (&SigmaM), 1, 0);
 
+  // C Thorpe: Stablize kaons
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kplus) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kzero) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kminus) , 1, 0);
+
+
   pythia2->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off
   pythia2->SetMSTU (23, 1);	//It sets counter of errors at 0
   pythia2->SetMSTU (26, 0);	//no warnings printed 

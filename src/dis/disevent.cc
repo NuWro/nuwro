@@ -180,6 +180,10 @@ double Meff2=Meff*Meff;
       pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaP) , 1, 0);
       pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaM) , 1, 0);
 
+      // C Thorpe: Stablize kaons
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kplus) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kzero) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kminus) , 1, 0);
 
 
       pythia22->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off

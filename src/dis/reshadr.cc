@@ -34,11 +34,17 @@ std::cout << "Setting RES PYTHIA parameters" << std::endl;
 
 //stabilne pi0
   pythia7->SetMDCY (pycomp_ (&pizero), 1, 0);
-//C Thorpe: Adding Hyperons as stable dis particles
+
+  //C Thorpe: Adding Hyperons as stable dis particles
   pythia7->SetMDCY (pycomp_ (&Lambda), 1, 0);
   pythia7->SetMDCY (pycomp_ (&Sigma), 1, 0);
   pythia7->SetMDCY (pycomp_ (&SigmaP), 1, 0);
   pythia7->SetMDCY (pycomp_ (&SigmaM), 1, 0);
+
+  // C Thorpe: Stablize kaons
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kplus) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kzero) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kminus) , 1, 0);
 
   pythia7->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off
   pythia7->SetMSTU (23, 1);	//It sets counter of errors at 0
