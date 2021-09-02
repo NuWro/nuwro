@@ -226,6 +226,10 @@ void Interaction::total_cross_sections(particle &p1, nucleus &t, interaction_par
   NN_inel->set_input_point( X.Ekeff );
   double inel_ii = NN_inel->get_value( 1 );
   double inel_ij = NN_inel->get_value( 2 );
+
+
+  int ij=0;
+
   if( X.Ekeff <= 280. )                // inelastic threshold
   {inel_ii = 0.;inel_ij =0.;}
 
@@ -324,7 +328,7 @@ bool Interaction::particle_scattering (particle & p1, nucleus &t, interaction_pa
     case pdg_SigmaM:
     case pdg_SigmaP:
       k1 = hyperon_;
-      return hyperon_scattering(X.hyp_state,p1,X.p2,X.n,X.p,X.sigma,X.xsec_p,X.xsec_n);
+      return hyperon_scattering(X.hyp_state,p1,X.p2,t,X.n,X.p,X.sigma,X.xsec_p,X.xsec_n);
 
     default:
       return 0;
@@ -387,28 +391,16 @@ void Interaction::get_NN_xsec( double Ek, double &resii, double &resij )
   {
     NN_xsec->set_input_point( Ek );
 
+
     resii = NN_xsec->get_value(1);
     resij = NN_xsec->get_value(2);
+
   }
 }
 
 ////////////////////////////////////////                                               
 
-// ADDED C THORPE DEC 2018                                                              
-// hyperon nucleon scatter                                                              
-
-/* Argument list:                                                                      
-Ek hyperon KE in target rest frame                                                    
-nY neutron hyperon cross sections                                                      
-pY proton hyperon cross sections                                                       
-N initial nucleon                                                                      
-Y initial hyperon                                                                      
-sigma[] array of cross sections for up to 6 possible reactions                         
-hyp_state indicates starting nucleon and hyperon                                       
-*/
-
-void Interaction::get_hyp_xsec(double &nY, double &pY,particle N,particle Y,
-			       double sigma[], int &hyp_state)
+void Interaction::get_hyp_xsec(double &nY, double &pY,particle N,particle Y,double sigma[], int &hyp_state)
 {
   switch(Y.pdg){
   case PDG::pdg_Lambda:
@@ -437,7 +429,7 @@ void Interaction::get_hyp_xsec(double &nY, double &pY,particle N,particle Y,
   v = (vect(N) + vect(Y)).v();
 
   // CMS energy
-  // required to check which final states are accessible
+  // Required to check which final states are accessible
 
   double E = sqrt((N+Y)*(N+Y));
 
@@ -530,6 +522,8 @@ bool Interaction::nucleon_scattering ( particle& p1, particle& p2, int &n, parti
   double s1  = get_NN_xsec_ij( Ek1 );
   double s2  = get_NN_xsec_ij( Ek2 );
 
+  double Ek_used = -1;
+
   if( frandom()*(s1 + s2) < s2 )
   {
     p2.x *= -1;
@@ -537,12 +531,16 @@ bool Interaction::nucleon_scattering ( particle& p1, particle& p2, int &n, parti
     p2.z *= -1;
     NN_inel->set_input_point( Ek2 );
     NN_angle->set_input_point( Ek2 );
+    Ek_used = Ek2;
   }
   else
   {
     NN_inel->set_input_point( Ek1 );
     NN_angle->set_input_point( Ek1 );
+    Ek_used = Ek1;
   }
+
+
 
   if ( frandom() > NN_inel->get_value( 1+ij ) )  // 1 is ii, 2 is ij
       return nucleon_elastic(p1, p2, n, p);
@@ -587,6 +585,7 @@ bool Interaction::nucleon_spp( particle p1, particle p2, int &n, particle p[] )
        {{f1[0],"pp."},{    1,"np+"},{ 1,"ddd"}} //pp
       };
   doit(n,cnls[canal],p);  // p[2] is pion 
+
   return scatter_n (n, p1, p2, p);
 }
 
@@ -612,6 +611,7 @@ bool Interaction::nucleon_dpp( particle p1, particle p2, int &n, particle p[] )
 
 int Interaction::nucleon_process_id()
 {
+	//std::cout << nucleon_ << " " << k2 << std::endl;
   return nucleon_+k2;
 }
 
@@ -626,72 +626,92 @@ const char* Interaction::nucleon_process_name()
     return NULL;
 }
 
-//////////////////////////////////////                                                 
-//// Added by c thorpe Jan 2019                                                        
-//// Hyperon Scattering Methods                                                        
-//// scatter hyperon either according to disribution for NN scatter                    
-//// If no NN process with same charges exists scatter isotropically in CMS frame      
-//////////////////////////////////////                                                 
+////////////////////////////////////////////////////////////////////////////////
+// Added by C Thorpe Jan 2019                                                        
+// Hyperon Scattering Methods                                                        
+// Scatter hyperon either according to disribution for NN scatter                    
+// If no NN process with same charges exists scatter isotropically in CMS frame      
+////////////////////////////////////////////////////////////////////////////////
 
-bool Interaction::hyperon_scattering(int hyp_state, particle& p1, particle& p2, int &n,
+bool Interaction::hyperon_scattering(int hyp_state, particle& p1, particle& p2,nucleus t, int &n,
                                      particle p[], double sigma[], double sigma_p, double sigma_n)
 {
-  int res;
+   int res;
 
-  // set value of hyp state, now specific for protons and neutrons
-  if(p2.pdg == PDG::pdg_neutron)
-  {
-    hyp_state += 4;
-  }
+   // Set value of hyp state, for initial state
+   if(p2.pdg == PDG::pdg_neutron)
+   {
+      hyp_state += 4;
+   }
 
-  // selects the final state for the hyperons
+  // Select final state
   hyperon_state(hyp_state,sigma,ij,p);
+
+  // Set the process ID
+
+  // (quasi)elastic scatter 
+  if( (p1.pdg == PDG::pdg_Lambda && p[0].pdg == PDG::pdg_Lambda) || (PDG::Sigma(p1.pdg) && PDG::Sigma(p[0].pdg)) ) k2 = 0;
+
+  // lambda -> sigma
+  else if(p1.pdg == PDG::pdg_Lambda && PDG::Sigma(p[0].pdg)) k2 = 1;
+
+  // sigma -> lambda
+  else if(PDG::Sigma(p1.pdg) && p[0].pdg == PDG::pdg_Lambda) k2 = 2;
+
+  else { std::cout << "Hyperon scatter error" << std::endl; exit(1); }
+
 
   if(ij == 0 || ij == 1)
   {
-    vec v = p2.v();
+     vec v = p2.v();
 
-    double Ek =  p1.Ek_in_frame (-v);
+     double Ek =  p1.Ek_in_frame (-v);
 
-    NN_angle->set_input_point( Ek );
+     NN_angle->set_input_point( Ek );
 
-    float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij                           
-    float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij                           
+     float A = NN_angle->get_value( 1+ij ); // 1 is ii, 2 is ij                           
+     float B = NN_angle->get_value( 3+ij ); // 3 is ii, 4 is ij                           
 
-    // std::cout << p1.pdg << "  " << p2.pdg << std::endl;                               
-
-    res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1) || hyperon_error(p1,p2,p);
+     res=scatterAB (p1, p2, p[0], p[1], 0, 0, 0, A, B, 0, 0, 1) || hyperon_error(p1,p2,p);
 
   }
   else
   {
-    res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
+     res = scatter_n(n,p1,p2,p) || hyperon_error(p1,p2,p);
   }
 
-  //set the binding energy of the hyperon
-  p[0].set_fermi(p1.his_fermi);
+   // Set position of outgoing particles to match 
+   // final position of hyperon before scatter
+   p[0].r = p1.r;
+   p[1].r = p1.r;
 
   return  res;
-
 }
-/////////////////////////////////////////////
-// if scatter unable to generate kinematics set
-// initial state same as final
-// find sometimes that CMS energy calculated
+
+////////////////////////////////////////////////////////////////////////////
+// If scatter unable to generate kinematics set initial state same as final
+// Find sometimes that CMS energy calculated
 // in hyperon cascade.cc is different to the one used by sactter by
 // 1-2 MeV and interaction being attempted should have been allowed
-///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 bool Interaction::hyperon_error(particle p1, particle p2,particle p[])
 {
-  //  std::cout << "hyperon scatter error" << std::endl;
-
   p[0] = p1;
   p[1] = p2;
-
-  //  std::cout << "failure" << std::endl;
 
   return 1;
 }
 
+////////////////////////////////////////
 
+int Interaction::hyperon_process_id()
+{
+  // 30 = elastic (lambda -> lambda or sigma -> sigma)
+  // 31 = lambda -> sigma
+  // 32 = sigma -> lambda
+  
+  return hyperon_+k2;
+}
+
+////////////////////////////////////////

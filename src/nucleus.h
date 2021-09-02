@@ -46,8 +46,9 @@ class nucleus
 						  /// 4 - spectral function (for carbon and oxygen, else lFG); 
 						  /// 5 - deuterium (forced for H2); 
 						  /// 6 - proton in deuterium (for tests only);
-	//hyperon potential at r=0
-	double Y_Eb;
+	// Hyperon potential at r=0
+	double Lambda_Eb;
+	double Sigma_Eb;
 		 
 	public:
 
@@ -81,7 +82,7 @@ class nucleus
 	bool pauli_blocking (particle p[], int n); ///< true if any of p[0]..p[n-1] is blocked (used in cascade)
 	bool pauli_blocking_old (particle &pa, double p0); ///< TRUE = PARTICLE IS BLOCKED (p0 - momentum of initial nucleon)
 
-	double hyp_BE(double r);
+	double hyp_BE(double r,int pdg);
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -92,6 +93,7 @@ class nucleus
 inline double nucleus::Ef()
 {
 	double const M=0.5*(PDG::mass_proton+PDG::mass_neutron);
+
 	return sqrt(_kf*_kf+M*M)-M;
 }
 
@@ -233,9 +235,25 @@ inline double nucleus::V(particle &p)
 	return (sqrt(p.mass2() + lkf*lkf) - p.mass());// + 7*MeV);// + 5*MeV;
 }
 
-inline double nucleus::hyp_BE(double r)
+
+///////////////////////////////////////////////////////////////////////////////
+/// potential of a hyperon
+///////////////////////////////////////////////////////////////////////////////
+
+inline double nucleus::hyp_BE(double r,int pdg)
 {
-  return Y_Eb*density(r)/density(0);
+
+
+switch(pdg){
+case 3122: return Lambda_Eb*density(r)/density(0);
+case 3212: case 3112: case 3222: return Sigma_Eb*density(r)/density(0);
+default: std::cout << "This is not a hyperon! Returning 0 for hyperon potential" << std::endl; return 0;
+}
+
+std::cout << "Should never reach here!" << std::endl;
+return 0;
+
+//  return Lambda_Eb*density(r)/density(0);
 }
 
 #endif

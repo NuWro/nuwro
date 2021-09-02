@@ -30,6 +30,7 @@
 double qelevent1(params&p, event & e, nucleus &t,bool nc)
 ////////////////////////////////////////////////////////////////////////
 {
+
   e.weight=0;
 
   particle nu=e.in[0];               // neutrino
@@ -88,7 +89,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       case 0: _E_bind = 0;        break;
       case 1: _E_bind = p.nucleus_E_b; break;
       case 2: _E_bind = t.Ef(N0) + p.kaskada_w;break; //temporary
-      case 3: _E_bind = bodek_binding_energy(N0, t.A()); break;
+      case 3: _E_bind = bodek_binding_energy(N0, t.p , t.n); break;
       case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n); break;
       case 5: _E_bind = deuter_binen (N0.p());break; //deuterium 
       case 6: _E_bind = p.nucleus_E_b;      break; //deuterium like Fermi gas
@@ -149,6 +150,8 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
             exit(9);
   }
 
+
+
   // (KN) TODO: momentum dependent potential should be independent of this code
   if (q2 != 0) // there was scattering
     if(p.qel_kinematics==3)
@@ -157,8 +160,13 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
   vect nu4 = nu;
   nu4.boost (-N0.v ());  // go to nucleon rest frame
   double Enu0 = nu4.t;     // neutrino energy in target frame
+
   xsec = jakobian * qel_sigma(Enu0, q2, kind, nu.pdg<0, lepton.mass(), N0.mass());
-  
+
+
+
+ 
+ 
   /*
   /////////////////////////////////////////////////////////
   // Aligarh Model for QEL (includes second class current)

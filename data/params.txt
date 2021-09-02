@@ -70,6 +70,7 @@ dyn_coh_cc =1      // Coherent charged current
 dyn_coh_nc =0      // Coherent neutral current
 dyn_mec_cc =1      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
+dyn_hyp_cc =1      // Quasi elastic hyperon production
 
 dyn_e_el   =0      // Elastic electron scattering
 
@@ -221,6 +222,24 @@ mec_back_to_back_smearing = 0 //smearing of originally back-to-back correlated p
 MEC_pauli_blocking = 1 //switch on/off Pauli blocking for nucleons from MEC dynamics; default 1 (on)
 mec_pb_trials = 30 //how many times configuration satisfying Pauli blocking is searched for; default 25
 MEC_cm_direction = 0 //in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1
+
+################################################################
+# Hyperon Production
+###############################################################
+
+hyp_lambda=1	         // Lambda zero baryon production
+hyp_sigma_zero=1         // Sigma zero baryon production
+hyp_sigma_minus=1        // Sigma minus baryon production
+
+hyp_g2_Re_part=0         // Real part second class current
+hyp_g2_Im_part=0         // Imaginary part second class current
+hyp_su3_sym_breaking=0   // SU(3) symmetry breaking
+hyp_axial_mass=1000      // Hyperon axial mass
+
+hyp_effmass=0            // Use effective masses in hyperon cross section calculation
+
+hyp_Lambda_Eb=0         // Lambda-nucleus potential strength
+hyp_Sigma_Eb=0         // Sigma-nucleus potential strength
 
 ################################################################
 #

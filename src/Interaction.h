@@ -63,7 +63,11 @@ inline int kod(int i)
     case 23: return 7;
     case 25: return 8;
     case 24: return 11;
-    case 30: return 14; // process names have to be added
+    //C Thorpe: Adding hyperon processes
+    case 30: return 15; // hyperon (quasi)elastic
+    case 31: return 16; // hyperon lambda -> sigma
+    case 32: return 17; // hyperon sigma -> lambda
+	
     case 99: return 9;
     case 100: return 10;
     default: throw "invalid interaction code";
@@ -719,7 +723,8 @@ class Interaction
                                                    (table p) and the number of outgoing particles (n). */
     int process_id()                          //! Returns the process id.
     {
-      if(k1==hyperon_) return 30; // process names have to be added
+      if(k1==hyperon_)  return hyperon_process_id(); // C Thorpe: Added hyperon process ids
+    
       return k1==nucleon_ ? nucleon_process_id() : PD.process_id(); 
     }
     const char* process_name()                //! Returns the process name.
@@ -747,6 +752,7 @@ class Interaction
     bool   nucleon_dpp(        particle  p1, particle  p2, int &n, particle p[] );
                                               //!< Scattering of p1, p2 with double pion production.
     int         nucleon_process_id();
+    int         hyperon_process_id();
                                               //!< Returns the nucleon process id.
     const char* nucleon_process_name();
                                               //!< Returns the nucleon process name.
@@ -754,7 +760,7 @@ class Interaction
     //calculates nucleon/hyperon cross section
     void get_hyp_xsec(double &nY, double &pY, particle N, particle Y, double sigma[], int &hyp_state);
     //scatters hyperons, particles p1 and p2 into p[]
-    bool hyperon_scattering(int hyp_state, particle& p1, particle& p2, int &n, particle p[],
+    bool hyperon_scattering(int hyp_state, particle& p1, particle& p2,nucleus t, int &n, particle p[],
                            double sigma[], double sigma_p, double sigma_n);
     bool hyperon_error(particle p1, particle p2, particle p[]);
 };

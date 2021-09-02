@@ -4,7 +4,7 @@
 #include "event1.h"
 #include "params.h"
 
-void disevent (params & p, event & e, bool cc);
+void disevent (params & p, event & e, nucleus &t, bool cc);
 
 #endif
 
