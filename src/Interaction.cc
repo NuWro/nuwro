@@ -684,9 +684,8 @@ bool Interaction::hyperon_scattering(int hyp_state, particle& p1, particle& p2,n
    // final position of hyperon before scatter
    p[0].r = p1.r;
    p[1].r = p1.r;
- 
-  return  res;
 
+  return  res;
 }
 
 ////////////////////////////////////////////////////////////////////////////
