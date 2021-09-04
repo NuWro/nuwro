@@ -4,7 +4,6 @@
 #
 ################################################################
 
-
 # The number of events used to calculate the cross sections: 
 
 number_of_test_events = 2000000
@@ -29,7 +28,7 @@ random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
 
 beam_type = 0       // single flavor beam
 beam_energy = 1000  // monoenergetic (in MeV)
-beam_particle = 14    // neutrino PDG
+beam_particle = 14    // lepton PDG
 
 # It is convenient to include one of the predefined beam specifications
 # with the @ char
@@ -45,6 +44,22 @@ beam_particle = 14    // neutrino PDG
 # Target specification
 #
 ################################################################
+
+# Models for the description of nucleus as a target:
+# nucleus_target = 0 // free target; 
+# nucleus_target = 1 // Fermi gas; 
+nucleus_target = 2 // local Fermi gas; 
+# nucleus_target = 3 // Bodek-Ritchie; 
+# nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
+# nucleus_target = 5 // deuterium; 
+# nucleus_target = 6 // effective potential
+
+# options below are kept only for historical reasons
+nucleus_E_b         =  34   // [MeV] binding energy 
+# used in qelevent.cc, target.h as Eb
+nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
+
+pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 
 #@target/proton.txt
 @target/C.txt
@@ -71,9 +86,9 @@ dyn_coh_nc =0      // Coherent neutral current
 dyn_mec_cc =1      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
 dyn_hyp_cc =1      // Quasi elastic hyperon production
+dyn_lep    =1      // Neutrino-electron
 
 dyn_e_el   =0      // Elastic electron scattering
-
 
 ################################################################
 # Dynamics details and form factor parameters
@@ -142,30 +157,14 @@ sf_pb = 1
 cc_smoothing=0 
 #cc_smoothing=1 // dont't try impossible qel reaction: nu+n
 
-# The default
-# qel_kinematics   = 0  // relativistic (default)
-# qel_kinematics   = 1  //
-# qel_kinematics   = 2  //
-# qel_kinematics   = 3  // momentum dependent kinematics
-# qel_kinematics   = 4  // momentum dependent kinematics with outgoing nucleon energy edjustment
-#   The choice of the kinematics for the qel interaction vertex  
-#   	0 - relativistic  
-#       1 - 
-#       2 - bodek 
-#       3 - momentum dependent potential
-#       4 - Fermi gas with 
-
-
 # qel_rpa = 0    // Don't use rpa
 qel_rpa = 1    // Use rpa without effective mass of nucleon
 # qel_rpa = 2    // Use effectove mass without rpa (test only)
 # qel_rpa = 3    // Use rpa with effective mass of nucleon (test only) 
 
-
 ################################################################
 #   RES
 ################################################################
-
 
 # The choice of Delta production FF:
 
@@ -196,11 +195,9 @@ spp_precision= 500
 res_dis_cut = 1600	//res dis boundary in MeV, should be 1600
 bkgrscaling = 0.0  //non-resonant background scaling; should be from -1.3 ... +1.3; default value is 0.0
 
-
 ################################################################
 #   COH
 ################################################################
-
 
 coh_mass_correction = 1  // Rein Sehgal correction to CC coherent single pion production
 coh_kind = 2             // Switch between Rein-Sehgal (1) and Berger Sehgal(2) models
@@ -251,22 +248,6 @@ hyp_Sigma_Eb=0         // Sigma-nucleus potential strength
 #nucleus_model       = 0  //"flatnucleus" ball with constant density
 nucleus_model       = 1  //"anynucleus" i.e. realistic density profile
 
-
-# options below are kept only for historical reasons
-nucleus_E_b         =  34   // [MeV] binding energy 
-# used in qelevent.cc, target.h as Eb
-nucleus_kf          = 220   // [MeV] Fermi momentum, used in Fermi gas model and in Pauli blocking
-
-# Models for the description of nucleus as a target:
-# nucleus_target = 0 // free target; 
-# nucleus_target = 1 // Fermi gas; 
-nucleus_target = 2 // local Fermi gas; 
-# nucleus_target = 3 // Bodek-Ritchie; 
-# nucleus_target = 4 // "effective" spectral function (carbon or oxygen); 
-# nucleus_target = 5 // deuterium; 
-# nucleus_target = 6 // deuterium with constant binding energy nucleus_E_b (for tests only!)
-
-
 kaskada_on 	 = 1      // use (1) or not (0) the cascade 
 
 kaskada_writeall = 0 // store all intermedate cascade particles in the event.all vector
@@ -302,5 +283,9 @@ kaskada_piN_xsec = 1  // Full sets of input data for pions: (0) Metropolis et al
 
 formation_length = 1 // formation length in fm for formation_zone = const
 
-pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
+################################
+# Electron scattering paremeters
+################################
 
+eel_theta_lab=0.5 // defines cosine of the scattered electron
+eel_dz=1 //defines angular acceptance for the scattered electron ( it is for the cosine from (eel_theta_lab - eel_dz) to (eel_theta_lab + eel_dz), the width is 2*eel_dz! )

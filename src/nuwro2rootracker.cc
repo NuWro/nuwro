@@ -20,6 +20,7 @@
 #include "TTree.h"
 #include "TFile.h"
 #include "TBits.h"
+#include "TObjString.h"
 #include "pdg.h"
 #include "generatormt.h"
 

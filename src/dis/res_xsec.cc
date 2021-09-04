@@ -10,14 +10,14 @@
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
 
-double pdd_red(double energy) {
+/*double pdd_red(double energy) {
   if (energy >= 1000)
     return 0.85;
   else if (energy > 750)
     return 0.65 + energy * 0.05 / 250.0;
   else  // if (en<=750)
     return 0.2 + energy * 0.2 / 250.0;
-}
+}*/
 
 res_xsec::res_xsec(res_kinematics &kin, const bool cc)
     : dis_pip(0),
@@ -119,5 +119,5 @@ void res_xsec::set_xsec(res_kinematics &kin, const params &p, const int pion_pdg
 
   // reduce cross section by removing the contribution from pionless delta decay
   // more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
-  if ((p.nucleus_p + p.nucleus_n) > 7) delta_total *= pdd_red(neutrino_energy);
+  //if ((p.nucleus_p + p.nucleus_n) > 7) delta_total *= pdd_red(neutrino_energy);
 }

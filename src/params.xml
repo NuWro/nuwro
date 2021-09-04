@@ -49,7 +49,7 @@
           <description>PDG code of the beam particles</description>
         </param>
         <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
-          <description> x y z cordinates of the beam direction</description>
+          <description> x y z cordinates of the beam direction</description
         </param>
       </condition>
       <condition value="1" description="1">
@@ -97,33 +97,39 @@
           <description></description>
         </param>
       </condition>
-      <condition value="5" description="5">
-        <param name="beam_inputroot" type="text" ctype="string" default="">
-          <description><![CDATA[Path to input flux histogram file]]></description>
+	    <condition value="5" description="5">
+	      <param name="beam_inputroot" type="text" ctype="string" default="">
+	        <description><![CDATA[Path to input flux histogram file]]></description>
+	      </param>
+	      <param name="beam_inputroot_flux" type="text" ctype="string" default="">
+	        <description><![CDATA[Name of total flux histogram file]]></description>
+	      </param>
+	    </condition>
+	    <condition value="6" description="6">
+	      <param name="beam_inputroot_nue" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for nue]]></description>
+	      </param>
+	      <param name="beam_inputroot_nueb" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for nueb]]></description>
+	      </param>
+	      <param name="beam_inputroot_numu" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for numu]]></description>
+	      </param>
+	      <param name="beam_inputroot_numub" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for numub]]></description>
+	      </param>
+	      <param name="beam_inputroot_nutau" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for nutau]]></description>
+	      </param>
+	      <param name="beam_inputroot_nutaub" type="text" ctype="string" default="">
+	        <description><![CDATA[Histogram name for nutaub]]></description>
+	      </param>
+	    </condition>
+      <condition value="7" description="Atmosferic neutrinos">
+        <param name="beam_atmo_files" type="text" ctype="line" default="">
+          <description></description>
         </param>
-        <param name="beam_inputroot_flux" type="text" ctype="string" default="">
-          <description><![CDATA[Name of total flux histogram file]]></description>
-        </param>
-      </condition>
-      <condition value="6" description="6">
-        <param name="beam_inputroot_nue" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for nue]]></description>
-        </param>
-        <param name="beam_inputroot_nueb" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for nueb]]></description>
-        </param>
-        <param name="beam_inputroot_numu" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for numu]]></description>
-        </param>
-        <param name="beam_inputroot_numub" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for numub]]></description>
-        </param>
-        <param name="beam_inputroot_nutau" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for nutau]]></description>
-        </param>
-        <param name="beam_inputroot_nutaub" type="text" ctype="string" default="">
-          <description><![CDATA[Histogram name for nutaub]]></description>
-        </param>
+        <paramclone name="beam_direction" />
       </condition>
     </conditions>
   </param>
@@ -227,6 +233,9 @@
   </param>
   <param name="dyn_hyp_cc" type="checkbox" ctype="bool" default="0">
     <description>Hyperon production charged current</description>
+  </param>
+  <param name="dyn_lep" type="checkbox" ctype="bool" default="0">
+    <description>Neutrino-electron scattering</description>
   </param>
   <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
     <description>Elastic electron scattering</description>

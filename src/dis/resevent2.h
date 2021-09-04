@@ -5,6 +5,7 @@
 #include "event1.h"
 #include "params.h"
 #include "res_kinematics.h"
+#include "nucleus.h"
 
 //! in SPP language: 0 -> pi+, 1 -> pi0, 2 -> pi-
 typedef enum { pip, pi0, pim } spp_code;
@@ -34,6 +35,6 @@ particle get_pythia_particle(Pyjets_t* pythia_particles, const int particle_id, 
 void save_pythia_particles(event& e, Pyjets_t* pythia_particles, const int nof_particles, const res_kinematics& kin);
 
 //! generate RES event
-void resevent2(params& p, event& e, bool cc);
+void resevent2(params& p, event& e, nucleus& t, bool cc);
 
 #endif

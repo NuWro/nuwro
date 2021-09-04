@@ -10,6 +10,8 @@ double bodek_kinematics(double Eb,particle nu,particle N0, particle &lepton, par
 double CT_bodek_kinematics(particle N0, int Z, int N);
 
 double bodek_binding_energy(particle N0, int Z, int N);
+  
+double bodek_binding_energy(particle N0, int A);
 
 double czarek_kinematics(double Eb,particle nu,particle N0, particle &lepton, particle &N1,double &jakobian);
 

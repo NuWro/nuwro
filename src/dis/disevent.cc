@@ -28,8 +28,7 @@
 TPythia6 *pythia22 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);
 
-void
-disevent (params & p, event & e, nucleus &t, bool cc)
+void disevent(params &p, event &e, nucleus &t, bool cc)
 {
 /////////////////initial parameters/////////////////////
   bool current = cc;		//cc==true for charge current , nc == false
@@ -58,15 +57,16 @@ int numneu=p.nucleus_n;
 	break;
 	case 1: _E_bind= p.nucleus_E_b;
 	break;
-	case 2: _E_bind=0;//temporary
+	case 2: _E_bind= t.Ef(e.in[1]) + p.kaskada_w;
+    break;
+	case 3: _E_bind=p.nucleus_E_b;//Bodek-Ritchie, temporary prescription
 	break;
-	case 3: _E_bind=0;//temporary
-	break;
-	case 4: _E_bind = binen (ped, numpro, numneu);
+	case 4: _E_bind = binen (ped, numpro, numneu);//efective SF
 	break;
 	case 5: _E_bind= deuter_binen (ped);//deuterium 
 	break;
-	case 6: _E_bind= p.nucleus_E_b; //deuterium like Fermi gas
+	case 6: assert ( !"For a moment effective potential cannot be used for DIS" );
+        _E_bind = p.nucleus_E_b; //effective potential
 	break;
 	default: _E_bind=0;
 	}

@@ -28,6 +28,7 @@ PARAM(string,beam_inputroot_numu,"")\
 PARAM(string,beam_inputroot_numub,"")\
 PARAM(string,beam_inputroot_nutau,"")\
 PARAM(string,beam_inputroot_nutaub,"")\
+PARAM(line,beam_atmo_files,"")\
 PARAM(int,beam_test_only,0)\
 PARAM(int,target_type,0)\
 PARAM(int,nucleus_p,6)\
@@ -53,6 +54,7 @@ PARAM(bool,dyn_coh_nc,1)\
 PARAM(bool,dyn_mec_cc,0)\
 PARAM(bool,dyn_mec_nc,0)\
 PARAM(bool,dyn_hyp_cc,0)\
+PARAM(bool,dyn_lep,0)\
 PARAM(bool,dyn_e_el,0)\
 PARAM(bool,dyn_e_spp,0)\
 PARAM(double,eel_theta_lab,90)\

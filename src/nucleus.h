@@ -43,12 +43,14 @@ class nucleus
 						  /// 1 - Fermi gas (mean Fermi momentum); 
 						  /// 2 - local Fermis gas; 
 						  /// 3 - "bodek tail" in momentum distribution
-						  /// 4 - spectral function (for carbon and oxygen, else lFG); 
-						  /// 5 - deuterium (forced for H2); 
-						  /// 6 - proton in deuterium (for tests only);
+						  /// 4 - effective spectral function (for carbon and oxygen, else lFG); 
+						  /// 5 - deuterium (forced for H2);
+              /// 6 - effective potential
+
 	// Hyperon potential at r=0
 	double Lambda_Eb;
 	double Sigma_Eb;
+
 		 
 	public:
 

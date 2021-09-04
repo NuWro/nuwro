@@ -1,6 +1,7 @@
 #include "res_kinematics.h"
 #include "jednostki.h"
 #include "dis/LeptonMass.h"
+#include "nucleus.h"
 
 const double res_kinematics::Wmin = 1080;  // TODO: it is not exactly pion mass + nucleon mass
 const double res_kinematics::avg_nucleon_mass = (PDG::mass_proton + PDG::mass_neutron) / 2.0;
@@ -9,13 +10,13 @@ const double res_kinematics::pythia_threshold = 1210;
 inline double pow2(double x) { return x * x; }
 
 // set all necessary variables so is_above_threshold may be called
-res_kinematics::res_kinematics(const event &e) : neutrino(e.in[0]), target(e.in[1]) {
+res_kinematics::res_kinematics(const event &e, nucleus &t) : neutrino(e.in[0]), target(e.in[1]) {
   // final lepton mass = 0 for NC or corresponding lepton mass (nu PDG - 1)
   lepton_mass = e.flag.cc * PDG::mass(abs(neutrino.pdg) - 1);
   lepton_mass2 = lepton_mass * lepton_mass;
 
   // subtract binding energy from nucleon energy inside nucleus
-  target.t -= get_binding_energy(e.par, target.p());
+  target.t -= get_binding_energy(e.par, target, t);
 
   // boost to the bound nucleon rest frame
   neutrino.boost(-target.v());
@@ -89,21 +90,22 @@ void res_kinematics::set_kinematics(event &e) {
   jacobian = e.res_jacobian;
 }
 
-double get_binding_energy(const params &p, const vec &momentum) {
+double get_binding_energy(const params &p, particle& target, nucleus &t) {
   switch (p.nucleus_target) {
     case 0:  // free nucleon
       return 0;
     case 1:  // (global) Fermi gas
       return p.nucleus_E_b;
-    case 2:  // local Fermi gas TODO: why 0?
-      return 0;
-    case 3:  // Bodek-Ritchie
-      return 0;
+    case 2:  // local Fermi gas
+      return t.Ef(target) + p.kaskada_w;
+    case 3:  // Bodek-Ritchie; temporary prescription taken from GFG
+      return p.nucleus_E_b;
     case 4:  // effective spectral function
-      return binen(momentum, p.nucleus_p, p.nucleus_n);
+      return binen(target.p(), p.nucleus_p, p.nucleus_n);
     case 5:  // deuterium
-      return deuter_binen(momentum);
-    case 6:  // deuterium with constant binding energy
+      return deuter_binen(target.p());
+    case 6:  // effective potential
+        assert ( !"For a moment effective potential cannot be used for RES" );
       return p.nucleus_E_b;
     default:
       return 0;

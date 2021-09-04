@@ -6,6 +6,7 @@
 #include "beam_mixed.h"
 #include "nozero_array.h"
 #include "geomy.h"
+#include "beam_atmo.h"
 
 
 void CreateNewHistogram( int dimsizes[5], string hist_out );
@@ -49,6 +50,11 @@ beam * create_beam(params &p, geomy *detector)
 	{
 	  cout << "Using combined flux from root file." << endl;
 	  return new beam_mixedroothist( p );
+	}
+	case 7:
+	{
+	  cout << "Using atmospheric neutrinno flux." << endl;
+	  return new beam_atmo( p );
 	}
 	default:
 	{

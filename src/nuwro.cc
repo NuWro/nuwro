@@ -33,6 +33,7 @@
 #include "nucleusmaker.h"
 #include "Interaction.h"
 #include "rew/rewparams.h"
+#include "lepevent.h"
 
 
 extern double SPP[2][2][2][3][40];
@@ -222,12 +223,17 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6 || dyn>=10)
+	if(dyn<6 || (dyn>=10 && dyn<12) || dyn==20)
 	{
 								 // insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
 		e->in[0].r=e->in[1].r;
 		assert(e->in[1]*e->in[1]>0);
+	}
+	else if(dyn>=12 && dyn<14)
+	{
+		// insert target electron
+		e->in.push_back(particle(PDG::pdg_e, PDG::mass_e));
 	}
 
 	e->weight=0;
@@ -244,6 +250,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.coh = false;
 	e->flag.mec = false;
 	e->flag.hyp = false;
+  e->flag.lep = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -300,7 +307,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
 			{
-				resevent2 (p, *e, true);
+				resevent2 (p, *e, *_nucleus, true);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
@@ -309,7 +316,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.nc=true;
 			if (p.dyn_res_nc) // res nc
 			{
-				resevent2 (p, *e, false);
+				resevent2 (p, *e, *_nucleus, false);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
@@ -408,21 +415,30 @@ void NuWro::makeevent(event* e, params &p)
 			{
 				hypevent (p, *e, *_nucleus);
 			}
+			break;		
+    case 12:
+			e->flag.lep=true; //->flag.cc=true;
+			if (p.dyn_lep) // Neutrino-lepton
+			{
+				lepevent (p, *e); //, true);
+			}
 			break;
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{
-		switch(dyn)
+       	switch(dyn)
 		{
 			case 20:
 				e->flag.nc=true;
-			    if(p.eel_alg=="old")
+			    /*if(p.eel_alg=="old")
                     e_el_event(p,*e,*_nucleus,false); 
 			    else 	
                 if(p.eel_alg=="fast")
                     e_el_event2orig(p,*e,*_nucleus,false); 
                 else   // all remaining algorithms  
-                    e_el_event2(p,*e,*_nucleus,false); 
+                    e_el_event2(p,*e,*_nucleus,false); */
+                
+                qelevent1 (p, *e, *_nucleus, true);
 			    break;
 
 			case 21: 
@@ -474,7 +490,7 @@ void NuWro::finishevent(event* e, params &p)
 
 								 // copy particle from out to post if coherent interaction
 	
-	if (!e->flag.coh )
+	if (!e->flag.coh && !e->flag.lep)
 	{
 		kaskada k(p, *e, &input);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true

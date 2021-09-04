@@ -31,12 +31,10 @@ double bodek_kinematics(double Eb,particle nu,particle N0, particle &lepton, par
 //////////////////////////////////////////////////////////////////////////////////////////
 {
   static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
-  double Ma = 56 * M12;	// Argon nucleus mass  
- double Ma1 = Ma - M12 + Eb;  // mass of the spectator nucleus
+  double Ma = 56 * M12;	// Argon nucleus mass // why like that?
+  double Ma1 = Ma - M12 + Eb;  // mass of the spectator nucleus
   N0.t = 56 * M12 - sqrt ( Ma1*Ma1 + N0.momentum2 () );
 
-
- 
   //if(N0*N0<0) return 0;
   double q2 = scatter_2 (nu, N0, lepton, N1);
   jakobian=jakob(nu,N0,lepton);
@@ -44,11 +42,10 @@ double bodek_kinematics(double Eb,particle nu,particle N0, particle &lepton, par
   return q2;
 }
 
-
-
 ///////////////////////////////////////////////////////////
-double CT_bodek_kinematics(particle N0, int Z, int N){
-
+double CT_bodek_kinematics(particle N0, int Z, int N)
+///////////////////////////////////////////////////////////
+{
    // Composite model, check if nucleon is below fermi level
 
    double kF = 220; // Fermi momentum
@@ -68,25 +65,31 @@ double CT_bodek_kinematics(particle N0, int Z, int N){
 
    return 0;
 }
-///////////////////////////////////////////////////////////
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 double bodek_binding_energy(particle N0, int Z, int N)
 //////////////////////////////////////////////////////////////////////////////////////////
 {
-
    static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
    double Ma  = Z*PDG::mass_proton + N*PDG::mass_neutron;
    double Ma1 = Ma - N0.mass();
-   double Md = PDG::mass_proton + PDG::mass_neutron; //deuteron mass
-
-   double p = N0.momentum();
-   double KE = sqrt(N0.mass2()+p*p) - N0.mass();
 
    double Eb = sqrt(Ma1*Ma1 + N0.momentum2()) - Ma + sqrt(N0.mass2() + N0.momentum2());
 
    return Eb;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+double bodek_binding_energy(particle N0, int A)
+//////////////////////////////////////////////////////////////////////////////////////////
+{
+  static double M12=0.5*(PDG::mass_proton+PDG::mass_neutron);
+  double Ma  = A * M12;
+  double Ma1 = (A-1) * M12;
+
+  double Eb = sqrt(Ma1*Ma1 + N0.momentum2()) - Ma + sqrt(M12*M12 + N0.momentum2());
+
+  return Eb;
 }
 
 
