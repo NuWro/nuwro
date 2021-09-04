@@ -9,7 +9,7 @@
 #include "qelevent.h"
 #include "e_el_event.h"
 #include "e_spp_event.h"
-#include "hipevent.h"
+#include "hypevent.h"
 #include "pdg.h"
 #include "chooser.h"
 #include "beam.h"
@@ -34,6 +34,7 @@
 #include "Interaction.h"
 #include "rew/rewparams.h"
 #include "lepevent.h"
+
 
 extern double SPP[2][2][2][3][40];
 //extern double sppweight;
@@ -104,9 +105,9 @@ geomy* NuWro::make_detector(params &p)
 		try
 		{
 			if(p.geo_d.norm2()==0)
-				return new geomy(p.geo_file,p.geo_name);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert);
 			else
-				return new geomy(p.geo_file,p.geo_name,p.geo_volume,p.geo_d,p.geo_o);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert,p.geo_volume,p.geo_d,p.geo_o);
 		}
 		catch(...)
 		{
@@ -160,11 +161,9 @@ void NuWro::init (int argc, char **argv)
                 cerr<<"No beam defined."<<endl;
                 exit(5);
             }
-
-
 	}
 
-  // load the input data
+	// load the input data
   input.initialize( p );
   input.load_data();
 
@@ -250,8 +249,8 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.dis = false;
 	e->flag.coh = false;
 	e->flag.mec = false;
-	e->flag.hip = false;
-    e->flag.lep = false;
+	e->flag.hyp = false;
+  e->flag.lep = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -411,20 +410,13 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 10:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_la) // qel hiperon lambda
+			e->flag.hyp=e->flag.cc=true;
+			if(p.dyn_hyp_cc) // qel hyperon
 			{
-				hipevent (p, *e, *_nucleus, true); //Lambda
+				hypevent (p, *e, *_nucleus);
 			}
 			break;		
-		case 11:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_si) // qel hiperon sigma
-			{
-				hipevent (p, *e, *_nucleus, false); // Sigma
-			}
-			break;
-        case 12:
+    case 12:
 			e->flag.lep=true; //->flag.cc=true;
 			if (p.dyn_lep) // Neutrino-lepton
 			{
@@ -548,6 +540,7 @@ void NuWro::pot_report(ostream& o)
 	if(_detector)
 	{
 		double pd=_detector->nucleons_per_cm2();
+
 		for(int i=0;i<_procesy.size();i++)
 		if(_procesy.avg(i)>0)
 		{	
@@ -557,16 +550,17 @@ void NuWro::pot_report(ostream& o)
 			o  <<"       POT per event = "<<1/epp<<endl;
 		}
 		double epp=tot*pd*_beam->nu_per_POT();
-			
+	
 		o<<"Total: events per POT= "<<epp<<endl
-		 <<"       POT per event = "<<1/epp<<endl<<endl;
+		 <<"       POT per event = "<<1.0/epp<<endl;
 		o<<" BOX nuclons per cm2 = "<<pd<<endl;
 		o<<"Total cross section  = "<<tot<<" cm2"<<endl;
 		o<<"Reaction probability = "<<tot*pd<<endl;
-		o<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;
+		o<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;		
 		o<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
 		o<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
-		
+		o << "Total POT: " << p.number_of_events/epp << std::endl;
+
 	}
 }
 
@@ -778,8 +772,8 @@ void NuWro::real_events(params& p)
 		xsections->SetBinError(i+1,_procesy.sigma(i));
 	}
 
-	TNamed version("NuWro version", VERSION );
-	version.Write();
+	//	TNamed version("NuWro version", VERSION );
+	//	version.Write();
 
 	/////////////////////////////////////////////////////////////
 	// The main loop in NPROC -- generate file with unweighted events

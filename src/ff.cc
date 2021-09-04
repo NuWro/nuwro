@@ -22,14 +22,31 @@ static const double MA_cc_mec =
     1014 * MeV;  // axial mass for MEC is fixed in TEM model
 static const double MA_nc_mec = 1014 * MeV;
 static double MA_s = 1030 * MeV;
+static double MA_hyp = 1030 * MeV; // C Thorpe Added Hyperon axial mass parameter
+
+static const double Dipole_Lambda = 5.6; //C Thorpe: Lambda parameter used in dipole form factors
+                                   // default 1030 MeV // March 2019
 static double delta_s = 0;
 static const double mu_p = 2.793;   // moment dipolowy protonu
 static const double mu_n = -1.913;  // moment dipolowy neutronu
 static const double piMass2 = pow2(PDG::mass_pi);
 static const double gA = -1.2673;
+
 static int axialFFset = 0;
 static const int strangeFFset = 0;
 static int strange = 0;
+
+//Added by C Thorpe Dec 2018
+//Constants associated with SU(3) representation of axial currents
+static const double Axial_F = 0.463;
+static const double Axial_D = 0.804;
+static const double Axial_x = Axial_F/(Axial_F+Axial_D);
+//Second class current setup
+//real and imaginary components at Q2=0
+static double Rg20 = 0;
+static double Ig20 = 0;
+//symmetry breaking setup
+static bool sym_break = false;
 
 static double p_AEp[7] = {1., 0.9927, 0.9898, 0.9975, 0.9812, 0.9340, 1.};
 static double p_AMp[7] = {1., 1.0011, 0.9992, 0.9974, 1.0010, 1.0003, 1.};
@@ -128,7 +145,14 @@ double zexp_FA(const double q2, const double ma); // Z-expansion Model
 /////////////////////////////////////////////////////////////
 /// Calculate F1,F2
 pair<double, double> FF::f12(int kind) {
+
   double Ge = 0, Gm = 0, f1 = 0, f2 = 0, F1s = 0, F2s = 0;
+  const double tau = Q2 / (4 * M2);
+
+  //C Thorpe added Dec 2018
+  //needed by hyperon production channels
+  double f1p=0,f1n=0,f2p=0,f2n=0;
+
   switch (kind) {
     case 0:
     case 6:  // cc and mec qel part
@@ -168,12 +192,21 @@ pair<double, double> FF::f12(int kind) {
         Ge=GEn;
         Gm=GMn;
         break;
+    //C Thorpe added Dec 2018
+    //hyperon channels: 12,13,14
+    case 12: 
+    case 13:
+    case 14: 
+      f1p = (1/(1+tau))*(GEp + tau*GMp);
+      f1n = (1/(1+tau))*(GEn + tau*GMn);
+      f2p = (1/(1+tau))*(GMp - GEp);   
+      f2n = (1/(1+tau))*(GMn - GEn);
+      break;
   }
-
-  const double tau = Q2 / (4 * M2);
 
   f1 = (Ge + tau * Gm) / (1 + tau);
   f2 = (Gm - Ge) / (1 + tau);
+
   if ((kind == 1 or kind == 2) and
       strangeEM)  // strangeness in F1, F2 (only for kind!=0 i.e. nc)
     switch (strangeEM) {
@@ -197,6 +230,39 @@ pair<double, double> FF::f12(int kind) {
       default:
         break;  // no strange correction
     }
+
+  //added c thorpe dec 2018
+  //hyperon channels
+  //Lambda zero
+  if(kind == 12){
+    f1 = (-1)*pow(1.5,0.5)*f1p;
+    f2 = (-1)*pow(1.5,0.5)*f2p;
+    //SU(3) symmetry breaking correction
+    if(sym_break == true)
+    {
+      f1 *= 0.976;
+    }
+  }
+  //Sigma zero
+  if(kind == 13){
+    f1 = (-1)*(f1p+2*f1n)/(pow(2,0.5));
+    f2 = (-1)*(f2p+2*f2n)/(pow(2,0.5));
+    //SU(3) symmetry breaking correction
+    if(sym_break == true)
+    {
+      f1 *= 0.975;
+    }
+  }
+  //Sigma minus
+  if(kind==14){
+    f1 = (-1)*(f1p+2*f1n);
+    f2 = (-1)*(f2p+2*f2n);
+    if(sym_break == true)
+    {
+      f1 *= 0.975;
+    }
+  }
+
   return pair<double, double>(f1, f2);
 }
 
@@ -205,11 +271,14 @@ FF DipoleFF(const double q2)  // dipole electric form factor G_E^V
 {
   double a = 1.0 - q2 / MV2;
   double a2 = a * a;
+  double tau = -q2 / (4 * M2);
 
   FF ff;
   ff.Q2 = -q2;
   ff.GEp = 1.0 / a2;
-  ff.GEn = 0;
+  //  ff.GEn = 0;
+  //C Thorpe: Updated dipole FFs
+  ff.GEn = (-1)*mu_n*tau/(1+Dipole_Lambda*tau)/a2;
   ff.GMp = mu_p / a2;
   ff.GMn = mu_n / a2;
 
@@ -274,6 +343,8 @@ FF bbba05_FForig(const double q2) {
 }
 
 FF bbba05_FF(const double q2) {
+
+
   FF ff;
   ff.Q2 = -q2;
   double Q2 = -q2;
@@ -710,23 +781,27 @@ void zexp_applyq0limit(){
 ///////////////////////////////////////////////////////////////
 // Calculate the axial form factors
 pair<double, double> fap(double q2, int kind) {
+
   double ksi = 3.706;
 
   static const double M12 = (PDG::mass_proton + PDG::mass_neutron) / 2;
   static const double MM = M12 * M12;
+
+  //C Thorpe added Dec 2018
+  //hyperon mass and kaon mass required for g3 calculation 
+  //using Phys Rev D98 (2018) no.3 033005, eq. 48
+  double hyp_mass;
+  double kmass = PDG::mass_K;
 
   double Ga, Fpa, Gas, Fpas;
   double Fp = 0, Fa = 0;
 
   switch (kind) {
     case 0:  // cc
-
       //Fa = Axialfromq2(q2, MA_cc); 
       Fa = Axialfromq2(q2, rew.qel_cc_axial_mass.val); 
-
       Fa *= axialcorr(axialFFset, q2);
       Fp = 2 * MM * Fa / (piMass2 - q2);
-
       break;
     case 1:  // nc proton
       //Fa = 0.5 * Axialfromq2(q2, MA_nc); 
@@ -753,6 +828,61 @@ pair<double, double> fap(double q2, int kind) {
     case 8:  // mec nc neutron
       Fa = -0.5 * Axialfromq2(q2, MA_nc_mec);
       // Fp=2.0*M2*Fa/(piMass2 - q2) ;
+      break;
+
+    //C Thorpe added Dec 2018
+    //hyperon production channels
+
+    //Lambda zero;
+    case 12:
+      // need to add x=F/(F+D) value to constants file 
+      // x = 0.36543014996
+      //Fa = Axialfromq2(q2, MA_hyp); 
+
+      Fa = Axialfromq2(q2,MA_hyp);
+      Fa *= (-1)*(1+2*Axial_x)/sqrt(6);
+
+      //SU(3) symmetry breaking
+      if(sym_break == true)
+      {
+        Fa *= 1.072;
+      }
+      hyp_mass = PDG::mass_Lambda;
+
+      //Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
+      Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
+      break;
+
+    //Sigma zero
+    case 13:
+      //need to add x=F/(F+D) value to constants file 
+      // x = 0.36543014996
+      Fa = Axialfromq2(q2, MA_hyp); 
+      //Fa  = 1.267/((1-q2/(MA_hyp*MA_hyp))*(1-q2/(MA_hyp*MA_hyp)));
+      Fa *= (1-2*Axial_x)/(pow(2,0.5));
+      //SU(3) symmetry breaking
+      if(sym_break == true)
+      {
+        Fa *= 1.051;
+      }
+      hyp_mass = PDG::mass_Sigma;
+      Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
+      break;
+
+    //Sigma minus
+    case 14:
+      // need to add x=F/(F+D) value to constants file 
+      // x = 0.36543014996
+      Fa = Axialfromq2(q2, MA_hyp);
+      //Fa  = 1.267/((1-q2/(MA_hyp*MA_hyp))*(1-q2/(MA_hyp*MA_hyp)));
+      Fa *= (1-2*Axial_x);
+      //SU(3) symmetry breaking
+      if(sym_break == true)
+      {
+        Fa *= 1.056;
+      }
+      hyp_mass = PDG::mass_SigmaM;
+      Fp = Fa*(M12+hyp_mass)*(M12+hyp_mass)/(2*(kmass*kmass-q2));
       break;
   }
 
@@ -808,6 +938,50 @@ double axialcorr(int axialFF, double q2) {
            4.0 * (max - 1.0) / pow2(dlug - szer) * (x - szer) * (x - dlug);
   else
     return 1.0;
+}
+
+/////////////////////////////////////////////////////////////
+// C Thorpe Added Dec 2018
+// Second class current Form Factors in Hyperon production
+/////////////////////////////////////////////////////////////
+
+pair<double,double>g2(double q2,int kind){
+
+  // real and imaginary parts of form factor g2
+  // imaginary values corresponding to TRV
+  // assume dipole form with same axial mass as g1
+
+  double Rg2 = (-1)*Rg20/(pow(1-q2/(MA_hyp*MA_hyp),2));
+  double Ig2 = (-1)*Ig20/(pow(1-q2/(MA_hyp*MA_hyp),2));
+
+  switch(kind)
+  {
+  //Lambda zero production
+  case 12:
+    Rg2 *= (-1)*(1+2*Axial_x)/pow(6,0.5);
+    Ig2 *= (-1)*(1+2*Axial_x)/pow(6,0.5);
+    break;
+
+  //Sigma zero production
+  case 13:
+    Rg2 *= (1-2*Axial_x)/(pow(2,0.5));
+    Ig2 *= (1-2*Axial_x)/(pow(2,0.5));
+    break;
+
+  //Sigma minus production
+  case 14:
+    Rg2 *= (1-2*Axial_x);
+    Ig2 *= (1-2*Axial_x);
+    break;
+  
+  // for ds=0 quasielastic do not include SCC for the time being
+  default:
+    Rg2 =0;
+    Ig2 =0;
+    break;
+  }
+
+  return pair<double,double>(Rg2,Ig2);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -905,5 +1079,23 @@ void ff_configure(params & p) {
   MA_cc = rew.qel_cc_axial_mass.val;
   MA_nc = rew.qel_nc_axial_mass.val;
   MA_s = rew.qel_s_axial_mass.val;
+
+  /////////////////////////////////
+  //added by c thorpe
+  //locate parameter values in params
+
+  //hyperon axial mass
+  MA_hyp = p.hyp_axial_mass;
+
+  //SCC Setup
+  //values of g2 at Q2 = 0
+  Rg20 = p.hyp_g2_Re_part;
+  Ig20 = p.hyp_g2_Im_part;
+
+  //symmetry breaking setup
+  if(p.hyp_su3_sym_breaking)
+    sym_break = true;
+  ////////////////////////
 }
+
 //________________________________________________________

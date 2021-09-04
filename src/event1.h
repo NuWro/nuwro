@@ -16,8 +16,9 @@ class flags
 		bool dis;        ///< deep inelastic        (dis == dyn/2==2)
 		bool coh;        ///< coherent              (coh == dyn/2==3)
 		bool mec;        ///< meson exhange current (mec == dyn/2==4)
-		bool hip;        ///< hiperon production    
-        bool lep;        ///< neutrino-lepton; from Dmitry                 
+		bool hyp;        ///< hyperon production    
+    bool lep;        ///< neutrino-lepton                
+
 		bool nc;         ///< neutral current       (nc == dyn%2)     
 		bool cc;         ///< charged current       (cc == !nc)
 
@@ -54,7 +55,7 @@ class event:public TObject
 		                        ///< 12 - lep  cc/nc - neutrino-lepton interaction
 		                        ///< 20 -  eel  nc - elastic electron scattering 
 
-		int nod[14];            ///< number of rescattering interactions of given type:
+		int nod[18];            ///< number of rescattering interactions of given type:
 		                        ///< 0 - nucleon elastic,
 		                        ///< 1 - nucleon ce,
 		                        ///< 2 - nucleon spp,
@@ -69,6 +70,10 @@ class event:public TObject
 		                        ///< 11 - pion tpp
 		                        ///< 12 - pion no interaction
 		                        ///< 13 - nucleon no interaction
+					///< 14 - hyperon no interaction
+					///< 15 - hyperon elastic scatter
+					///< 16 - hyperon Lambda -> Sigma conversion
+					///< 17 - hyperon Sigma -> Lambda conversion
 		int pr;     ///< number of protons  in the residual nucleus
 		int nr;     ///< number of neutrons in the residual nucleus
 		double r_distance; //< distance from nucleus center of absorption point (if happened)

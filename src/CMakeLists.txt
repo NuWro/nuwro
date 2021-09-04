@@ -17,13 +17,13 @@ set(COMMON_SOURCES
   cohevent2.cc cohdynamics2.cc  qelevent1.cc mecdynamics.cc mecevent.cc mecevent_tem.cc mecevent_Nieves.cc mecevent_SuSA.cc particle.cc
   mecevent_common.cc mecdynamics2.cc mecevent2.cc qel_sigma.cc kinsolver.cc input_data.cc data_container.cc kinematics.cc pdg.cc target_mixer.cc
   nucleus.cc sfevent.cc ff.cc rpa_2013.cc nucleus_data.cc isotopes.cc elements.cc beam.cc nd280stats.cc beamHist.cc coh.cc fsi.cc pitab.cc scatter.cc
-  kaskada7.cc hipevent.cc Interaction.cc e_el_event.cc e_el_sigma.cc e_spp_event.cc  espp/crossection.cc espp/DM.cc rew/PythiaQuiet.f
+  kaskada7.cc hyperon_cascade.cc hypevent.cc hyperon_interaction.cc Interaction.cc e_el_event.cc e_el_sigma.cc e_spp_event.cc  espp/crossection.cc espp/DM.cc rew/PythiaQuiet.f
   pauli.cc generatormt.cc rew/rewparams.cc
 )
 
 set(EVENT_SOURCES event1.cc generatormt.cc particle.cc pdg.cc dirs.cc  event1Dict.cc )
 
-set(FSI_SOURCES scatter.cc kaskada7.cc Interaction.cc input_data.cc data_container.cc nucleus.cc  nucleus_data.cc isotopes.cc elements.cc fsi.cc pitab.cc )  
+set(FSI_SOURCES scatter.cc kaskada7.cc Interaction.cc hyperon_cascade.cc hyperon_interaction.cc input_data.cc data_container.cc nucleus.cc  nucleus_data.cc isotopes.cc elements.cc fsi.cc pitab.cc )  
 
 set(REW_SOURCES  rew/Reweighters.cc rew/rewQEL.cc rew/rewRES.cc rew/rewNorm.cc rew/PythiaQuiet.f)
 
@@ -79,8 +79,8 @@ target_link_libraries(rew1 ${EXTERNAL_LIBS} common1 dis1)
 add_executable(nuwro main.cc nuwro.cc)
 target_link_libraries(nuwro ${EXTERNAL_LIBS} event1 common1 dis1 espp1 sf1)
 
-add_executable(kaskada scatter.cc kaskada7.cc Interaction.cc input_data.cc data_container.cc 
-                nucleus.cc kaskada.cc fsi.cc pitab.cc nucleus_data.cc isotopes.cc elements.cc) 
+add_executable(kaskada scatter.cc kaskada7.cc Interaction.cc hyperon_interaction.cc hyperon_cascade.cc input_data.cc data_container.cc 
+                nucleus.cc kaskada.cc rew/rewparams.cc ff.cc fsi.cc pitab.cc nucleus_data.cc isotopes.cc elements.cc) 
 target_link_libraries(kaskada ${EXTERNAL_LIBS} event1)
 
 add_executable(myroot myroot.cc event1Dict.cc)

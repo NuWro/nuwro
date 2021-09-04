@@ -44,6 +44,9 @@ nucleus::nucleus(params &par):
 	{
 		_kf=par.nucleus_kf;
 	}
+	//set hyperon binding energy
+	Lambda_Eb = par.hyp_Lambda_Eb;
+	Sigma_Eb = par.hyp_Sigma_Eb;
 }
 
 double nucleus::density (double r)
@@ -149,6 +152,7 @@ double nucleus :: Ef (particle &pa)
 		case 2: kmom = localkf (pa); break;
 		default: kmom = kF(); break;
 	};
+
 	
 	return sqrt(kmom*kmom + M*M) - M;
 }

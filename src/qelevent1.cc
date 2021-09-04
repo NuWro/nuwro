@@ -16,9 +16,11 @@
 #include "nucleus_data.h"
 #include "dis/LeptonMass.h"
 #include <cstdlib>
+
 #define LOCALKF localkf_O
 
 #include "rpa_2013.h"
+#include "hyperon_interaction.h"
 
 ////////////////////////////////////////////////////////////////////////
 double qelevent1(params&p, event & e, nucleus &t,bool nc)
@@ -61,27 +63,21 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
         N1.set_mass(PDG::mass(N1.pdg));
         break;
     }
-  } 
-  
-  if (nu.pdg==11 && N0.pdg==pdg_proton)
-      kind=10;
-  if (nu.pdg==11 && N0.pdg==pdg_neutron)
-      kind=11;//will be used when FF are selected in the file ff.cc
+  }
 
   double _E_bind=0; //binding energy
 
-  
   if(t.A() > 1)
   {
     switch(p.nucleus_target)
     {
-      case 0: _E_bind= 0; break;// free nucleon
-      case 1: _E_bind= p.nucleus_E_b; break;//GFG
-      case 2: _E_bind= t.Ef(N0) + p.kaskada_w; break; //LFG
-      case 3: _E_bind= bodek_binding_energy(N0, t.A()); break;//Bodek-Ritchie
-      case 4: _E_bind= binen (N0.p(), p.nucleus_p, p.nucleus_n); break;//effective SF
-      case 5: _E_bind= deuter_binen (N0.p()); break; //deuterium 
-      case 6: _E_bind= 0; break; //effective potential
+      case 0: _E_bind = 0; break; // free nucleon
+      case 1: _E_bind = p.nucleus_E_b; break; // GFG
+      case 2: _E_bind = t.Ef(N0) + p.kaskada_w; break; // LFG
+      case 3: _E_bind = bodek_binding_energy(N0, t.p, t.n); break; // Bodek-Ritchie
+      case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n); break; // effective SF
+      case 5: _E_bind = deuter_binen (N0.p()); break; // deuterium 
+      case 6: _E_bind = 0; break; // effective potential
       default: _E_bind= 0;
     }
   }
@@ -98,19 +94,50 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
   // cross section (is 0 until the reaction occurs)   
   double xsec = 0;    
-  double q2,jakobian;  
+  double q2,jakobian;
   
-  //parameter qel_kinematics is no longer used :)
+  // parameter qel_kinematics is no longer used :)
   
-    if (!(p.nucleus_target==6))//generic case
-        q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, N1,jakobian);   
-    else//effective momentum dependent potential
-        {q2=momentum_dependent_potential_kinematics(nu,N0,lepton,N1,jakobian);}
+  if (!(p.nucleus_target==6)) // generic case
+    q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, N1,jakobian);   
+  else // effective momentum dependent potential
+    q2=momentum_dependent_potential_kinematics(nu,N0,lepton,N1,jakobian);
   
   vect nu4 = nu;
   nu4.boost (-N0.v ());  // go to nucleon rest frame
-  double Enu0 = nu4.t;     // neutrino energy in target frame
+  double Enu0 = nu4.t;   // neutrino energy in target frame
   xsec = jakobian * qel_sigma(Enu0, q2, kind, nu.pdg<0, lepton.mass(), N0.mass());
+  
+  /*
+  /////////////////////////////////////////////////////////
+  // Aligarh Model for QEL (includes second class current)
+  /////////////////////////////////////////////////////////
+
+  vect v1(nu); //neutrino
+  vect v2(N0); //initial nucleon adjusted for binding energy
+  vect v3(lepton); //final lepton
+  vect v4(N1); //final nucleon
+
+  vec vcms =(vect(nu) + vect(N0)).v ();
+
+  v1.boost(-vcms);
+  v2.boost(-vcms);
+  v3.boost(-vcms);
+  v4.boost(-vcms);
+
+  double kin = v1.length();
+  double kout = v3.length();
+  double M2 = v2*v2;
+
+  double pf = G*G*cos2thetac/(8*Pi*Enu0*Enu0*M2);
+
+  bool anti;
+  if(nu.pdg > 0){anti = false;}
+  else if(nu.pdg < 0){anti = true;}
+  else {return 0;}
+
+  xsec = pf*Singh_Model(-q2,Enu0,kind-11,v1,v2,v3,v4,anti)*jakobian;
+  */
   
   // now take into account the neutrino flux and nucleon proper time
   // corrections to the cross section on the whole nucleus
@@ -148,22 +175,20 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       case 3:e.weight *= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(),    t.Mf(), t.kF(), new_ver);break;
     } 
   }
-  
     
   if( p.pauli_blocking) // inlined mypauli_qel
     if(t.pauli_blocking_old(N1, N0.length()))
       e.weight = 0;
     
-//selection of events for electron scattering using acceptance information
-    if (nu.pdg==11)
-    {
-    double kosine=lepton.z/lepton.momentum();
-    
-  if ( kosine < (p.eel_theta_lab-p.eel_dz)  || kosine > (p.eel_theta_lab+p.eel_dz) )
-        e.weight=0;
-  else
-      e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2;//change of propagators in weak and em processes
-    }
-    
+  // selection of events for electron scattering using acceptance information
+  if (nu.pdg==11)
+  {
+    double kosine=lepton.z/lepton.momentum();  
+    if ( kosine < (p.eel_theta_lab-p.eel_dz) || kosine > (p.eel_theta_lab+p.eel_dz) )
+      e.weight=0;
+    else
+      e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2; // change of propagators in weak and em processes
+  }
+
   return e.weight*cm2;
 }

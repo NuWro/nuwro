@@ -12,7 +12,7 @@
 #include "piangle.h"
 #include "input_data.h"
 
-enum {nucleon_=10,pion_=20};
+enum {nucleon_=10,pion_=20,hyperon_=30};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
 ////////////////////////////////////////
@@ -39,8 +39,11 @@ struct interaction_parameters
   particle p2;              //!< Target nucleon from nucleus.
   particle p[5];            //!< Results of scattering.
   int      n;               //!< Number of particles after scattering.
-};
 
+  // C Thorpe added Jan 2019 hyperon interactions
+  double sigma[6]; // 6 cross sections used in 2 particle hyperon scattering
+  int hyp_state;   // initial hyperon state
+};
 
 ////////////////////////////////////////
 // Utilities - general
@@ -59,7 +62,12 @@ inline int kod(int i)
     case 22: return 6;
     case 23: return 7;
     case 25: return 8;
-    case 24: return 11; 
+    case 24: return 11;
+    //C Thorpe: Adding hyperon processes
+    case 30: return 15; // hyperon (quasi)elastic
+    case 31: return 16; // hyperon lambda -> sigma
+    case 32: return 17; // hyperon sigma -> lambda
+	
     case 99: return 9;
     case 100: return 10;
     default: throw "invalid interaction code";
@@ -714,11 +722,14 @@ class Interaction
                                                    Interaction_parameters object keeps track of resulting particles
                                                    (table p) and the number of outgoing particles (n). */
     int process_id()                          //! Returns the process id.
-    { 
+    {
+      if(k1==hyperon_)  return hyperon_process_id(); // C Thorpe: Added hyperon process ids
+    
       return k1==nucleon_ ? nucleon_process_id() : PD.process_id(); 
     }
     const char* process_name()                //! Returns the process name.
     {
+      if(k1==hyperon_) return "any hyperon"; // process names have to be added
       return k1==nucleon_ ? nucleon_process_name() : PD.process_name();
     }
     void test ();                             //!< Test function.
@@ -741,9 +752,17 @@ class Interaction
     bool   nucleon_dpp(        particle  p1, particle  p2, int &n, particle p[] );
                                               //!< Scattering of p1, p2 with double pion production.
     int         nucleon_process_id();
+    int         hyperon_process_id();
                                               //!< Returns the nucleon process id.
     const char* nucleon_process_name();
                                               //!< Returns the nucleon process name.
+    //added C Thorpe Dec 2018
+    //calculates nucleon/hyperon cross section
+    void get_hyp_xsec(double &nY, double &pY, particle N, particle Y, double sigma[], int &hyp_state);
+    //scatters hyperons, particles p1 and p2 into p[]
+    bool hyperon_scattering(int hyp_state, particle& p1, particle& p2,nucleus t, int &n, particle p[],
+                           double sigma[], double sigma_p, double sigma_n);
+    bool hyperon_error(particle p1, particle p2, particle p[]);
 };
 
 ////////////////////////////////////////

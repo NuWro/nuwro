@@ -31,6 +31,12 @@ enum {
      pion_tpp=24,
      pion_abs=25, 
 
+     // hyperon processes
+     hyperon_el=30, //elastic 
+     hyperon_ls=31, // lambda -> sigma
+     hyperon_sl=32, // sigma -> lambda
+ 
+
      jailed=99,
      escape=100
      };
