@@ -49,7 +49,7 @@
           <description>PDG code of the beam particles</description>
         </param>
         <param name="beam_direction" type="text" ctype="vec" default="0 0 1">
-          <description> x y z cordinates of the beam direction</description
+          <description> x y z cordinates of the beam direction</description>
         </param>
       </condition>
       <condition value="1" description="1">
