@@ -250,7 +250,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.coh = false;
 	e->flag.mec = false;
 	e->flag.hyp = false;
-  e->flag.lep = false;
+	e->flag.lep = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -416,7 +416,7 @@ void NuWro::makeevent(event* e, params &p)
 				hypevent (p, *e, *_nucleus);
 			}
 			break;		
-    case 12:
+		case 12:
 			e->flag.lep=true; //->flag.cc=true;
 			if (p.dyn_lep) // Neutrino-lepton
 			{
@@ -437,17 +437,18 @@ void NuWro::makeevent(event* e, params &p)
                     e_el_event2orig(p,*e,*_nucleus,false); 
                 else   // all remaining algorithms  
                     e_el_event2(p,*e,*_nucleus,false); */
-                
-                qelevent1 (p, *e, *_nucleus, true);
+                if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
+					sfevent (p, *e, *_nucleus);
+				else
+					qelevent1 (p, *e, *_nucleus, true);
 			    break;
-
-			case 21: 
-				e->flag.nc=true;
-			    if(p.eel_theta_lab>0) 	
-                    e_spp_event(p,*e,*_nucleus,false); 
-			    else // use negative theta to test new implementation	
-                    e_spp_event3(p,*e,*_nucleus,false); 
-			    break;
+			// case 21: 
+			// 	e->flag.nc=true;
+			//     if(p.eel_theta_lab>0) 	
+   //                  e_spp_event(p,*e,*_nucleus,false); 
+			//     else // use negative theta to test new implementation	
+   //                  e_spp_event3(p,*e,*_nucleus,false); 
+			//     break;
 		}
 	}
 	e->weight*=factor;

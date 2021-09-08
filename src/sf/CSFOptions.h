@@ -47,8 +47,15 @@ public:
 				  const double p4q4til,
 				  const double k4q4til,
 				  const double kPrime4q4til,
-				  const double k4kPrime4) 
-				  const;
+				  const double k4kPrime4) const;
+
+	double evalLHel(const double q4til2, 
+				  const double p4k4, 
+				  const double p4kPrime4, 
+				  const double p4q4til,
+				  const double k4q4til,
+				  const double kPrime4q4til,
+				  const double k4kPrime4) const;
 
 
 private:

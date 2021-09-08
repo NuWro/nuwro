@@ -237,17 +237,17 @@
   <param name="dyn_lep" type="checkbox" ctype="bool" default="0">
     <description>Neutrino-electron scattering</description>
   </param>
-  <param name="dyn_e_el" type="checkbox" ctype="bool" default="0">
-    <description>Elastic electron scattering</description>
+  <param name="dyn_qel_el" type="checkbox" ctype="bool" default="0">
+    <description>Quasi elastic electron scattering</description>
   </param>
-  <param name="dyn_e_spp" type="checkbox" ctype="bool" default="0">
-    <description>electron SPP</description>
+  <param name="dyn_res_el" type="checkbox" ctype="bool" default="0">
+    <description>Electron SPP</description>
   </param>
-  <param name="eel_theta_lab" type="text" ctype="double" default="90">
-    <description><![CDATA[Theta lab for eletron measurement]]></description>
+  <param name="el_costh_lab" type="text" ctype="double" default="90">
+    <description><![CDATA[Cos theta lab for electron scattering]]></description>
   </param>
-  <param name="eel_dz" type="text" ctype="double" default="2">
-    <description><![CDATA[electon scattering cos_theta_lab accuracy]]></description>
+  <param name="el_costh_del" type="text" ctype="double" default="2">
+    <description><![CDATA[Electon scattering cos theta lab accuracy]]></description>
   </param>
   <param name="eel_alg" type="text" ctype="string" default="old">
     <description><![CDATA[electron elastic scattering algorithm: old, fast, Mott, Rutheford]]></description>

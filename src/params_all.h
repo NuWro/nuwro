@@ -55,10 +55,10 @@ PARAM(bool,dyn_mec_cc,0)\
 PARAM(bool,dyn_mec_nc,0)\
 PARAM(bool,dyn_hyp_cc,0)\
 PARAM(bool,dyn_lep,0)\
-PARAM(bool,dyn_e_el,0)\
-PARAM(bool,dyn_e_spp,0)\
-PARAM(double,eel_theta_lab,90)\
-PARAM(double,eel_dz,2)\
+PARAM(bool,dyn_qel_el,0)\
+PARAM(bool,dyn_res_el,0)\
+PARAM(double,el_costh_lab,90)\
+PARAM(double,el_costh_del,2)\
 PARAM(string,eel_alg,"old")\
 PARAM(int,qel_kinematics,0)\
 PARAM(int,qel_vector_ff_set,2)\

@@ -65,6 +65,11 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     }
   }
 
+  if (nu.pdg==11 && N0.pdg==pdg_proton)
+    kind=10;
+  if (nu.pdg==11 && N0.pdg==pdg_neutron)
+    kind=11;//will be used when FF are selected in the file ff.cc
+
   double _E_bind=0; //binding energy
 
   if(t.A() > 1)
@@ -184,10 +189,13 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
   if (nu.pdg==11)
   {
     double kosine=lepton.z/lepton.momentum();  
-    if ( kosine < (p.eel_theta_lab-p.eel_dz) || kosine > (p.eel_theta_lab+p.eel_dz) )
+    if ( kosine < (p.el_costh_lab-p.el_costh_del) || kosine > (p.el_costh_lab+p.el_costh_del) )
       e.weight=0;
     else
-      e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2; // change of propagators in weak and em processes
+      e.weight*=Pi2*8.0/137.03599908/137.03599908/G/G/q2/q2 / (2*p.el_costh_del);
+      // change of propagators in weak and em processes
+      // KN: the output should be the differential in costh!
+      //     (so the user doesn't have to remember what the width was)
   }
 
   return e.weight*cm2;

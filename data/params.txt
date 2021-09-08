@@ -88,7 +88,7 @@ dyn_mec_nc =0      // Meson exchange neutral current
 dyn_hyp_cc =1      // Quasi elastic hyperon production
 dyn_lep    =1      // Neutrino-electron
 
-dyn_e_el   =0      // Elastic electron scattering
+dyn_qel_el =0      // (Quasi) elastic electron scattering
 
 ################################################################
 # Dynamics details and form factor parameters
@@ -287,5 +287,5 @@ formation_length = 1 // formation length in fm for formation_zone = const
 # Electron scattering paremeters
 ################################
 
-eel_theta_lab=0.5 // defines cosine of the scattered electron
-eel_dz=1 //defines angular acceptance for the scattered electron ( it is for the cosine from (eel_theta_lab - eel_dz) to (eel_theta_lab + eel_dz), the width is 2*eel_dz! )
+el_costh_lab=0.5 // defines cosine of the scattered electron
+el_costh_del=1   //defines angular acceptance for the scattered electron ( it is for the cosine from (el_costh_lab - el_costh_del) to (el_costh_lab + el_costh_del), the width is 2*el_costh_del! )

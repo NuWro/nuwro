@@ -126,7 +126,6 @@ void kaskada::prepare_particles()
           p1.set_energy (p1.E() + par.nucleus_E_b);
 
         p1.set_fermi(nucl->Ef(p1));
-
  
         if (p1.Ek() <= par.kaskada_w + p1.his_fermi)  // jailed nucleon if its kinetic energy
                                                       // is lower than binding energy
@@ -266,6 +265,8 @@ bool kaskada::move_particle()
     }
     return true; // hyperon was not jailed
   }
+
+  return true;
 }
 
 ////////////////////////////////////////
