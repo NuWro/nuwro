@@ -220,11 +220,16 @@ MEC_pauli_blocking = 1 //switch on/off Pauli blocking for nucleons from MEC dyna
 mec_pb_trials = 30 //how many times configuration satisfying Pauli blocking is searched for; default 25
 MEC_cm_direction = 0 //in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1
 
+# Rescaling of the Valencia model (+LFG) to fit T2K and MINERvA 
+# v/anu inclusive CC0pi data better
+# -> see Phys.Rev. C 102 (2020) 015502
+mec_scaling = 0
+
 ################################################################
 # Hyperon Production
 ###############################################################
 
-hyp_lambda=1	         // Lambda zero baryon production
+hyp_lambda=1	           // Lambda zero baryon production
 hyp_sigma_zero=1         // Sigma zero baryon production
 hyp_sigma_minus=1        // Sigma minus baryon production
 

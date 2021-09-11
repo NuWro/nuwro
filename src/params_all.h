@@ -97,6 +97,7 @@ PARAM(double,mec_back_to_back_smearing,0.0)\
 PARAM(int,mec_pb_trials,30)\
 PARAM(bool,MEC_pauli_blocking,1)\
 PARAM(double,MEC_cm_direction,0.0)\
+PARAM(int,mec_scaling,0)\
 PARAM(bool,hyp_lambda,1)\
 PARAM(bool,hyp_sigma_zero,1)\
 PARAM(bool,hyp_sigma_minus,1)\

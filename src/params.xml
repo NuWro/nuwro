@@ -430,6 +430,9 @@
    <param name="MEC_cm_direction" type="checkbox" ctype="double" default="0.0">
      <description><![CDATA[ in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1]]></description>
   </param>
+  <param name="mec_scaling" type="text" ctype="int" default="0">
+    <description><![CDATA[Phenomenological mec scaling based on the CC0pi data; works with the Valencia model and LFG]]></description>
+  </param>
   <param name="hyp_lambda" type="checkbox" ctype="bool" default="1">
     <description>Lambda baryon production</description> 
   </param>

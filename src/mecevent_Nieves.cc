@@ -1,5 +1,14 @@
 #include "mecevent_Nieves.h"
 
+double przeskalowanie (double w, double q)
+{
+  int w_int = floor(w/50);
+  int q_int = floor(q/50);
+  
+  return przeskalowanie_mec [w_int] [q_int];
+  
+};
+
 void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
 {
   e.par = p;            // save params in the event
@@ -14,6 +23,7 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
   double mec_smearing = p.mec_back_to_back_smearing;
   double binding = p.kaskada_w;
   double mc_sampling = p.MEC_cm_direction;
+  int mecskalowanie = p.mec_scaling;
 
   // sadly, only CC events available so far...
   if(e.flag.nc)
@@ -49,7 +59,7 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
   double weight=0;
 
   if(width_q0>0) weight=Nieves_kin_and_weight (e.in[0].E(), meclepton, mecnucleon, t, mec_central,
-                                               mec_smearing, binding, ile_pb, mc_sampling);
+                                               mec_smearing, binding, ile_pb, mc_sampling, mecskalowanie);
 
   e.weight = weight;
   if (weight>0) mec_do_cc (mecnucleon, p.mec_ratio_pp);
@@ -135,7 +145,7 @@ void mecevent_Nieves (params & p, event & e, nucleus & t, bool cc)
 
 double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nucleus &t,
                               double mec_central, double mec_smearing, double binding,
-                              int ile_PB, double sampling)
+                              int ile_PB, double sampling, int skalowanie)
 {
   // it is assumed that neutrino direction is (0,0,1); but transition to other direction in nuwro.cc!
 
@@ -162,7 +172,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
     if((q2>q0*q0))
     {
       //double differential cross section
-      result=Nieves_dsdEdc(E,q0,ct)*width_q0*width_cos/GeV;
+      result=Nieves_dsdEdc(E,q0,ct,skalowanie)*width_q0*width_cos/GeV;
 
       // Why should we bother to do anything, if weight=0??
       if(result>0)
@@ -323,7 +333,7 @@ double Nieves_kin_and_weight (double E, particle &meclep, particle *nucleon, nuc
 
 ////////////////////////////////////////
 
-double Nieves_dsdEdc(double E, double q0, double ct)
+double Nieves_dsdEdc(double E, double q0, double ct, int skalowanie)
 {
   double result=0;
   double Ep=E-q0;
@@ -478,6 +488,17 @@ double Nieves_dsdEdc(double E, double q0, double ct)
     result=(2*w1*st2+w2*ct2-w3*(E+Ep)*st2);
     result+=ml2/((Ep+lp)*Ep)*(w1*ct-0.5*w2*ct+0.5*w3*(Ep*(1.0-ct)+lp-E*ct)+0.5*w4*(ml2*ct+2*Ep*(Ep+lp)*sts)-0.5*w5*(Ep+lp));
     result*=2*G*G*Ep*lp/Pi/cm2;
+
+    if (skalowanie == 1 && nucl == 0)//only for carbon phenomenological rescaling
+    {
+      result*=przeskalowanie(q0,q);
+    }
+    
+    if (skalowanie == 2 && nucl <3)//only nuclei phenomenological rescaling
+    {
+      result*=przeskalowanie(q0,q);
+    }
+
     if (result<0) { result=0;}
   }
   return result;
