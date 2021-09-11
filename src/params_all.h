@@ -44,17 +44,17 @@ PARAM(vec,geo_d,"2000 2000 5000")\
 PARAM(int,nucleus_target,2)\
 PARAM(int,nucleus_model,1)\
 PARAM(bool,dyn_qel_cc,1)\
-PARAM(bool,dyn_qel_nc,1)\
+PARAM(bool,dyn_qel_nc,0)\
 PARAM(bool,dyn_res_cc,1)\
-PARAM(bool,dyn_res_nc,1)\
+PARAM(bool,dyn_res_nc,0)\
 PARAM(bool,dyn_dis_cc,1)\
-PARAM(bool,dyn_dis_nc,1)\
+PARAM(bool,dyn_dis_nc,0)\
 PARAM(bool,dyn_coh_cc,1)\
-PARAM(bool,dyn_coh_nc,1)\
-PARAM(bool,dyn_mec_cc,0)\
+PARAM(bool,dyn_coh_nc,0)\
+PARAM(bool,dyn_mec_cc,1)\
 PARAM(bool,dyn_mec_nc,0)\
-PARAM(bool,dyn_hyp_cc,0)\
-PARAM(bool,dyn_lep,0)\
+PARAM(bool,dyn_hyp_cc,1)\
+PARAM(bool,dyn_lep,1)\
 PARAM(bool,dyn_qel_el,0)\
 PARAM(bool,dyn_res_el,0)\
 PARAM(double,el_costh_lab,90)\
@@ -105,7 +105,9 @@ PARAM(double,hyp_g2_Re_part,0)\
 PARAM(double,hyp_g2_Im_part,0)\
 PARAM(bool,hyp_su3_sym_breaking,0)\
 PARAM(double,hyp_axial_mass,1030)\
-PARAM(bool,hyp_effmass,false)\
+PARAM(bool,hyp_effmass,true)\
+PARAM(double,hyp_Lambda_Eb,27)\
+PARAM(double,hyp_Sigma_Eb,-70)\
 PARAM(bool,kaskada_on,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\
@@ -123,6 +125,4 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
-PARAM(double,hyp_Lambda_Eb,30)\
-PARAM(double,hyp_Sigma_Eb,30)\
 

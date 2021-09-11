@@ -204,37 +204,37 @@
   <param name="dyn_qel_cc" type="checkbox" ctype="bool" default="1">
     <description>Quasi elastic charged current</description>
   </param>
-  <param name="dyn_qel_nc" type="checkbox" ctype="bool" default="1">
+  <param name="dyn_qel_nc" type="checkbox" ctype="bool" default="0">
     <description>Quasi elastic neutral current</description>
   </param>
   <param name="dyn_res_cc" type="checkbox" ctype="bool" default="1">
     <description>Resonant charged current</description>
   </param>
-  <param name="dyn_res_nc" type="checkbox" ctype="bool" default="1">
+  <param name="dyn_res_nc" type="checkbox" ctype="bool" default="0">
     <description>Resonant neutral current</description>
   </param>
   <param name="dyn_dis_cc" type="checkbox" ctype="bool" default="1">
     <description>Deep inelastic charged current</description>
   </param>
-  <param name="dyn_dis_nc" type="checkbox" ctype="bool" default="1">
+  <param name="dyn_dis_nc" type="checkbox" ctype="bool" default="0">
     <description>Deep inelastic neutral current</description>
   </param>
   <param name="dyn_coh_cc" type="checkbox" ctype="bool" default="1">
     <description>Coherent charged current</description>
   </param>
-  <param name="dyn_coh_nc" type="checkbox" ctype="bool" default="1">
+  <param name="dyn_coh_nc" type="checkbox" ctype="bool" default="0">
     <description>Coherent neutral current</description>
   </param>
-  <param name="dyn_mec_cc" type="checkbox" ctype="bool" default="0">
+  <param name="dyn_mec_cc" type="checkbox" ctype="bool" default="1">
     <description>Meson exchange charged current</description>
   </param>
   <param name="dyn_mec_nc" type="checkbox" ctype="bool" default="0">
     <description>Meson exchange charged current</description>
   </param>
-  <param name="dyn_hyp_cc" type="checkbox" ctype="bool" default="0">
+  <param name="dyn_hyp_cc" type="checkbox" ctype="bool" default="1">
     <description>Hyperon production charged current</description>
   </param>
-  <param name="dyn_lep" type="checkbox" ctype="bool" default="0">
+  <param name="dyn_lep" type="checkbox" ctype="bool" default="1">
     <description>Neutrino-electron scattering</description>
   </param>
   <param name="dyn_qel_el" type="checkbox" ctype="bool" default="0">
@@ -454,10 +454,19 @@
   <param name="hyp_axial_mass" type="text" ctype="double" default="1030">
     <description>Axial mass used in hyperon production></description>
   </param>
- <param name="hyp_effmass" type="checkbox" ctype="bool" default="false">
-  <description>Use hyperon effective mass if cross section</description>
-</param>
-
+  <param name="hyp_effmass" type="checkbox" ctype="bool" default="true">
+    <description>Use hyperon effective mass in cross section</description>
+  </param>
+  <!-- Cascade hyperon KE cutoff -->
+  <!-- <param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
+    <description>Hyperon kinetic energy cutoff</description>
+  </param> -->
+  <param name="hyp_Lambda_Eb" type="text" ctype="double" default="27">
+    <description>Lambda binding energy at max density; [25 MeV, 29 MeV]</description>
+  </param>
+  <param name="hyp_Sigma_Eb" type="text" ctype="double" default="-70">
+    <description>Sigma binding energy at max density; [10 MeV; -150 MeV]</description>
+  </param>
   <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) the cascade]]></description>
   </param>
@@ -543,18 +552,6 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param> 
-  <!-- Cascade hyperon KE cutoff -->
-  <!-- <param name="hyp_kaskada_cutoff" type="checkbox" ctype="bool" default="0">
-    <description>Hyperon kinetic energy cutoff</description>
-  </param> -->
-  <param name="hyp_Lambda_Eb" type="text" ctype="double" default="30">
-    <description>Lambda binding energy at max density</description>
-  </param>
-  <param name="hyp_Sigma_Eb" type="text" ctype="double" default="30">
-    <description>Sigma binding energy at max density</description>
-  </param>
-
-
 </params>
 
 <!--
