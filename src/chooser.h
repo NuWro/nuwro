@@ -198,18 +198,18 @@ inline bool chooser::accept(int i, double x, double bias)
 inline void chooser::short_report(ostream &f, bool format=false)
 {
     string tab (8,' ');
-    string line(39,'-');
+    string line(42,'-');
 /// write calculated total cross sections for each channel to file
     if(format)
         f << tab << " ";
-    f << "dyn    events     ratio   sigma[cm2]" << endl;
+    f << "dyn     events        ratio   sigma[cm2]" << endl;
     for (int k = 0; k < N; k++)
     {
         if(format)
             f << tab << line << endl << tab << " ";
         f << setw(3)  << dyn(k)     << " "
-          << setw(9)  << desired(k) << " "
-          << setw(9)  << ratio(k)   << " "
+          << setw(10) << desired(k) << " "
+          << setw(12) << ratio(k)   << " "
           << setw(12) << avg(k)     << endl;
     }
 }

@@ -149,7 +149,7 @@ void NuWro::init (int argc, char **argv)
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
 	{
-		cout << "     -> Calculating the one pion functions..." << endl;
+		cout << "     -> Calculating the single-pion functions..." << endl;
 		singlepion (p);
 	}
 	if(p.kaskada_redo==0)
