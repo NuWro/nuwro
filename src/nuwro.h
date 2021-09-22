@@ -29,7 +29,7 @@ class NuWro
 		void set (params &p);
 		void refresh_target (params &p);
 		void refresh_dyn (params &p);
-		void pot_report(ostream&);
+		void pot_report(ostream&, bool format);
 		NuWro ();
 		~NuWro();
 

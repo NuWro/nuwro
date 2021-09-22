@@ -13,9 +13,9 @@ number_of_test_events = 2000000
 number_of_events      = 500000
  
 # Control the random seed persistence:
-random_seed= 0    // 0 - use time(NULL) as a seed for random number generator
-#random_seed= 1    // 1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
-#random_seed=12312 // other values - use given number as the seed for the generator
+random_seed = 0     // 0 - use time(NULL) as a seed for random number generator
+#random_seed = 1     // 1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
+#random_seed = 12312 // other values - use given number as the seed for the generator
 
 ################################################################
 #
@@ -26,9 +26,10 @@ random_seed= 0    // 0 - use time(NULL) as a seed for random number generator
 # *default* 1 GeV muon neutrinos
 
 # Define the beam by hand:
-beam_type = 0       // single flavor beam
-beam_energy = 1000  // monoenergetic (in MeV)
-beam_particle = 14  // lepton PDG
+# (single flavor, monoenergetic [MeV], lepton PDG)
+beam_type     = 0
+beam_energy   = 1000
+beam_particle = 14
 
 # It is convenient to include one of the predefined beam specifications
 # with the @ char (or modify them as needed):

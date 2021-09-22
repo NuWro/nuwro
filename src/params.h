@@ -226,7 +226,7 @@ public:
   void list (ostream & out = cout)
   {
 #define PARAM(type,name,default_value) \
-				out<< #name" ="; \
+				out<<"        "<< #name" ="; \
 				write(name,out); \
 				out<<endl;
     PARAMS_ALL ();

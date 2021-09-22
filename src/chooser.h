@@ -84,7 +84,7 @@ class chooser
     double sigma (int i){return proc[i].sigma();} ///< sigma
     double efficiency(int i) {return proc[i].efficiency();} /// efficincy of i-th channel
     void report();                  ///< report active channels characteristics
-    void short_report(ostream &f);	///< write calculated total cross sections for each channel to file 
+    void short_report(ostream &f, bool format);	///< write calculated total cross sections for each channel to file 
     void calculate_counts(int ilosc); ///< calculate how many events to generate for each channel
     int desired(int i) {return proc[i].Desired;} ///< how many events to generate for each channel
     int ready(int i) {return proc[i].Ready;}; ///< how many events got accepted (and writen to file)
@@ -127,8 +127,6 @@ inline void chooser::reset(params &p)
         cerr<<"No active dynamics - chooser invalid"<<endl;
         exit(19);
     }
-    else
-        std::cout<<"chooser created"<<std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -154,7 +152,7 @@ inline int chooser::choose()
 ////////////////////////////////////////////////////////////////////////
 inline void chooser::set_weights_to_avg()
 {
-	cout<<"Updating"<<endl;
+	//cout<<"Updating"<<endl;
 	for(int i=0;i<N;i++)
 		proc[i].W=avg(i);
 	do_distrib(); 
@@ -197,43 +195,61 @@ inline bool chooser::accept(int i, double x, double bias)
 }
 
 ////////////////////////////////////////////////////////////////////////
-inline void chooser::short_report(ostream &f)
+inline void chooser::short_report(ostream &f, bool format=false)
 {
+    string tab (8,' ');
+    string line(39,'-');
 /// write calculated total cross sections for each channel to file
-    f << "dyn  n        ratio          sigma[cm2] " << endl;
+    if(format)
+        f << tab << " ";
+    f << "dyn    events     ratio   sigma[cm2]" << endl;
     for (int k = 0; k < N; k++)
     {
-        f << dyn(k) << " " << setw(5) << desired(k)
-          << " " << setw(15) << ratio(k)
-          << " " << setw(15) << avg(k) << endl;
+        if(format)
+            f << tab << line << endl << tab << " ";
+        f << setw(3)  << dyn(k)     << " "
+          << setw(9)  << desired(k) << " "
+          << setw(9)  << ratio(k)   << " "
+          << setw(12) << avg(k)     << endl;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////
 inline void chooser::report()
 {
-    string linia(113,'-');
-    cout<<linia<<endl;
-    cout<<"dyn| label |"
-        <<"  weight      |"
-        <<"  ratio       |"
-        <<"  efficiency    |"
-        <<"  mean_value     |" 
-        <<"  deviation      |" 
-        <<"  sigma          |" 
-        <<  endl;
-    cout<<linia<<endl;
+    string linia (76,'_');
+    string linia2(76,'-');
+    string linia3(19,' ');
+    string linia4(56,'-');
+    string linia5(78,' ');
+    cout << linia5 << "|" << endl
+         << linia5 << "|" << endl;
+    cout << " |" << linia  << "|" << endl;
+    cout << " |  dyn  |   label   |"
+         << "      weight      |"
+         << "      ratio       |"
+         << "    efficiency    |"
+         << endl;
+    cout << " |" << linia2 << "|" << endl;
+    cout << " |" << linia3 << "|"
+         << "    mean value    |"
+         << "    deviation     |"
+         << "      sigma       |"
+         << endl;
+    cout << " |" << linia3 << "|" << linia4 << "|" << endl;
     for (int j = 0; j < N; j++)
-        cout <<setw(2)<<  proc[j].dyn<<setprecision(6) << " | "
-             <<proc[j].label  << " |"
-             <<setw(12)<< weight (j) << "  |"
-             <<setw(12)<< ratio (j) << "  |"
-             <<setw(12)<< efficiency(j)*100 << " %  | "
-             <<setw(12)<< avg (j) << " cm2| "
-             <<setw(12)<< sqrt(var(j))<< " cm2| "
-             <<setw(12)<< sigma(j)<< " cm2| "
+        cout << " |   " << setw(2) << proc[j].dyn  << "  |   "
+             << setprecision(6) << left
+             << setw(5)  << proc[j].label << right << "   | "
+             << setw(12) << weight (j)             << "     | "
+             << setw(12) << ratio (j)              << "     | "
+             << setw(12) << efficiency(j)*100      << " %   | "
+             << endl << " |" << linia3 << "| "
+             << setw(12) << avg (j)                << " cm2 | "
+             << setw(12) << sqrt(var(j))           << " cm2 | "
+             << setw(12) << sigma(j)               << " cm2 |"
              << endl;
-    cout<<linia<<endl;
+    cout << " |" << linia << "|" << endl << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////
