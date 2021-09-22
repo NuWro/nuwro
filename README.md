@@ -61,3 +61,4 @@ Significant contribution
 * Paweł Przewłocki
 * Luke Pickering
 * Patrick Stowell
+* Chris Thorpe
