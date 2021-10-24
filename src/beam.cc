@@ -53,7 +53,7 @@ beam * create_beam(params &p, geomy *detector)
 	}
 	case 7:
 	{
-	  cout << "Using atmospheric neutrinno flux." << endl;
+	  cout << "Using atmospheric neutrino flux." << endl;
 	  return new beam_atmo( p );
 	}
 	default:

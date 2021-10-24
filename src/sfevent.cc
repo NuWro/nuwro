@@ -99,8 +99,10 @@ double sfevent(params &par, event &e, nucleus &t) {
       return 0;
   }
 
-  // four-momentum transfer
-  vect q = N1 - N0;
+  // four-momentum transfer (hadronic side)
+  vect  q = N1 - N0;
+  // four-momentum transfer (leptonic side)
+  vect qq = l0 - l1;
   // sphere volume in cms
   const double vol = 4 * pi * mom_cms * mom_cms;
   // gradient for Dirac delta when integrating over k'
@@ -111,7 +113,7 @@ double sfevent(params &par, event &e, nucleus &t) {
   double common, val;
   if(l0.pdg==11)
   {
-    common = 1. / 137.03599908 / 137.03599908 / (q*q) / (q*q) * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
+    common = 1. / 137.03599908 / 137.03599908 / (qq*qq) / (qq*qq) * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
     val = common * options.evalLHel(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1);
   }
   else
