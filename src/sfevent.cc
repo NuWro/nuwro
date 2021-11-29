@@ -172,6 +172,12 @@ double sfevent(params &par, event &e, nucleus &t) {
   else
     return 0;
 
+  //fixing a bug in initial nucleon energy
+  if (N0.mass() > E)
+    N0.t = N0.mass() - E;
+  else
+    return 0;
+
   e.weight = val / cm2;
 
   // push final state particles
