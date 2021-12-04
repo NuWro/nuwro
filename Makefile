@@ -18,7 +18,7 @@ ifeq ($(OS),Darwin)
   CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 else
   # Flags for others
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -std=c++0x -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
+ CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\"
 # CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` --std=c++17 -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-deprecated-register -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS)
  
 endif
