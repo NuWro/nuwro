@@ -118,7 +118,7 @@ particle nucleus::get_nucleon (vec r)
 		case  1: p0.set_momentum(rand_from_ball(_kf)); break; // global fermi gas
 		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
 		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek Ritchie
-		case  4: assert (!"effective SF can be run only for carbon and oxygen" &&(p==n && (p==6 || p==8)) ); //effective SF is defined only for two targets
+		case  4: assert ("effective SF can be run only for carbon and oxygen" && p==n && (p==6 || p==8) ); //effective SF is defined only for two targets
 					p0.set_momentum(spectral_choice(p,n));	break;
 		case  0: // free nucleon
 		case  5: p0.set_momentum(deuterium()); break; //deuterium
