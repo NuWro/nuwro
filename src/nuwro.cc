@@ -444,7 +444,8 @@ void NuWro::makeevent(event* e, params &p)
        	switch(dyn)
 		{
 			case 20:
-				e->flag.nc=true;
+				// TODO: introduce a new flag el!
+				e->flag.qel=e->flag.nc=true;
 			    /*if(p.eel_alg=="old")
                     e_el_event(p,*e,*_nucleus,false); 
 			    else 	

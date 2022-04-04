@@ -110,7 +110,7 @@ double ran_exp(double p)
 
 double formation_zone (particle &p, params &par, event &e)
 {
-	double flength;
+	double flength = 0;
 			
 	if (par.first_step)
 	{	
@@ -142,6 +142,9 @@ double formation_zone (particle &p, params &par, event &e)
 				flength = 0;
 			}
 			else if (W < 1400)
+			// KN: for the future code development, I guess that p0 is supposed to be the on-shell target nucleon;
+			//     this might be a problem as in some dynamics, e.g. SF, it is written as off-shell;
+			//     I sense potential consistency issues;
 			{
 				double e = q.t + p0.t;
 				vec pa;
