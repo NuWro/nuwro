@@ -1,5 +1,4 @@
 #include <iomanip>
-#include <iomanip>
 #include <sstream>
 #include <vector>
 #include "event1.h"
@@ -139,10 +138,6 @@ void NuWro::init (int argc, char **argv)
 	_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
-  // load the input data
-  input.initialize( p );
-  input.load_data();
-
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
 	{
@@ -168,6 +163,11 @@ void NuWro::init (int argc, char **argv)
 
 
 	}
+
+  // load the input data
+  input.initialize( p );
+  input.load_data();
+
 	ff_configure(p);
 	refresh_dyn(p);	
 }
@@ -304,9 +304,9 @@ void NuWro::makeevent(event* e, params &p)
 			{
 				switch(p.res_kind)
 				{
-					case 1:resevent2 (p, *e, true);break;
-					case 2:resevent_hybrid (p, *e, true);break;
-					default:resevent2 (p, *e, true);break;
+					case 1:resevent2 (p, *e, *_nucleus, true);break;
+					case 2:resevent_hybrid (p, *e, *_nucleus, true);break;
+					default:resevent2 (p, *e, *_nucleus, true);break;
 				}
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
@@ -316,7 +316,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.res=e->flag.nc=true;
 			if (p.dyn_res_nc) // res nc
 			{
-				resevent2 (p, *e, false);
+				resevent2 (p, *e, *_nucleus, false);
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
@@ -468,10 +468,13 @@ void NuWro::finishevent(event* e, params &p)
   {
     if( p.res_kind == 2 )
     {
+      // for consistency reasons, the simplest solution for now is to recreate the nucleus
+      nucleus *nucl = make_nucleus(p);
       if( p.res_hybrid_sampling == 1 )
-        resevent_dir_hybrid(*e, p.res_hybrid_resampling);
+        resevent_dir_hybrid(*e, *nucl, p.res_hybrid_resampling);
       else if( p.res_hybrid_sampling < 4 )
-        resevent_phi_hybrid(*e);
+        resevent_phi_hybrid(*e, *nucl);
+      delete nucl;
     }
   }
 

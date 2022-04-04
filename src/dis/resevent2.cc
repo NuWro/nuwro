@@ -45,16 +45,17 @@ Channels are labelled by 4 integers corresponding to: nu/anu   cc/nc   proton/ne
 #include "res_xsec.h"
 #include "singlepion.h"
 #include "vect.h"
+#include "nucleus.h"
 
 extern "C" int pycomp_(const int *);
 extern double SPP[2][2][2][3][40];
 
-void resevent2(params &p, event &e, bool cc) {
+void resevent2(params &p, event &e, nucleus &t, bool cc) {
   e.weight = 0;              // if kinmetically forbidden
   e.flag.res_delta = false;  // pion from background by default
   e.res_angrew = 1.0;        // no xsec scaling by default
 
-  res_kinematics kin(e);  // kinematics variables
+  res_kinematics kin(e, t);  // kinematics variables
 
   // check threshold for pion production (otherwise left e.weight = 0)
   if (not kin.is_above_threshold()) return;

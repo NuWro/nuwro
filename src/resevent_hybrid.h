@@ -4,6 +4,7 @@
 #include "params.h"
 #include "event1.h"
 #include "dis/res_kinematics.h"
+#include "nucleus.h"
 
 // Cuts in Q2 and W for the hybrid model
 const double  Q2max_hybrid  =3.901*GeV2;
@@ -24,7 +25,7 @@ const double cthspc_hybrid  = 2./19;
 const int    cthbin_hybrid  =(cthmax_hybrid-cthmin_hybrid)/cthspc_hybrid+1;
 
 // Generate RES event
-void resevent_hybrid(params& p, event& e, bool cc);
+void resevent_hybrid(params& p, event& e, nucleus& t, bool cc);
 
 // Double-differential cross section in CMS without LAB factors
 // - in terms of tabularized hadronic responses
@@ -80,9 +81,9 @@ vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp);
 
 // Function to be called in finishevent to resample the hadronic angles
 // - resample the whole direction
-void resevent_dir_hybrid(event& e, int method);
+void resevent_dir_hybrid(event& e, nucleus& t, int method);
 // - resample only the phi angle
-void resevent_phi_hybrid(event& e);
+void resevent_phi_hybrid(event& e, nucleus& t);
 
 // Interpolations, axes xyz
 double    linear_interp(double f0,   double f1,   double xd);

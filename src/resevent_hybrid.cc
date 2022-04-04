@@ -16,13 +16,14 @@ This function calculates RES events from the Hybrid model
 #include "TDecompLU.h"
 #include "TVectorD.h"
 #include "TH1D.h"
+#include "nucleus.h"
 
 
-void resevent_hybrid(params &p, event &e, bool cc) // free nucleon only!
+void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon only!
 {
   e.weight = 0;           // if kinematically forbidden
 
-  res_kinematics kin(e);  // kinematics variables
+  res_kinematics kin(e, t);  // kinematics variables
 
   // check threshold for pion production (otherwise left e.weight = 0)
   if (not kin.is_above_threshold()) return;
@@ -918,19 +919,19 @@ vec hybrid_dir_from_adler(double costh, double phi, vect k, vect kp)
   return kierunek;
 }
 
-void resevent_dir_hybrid(event& e, int method)
+void resevent_dir_hybrid(event& e, nucleus& t, int method)
 {
   // get all 4-vectors from the event and boost them to the N-rest frame
-  vect target   = e.in[1];  
-  target.t     -= get_binding_energy (e.par, target);
-  vect neutrino = e.in[0];  neutrino.boost(-target.v());
-  vect lepton   = e.out[0]; lepton.boost  (-target.v());
-  vect pion     = e.out[1]; pion.boost    (-target.v());
-  vect nucleon  = e.out[2]; nucleon.boost (-target.v());
+  particle target = e.in[1];  
+  target.t       -= get_binding_energy (e.par, target, t);
+  vect neutrino   = e.in[0];  neutrino.boost(-target.v());
+  vect lepton     = e.out[0]; lepton.boost  (-target.v());
+  vect pion       = e.out[1]; pion.boost    (-target.v());
+  vect nucleon    = e.out[2]; nucleon.boost (-target.v());
 
   // calculate hadron_speed and boost to CMS
   vect q = neutrino - lepton;
-  double Mef = min(sqrt(target * target), res_kinematics::avg_nucleon_mass);
+  double Mef = min(sqrt(target.p4() * target.p4()), res_kinematics::avg_nucleon_mass);
   double q3  = sqrt(pow(Mef + q.t,2) - e.W()*e.W());
   vec hadron_speed = q / sqrt(e.W()*e.W() + q3 * q3);
   pion.boost     (-hadron_speed);
@@ -1015,19 +1016,19 @@ void resevent_dir_hybrid(event& e, int method)
   e.out[2].p4() = nucleon;
 }
 
-void resevent_phi_hybrid(event& e)
+void resevent_phi_hybrid(event& e, nucleus& t)
 {
   // get all 4-vectors from the event and boost them to the N-rest frame
-  vect target   = e.in[1];  
-  target.t     -= get_binding_energy (e.par, target);
-  vect neutrino = e.in[0];  neutrino.boost(-target.v());
-  vect lepton   = e.out[0]; lepton.boost  (-target.v());
-  vect pion     = e.out[1]; pion.boost    (-target.v());
-  vect nucleon  = e.out[2]; nucleon.boost (-target.v());
+  particle target = e.in[1];  
+  target.t       -= get_binding_energy (e.par, target, t);
+  vect neutrino   = e.in[0];  neutrino.boost(-target.v());
+  vect lepton     = e.out[0]; lepton.boost  (-target.v());
+  vect pion       = e.out[1]; pion.boost    (-target.v());
+  vect nucleon    = e.out[2]; nucleon.boost (-target.v());
 
   // calculate hadron_speed and boost to CMS
   vect q = neutrino - lepton;
-  double Mef = min(sqrt(target * target), res_kinematics::avg_nucleon_mass);
+  double Mef = min(sqrt(target.p4() * target.p4()), res_kinematics::avg_nucleon_mass);
   double q3  = sqrt(pow(Mef + q.t,2) - e.W()*e.W());
   vec hadron_speed = q / sqrt(e.W()*e.W() + q3 * q3);
   pion.boost     (-hadron_speed);
