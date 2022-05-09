@@ -51,7 +51,6 @@ class nucleus
 	double Lambda_Eb;
 	double Sigma_Eb;
 
-		 
 	public:
 
 	nucleus(params &par);                    ///< construct nucleus from params
@@ -91,14 +90,12 @@ class nucleus
 ///                I m p l e m e n t a t i on
 ////////////////////////////////////////////////////////////////////////
 
-
 inline double nucleus::Ef()
 {
 	double const M=0.5*(PDG::mass_proton+PDG::mass_neutron);
 
 	return sqrt(_kf*_kf+M*M)-M;
 }
-
 
 inline double kf_from_density (double dens)
 { 
@@ -109,13 +106,11 @@ inline double kf_from_density (double dens)
 		return 0;
 }
 
-
 ////////////////////////////////////////////////////////////////////////
 inline double nucleus::localkf (particle & pa)   ///< local Fermi momentum for particle (pdg and position dependent)
 {
 	return localkf_ (pa.pdg, pa.r.length ());
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 inline  double nucleus::localkf_ (int pdg, double r)
@@ -154,7 +149,6 @@ inline double nucleus::frac_neutron () ///< percentage of neutrons
 { 
 	return double (nr) / (pr + nr); 
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // check if any of p[0]...p[n-1] is Pauli blocked 
@@ -237,25 +231,20 @@ inline double nucleus::V(particle &p)
 	return (sqrt(p.mass2() + lkf*lkf) - p.mass());// + 7*MeV);// + 5*MeV;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 /// potential of a hyperon
 ///////////////////////////////////////////////////////////////////////////////
-
 inline double nucleus::hyp_BE(double r,int pdg)
 {
+	switch(pdg)
+	{
+		case 3122: return Lambda_Eb*density(r)/density(0);
+		case 3212: case 3112: case 3222: return Sigma_Eb*density(r)/density(0);
+		default: std::cout << "This is not a hyperon! Returning 0 for hyperon potential" << std::endl; return 0;
+	}
 
-
-switch(pdg){
-case 3122: return Lambda_Eb*density(r)/density(0);
-case 3212: case 3112: case 3222: return Sigma_Eb*density(r)/density(0);
-default: std::cout << "This is not a hyperon! Returning 0 for hyperon potential" << std::endl; return 0;
-}
-
-std::cout << "Should never reach here!" << std::endl;
-return 0;
-
-//  return Lambda_Eb*density(r)/density(0);
+	std::cout << "Should never reach here!" << std::endl;
+	return 0;
 }
 
 #endif

@@ -21,7 +21,6 @@
 
 double hypevent(params&p, event &e, nucleus &t)
 {
-
   /*
    * 
    * This is the hyperon production code. Only for antineutrino scattering.
@@ -54,11 +53,10 @@ double hypevent(params&p, event &e, nucleus &t)
   lepton.r=N0.r;
   hyperon.r=N0.r;
 
-
   // adjust the lepton flavour
   lepton.pdg=nu.pdg-(nu.pdg>0 ? 1 :-1);
 
-  int h; // hyperon produced: 1,2,3
+  int h=0; // hyperon produced: 1,2,3
   switch(N0.pdg)
   {
     case PDG::pdg_proton: // Lambda or Sigma_0 (cross sections should add up)
@@ -103,8 +101,6 @@ double hypevent(params&p, event &e, nucleus &t)
   # 6 is deuterium with constant binding energy nucleus_E_b (for tests only!)
   */
 
-
-
   // if nucleus conains more than one nucleon, calculate binding energy
   if(t.p + t.n > 1)
   { 
@@ -121,13 +117,11 @@ double hypevent(params&p, event &e, nucleus &t)
     }
   }
 
-
   particle N0_Eb = N0; // nucleon with 4 momentum adjusted for binding energy
   N0_Eb.t -= _E_bind;
 
   double xsec = 0;
   double jakobian=0;  // the value will be set by kinematics generator
-	
 
   // DEPRECATED
   // double q2 = qel_kinematics(_E_bind, nu, N0, lepton, hyperon, jakobian)
@@ -155,7 +149,6 @@ double hypevent(params&p, event &e, nucleus &t)
 
   //boost these to CMS for calculations
   vec vcms = (vect(nu) + vect(N0_Eb)).v ();
-
 
   v1.boost(-vcms);
   v2.boost(-vcms);
@@ -186,11 +179,9 @@ double hypevent(params&p, event &e, nucleus &t)
      Hyp_mass = hyperon.mass();
   }
 
-
   //DEPRECATED
   //double dif = Hyperon_Interaction(-q2,Enu0,h,v1,v2,v3,v4,true);
   //double dif = Singh_Model(-q2,Enu0,h,v1,v2,v3,v4,true);
-
   double dif = Singh_Model2(-q2,Enu0,h,Nuc_mass,Hyp_mass,lepton.mass(),true);
 
   // Various coefficients in cross section
@@ -200,12 +191,10 @@ double hypevent(params&p, event &e, nucleus &t)
   // Transform from Q2 to costheta
   jakobian = 4*kin*kout; 
   xsec = dif*pf*jakobian;
-    
- 
+
   // Sigma0 cross section calculation
   if(h==1 && p.hyp_sigma_zero)
   {
-
     double xsec2=0;
 
     // take new particles
@@ -220,7 +209,6 @@ double hypevent(params&p, event &e, nucleus &t)
     // Try to solve kinematics for new hyperon, returns false if forbidden
     if( rescale_momenta(cms_Eb,cms_dir,lepton2,hyperon2) )
     {
-
        v3 = vect(lepton2);
        v4 = vect(hyperon2);
 
@@ -233,26 +221,23 @@ double hypevent(params&p, event &e, nucleus &t)
        vect p13 = nu - lepton2;
        double q22 = p13 * p13;
 
-
-       if(p.hyp_effmass){
+       if(p.hyp_effmass)
+       {
           Hyp_mass = sqrt(hyperon2*hyperon2);
        }
-
-       else {
+       else
+       {
           Hyp_mass = hyperon2.mass();
        }
 
        // Calculate the cross section
-
        //DEPRECATED
        //dif = Singh_Model(-q22,Enu0,2,v1,v2,v3,v4,true);
-
        dif = Singh_Model2(-q22,Enu0,2,Nuc_mass,Hyp_mass,lepton.mass(),true);
 
        jakobian = 4*kin*kout; 
        // Prefactor pf only depends on initial state kinematics
        xsec2 = dif*pf*jakobian;
-
     }
 
     // choose a proper channel
@@ -278,14 +263,9 @@ double hypevent(params&p, event &e, nucleus &t)
     xsec *= sqrt ( (1 - vz) * (1 - vz) );
   }
 
-
-
-
-
   // Set potential 
   if(p.nucleus_target && t.p + t.n > 1) hyperon.set_fermi(t.hyp_BE(hyperon.r.length(),hyperon.pdg));
   else hyperon.set_fermi(0);
-
 
   // Check if hyperon can be generated in potential (performed at start of cascade)
   // Interaction didn't happen if not
@@ -293,12 +273,11 @@ double hypevent(params&p, event &e, nucleus &t)
      return 0;
   }
 
-
   e.temp.push_back(lepton);
   e.temp.push_back(hyperon);
   e.out.push_back(lepton);
   e.out.push_back(hyperon);
- 
+
   e.weight=xsec/cm2;
 
   return e.weight*cm2;
