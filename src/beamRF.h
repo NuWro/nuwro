@@ -150,7 +150,7 @@ public:
       acum[i]=prev+=events[i/100000][i%100000].norm;
 
 
-      prev=0;
+    prev=0;
     for(int i=0;i<N;i++)
     { 
       ND5Event& ev=events[i/100000][i%100000];
