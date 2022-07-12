@@ -174,9 +174,9 @@ template<typename T> void NonZeroArray< T >::Load( ifstream & file )
 /// jumps on flat array, is searching index of int x value
 template<typename T> int NonZeroArray< T >::Bisection( cir x )
 {
-	register int a = 0;
-	register int b = _arr.size()-1;
-	register int i;
+	int a = 0;
+	int b = _arr.size()-1;
+	int i;
 
 	while( b > a )
 	{

@@ -202,9 +202,9 @@ template<typename T> void NArray< T >::UndoSum()
 /// jumps on flat array, is searching index of int x value
 template<typename T> int NArray< T >::Bisection( cir x )
 {
-	register int a = 0;
-	register int b = _count-1;
-	register int i;
+	int a = 0;
+	int b = _count-1;
+	int i;
 
 	while( b > a )
 	{
