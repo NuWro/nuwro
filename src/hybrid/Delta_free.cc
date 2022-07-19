@@ -135,18 +135,25 @@ void OSMM( int medmod, double s, double r, complex<double> &f_OSMM)
 }
 
 void Delta_ff(double s, double u, double &Deltaff){
-  double cut_off = 800.;
+
+  //Modif, same as in my thesis: cutoff is bigger than in RGJ
+  //notice cutoff and VRfac are the same unlike in VR paper, but according to RGJ paper
+
+  double cut_off = 1200.;
+
   double Lam_piND = cut_off; 
   
   double MDelta2 = MDelta*MDelta;
   double Lam_piND4 = pow( Lam_piND ,4 );
+  double VRfac= Lam_piND4;
+
   
   double Fgauss_u = exp( -pow( u - MDelta2, 2) / Lam_piND4 ); // Gaussian
-  double Dipole_u = Lam_piND4 / ( pow( u - MDelta2, 2) + Lam_piND4 ); // "Dipole"
+  double Dipole_u = VRfac / ( pow( u - MDelta2, 2) + VRfac ); // "Dipole"
   double FGaDi_u = Fgauss_u * Dipole_u;
 
   double Fgauss_s = exp( -pow( s - MDelta2, 2) / Lam_piND4 ); // Gaussian
-  double Dipole_s = Lam_piND4 / ( pow( s - MDelta2, 2) + Lam_piND4 ); // "Dipole"
+  double Dipole_s = VRfac / ( pow( s - MDelta2, 2) + VRfac ); // "Dipole"
   double FGaDi_s = Fgauss_s * Dipole_s;
 
   Deltaff = FGaDi_s + FGaDi_u - FGaDi_s*FGaDi_u;

@@ -3,19 +3,23 @@
 
 void D13_ff( double s, double u, double &D13ff)
 {
-    
+  
   double cut_off = 800.;
   double Lam_piND = cut_off; 
 
   double M132=pow(MD13,2);
   double Lam_piND4 = pow( Lam_piND ,4 );
+
+  //double VRfac_o2 = M132*pow(M132*2*3.9-2*3.9*M132*sqrt(1.-WdthD13/MD13),2);
+//  VRfac = VRfac_o2;
+  double VRfac = Lam_piND4;
   
   double Fgauss_u = exp( -pow( u - M132, 2) / Lam_piND4 ); // Gaussian
-  double Dipole_u = Lam_piND4 / ( pow( u - M132, 2) + Lam_piND4 ); // "Dipole"
+  double Dipole_u = VRfac / ( pow( u - M132, 2) + VRfac ); // "Dipole"
   double FGaDi_u = Fgauss_u * Dipole_u;
 
   double Fgauss_s = exp( -pow( s - M132, 2) / Lam_piND4 ); // Gaussian
-  double Dipole_s = Lam_piND4 / ( pow( s - M132, 2) + Lam_piND4 ); // "Dipole"
+  double Dipole_s = VRfac / ( pow( s - M132, 2) + VRfac ); // "Dipole"
   double FGaDi_s = Fgauss_s * Dipole_s;
 
   D13ff = FGaDi_s + FGaDi_u - FGaDi_s*FGaDi_u;
