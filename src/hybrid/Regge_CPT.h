@@ -1,26 +1,6 @@
 #ifndef REGGE_H
 #define REGGE_H
 
-// void U_plane(double P[], complex<double> out_comp_plus[], complex<double> out_comp_minus[])
-// {
-//   double n0 = P[0]+MN;
-//   double n1=sqrt(n0/(2.*MN));
-//   complex<double> p_plus = P[1] + I*P[2];
-//   complex<double> p_minus = P[1] - I*P[2];
-// // // sigma_dot_p = ( P[3]      p_minus )
-// // //               ( p_plus  -P[3]     )
-// 
-//     out_comp_plus[0] = n1;
-//     out_comp_plus[1] = 0.;
-//     out_comp_plus[2] = n1*P[3]/n0;
-//     out_comp_plus[3] = n1*p_plus/n0;  
-//     
-//     out_comp_minus[0] = 0.;
-//     out_comp_minus[1] = n1;
-//     out_comp_minus[2] = n1*p_minus/n0;
-//     out_comp_minus[3] = -n1*P[3]/n0;  
-//   
-// }
 
 void Pion_Nucleon_FF(int process, int nucleon, int decay, int ChPT, double Qsq, double t, double s, double u, complex<double> &Fbpipi, complex<double> &wFCT, complex<double> &F1, complex<double> &F1_c, complex<double> &GA0, complex<double> &GA0_c, complex<double> &PRegge_NP, complex<double> &PRegge_rho)
 {
@@ -432,18 +412,7 @@ if(icPF != 0){
       }
    }
   }
-// // // 
-//
 
-//Watch out, no nucleon pole in axial current!
-//Watchout again, changing it back!
-//Differs from nucleus calculation, CHECK THIS
-//  if(process == 1)
-//	{
-//		icNP=0;
-//		icCNP=0;
-//	}
-// // // 
 
   Matrix AUX_np, AUX_cnp;
   
@@ -468,6 +437,8 @@ if(icPF != 0){
       AUX_np_A = GA * common;    
       for( int i=0; i<4; i++ ){
 	NPv_regge[i] = AUX_np_V*Gamma[i];
+
+	//ALEXIS: Can make choice to exclude NP from axial current in future:
 	NPa_regge[i] = -1.*AUX_np_A*(Gamma_mu5[i] + (Q[i]/(Mpi2+Qsq))*QSlash_5); 
       }
     }
@@ -498,6 +469,8 @@ if(icPF != 0){
       AUX_cnp_A = GA_c * common_c ;
       for( int i=0; i<4; i++ ){
 	CNPv_regge[i] = Gamma[i] * AUX_cnp_V ; 
+
+	//ALEXIS: Can make choice to exclude CNP from axial current in future:
 	CNPa_regge[i] =  -1.*(Gamma_mu5[i] + (Q[i]/(Mpi2+Qsq))*QSlash_5)*AUX_cnp_A; 
       }
     }
