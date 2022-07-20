@@ -43,11 +43,35 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
   M_V2 = pow(0.84,2);
   DipV = pow(1.+QsqGeV/M_V2,2);
   double C5_A0;
-  
-  int vff = 1; //choice for vector form factors
+
+  //Vector form factors obtained by fitting FF implied by the MAID07 helicity amplitudes
+  //See A. Nikolakopoulos PhD thesis Ghent University 2021
+
+//Fit results for MAID D13 FF
+  double GD=1./DipV;
+
+//Proton FF
+  C3_Vp=  -2.724772150522554*pow(1+QsqGeV/1.5326398207953191/M_V2,-2)*exp(-QsqGeV*0.37570660864771616);
+  C4_Vp=  3.131184784551068*pow(1+QsqGeV/0.8364484780029084/M_V2,-2)*exp(-QsqGeV*0.659903075483167);
+  C5_Vp=  -1.664104986552426*pow(1+QsqGeV/0.8048024170595199/M_V2,-2)*exp(-QsqGeV*0.9607721407482821)*(1-2.513027274819739*QsqGeV);
+
+//Isovector form factors
+  double C3V  =  -2.996516191447399*pow(1+QsqGeV/1.9990325955300046/M_V2,-2)*exp(-QsqGeV*0.5363708344588878);
+  double C4V  =  4.7346153899638885*pow(1+QsqGeV/1.1321228108433212/M_V2,-2)*exp(-QsqGeV*0.7320628283382403);
+  double C5V  =  -3.6479487586046138*pow(1+QsqGeV/0.9919129508088239/M_V2,-2)*exp(-QsqGeV*0.9659166426836087)*(1-1.1502656679748664*QsqGeV);
+
+//Neutron
+   C3_Vn = C3_Vp-C3V;
+   C4_Vn = C4_Vp-C4V;
+   C5_Vn = C5_Vp-C5V;
+
+//////////////////////////////////////////////////////////////  
+/* Commented block with other choices for Vector form factors  
+///////////////////////////////////////////////////////////////
+//  int vff = 1; //choice for vector form factors
 // //   choose: vff=1--> Lalakulich 2006, vff=2--> Leitner 2009
 
-  
+
   if( vff == 1 ){
 // // //   Lalakulich 2006 
     double temp=DipV*(1.+QsqGeV/(8.9*M_V2));
@@ -76,7 +100,14 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
 // // // 
     C5_A0 = -2.15;
   }
-  
+///////////////////////////////////////////////////////////
+//END Other vector FF */
+////////////////////////////////////////////////////////
+
+//Axial form Factors, as in Lalakulich, set C3 and C4 to zero because there is no PCAC constraint for these
+
+  C5_A0 = -2.1; //From PCAC
+
   double DipA,M_A2;
   M_A2 = 1.0;
   DipA = pow(1.+QsqGeV/M_A2,2);
@@ -86,6 +117,7 @@ void Gamma_WND13( int nucleon, int process, int decay, int cross, double Qsq, do
   C3_A = 0.;
   C4_A = 0.;
 
+  //C6_A is set later!
   
   double C3_V, C4_V, C5_V;  
 // // EM interaction  
@@ -193,9 +225,9 @@ double wC5_An = 0.5*(-C5_A - C5_As);
 
 // // // CC interaction  
 if( process == 1 ){
-  C3_V = C3_Vp - C3_Vn; // C3_V(0) = -2.98
-  C4_V = C4_Vp - C4_Vn; // C4_V(0) = 4.21
-  C5_V = C5_Vp - C5_Vn; // C5_V(0) = -3.13 
+  C3_V = C3_Vp - C3_Vn;
+  C4_V = C4_Vp - C4_Vn;
+  C5_V = C5_Vp - C5_Vn; 
 }
 // // // // // 
   
@@ -255,7 +287,7 @@ if( process == 1 ){
   
 // // // // axial part 
   if( process==1 || process==2 ){
-   // C3_A = C4_A = 0...
+   // C3_A = C4_A = 0... is assumed
    
     double gmunu;
     double temp3;

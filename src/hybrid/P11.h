@@ -42,7 +42,26 @@ void Gamma_WNP11( int nucleon, int process, int decay, int cross, double Qsq, do
     
   
   double F1p, F2p, F1n, F2n, GA0, GP0, F1V, F2V;  
-  
+
+	
+   // axial coupling from PCAC, Q2 dependence as in Lalakulich 06
+    GA0 = 0.51 / ( DipA * (1. + QsqGeV/(3.*MA2)) ) ;
+ 
+// Vector form factors
+// Hernandez result, with W fixed to resonance mass 
+// Agrees well with MAID07 for isovector current, but slightly different for isoscalar!
+    double W = MP11;
+    F1p = -5.7/(DipV*(1. + QsqGeV/(1.4*MV2)));
+    F2p = -0.64/DipV*( 1. - 2.47*log(1.+QsqGeV/1.0) );
+    
+    F1V = ( F1p*(pow(MN+W,2)+ 5./3.*Qsq) + 2./3*F2p*(MN+W)*xmu  ) / ( pow(MN + W,2) + Qsq  );
+    F2V = ( F2p*(5.*pow(MN+W,2)+ 3.*Qsq)*xmu + 2.*F1p*Qsq*(MN+W)  ) / ( 3.*xmu*(pow(MN + W,2) + Qsq)  );
+    
+    F1n = F1p - F1V;
+    F2n = F2p - F2V;
+ 
+//////////////////////////////////////////////////
+/* OTHER CHOICES FOR Vector FF  
   int Vff = 1;
   
   if( Vff == 1 ){
@@ -72,6 +91,10 @@ void Gamma_WNP11( int nucleon, int process, int decay, int cross, double Qsq, do
     GA0 = 0.63 / DipA;
 // // // // // // // // // // // //   
   }
+/////////////////////////////////////
+END OTHER VFF
+////////////////////////////////////////
+/// */
   
   
 double F1, F2;
@@ -166,14 +189,8 @@ else if( process == 2 ){
 
 // // // // //   
 if( process == 1 ){
-  if( Vff == 1 ){
     F1 = (F1p - F1n);
     F2 = (F2p - F2n);
-  }
-  else if( Vff == 2 ){
-    F1 = F1V;
-    F2 = F2V;
-  }
 }
 // // // // //  
 
@@ -183,14 +200,14 @@ GP0 = xmu/(Qsq + pow(Mpi,2)) * GA0; //MeV^-1
   
 if( process == 1 || process == 2 ){
     for(int i=0; i<4; i++){
-        WNR[i] = ( F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) ) - ( GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5 ) ;
+        WNR[i] = ( F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - 0.5*F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) ) + ( GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5 ) ;
     }
 }
 // // // // // // // // // // // // // // // // // // // // // // // // // 
 else{
     for(int i=0; i<4; i++){
 
-      WNR[i] = F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) ;
+      WNR[i] = F1/(pow(xmu,2))*(Qsq*Gamma[i] + Q[i]*QSlash) - 0.5*F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) ;
       
     }
   }

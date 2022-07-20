@@ -174,8 +174,8 @@ double Wrec2 = s;
 complex<double> PhiV, PhiA;
   PhiV = 1., PhiA = 1.;
 
-int Phases = 1; //Phases == 1 to include phases (and, partially, recover unitarity)
-if(Phases == 1 ){ 
+int Phases = 1; //Phases == 1 to include phases (and, partially, recover unitarity from LAR paper)
+if(Phases == 1 && cross != 1){ 
 
   double WGeV = sqrt(Wrec2)/1000;    
       
@@ -203,17 +203,10 @@ if(Phases == 1 ){
 
   /*  
       Now, we get the form factor values, along Lalakulich (PRD 71, 074003) and Leitner (Dipl. Thesis).  
-      CVC is assumed, meaning C6_V = 0.   
   */
   
 
-  
-//   double C3_V, C4_V, C5_V;
-//   C3_V = ((1.95)/(pow(1+Qsq/705600,2)))*((1.)/(1+Qsq/(4*705600)));
-//   C4_V = -C3_V*MN/W; 
-//   C5_V = 0.;
-
-  // use new fit by Olga Lalakulich, PRD74 014009 (2006)
+  // Use fit by Lalakulich et al. PRD74 014009 (2006)
   
   complex<double> C3_V, C4_V, C5_V;
   C3_V = ( ((2.13)/(pow(1+Qsq/705600,2)))*((1.)/(1+Qsq/(4.*705600.))) ) * PhiV;
@@ -228,6 +221,10 @@ if(Phases == 1 ){
   
 
   complex<double> C3_A, C4_A, C5_A, C6_A;
+  C3_A=0.;
+  C4_A=0.;
+  C5_A=0.;
+  C6_A=0.;
 
 if( process != 0 ){
   
@@ -472,8 +469,8 @@ Matrix Sym, Asym;
 ***************************************************************************/
 
 /***************************************************************************
-The vertex used by J. Weda (PhD thesis) is taken.  In view of the consistency 
-of this interaction, this seems a good choice.
+The vertex used by J. Weda (PhD thesis) is taken. 
+Only used if Pascalutsa = 1;
 ***************************************************************************/
 
 void Gamma_DeltaNpi( double s, double fDeltaNpi, double kResonance[], double kpi[], Matrix DeltaNpi[] ){

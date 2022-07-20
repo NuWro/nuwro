@@ -42,7 +42,19 @@ void Gamma_WNS11( int nucleon, int process, int decay, int cross, double Qsq, do
     
   
   double F1p, F2p, F1n, F2n, GA0, GP0;  
-  
+
+
+// Proton FF from Lalakulich 2006 
+// We have a relative sign in the proton form factor
+// We take the neutron FFs F_n = -0.5 F_proton, agrees better with MAID07 at low Q2, Lalakulichs assumption was F_n = - F_p , but there was no real reason for it.   
+
+  F1p = -2.0/(DipV*(1.+ QsqGeV/(1.2*MV2))) * ( 1.+7.2*log(1.+QsqGeV/1.0) );
+  F2p = -0.84/DipV*( 1.+ 0.11*log(1.+QsqGeV/1.0) );
+  F1n = -0.5*F1p;
+  F2n = -0.5*F2p;
+
+//////////////////////////////////////
+/* OTHER CHOICES FOR VECTOR FF BELOW  
   int Vff = 1;
   
   if( Vff == 1 ){
@@ -65,7 +77,18 @@ void Gamma_WNS11( int nucleon, int process, int decay, int cross, double Qsq, do
     GA0 = -0.23 / DipA;
 // // // // // // // // // // // //   
   }
-  
+
+  //MAID fit 1, With Lalakulich sign convention
+//  F1p =  -2.657037090222223*pow(1+QsqGeV*0.22402690559896885/MV2,-2)*exp(-0.4568398980755772*QsqGeV);
+//  F2p =  -0.6071514773330419*exp(-2.113557899796671*QsqGeV);
+//  double F1V =  -6.511739591535363*pow(1+QsqGeV*0.4723297420249792/MV2,-2)*exp(-0.4293468827219131*QsqGeV);
+//  double F2V =  -1.0761004065720594*pow(1+QsqGeV*0.20251031923122392/MV2,-2)*exp(-1.4735379116387803*QsqGeV);
+END OTHER VFF */
+//////////////////////////////////////////
+
+
+  //Axial FF as in Lalakulich
+  GA0 = -0.21 / ( DipA * (1. + QsqGeV/(3.*MA2)) ) ;
   
   double F1, F2;
   
@@ -167,13 +190,13 @@ else if( process == 1 ){
     if( process == 0 ){
         
   for(int i=0; i<4; i++){
-      WNR[i] = ( F1/(pow(xmu,2)) * (Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) )*Gamma5 ;
+      WNR[i] = ( F1/(pow(xmu,2)) * (Qsq*Gamma[i] + Q[i]*QSlash) - 0.5*F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) )*Gamma5 ;
   }
   
     }else{
         
   for(int i=0; i<4; i++){
-      WNR[i] = ( F1/(pow(xmu,2)) * (Qsq*Gamma[i] + Q[i]*QSlash) - F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) - ( GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5 ) )*Gamma5;
+      WNR[i] = ( F1/(pow(xmu,2)) * (Qsq*Gamma[i] + Q[i]*QSlash) - 0.5*F2/(xmu)*(Gamma[i]*QSlash-QSlash*Gamma[i]) + ( GA0*Gamma_mu5[i] + (GP0* Q[i])*Gamma5 ) )*Gamma5;
   }
   
     }
