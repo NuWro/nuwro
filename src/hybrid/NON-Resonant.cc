@@ -56,7 +56,9 @@ void Gamma_WNN( int nucleon, int process, int decay, int cross, double Qsq, doub
   
     GA0 = gA/ DipA ;
 
-  double F1, F2;
+  double F1, F2; //Set to correct values in the following
+  F1=0.;
+  F2=0.;
   
   if( process == 0 ){
     if( nucleon == 1 && decay == 1){      
@@ -232,7 +234,7 @@ void NP_current( int process, int nucleon, int decay, int Helicity, int cross, d
 // 		decay = 2 --> p + pi^-
 // // // // // // // // // // //
 // // // // // // // // // // // // // // // // // // // //
-      double icNP; 
+      double icNP=0; 
       
 if( cross == 0 ){
   if( process == 0 || process == 2 ){
@@ -352,7 +354,7 @@ void CNP_current( int process, int nucleon, int decay, int Helicity, int cross, 
 // // // // // // // // // // //
 // // // // // // // // // // // // // // // // // // // // 
   
-      double icNP; 
+      double icNP=0; 
 if( cross == 0 ){
   if( process == 0 || process == 2 ){
     if( nucleon == 1 ){ 
