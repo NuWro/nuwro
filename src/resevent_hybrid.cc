@@ -75,7 +75,7 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
     default:hybrid_xsec = hybrid_dsdQ2dWdOm; break;
   }
   // switch from tabs to dsdQ2dWdcth above the limits
-  if(kin.W > Wmax_hybrid || -kin.q*kin.q > Q2max_hybrid)
+  if(p.res_hybrid_sampling < 3 && (kin.W > Wmax_hybrid || -kin.q*kin.q > Q2max_hybrid))
     hybrid_xsec = hybrid_dsdQ2dWdcth;
 
   // pion momentum if masses were averaged
