@@ -17,7 +17,46 @@ This function calculates RES events from the Hybrid model
 #include "TVectorD.h"
 #include "TH1D.h"
 #include "nucleus.h"
-
+#include "mmapio.h"
+#include <array>
+#include <string>
+class hybrid_grid_mmapio {
+private:
+  std::array<mmapio<double>, 6> tabs;
+  hybrid_grid_mmapio(std::string basepath)
+      : tabs(
+            {mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_11.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_22.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_21.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_2_11.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_2_22.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dWdcth_2_21.dat",
+                            false}}) {
+    std::cout << "loading hybrid grid from " << basepath << std::endl;
+  }
+  hybrid_grid_mmapio(std::string basepath, int)
+      : tabs(
+            {mmapio<double>{basepath + "hybrid_grid_dQ2dW_11.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dW_22.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dW_21.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dW_2_11.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dW_2_22.dat", false},
+             mmapio<double>{basepath + "hybrid_grid_dQ2dW_2_21.dat",
+                            false}}) {
+    std::cout << "loading 2d hybrid grid from " << basepath << std::endl;
+  }
+public:
+  static hybrid_grid_mmapio &get(char const *basepath = "/home/yan/misc/") { 
+    static hybrid_grid_mmapio instance_dQ2dWdcth{std::string(basepath)};
+    return instance_dQ2dWdcth;
+  }
+  static hybrid_grid_mmapio &get2d(char const *basepath = "/home/yan/misc/") { 
+    static hybrid_grid_mmapio instance_dQ2dW{std::string(basepath), 1};
+    return instance_dQ2dW;
+  }
+  const mmapio<double>& operator[](int i) const { return tabs[i]; }
+};  // an adapter to mmapio for the hybrid grid
+    // can be used as in place replacement for the old hybrid_grid array
 
 void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon only!
 {
@@ -29,7 +68,7 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
   if (not kin.is_above_threshold()) return;
 
   // generate random kinematics (return false in the case of impossible kinematics)
-  if (not kin.generate_kinematics(Wmax_hybrid)) return;
+  if (not kin.generate_kinematics(p.res_dis_cut)) return;
   //if (not kin.generate_kinematics(100000, 1310)) return;
 
   // save final lepton (kin.lepton is in target rest frame so boost it first)
@@ -197,8 +236,9 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, d
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  double *hybrid_grid[] = {hybrid_grid_dQ2dW_11,   hybrid_grid_dQ2dW_22,   hybrid_grid_dQ2dW_21,
-                           hybrid_grid_dQ2dW_2_11, hybrid_grid_dQ2dW_2_22, hybrid_grid_dQ2dW_2_21};
+  // double *hybrid_grid[] = {hybrid_grid_dQ2dW_11,   hybrid_grid_dQ2dW_22,   hybrid_grid_dQ2dW_21,
+  //                          hybrid_grid_dQ2dW_2_11, hybrid_grid_dQ2dW_2_22, hybrid_grid_dQ2dW_2_21};
+  auto& hybrid_grid = hybrid_grid_mmapio::get2d();
   int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
 
   double Q2min,Q2max,Q2spc,Q2bin;
@@ -280,8 +320,9 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   double Q2 =-kin->q*kin->q;
   double W  = kin->W;
 
-  double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
-                           hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  // double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
+  //                          hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  auto & hybrid_grid = hybrid_grid_mmapio::get();
   int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
 
   double  Q2min,  Q2max,  Q2spc,  Q2bin;
@@ -520,8 +561,9 @@ double hybrid_sample_costh_2(double Enu, double Q2, double W, double M, int para
   double costh_rnd;
 
   // Specify all details needed for arrays
-  double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
-                           hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  // double *hybrid_grid[] = {hybrid_grid_dQ2dWdcth_11,   hybrid_grid_dQ2dWdcth_22,   hybrid_grid_dQ2dWdcth_21,
+  //                          hybrid_grid_dQ2dWdcth_2_11, hybrid_grid_dQ2dWdcth_2_22, hybrid_grid_dQ2dWdcth_2_21};
+  auto & hybrid_grid = hybrid_grid_mmapio::get();
   int hg_idx = hybrid_grid_idx(params[2], params[3]*10 + params[1]);
 
   double  Q2min,  Q2max,  Q2spc,  Q2bin;
