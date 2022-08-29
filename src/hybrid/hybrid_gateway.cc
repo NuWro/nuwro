@@ -88,8 +88,11 @@ using namespace std;
 // }
 
 
-int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double *costheta_pi_in, int N, int *params, double (*strucfuncs)[5], double (*Inclusive)[5])
+int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double nucleonmass, double *costheta_pi_in, int N, int *params, double (*strucfuncs)[5], double (*Inclusive)[5])
 {
+  // Effective nucleon mass
+  double nucleonmass2 = nucleonmass*nucleonmass;
+
   //Making the struct, could be removed at some point, because it may not be efficient
   Hadron_prime Hadronbag;
 
@@ -126,7 +129,7 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double *
   double QQ = Q2;
 
   double Enu = El_inc;
-  double w = (W*W + QQ - MN*MN)/(2*MN); //This omega is  in LAB!
+  double w = (W*W + QQ - nucleonmass2)/(2*nucleonmass); //This omega is  in LAB!
   if (w <= 0 || w > Enu){return -1;}
   if (pow((Enu - w),2) - leptonmass*leptonmass <= 0){return -1;}
   double k_l = sqrt(pow((Enu - w),2) - leptonmass*leptonmass);
@@ -136,8 +139,8 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double *
   double q = sqrt(QQ + w*w);
 
   //define the boost parameters
-  double v = q/(w+MN);
-  double gamma = (w + MN)/W;
+  double v = q/(w+nucleonmass);
+  double gamma = (w + nucleonmass)/W;
 
   //define CMS angles for the leptons
   double costheta = (Enu - k_l*cos(radThetal))/q;
@@ -174,9 +177,9 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double *
   ///////HADRON kinematics (the part that does not depend on cosine of pion)
   ////////////////////////////////////////////////////////////
 
-  double E_pi = (W*W + pow(Mpi,2) - pow(MN,2))/(2*W);
+  double E_pi = (W*W + pow(Mpi,2) - nucleonmass2)/(2*W);
   double E_N = W - E_pi;
-  double p_N = MN*q/W;
+  double p_N = nucleonmass*q/W;
 
   Had->Q[0] = Q[0];
   Had->Q[1] = Q[1];
@@ -215,7 +218,7 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double *
   Had->kpi[2] = 0; //pion in x-z frame
 
   Had->kN[0] = W - E_pi;
-  if (Had->kN[0] < MN){return -1;}
+  if (Had->kN[0] < nucleonmass){return -1;}
   Had->kN[2] = 0;
 
   Had->s = W*W;

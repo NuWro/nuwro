@@ -43,17 +43,17 @@ double hybrid_dsdQ2dWdOm     (res_kinematics* kin, int params[4], vect final_pio
 
 // Sample cos_theta_pi^* using ABCDE decomposition
 // - using ABCDE decomposition, fitting a polynomial, inverting using bisection
-double hybrid_sample_costh  (double Enu, double Q2, double W, double m, int params[4], int points);
+double hybrid_sample_costh  (double Enu, double Q2, double W, double m, double M, int params[4], int points);
 // - using tabulated A functions, accept-or-reject
-double hybrid_sample_costh_2(double Enu, double Q2, double W, int params[4], vect neutrino, vect lepton);
+double hybrid_sample_costh_2(double Enu, double Q2, double W, double M, int params[4], vect neutrino, vect lepton);
 
 // Sample phi_theta^* using ABCDE decomposition
 // - fitting a polynomial, inverting using bisection
-double hybrid_sample_phi  (double Enu, double Q2, double W, double m, int params[4], double costh_rnd);
+double hybrid_sample_phi  (double Enu, double Q2, double W, double m, double M, int params[4], double costh_rnd);
 // - integrating analytically, inverting using bisection
-double hybrid_sample_phi_2(double Enu, double Q2, double W, double m, int params[4], double costh_rnd);
+double hybrid_sample_phi_2(double Enu, double Q2, double W, double m, double M, int params[4], double costh_rnd);
 // - integrating analytically, inverting using Newton's method
-double hybrid_sample_phi_3(double Enu, double Q2, double W, double m, int params[4], double costh_rnd);
+double hybrid_sample_phi_3(double Enu, double Q2, double W, double m, double M, int params[4], double costh_rnd);
 
 // Fit polynomial to given points
 // - using Root methods

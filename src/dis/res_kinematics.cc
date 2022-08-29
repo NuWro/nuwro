@@ -126,23 +126,29 @@ void res_kinematics::set_kinematics(event &e) {
   jacobian = e.res_jacobian;
 }
 
-double get_binding_energy(const params &p, particle& target, nucleus &t) {
-  switch (p.nucleus_target) {
-    case 0:  // free nucleon
-      return 0;
-    case 1:  // (global) Fermi gas
-      return p.nucleus_E_b;
-    case 2:  // local Fermi gas
-      return t.Ef(target) + p.kaskada_w;
-    case 3:  // Bodek-Ritchie
-      return 0;
-    case 4:  // effective spectral function
-      return binen(target.p(), p.nucleus_p, p.nucleus_n);
-    case 5:  // deuterium
-      return deuter_binen(target.p());
-    case 6:  // deuterium with constant binding energy
-      return p.nucleus_E_b;
-    default:
-      return 0;
+double get_binding_energy(const params &p, particle& target, nucleus &t)
+{
+  if(t.A() > 1)
+  {
+    switch (p.nucleus_target)
+    {
+      case 0:  // free nucleon
+        return 0;
+      case 1:  // (global) Fermi gas
+        return p.nucleus_E_b;
+      case 2:  // local Fermi gas
+        return t.Ef(target) + p.kaskada_w;
+      case 3:  // Bodek-Ritchie
+        return 0;
+      case 4:  // effective spectral function
+        return binen(target.p(), p.nucleus_p, p.nucleus_n);
+      case 5:  // deuterium
+        return deuter_binen(target.p());
+      case 6:  // deuterium with constant binding energy
+        return p.nucleus_E_b;
+      default:
+        return 0;
+    }
   }
+  return 0;
 }
