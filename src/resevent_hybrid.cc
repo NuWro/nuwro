@@ -3,22 +3,21 @@ This function calculates RES events from the Hybrid model
 */
 
 #include "resevent_hybrid.h"
-#include "params.h"
-#include "event1.h"
+#include "TDecompLU.h"
+#include "dis/LeptonMass.h"
 #include "dis/res_kinematics.h"
+#include "dis/res_xsec.h"
+#include "dis/resevent2.h"
+#include "event1.h"
+#include "hybrid/hybrid_gateway.h"
+#include "dis/fragmentation.h"
+#include "mmapio.h"
+#include "nucleus.h"
+#include "params.h"
 #include "particle.h"
 #include "vect.h"
-#include "dis/LeptonMass.h"
-#include "hybrid_RES.h"
-#include "hybrid_RES2.h"
-#include "hybrid/hybrid_gateway.h"
-#include "TMatrixD.h"
-#include "TDecompLU.h"
-#include "TVectorD.h"
-#include "TH1D.h"
-#include "nucleus.h"
-#include "mmapio.h"
 #include <array>
+#include <cmath>
 #include <string>
 class hybrid_grid_mmapio {
 private:
@@ -113,9 +112,15 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
     case 4: hybrid_xsec = hybrid_dsdQ2dWdOm; break;
     default:hybrid_xsec = hybrid_dsdQ2dWdOm; break;
   }
+  if(p.res_hybrid_sampling == 1){
+    e.flag.need_resample = true;
+  }
   // switch from tabs to dsdQ2dWdcth above the limits
-  if(p.res_hybrid_sampling < 3 && (kin.W > Wmax_hybrid || -kin.q*kin.q > Q2max_hybrid))
+  if (p.res_hybrid_sampling < 3 &&
+      (kin.W > Wmax_hybrid || -kin.q * kin.q > Q2max_hybrid)) {
     hybrid_xsec = hybrid_dsdQ2dWdcth;
+    e.flag.need_resample = false;
+  }
 
   // pion momentum if masses were averaged
   double pion_momentum;
@@ -139,17 +144,7 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
        pion_momentum = kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
        xsec_pi0 = hybrid_xsec(&kin, params, final_pion2, pion_momentum);}
       xsec_inclusive = xsec_pip + xsec_pi0;
-      if ( not (xsec_inclusive > 0) ) return;
-      if( xsec_pip / xsec_inclusive < frandom() ) // random selection, switch to "2"
-      {
-        final_pion = final_pion2;
-        final_nucleon = final_nucleon2;
-        params[3] = 2; params[1] = 1;
-      }
-      else // make sure the params are okay for "1"
-      {
-        params[3] = 2; params[1] = 2;
-      }
+      if ( not (xsec_inclusive > 0 && xsec_pip>0 && xsec_pi0>0) ) return;
       break;
     case  0:  // pi0 + neutron (anu_11) or pi- + proton (anu_12)
       {params[3] = 1; params[1] = 1;
@@ -161,17 +156,7 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
        pion_momentum = kin1part(kin.W, final_nucleon2.pdg, final_pion2.pdg, final_nucleon2, final_pion2, kierunek);
        xsec_pim = hybrid_xsec(&kin, params, final_pion2, pion_momentum);}
       xsec_inclusive = xsec_pi0 + xsec_pim;
-      if ( not (xsec_inclusive > 0) ) return;
-      if( xsec_pi0 / xsec_inclusive < frandom() ) // random selection, switch to "2"
-      {
-        final_pion = final_pion2;
-        final_nucleon = final_nucleon2;
-        params[3] = 1; params[1] = 2;
-      }
-      else // make sure the params are okay for "1"
-      {
-        params[3] = 1; params[1] = 1;
-      }
+      if ( not (xsec_inclusive > 0&& xsec_pi0>0 && xsec_pim>0) ) return;
       break;
     case -1:  // pi- + neutron (anu_21)
       {params[3] = 2; params[1] = 2;
@@ -179,55 +164,174 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
        pion_momentum = kin1part(kin.W, final_nucleon.pdg, final_pion.pdg, final_nucleon, final_pion, kierunek);
        xsec_pim = hybrid_xsec(&kin, params, final_pion, pion_momentum);}
       xsec_inclusive = xsec_pim;
-      if ( not (xsec_inclusive > 0) ) return;
+      if ( not (xsec_inclusive > 0 && xsec_pim>0) ) return;
       break;
     default:
       cerr << "[WARNING]: Reaction charge out of range\n";
   };
 
-  // Omega_pi^* was chosen in hadronic CMS
+  e.flag.res_delta = false;
+  const double factor = (G * G * cos2thetac / 2) /
+                        (e.in[0].E() * e.in[0].E() / 2 /
+                         res_kinematics::avg_nucleon_mass / 1.) /
+                        cm2 * 1e38;
 
-  // // Choose cos_theta^* for dsdQ2dW, in Adler frame
-  // double costh_rnd = hybrid_sample_costh(kin.neutrino.E(), -kin.q*kin.q, kin.W, kin.lepton_mass, params);
+  // 0: unset, random selection for final charge = 1, 0 channel
+  // 211/111/-211: force final pion to be in certain channel
+  auto gen_final_particles_hybrid = [&](int pdg_pion = 0) {
+    
+    switch (final_charge) { // calculate the cross section with only the CMS
+                            // variables
+    case 2:                 // pi+ + proton (nu_11)
+      break;
+    case 1: // pi+ + neutron (nu_22) or pi0 + proton (nu_21)
+      if (pdg_pion == 211){
+        params[3] = 2;
+        params[1] = 2;
+        break;
+      }
+      if (pdg_pion == 111) {
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
+        params[3] = 2;
+        params[1] = 1;
+        break;
+      }
+      if ((xsec_pip / xsec_inclusive <
+          frandom())) // random selection, switch to "2"
+      {
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
+        params[3] = 2;
+        params[1] = 1;
+      } else // make sure the params are okay for "1"
+      {
+        params[3] = 2;
+        params[1] = 2;
+      }
+      break;
+    case 0: // pi0 + neutron (anu_11) or pi- + proton (anu_12)
+      if (pdg_pion == 111) {
+        params[3] = 1;
+        params[1] = 1;
+        break;
+      }
+      if (pdg_pion == -211) {
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
+        params[3] = 1;
+        params[1] = 2;
+        break;
+      }
+      if (xsec_pi0 / xsec_inclusive <
+          frandom()) // random selection, switch to "2"
+      {
+        final_pion = final_pion2;
+        final_nucleon = final_nucleon2;
+        params[3] = 1;
+        params[1] = 2;
+      } else // make sure the params are okay for "1"
+      {
+        params[3] = 1;
+        params[1] = 1;
+      }
+      break;
+    case -1: // pi- + neutron (anu_21)
+      break;
+    default:
+      cerr << "[WARNING]: Reaction charge out of range\n";
+    };
+    e.flag.res_delta = true;
+    final_nucleon.p4() = final_nucleon.boost(kin.hadron_speed);
+    final_nucleon.p4() = final_nucleon.boost(kin.target.v());
 
-  // // Choose phi^* for dsdQ2dWdcosth, in Adler frame
-  // double phi_rnd = hybrid_sample_phi(kin.neutrino.E(), -kin.q*kin.q, kin.W, kin.lepton_mass, params, costh_rnd);
+    final_pion.p4() = final_pion.boost(kin.hadron_speed);
+    final_pion.p4() = final_pion.boost(kin.target.v());
 
-  // // Modify final hadron directions as specified in the Adler frame
-  // vect nu  = kin.neutrino; nu.boost(-kin.hadron_speed); 
-  // vect lep = kin.lepton;  lep.boost(-kin.hadron_speed);
-  // vec dir_rnd = hybrid_dir_from_adler(costh_rnd, phi_rnd, nu, lep);
+    // save final state hadrons
+    // warning: the order is essential
+    e.out.push_back(final_pion);
+    e.out.push_back(final_nucleon);
+  };
+  res_xsec_hybrid xsec(kin, cc);
+  if ((!kin.is_above_pythia_threshold()) || xsec.is_no_dis() ||
+      (!p.dyn_dis_cc)) {
+    // xsec.set_xsec_nopythia(kin, p, xsec_pip * factor ,
+    //                        xsec_pi0 * factor , xsec_pim * factor );
+    // e.weight = xsec.get_total(kin.jacobian);
+    e.weight = xsec_inclusive * (factor* 1e-38) * kin.jacobian ;
+    gen_final_particles_hybrid();
+  } else // W above pythia threshold and fromdis > 0
+  {
+    // the algorithm starts from the production of PYTHIA event
+    TPythia6 *pythia71 = get_pythia();
 
-  // // Recalculate the hadronic kinematics, dir_rnd is the new direction of pion
-  // double momentum = final_nucleon.momentum();
-  // final_nucleon = vect(final_nucleon.E(), -momentum * dir_rnd.x, -momentum * dir_rnd.y, -momentum * dir_rnd.z);
-  // final_pion = vect(final_pion.E(), momentum * dir_rnd.x, momentum * dir_rnd.y, momentum * dir_rnd.z);
+    int nof_particles = 0;      // number of particles in the final state
+    Pyjets_t *pythia_particles; // pythia particles placeholder
 
-  // set event weight
-  e.weight = xsec_inclusive;
+    // force at least 5 particles in the final state
+    // TODO: including initial particles?
+    while (nof_particles < 5) {
+      hadronization(kin.neutrino.E(), kin.W, kin.q.t, kin.lepton_mass,
+                    kin.neutrino.pdg, kin.target.pdg, cc);
+      pythia_particles = pythia71->GetPyjets();
+      nof_particles = pythia71->GetN();
+    }
 
-  // the cross section needs a factor (initial lepton momentum)^-2 in LAB
-  // the cross section needs a jacobian: dw = dQ2/2M
-  e.weight /= e.in[0].E() * e.in[0].E() / 2 / res_kinematics::avg_nucleon_mass / kin.jacobian;
-  // coupling
-  e.weight *= G*G*cos2thetac/2;
-  // units
-  e.weight /= cm2;
+    /*
+    There are three different possible outcomes:
+      a) spp event nof_particles = 5
+      b) more inelastic event nof_particles > 5, typically 7
+      c) single kaon production; this causes technical complications because
+    nof_particles = 5 also in this case
+    */
 
-  // boost back to LAB frame
-  final_nucleon.p4() = final_nucleon.boost(kin.hadron_speed);
-  final_nucleon.p4() = final_nucleon.boost(kin.target.v());
+    // single pion production -> 5 particles including a pion
+    if (nof_particles == 5 && (PDG::pion(pythia_particles->K[1][3]) ||
+                                PDG::pion(pythia_particles->K[1][4]))) {
+      // K[1][3] or K[1][4] is a pion, and only 1 pion
+      const int pion_pdg = PDG::pion(pythia_particles->K[1][3])
+                               ? pythia_particles->K[1][3]
+                               : pythia_particles->K[1][4];
+      // if(pion_pdg)
+      // PDG to SPP code
+      const int t = pdg2spp(pion_pdg);
+      const int nucleon_pdg =
+          xsec.final_charge + t == 1 ? PDG::pdg_neutron : PDG::pdg_proton;
 
-  final_pion.p4() = final_pion.boost(kin.hadron_speed);
-  final_pion.p4() = final_pion.boost(kin.target.v());
+      // initialize xsec struct according to Pythia result
+      double xsec_channel{};
+      if (pion_pdg == 211){
+        xsec_channel = xsec_pip*factor;
+      }else if (pion_pdg == -211){
+        xsec_channel = xsec_pim*factor;
+      }else{
+        xsec_channel = xsec_pi0*factor;
+      }
+      xsec.set_xsec(kin, p, pion_pdg, nucleon_pdg, e.in[0].t,xsec_channel);
+      // xsec.set_xsec(kin, p, pion_pdg, nucleon_pdg, e.in[0].t,xsec_inclusive*factor);
+      // xsec.set_delta_total(xsec_inclusive*factor);
 
-  // save final state hadrons
-  // warning: the order is essential
-  e.out.push_back(final_pion);
-  e.out.push_back(final_nucleon);
+      e.weight = xsec.get_total(kin.jacobian); // save total cross sections
 
+      // randomly decide if SPP comes from Delta or DIS
+      if (xsec.get_dis_fraction() > frandom()) // SPP from DIS
+        save_pythia_particles(e, pythia_particles, nof_particles, kin);
+      else // SPP from Delta
+      {
+        // e.flag.res_delta = true;      // mark pion as comming from Delta
+        gen_final_particles_hybrid(pion_pdg); // generate final state particles
+      }
+    } else // more inelastic final state or single kaon production
+    {
+      e.weight = xsec.get_total(kin.jacobian);
+      save_pythia_particles(e, pythia_particles, nof_particles, kin);
+    }
+    delete pythia71;
+  }
   // set all outgoing particles position to target nucleon position
-  for (int j = 0; j < e.out.size(); j++) e.out[j].r = e.in[1].r;
+  for (int j = 0; j < e.out.size(); j++)
+    e.out[j].r = e.in[1].r;
 }
 
 double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, double pion_momentum)

@@ -5,6 +5,7 @@
 #include "event1.h"
 #include "dis/res_kinematics.h"
 #include "nucleus.h"
+#include <array>
 
 // Cuts in Q2 and W for the hybrid model
 const double  Q2max_hybrid  =3.901*GeV2;
@@ -15,7 +16,7 @@ const double  Q2max_2_hybrid=0.201*GeV2;
 const double  Q2min_2_hybrid=0.001*GeV2;
 const double  Q2spc_2_hybrid=0.001*GeV2;
 const int     Q2bin_2_hybrid=(Q2max_2_hybrid-Q2min_2_hybrid)/Q2spc_2_hybrid+1;
-const double   Wmax_hybrid  =1600*MeV;
+const double   Wmax_hybrid  =4000*MeV;
 const double   Wmin_hybrid  =1080*MeV;
 const double   Wspc_hybrid  = 2.5*MeV;
 const int      Wbin_hybrid  =(Wmax_hybrid-Wmin_hybrid)/Wspc_hybrid+1;

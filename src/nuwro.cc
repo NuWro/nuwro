@@ -35,7 +35,7 @@
 #include "Interaction.h"
 #include "rew/rewparams.h"
 
-extern double SPP[2][2][2][3][40];
+// extern double SPP[2][2][2][3][40];
 //extern double sppweight;
 extern "C" {
 void shhpythiaitokay_(void);
@@ -135,7 +135,8 @@ void NuWro::init (int argc, char **argv)
 	p.list (string(a.output)+".par");
 	p1=&p;
 	rew.init(p);
-	_progress.open(a.progress);
+	if(a.progress)
+		_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
@@ -466,11 +467,11 @@ void NuWro::finishevent(event* e, params &p)
   // Resample independent variables not used for event acceptance
   if( e->flag.res && e->flag.cc )
   {
-    if( p.res_kind == 2 )
+    if( p.res_kind == 2 && e->flag.res_delta )
     {
       // for consistency reasons, the simplest solution for now is to recreate the nucleus
       nucleus *nucl = make_nucleus(p);
-      if( p.res_hybrid_sampling == 1 )
+      if( p.res_hybrid_sampling == 1 && e->flag.need_resample )
         resevent_dir_hybrid(*e, *nucl, p.res_hybrid_resampling);
       else if( p.res_hybrid_sampling < 4 )
         resevent_phi_hybrid(*e, *nucl);
@@ -641,7 +642,7 @@ void NuWro::test_events(params & p)
 				case 0: 
 					break;
 				case 1: 
-					finishevent(e, p);
+					// finishevent(e, p);
 					t1->Fill ();
 					break;
 				case 2:

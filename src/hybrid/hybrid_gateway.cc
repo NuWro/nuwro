@@ -252,17 +252,23 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double n
     Had->uSlash = Had->uMan[0]*Gamma[0] - Had->uMan[1]*Gamma[1]- Had->uMan[2]*Gamma[2] - Had->uMan[3]*Gamma[3];
 
     Do_Fivefold_Calc(Reac, Lepton_T, Had);
-    Inclusive[i][0] = Reac->R_factors[0];
-    Inclusive[i][1] = Reac->R_factors[1];
-    Inclusive[i][2] = Reac->R_factors[2];
-    Inclusive[i][3] = Reac->R_factors[3];
-    Inclusive[i][4] = Reac->R_factors[4];
+    if(Inclusive)
+    {
+      Inclusive[i][0] = Reac->R_factors[0];
+      Inclusive[i][1] = Reac->R_factors[1];
+      Inclusive[i][2] = Reac->R_factors[2];
+      Inclusive[i][3] = Reac->R_factors[3];
+      Inclusive[i][4] = Reac->R_factors[4];
+    }
+    if(strucfuncs)
+    {
+      strucfuncs[i][0] = Reac->ABCDE[0] * prefactor;
+      strucfuncs[i][1] = Reac->ABCDE[1] * prefactor;
+      strucfuncs[i][2] = Reac->ABCDE[2] * prefactor;
+      strucfuncs[i][3] = Reac->ABCDE[3] * prefactor;
+      strucfuncs[i][4] = Reac->ABCDE[4] * prefactor;
+    }
 
-    strucfuncs[i][0] = Reac->ABCDE[0]*prefactor; 
-    strucfuncs[i][1] = Reac->ABCDE[1]*prefactor; 
-    strucfuncs[i][2] = Reac->ABCDE[2]*prefactor; 
-    strucfuncs[i][3] = Reac->ABCDE[3]*prefactor; 
-    strucfuncs[i][4] = Reac->ABCDE[4]*prefactor; 
 
 
   }

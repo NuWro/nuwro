@@ -514,6 +514,12 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>
+    <param name="res_dis_blending_start" type="checkbox" ctype="double" default="2800">
+    <description><![CDATA[random order of events in uotut file]]></description>
+  </param>
+    <param name="res_dis_blending_end" type="checkbox" ctype="double" default="3200">
+    <description><![CDATA[random order of events in uotut file]]></description>
+  </param>
 </params>
 
 <!--

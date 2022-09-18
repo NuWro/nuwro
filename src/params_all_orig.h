@@ -75,5 +75,7 @@ PARAM(int, sf_method,0)\
 PARAM(bool, cc_smoothing,0)\
 PARAM(bool, mixed_order,1)\
 PARAM(double,rmin,0)\
-PARAM(double,rmax,0)
+PARAM(double,rmax,0)\
+PARAM(double,res_dis_blending_start,2800)\
+PARAM(double,res_dis_blending_end,3200)
 
