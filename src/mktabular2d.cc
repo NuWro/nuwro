@@ -111,13 +111,7 @@ nuclear_tensor_t get_nucleus_tensor(double W, double Q2, int *params) {
       [=](double costh) -> nuclear_tensor_t {
         return get_nucleus_tensor_3d(W, Q2, costh, params);
       },
-      -1, 1, 32);
-}
-
-size_t index_calculator(size_t W_index, size_t Q_index,
-                        size_t Q_bins) { // use different Q_bins value to
-                                         // identify different part of Q table
-  return W_index * Q_bins + Q_index;
+      -1, 1, 128);
 }
 
 double get_pion_momentum(double hama) {
@@ -165,7 +159,7 @@ int main(int argc, char **argv) {
         double Q = Q2min_hybrid + Q2_index * Q2spc_hybrid;
         auto nucleus_tensor = get_nucleus_tensor(W, Q, params);
         nucleus_tensor *= pion_momentum / pow(2 * Pi, 3);
-        size_t index = index_calculator(W_index, Q2_index, Q2bin_hybrid) * 5;
+        size_t index = index_calculator_2d(W_index, Q2_index, Q2bin_hybrid) * 5;
         memcpy(&tabulars[channel_index][index], nucleus_tensor.data(),
                5 * sizeof(double));
         // for (size_t g{}; g < 5; g++) {
@@ -182,7 +176,7 @@ int main(int argc, char **argv) {
         double Q = Q2min_2_hybrid + Q2_index * Q2spc_2_hybrid;
         auto nucleus_tensor = get_nucleus_tensor(W, Q, params);
         nucleus_tensor *= pion_momentum / pow(2 * Pi, 3);
-        size_t index = index_calculator(W_index, Q2_index, Q2bin_2_hybrid) * 5;
+        size_t index = index_calculator_2d(W_index, Q2_index, Q2bin_2_hybrid) * 5;
         memcpy(&tabular_dense[channel_index][index], nucleus_tensor.data(),
                5 * sizeof(double));
         // for (size_t g{}; g < 5; g++) {

@@ -14,12 +14,6 @@ std::array<double, 5> get_nucleus_tensor(double W, double Q2, double costh,
           nuclear_tensor[0][4] / 2};
 };
 
-size_t index_calculator(size_t cth_index, size_t W_index, size_t Q_index,
-                        size_t Q_bins) { // use different Q_bins value to
-                                         // identify different part of Q table
-  return cth_index * Wbin_hybrid * Q_bins + W_index * Q_bins + Q_index;
-}
-
 int main(int argc, char **argv) {
   const size_t tab1_size = Q2bin_hybrid * Wbin_hybrid * cthbin_hybrid * 5;
   const size_t tab2_size = Q2bin_2_hybrid * Wbin_hybrid * cthbin_hybrid * 5;

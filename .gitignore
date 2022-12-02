@@ -9,3 +9,4 @@ nuwro.geany
 *.pcm
 doc/doxygen/html
 .clang-format
+setup.sh

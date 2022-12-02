@@ -1,3 +1,4 @@
+#include <array>
 #include <complex>
 #include <cstdarg>
 
@@ -87,6 +88,92 @@ using namespace std;
 
 // }
 
+std::array<double, 5> get_lepton_vec(double El_inc, double Q2, double W,
+                                     double leptonmass, double nucleonmass,
+                                     int *params) {
+  std::array<double, 5> lepton_vec;
+  // Effective nucleon mass
+  double nucleonmass2 = nucleonmass * nucleonmass;
+
+  // Making the struct, could be removed at some point, because it may not be
+  // efficient
+  Hadron_prime Hadronbag{};
+
+  // Set arrays for lepton kinematics
+  double kl[4]{}, kl_inc[4]{}, Q[4]{}, Pa[4]{};
+  complex<double> Lepton_T[4][4]{}; // lepton tensor
+
+  Reaction_parameters Reacbag{};
+  double ABCDE[5]{}, R_factors[5]{};
+  // Fill Reac
+  Reacbag.process = params[0], Reacbag.decay = params[1],
+  Reacbag.Helicity = params[2], Reacbag.nucleon = params[3];
+  Reacbag.ABCDE = ABCDE, Reacbag.R_factors = R_factors;
+
+  // Getting the pointers:
+  //  Hadron_prime* Had = &Hadronbag;
+  Reaction_parameters *Reac = &Reacbag;
+
+  //////////////////////////////////////////////
+  ///////Lepton kinematics:
+  //////////////////////////////////////////////////
+
+  double W2 = W * W;
+  double QQ = Q2;
+
+  double Enu = El_inc;
+  double w =
+      (W * W + QQ - nucleonmass2) / (2 * nucleonmass); // This omega is  in LAB!
+  // if (w <= 0 || w > Enu){return -1;}
+  // if (pow((Enu - w),2) - leptonmass*leptonmass <= 0){return -1;}
+  double k_l = sqrt(pow((Enu - w), 2) - leptonmass * leptonmass);
+  double E_l = Enu - w;
+  // if (fabs((QQ+w*w - pow(Enu,2) - pow(k_l,2))/(2.*Enu*k_l)) > 1){return -1;}
+  double radThetal =
+      acos((QQ + w * w - pow(Enu, 2) - pow(k_l, 2)) / (-2. * Enu * k_l));
+  double q = sqrt(QQ + w * w);
+
+  // define the boost parameters
+  double v = q / (w + nucleonmass);
+  double gamma = (w + nucleonmass) / W;
+
+  // define CMS angles for the leptons
+  double costheta = (Enu - k_l * cos(radThetal)) / q;
+  double sintheta = k_l * sin(radThetal) / q;
+
+  // The leptonic side in CMS, q~z and in x-z plane is now given as:
+
+  kl[0] = gamma * (E_l - v * (Enu * costheta - q));
+  kl[1] = sintheta * Enu;
+  kl[2] = 0.;
+  kl[3] = gamma * (-1 * v * E_l + (Enu * costheta - q));
+
+  kl_inc[0] = gamma * (El_inc - v * Enu * costheta);
+  kl_inc[1] = kl[1];
+  kl_inc[2] = 0;
+  kl_inc[3] = gamma * (-1 * v * Enu + Enu * costheta);
+
+  Q[0] = kl_inc[0] - kl[0];
+  Q[1] = 0;
+  Q[2] = 0;
+  Q[3] = kl_inc[3] - kl[3];
+
+  double Lepton_S[4][4]{}, Lepton_A[4][4]{};
+  Leptonic_Tensor_fourvector(Reac->process, kl, kl_inc, Lepton_S, Lepton_A);
+  double h = Reac->Helicity;
+  double CC = Reac->process;
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      Lepton_T[i][j] = Lepton_S[i][j] - I * Lepton_A[i][j] * h * CC;
+    }
+  }
+  lepton_vec[0] = real(Lepton_T[0][0]);
+  lepton_vec[1] = real(Lepton_T[3][0]);
+  lepton_vec[2] = real(Lepton_T[3][3]);
+  lepton_vec[3] = real(Lepton_T[1][1] + Lepton_T[2][2]);
+  lepton_vec[4] = -real(I * Lepton_T[1][2]);
+  return lepton_vec;
+}
 
 int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double nucleonmass, double *costheta_pi_in, int N, int *params, double (*strucfuncs)[5], double (*Inclusive)[5])
 {
@@ -94,25 +181,25 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double n
   double nucleonmass2 = nucleonmass*nucleonmass;
 
   //Making the struct, could be removed at some point, because it may not be efficient
-  Hadron_prime Hadronbag;
+  Hadron_prime Hadronbag{};
 
   //Set arrays for lepton kinematics
-  double kl[4],kl_inc[4], Q[4], Pa[4];
-  complex<double> Lepton_T[4][4]; // lepton tensor
+  double kl[4]{},kl_inc[4]{}, Q[4]{}, Pa[4]{};
+  complex<double> Lepton_T[4][4]{}; // lepton tensor
 
   //Same for Hadron Kin
-  double xQ[4], xminusQ[4];
-  double kpi[4], kN[4], ki[4];         //4vectors in the kN//z system
+  double xQ[4]{}, xminusQ[4]{};
+  double kpi[4]{}, kN[4]{}, ki[4]{};         //4vectors in the kN//z system
   Hadronbag.Q= xQ, Hadronbag.minusQ=xminusQ, Hadronbag.kpi = kpi, Hadronbag.kN=kN, Hadronbag.ki=ki;
 
   //Mandelstam variables
-  double sMan[4], tMan[4], uMan[4];
+  double sMan[4]{}, tMan[4]{}, uMan[4]{};
   Hadronbag.sMan=sMan;
   Hadronbag.tMan=tMan;
   Hadronbag.uMan=uMan;
 
-  Reaction_parameters Reacbag;
-  double ABCDE[5], R_factors[5];
+  Reaction_parameters Reacbag{};
+  double ABCDE[5]{}, R_factors[5]{};
   //Fill Reac
   Reacbag.process = params[0], Reacbag.decay= params[1], Reacbag.Helicity = params[2] , Reacbag.nucleon = params[3];
   Reacbag.ABCDE = ABCDE, Reacbag.R_factors = R_factors;
@@ -163,7 +250,7 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double n
   Q[2] = 0;
   Q[3] = kl_inc[3] - kl[3];
 
-  double Lepton_S[4][4], Lepton_A[4][4];
+  double Lepton_S[4][4]{}, Lepton_A[4][4]{};
   Leptonic_Tensor_fourvector(Reac->process,kl, kl_inc, Lepton_S, Lepton_A);
   double h = Reac->Helicity;
   double CC = Reac->process;

@@ -471,9 +471,9 @@ void NuWro::finishevent(event* e, params &p)
     {
       // for consistency reasons, the simplest solution for now is to recreate the nucleus
       nucleus *nucl = make_nucleus(p);
-      if( p.res_hybrid_sampling == 1 && e->flag.need_resample )
+      if( p.res_hybrid_sampling == 1 && e->flag.need_resample_dir )
         resevent_dir_hybrid(*e, *nucl, p.res_hybrid_resampling);
-      else if( p.res_hybrid_sampling < 4 )
+      else if( p.res_hybrid_sampling < 4 && e->flag.need_resample_phi )
         resevent_phi_hybrid(*e, *nucl);
       delete nucl;
     }

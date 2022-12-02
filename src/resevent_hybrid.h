@@ -95,4 +95,10 @@ double trilinear_interp(double f000, double f010, double f100, double f110,
 // Helper to choose the grid
 int hybrid_grid_idx(int helicity, int channel);
 
+size_t index_calculator(size_t cth_index, size_t W_index, size_t Q_index,
+                        size_t Q_bins);
+
+size_t index_calculator_2d(size_t W_index, size_t Q_index,
+                        size_t Q_bins) ;
+
 #endif

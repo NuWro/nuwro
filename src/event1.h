@@ -25,7 +25,8 @@ class flags
 		bool anty;       ///< true if antineutrino (anty==in[0].pdg<0)
 
 		bool res_delta{false};  ///< true if RES pion comes from Delta
-		bool need_resample{false};
+		bool need_resample_dir{false};
+		bool need_resample_phi{true};
 };
 
 using namespace std;
