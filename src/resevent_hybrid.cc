@@ -462,7 +462,7 @@ double hybrid_dsdQ2dW_tab(res_kinematics *kin, int params[4], vect final_pion, d
     Q2spc = Q2spc_2_hybrid; Q2bin = Q2bin_2_hybrid;
   }
 
-  auto l = get_lepton_vec(kin->neutrino.E(), Q2, W, kin->lepton_mass, kin->effective_mass, params);
+  auto l = get_lepton_vec(kin->neutrino.E(), Q2, W, kin->lepton_mass, res_kinematics::avg_nucleon_mass, params);
 
   // interpolate the nuclear tensor elements
   double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
@@ -548,7 +548,7 @@ double hybrid_dsdQ2dWdcth_tab(res_kinematics *kin, int params[4], vect final_pio
   Zast.normalize(); Yast.normalize(); Xast.normalize();
   double pion_cos_theta = Zast * vec(final_pion) / final_pion.length();
 
-  auto l = get_lepton_vec(kin->neutrino.E(), Q2, W, kin->lepton_mass, kin->effective_mass, params);
+  auto l = get_lepton_vec(kin->neutrino.E(), Q2, W, kin->lepton_mass, res_kinematics::avg_nucleon_mass, params);
 
   // interpolate the nuclear tensor elements
   double w[5] = {0,0,0,0,0}; // 00, 03, 33, 11/22, 12
@@ -647,7 +647,7 @@ double hybrid_dsdQ2dWdcth(res_kinematics* kin, int params[4], vect final_pion, d
   costh[0] = pion_cos_theta;
 
   // get ABCDE
-  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, kin->effective_mass, costh, 1, params, ABCDE, ABCDE);
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, res_kinematics::avg_nucleon_mass, costh, 1, params, ABCDE, ABCDE);
 
   result  = ABCDE[0][0];                 // *2Pi
   result *= pion_momentum / pow(2*Pi,3); // /2Pi
@@ -685,7 +685,7 @@ double hybrid_dsdQ2dWdOm(res_kinematics* kin, int params[4], vect final_pion, do
   costh[0] = pion_cos_theta;
 
   // get ABCDE
-  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, kin->effective_mass, costh, 1, params, ABCDE, ABCDE);
+  hybrid_ABCDE(kin->neutrino.E(), Q2, W, kin->lepton_mass, res_kinematics::avg_nucleon_mass, costh, 1, params, ABCDE, ABCDE);
 
   result  = ABCDE[0][0] + ABCDE[0][1]*cos(pion_phi) + ABCDE[0][2]*cos(2*pion_phi)
                         + ABCDE[0][3]*sin(pion_phi) + ABCDE[0][4]*sin(2*pion_phi);
