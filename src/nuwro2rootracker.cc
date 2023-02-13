@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <vector>
 #include <sys/stat.h> 
+#include "TParameter.h"
 #include "event1.h"
 #include "TROOT.h"
 #include "TTree.h"
@@ -148,6 +149,13 @@ int main (int argc, char *argv[]){
     event *e = new event;
     TFile *fin = new TFile(argv[optind]);//input file
     TTree *tt1 = (TTree*)fin->Get("treeout");
+    auto list = tt1->GetUserInfo();
+    double xsec{};
+    for (auto && obj : *list){
+      if(TString{"xsec"} == obj->GetName()){
+        xsec = (dynamic_cast<TParameter<double>*>(obj))->GetVal();
+      }
+    }
     tt1->SetBranchAddress ("e", &e);
     int n = tt1->GetEntries();
     if (onefile) ncopy=n;  //by default one big rootracker with n events in it.
@@ -316,7 +324,11 @@ int main (int argc, char *argv[]){
 	  fEvtXSec=e->weight*coef; //unimportant for regular events
 	  fEvtDXSec=fEmpty;
 	  fEvtWght=e->weight*1e38; //unimportant for regular events
-	  fEvtProb=fEmpty;
+    if (xsec) {
+      fEvtWght = xsec * 1e38;
+      fEvtXSec = xsec * coef;
+    }
+    fEvtProb=fEmpty;
 	  fEvtVtx[0]=e->r.x/1000;
 	  fEvtVtx[1]=e->r.y/1000;
 	  fEvtVtx[2]=e->r.z/1000;
@@ -398,6 +410,27 @@ int main (int argc, char *argv[]){
 		  fStdHepLm[fStdHepN]=fEmpty;
 		  fStdHepN++;
 	  }
+
+    vector <particle> & before_fsi =e->out;
+	  for (int nout=0; nout< before_fsi.size();nout++){//outgoing
+		  fStdHepPdg[fStdHepN]=before_fsi[nout].pdg; 
+		  fStdHepStatus[fStdHepN]=2;//before-FSI
+		  for (int k=0;k<4;k++){
+			  fStdHepX4[fStdHepN][k]=fEmpty;
+		  }
+		  for (int k=0;k<3;k++){
+			  fStdHepPolz[fStdHepN][k]=fEmpty;
+		  }
+		  fStdHepP4[fStdHepN][3]=before_fsi[nout].E()/1000;
+		  fStdHepP4[fStdHepN][0]=before_fsi[nout].x/1000;
+		  fStdHepP4[fStdHepN][1]=before_fsi[nout].y/1000;
+		  fStdHepP4[fStdHepN][2]=before_fsi[nout].z/1000;
+		  fStdHepFd[fStdHepN]=fEmpty;
+		  fStdHepLd[fStdHepN]=fEmpty;
+		  fStdHepFm[fStdHepN]=fEmpty;
+		  fStdHepLm[fStdHepN]=fEmpty;
+		  fStdHepN++;
+    }
 	  //----random values for parent info, disregard!
 	  fNuParentPdg=211;
 	  fNuParentDecMode=11;
