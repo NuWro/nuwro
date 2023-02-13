@@ -552,6 +552,15 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param> 
+  <param name="use_mh" type="checkbox" ctype="bool" default="0">
+    <description>Set to 1 to switch to MH sampling</description>
+  </param>
+  <param name="mh_sample_interval" type="checkbox" ctype="int" default="80">
+    <description>Set sampling interval for re-sampling on MH chain</description>
+  </param>
+    <param name="use_weighted_channel" type="checkbox" ctype="bool" default="1">
+    <description>Use weighted transition prob</description>
+  </param>
 </params>
 
 <!--
