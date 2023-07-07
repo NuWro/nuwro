@@ -29,12 +29,10 @@ int W_Z;			// Decyduje czy mamy prady naladowane czy neutralne
 //double sin2thetaW = sin_2_theta_W;
 double masa_rezonansu;
 
-
 double W_limit (1000 * GeV);	// --- jesli nie jest ustalna to az 1000*GeV !!!
 
-int
-form_faktory_wektorowe (int FFset, double Q2, double W, int NC_czy_CC,
-			double *c3v, double *c4v, double *c5v, double *c6v)
+int form_faktory_wektorowe (int FFset, double Q2, double W, int NC_czy_CC,
+                            double *c3v, double *c4v, double *c5v, double *c6v)
 {
   double funkcja;
 
@@ -196,9 +194,8 @@ switch (FFset)
 
 
 
-int
-form_faktory_aksjalne (int FFset, double delta_axial_mass, double delta_C5A, double Q2, double W, double *c3a,
-		       double *c4a, double *c5a, double *c6a)
+int form_faktory_aksjalne (int FFset, double delta_axial_mass, double delta_C5A, double Q2, double W,
+                           double *c3a, double *c4a, double *c5a, double *c6a)
 {
 
   double MA;			// 1.00*GeV;
@@ -351,9 +348,8 @@ break;
 }
 
 
-int
-tensor_hadronowy (int FFset, double delta_axial_mass, double delta_C5A, double E, double Q2, double W, double *W1,
-		  double *W2, double *W3, double *W4, double *W5, double *W6)
+int tensor_hadronowy (int FFset, double delta_axial_mass, double delta_C5A, double E, double Q2, double W,
+                      double *W1, double *W2, double *W3, double *W4, double *W5, double *W6)
 /* Ta funkcja zwraca funkcje struktury (patrz notattki k.g.), ktore sa lorentzowsko niezmiennicze */
 {
 
@@ -449,8 +445,7 @@ tensor_hadronowy (int FFset, double delta_axial_mass, double delta_C5A, double E
 
 }
 
-double
-qw (double W)
+double qw (double W)
 {
   double l = pow (W * W + MM - m_pi * m_pi, 2) - 4 * W * W * MM;
 
@@ -458,17 +453,13 @@ qw (double W)
 }
 
 
-double
-dif_cross_q0_W (int FFset, double delta_axial_mass, double delta_C5A, double E, double q0, double W)
+double dif_cross_q0_W (int FFset, double delta_axial_mass, double delta_C5A, double E, double q0, double W, double Meff)
 {
-  double Q2 = 2 * Masa * q0 + Masa * Masa - W * W;
-
+  double Q2 = 2 * Meff * q0 + Meff * Meff - W * W;
 
   double mm2 = masa_leptonu * masa_leptonu;
 
-
   double W1, W2, W3, W4, W5, W6;
-
 
   double qp = (Q2 + W * W - MM) / 2;
 
@@ -501,14 +492,11 @@ dif_cross_q0_W (int FFset, double delta_axial_mass, double delta_C5A, double E, 
     G * G * cos_2_theta_C * GAMMA * czynnik * W / Masa / E / E / 4 / Pi;
 
   if (W_limit * W_limit > W * W && W * W > pow (Masa + m_pi, 2))
-    return 2 * Masa * przekroj_Q2_W;
+    return 2 * Meff * przekroj_Q2_W; // d(Q2) = 2*Meff*d(omega)
   else
     return 0;
 
 }
-
-
-
 
 
 // Ponizsza ma za argumenty Energia=Energia neutrina, q0=przekaz energii k_0 - {k'}_O m_l =masa leptonu
@@ -524,13 +512,10 @@ dif_cross_q0_W (int FFset, double delta_axial_mass, double delta_C5A, double E, 
 //             produkcja neutron pi_+ :  *NC_an_n_pi_plus  
 //             produkcja neutron pi_0 :  *NC_an_n_p0
 //             produkcja proton  po_- :  *NC_an_p_pi_minus
-
-int
-Przekroje_Czynne_q0_W_NC (int FFset, double delta_axial_mass, double delta_C5A, double Energia, double q0, double W,
-			  int FF, double *NC_n_p_p0, double *NC_n_n_pi_plus,
-			  double *NC_n_n_p0, double *NC_n_p_pi_minus,
-			  double *NC_an_p_p0, double *NC_an_n_pi_plus,
-			  double *NC_an_n_p0, double *NC_an_p_pi_minus)
+int Przekroje_Czynne_q0_W_NC (int FFset, double delta_axial_mass, double delta_C5A,
+                              double Energia, double q0, double W, double Meff, int FF,
+                              double *NC_n_p_p0, double *NC_n_n_pi_plus, double *NC_n_n_p0, double *NC_n_p_pi_minus,
+                              double *NC_an_p_p0, double *NC_an_n_pi_plus,double *NC_an_n_p0, double *NC_an_p_pi_minus)
 {
 
   masa_rezonansu = 1232 * MeV;
@@ -543,7 +528,7 @@ Przekroje_Czynne_q0_W_NC (int FFset, double delta_axial_mass, double delta_C5A, 
 
   masa_leptonu = 0;
 
-  czynnik_n = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W);
+  czynnik_n = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W, Meff);
 
   *NC_n_p_p0 = (2 / 9.) * czynnik_n;
   *NC_n_n_pi_plus = (1 / 9.) * czynnik_n;
@@ -552,7 +537,7 @@ Przekroje_Czynne_q0_W_NC (int FFset, double delta_axial_mass, double delta_C5A, 
 
   znak = antyneutrino;
 
-  czynnik_an = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W);
+  czynnik_an = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W, Meff);
 
   *NC_an_p_p0 = (2 / 9.) * czynnik_an;
   *NC_an_n_pi_plus = (1 / 9.) * czynnik_an;
@@ -573,14 +558,10 @@ Przekroje_Czynne_q0_W_NC (int FFset, double delta_axial_mass, double delta_C5A, 
 //             produkcja proton  pi_+ :  *CC_an_p_plus   
 //             produkcja neutron pi_+ :  *CC_an_n_p_plus  
 //             produkcja proton  pi_0 :  *CC_an_p_p0
-
-
-int
-Przekroje_Czynne_q0_W_CC (int FFset, double delta_axial_mass, double delta_C5A, double Energia, double q0, double W,
-			  double m_l, int FF, double *CC_n_p_plus,
-			  double *CC_n_n_p_plus, double *CC_n_p_p0,
-			  double *CC_an_p_plus, double *CC_an_n_p_plus,
-			  double *CC_an_p_p0)
+int Przekroje_Czynne_q0_W_CC (int FFset, double delta_axial_mass, double delta_C5A,
+                              double Energia, double q0, double W, double Meff, double m_l, int FF,
+                              double *CC_n_p_plus, double *CC_n_n_p_plus, double *CC_n_p_p0,
+                              double *CC_an_p_plus, double *CC_an_n_p_plus, double *CC_an_p_p0)
 {
 
   masa_rezonansu = 1232 * MeV;
@@ -590,7 +571,7 @@ Przekroje_Czynne_q0_W_CC (int FFset, double delta_axial_mass, double delta_C5A, 
 
   znak = neutrino;
 
-  double liczba_a = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W);
+  double liczba_a = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W, Meff);
 
   *CC_n_p_plus = liczba_a;
   *CC_n_n_p_plus = (1 / 9.) * liczba_a;
@@ -599,7 +580,7 @@ Przekroje_Czynne_q0_W_CC (int FFset, double delta_axial_mass, double delta_C5A, 
 
   znak = antyneutrino;
 
-  double liczba_an = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W);
+  double liczba_an = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, Energia, q0, W, Meff);
 
   *CC_an_p_plus = liczba_an;
   *CC_an_n_p_plus = (1 / 9.) * liczba_an;
@@ -609,10 +590,10 @@ Przekroje_Czynne_q0_W_CC (int FFset, double delta_axial_mass, double delta_C5A, 
 }
 
 
-//functtion by JN
-double
-cr_sec_delta (int FFset, double delta_axial_mass, double delta_C5A, double E, double W, double nu, int lepton_in,
-	      int nukleon_in, int nukleon_out, int meson_out, bool current)
+//function by JN
+double cr_sec_delta (int FFset, double delta_axial_mass, double delta_C5A,
+                     double E, double W, double nu, double Meff,
+                     int lepton_in, int nukleon_in, int nukleon_out, int meson_out, bool current)
 {
 
   double przekroj = 0, wynik = 0;
@@ -632,7 +613,7 @@ cr_sec_delta (int FFset, double delta_axial_mass, double delta_C5A, double E, do
 	{
 	  znak = antyneutrino;
 	}
-      przekroj = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, E, nu, W);
+      przekroj = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, E, nu, W, Meff);
 ////////////?????????????????????????????????????????????sprawdzic czy w porzadku sa reguly izospuinowe//////////////////////
 //neutrino
       if (lepton_in > 0 && nukleon_in == proton && nukleon_out == proton
@@ -679,7 +660,7 @@ cr_sec_delta (int FFset, double delta_axial_mass, double delta_C5A, double E, do
 	{
 	  znak = antyneutrino;
 	}
-      przekroj = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, E, nu, W);
+      przekroj = dif_cross_q0_W (FFset, delta_axial_mass, delta_C5A, E, nu, W, Meff);
       //neutrino & antyneutrino
       if (nukleon_in == proton && nukleon_out == proton
 	  && meson_out == pizero)

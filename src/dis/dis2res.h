@@ -16,13 +16,17 @@ int nukleon_out_ (double W, int lepton_in, int nukleon_in, int meson_out,
 		  bool current);
 double funkcja_dis (double W, double W_min, double W_max, double alfa);
 
-double kombinacja (int FFset, double E, double W, double nu, int lepton_in,
-		   int nukleon_in, int nukleon_out, int meson_out,
-		   bool current, double alfa, double W_min, double W_max);
-//nowa kombinacja dis i res z produkcja stanow koncowych
 
-double cr_dis_res (int FFset, double E, double W, double nu, int lepton_in,
-		   int nukleon_in, int meson_out, int nukleon_out,
-		   bool current);
+// KN: The following functions are commented out until anyone proves their usefulness.
+//     Please do not leave garbage in the code.
+
+// double kombinacja (int FFset, double E, double W, double nu, int lepton_in,
+// 		   int nukleon_in, int nukleon_out, int meson_out,
+// 		   bool current, double alfa, double W_min, double W_max);
+// //nowa kombinacja dis i res z produkcja stanow koncowych
+
+// double cr_dis_res (int FFset, double E, double W, double nu, int lepton_in,
+// 		   int nukleon_in, int meson_out, int nukleon_out,
+// 		   bool current);
 
 #endif
