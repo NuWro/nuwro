@@ -177,160 +177,160 @@ double funkcja_dis (double W, double W_min, double W_max, double alfa)
 }
 		
 
-double kombinacja (int FFset, double delta_axial_mass, double delta_C5A, double E, double W, double nu, int lepton_in, int nukleon_in, int nukleon_out, int meson_out, bool current, double alfa, double W_min, double W_max)
-{
+// double kombinacja (int FFset, double delta_axial_mass, double delta_C5A, double E, double W, double nu, int lepton_in, int nukleon_in, int nukleon_out, int meson_out, bool current, double alfa, double W_min, double W_max)
+// {
 
-  double cros = 0;
-  double spp_f = funkcja_dis(W,W_min,W_max, alfa);
-  double funkcja_spp_3_ = funkcja_spp_3(W, nukleon_in, meson_out, current);
+//   double cros = 0;
+//   double spp_f = funkcja_dis(W,W_min,W_max, alfa);
+//   double funkcja_spp_3_ = funkcja_spp_3(W, nukleon_in, meson_out, current);
 
-  double cros_dis = cr_sec_dis (E, W, nu, lepton_in, nukleon_in, current);
+//   double cros_dis = cr_sec_dis (E, W, nu, lepton_in, nukleon_in, current);
 
-  double cros_delta = cr_sec_delta (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, nukleon_out, meson_out, current);
+//   double cros_delta = cr_sec_delta (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, nukleon_out, meson_out, current);
 
 
-if(funkcja_spp_3_==0)
-    {
-      cros = cros_dis * spp_f + cros_delta * (1-spp_f);
-      cr_dis =cros_dis*spp_f;
-      cr_res =cros_delta * (1-spp_f);
-    }
-else
-    {
-     cros = cros_dis * spp_f + cros_delta * (1-spp_f)/(funkcja_spp_3_);
-     cr_dis =cros_dis*spp_f;
-     cr_res =cros_delta * (1-spp_f)/(funkcja_spp_3_);
+// if(funkcja_spp_3_==0)
+//     {
+//       cros = cros_dis * spp_f + cros_delta * (1-spp_f);
+//       cr_dis =cros_dis*spp_f;
+//       cr_res =cros_delta * (1-spp_f);
+//     }
+// else
+//     {
+//      cros = cros_dis * spp_f + cros_delta * (1-spp_f)/(funkcja_spp_3_);
+//      cr_dis =cros_dis*spp_f;
+//      cr_res =cros_delta * (1-spp_f)/(funkcja_spp_3_);
 
-    }
+//     }
 
-//cout<<"tutuaj="<<cr_dis<<" "<<cr_res<<" "<<cros<<endl;
+// //cout<<"tutuaj="<<cr_dis<<" "<<cr_res<<" "<<cros<<endl;
 
-  return cros;
-}
+//   return cros;
+// }
 
 //nowa kombinacja dis i res z produkcja stanow koncowych
 
-double cr_dis_res (int FFset, double delta_axial_mass, double delta_C5A, double E, double W, double nu, int lepton_in, int nukleon_in, int meson_out, int nukleon_out, bool current)
-{
+// double cr_dis_res (int FFset, double delta_axial_mass, double delta_C5A, double E, double W, double nu, int lepton_in, int nukleon_in, int meson_out, int nukleon_out, bool current)
+// {
 
-  int ip=0;
-  double W1=W/GeV;
-  W_min = 1300/MeV;
-  W_max = 1600/MeV;
-  double przekroj_=0.0;
-
-
-//Neutrino + proton
-//nu + p --> l- + p + pi+
-//int nukleon_out=0;
-//int meson_out=0;
-
-  if (current == true && lepton_in > 0 && nukleon_in == proton && nukleon_out == proton && meson_out == piplus)
-    {
-      double  alfa = 0.;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piplus,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &proton, &piplus, &W1);
-      return przekroj_;
-    }
-
-//neutrino + neutron
-//nu + n --> l- + n + pi+
-//nu + n --> l- + p + pi0
+//   int ip=0;
+//   double W1=W/GeV;
+//   W_min = 1300/MeV;
+//   W_max = 1600/MeV;
+//   double przekroj_=0.0;
 
 
-  if (current == true && lepton_in > 0 && nukleon_in == neutron && nukleon_out == neutron && meson_out == piplus)
-    {
-    double  alfa = 0.2;
-    double przekroj_plus= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piplus, current, alfa, W_min, W_max);
-    py2ent_(&ip, &neutron, &piplus, &W1);
-    return przekroj_plus;
-    }
+// //Neutrino + proton
+// //nu + p --> l- + p + pi+
+// //int nukleon_out=0;
+// //int meson_out=0;
 
-  if (current == true && lepton_in > 0 && nukleon_in == neutron && nukleon_out == proton && meson_out == pizero)
-    {
-    double  alfa = 0.3;
-    double przekroj_zero= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, pizero,  current, alfa, W_min, W_max);
-    py2ent_(&ip, &proton, &pizero, &W1);
-    return przekroj_zero;
-    }
+//   if (current == true && lepton_in > 0 && nukleon_in == proton && nukleon_out == proton && meson_out == piplus)
+//     {
+//       double  alfa = 0.;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piplus,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &proton, &piplus, &W1);
+//       return przekroj_;
+//     }
 
-
-//anu
-
-  if (current == true && lepton_in < 0 && nukleon_in == neutron && nukleon_out == neutron && meson_out == piminus)
-    {
-      double  alfa = 0.0;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piminus,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &neutron, &piminus, &W1);
-      return przekroj_;
-    }
+// //neutrino + neutron
+// //nu + n --> l- + n + pi+
+// //nu + n --> l- + p + pi0
 
 
+//   if (current == true && lepton_in > 0 && nukleon_in == neutron && nukleon_out == neutron && meson_out == piplus)
+//     {
+//     double  alfa = 0.2;
+//     double przekroj_plus= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piplus, current, alfa, W_min, W_max);
+//     py2ent_(&ip, &neutron, &piplus, &W1);
+//     return przekroj_plus;
+//     }
 
-  if (current == true && lepton_in < 0 && nukleon_in == proton && nukleon_out == proton && meson_out == piminus)
-    {
-      double  alfa = 0.2;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piminus,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &proton, &piminus, &W1);
-      return przekroj_;
-    }
+//   if (current == true && lepton_in > 0 && nukleon_in == neutron && nukleon_out == proton && meson_out == pizero)
+//     {
+//     double  alfa = 0.3;
+//     double przekroj_zero= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, pizero,  current, alfa, W_min, W_max);
+//     py2ent_(&ip, &proton, &pizero, &W1);
+//     return przekroj_zero;
+//     }
 
-  if (current == true && lepton_in < 0 && nukleon_in == proton && nukleon_out == neutron && meson_out == pizero)
-    {
-      double  alfa = 0.3;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, pizero,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &neutron, &pizero, &W1);
-      return przekroj_;
-    }
+
+// //anu
+
+//   if (current == true && lepton_in < 0 && nukleon_in == neutron && nukleon_out == neutron && meson_out == piminus)
+//     {
+//       double  alfa = 0.0;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piminus,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &neutron, &piminus, &W1);
+//       return przekroj_;
+//     }
 
 
 
-//NC
+//   if (current == true && lepton_in < 0 && nukleon_in == proton && nukleon_out == proton && meson_out == piminus)
+//     {
+//       double  alfa = 0.2;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piminus,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &proton, &piminus, &W1);
+//       return przekroj_;
+//     }
 
-  if (current == false &&  nukleon_in == proton && nukleon_out == neutron && meson_out == piplus)
-    {
-      double  alfa = 0.0;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piplus,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &neutron, &piplus, &W1);
-      return przekroj_;
-    }
-
-  if (current == false &&  nukleon_in == proton && nukleon_out == proton && meson_out == pizero)
-    {
-      double  alfa = 0.0;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, pizero,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &proton, &pizero, &W1);
-      return przekroj_;
-    }
-
-  if (current == false &&  nukleon_in == neutron && nukleon_out == neutron && meson_out == pizero)
-    {
-      double  alfa = 0.0;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, pizero,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &neutron, &pizero, &W1);
-      return przekroj_;
-    }
-
-  if (current == false &&  nukleon_in == neutron && nukleon_out == proton && meson_out == piminus)
-    {
-      double  alfa = 0.0;
-      przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piminus,  current, alfa, W_min, W_max);
-      py2ent_(&ip, &proton, &piminus, &W1);
-      return przekroj_;
-    }
+//   if (current == true && lepton_in < 0 && nukleon_in == proton && nukleon_out == neutron && meson_out == pizero)
+//     {
+//       double  alfa = 0.3;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, pizero,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &neutron, &pizero, &W1);
+//       return przekroj_;
+//     }
 
 
+
+// //NC
+
+//   if (current == false &&  nukleon_in == proton && nukleon_out == neutron && meson_out == piplus)
+//     {
+//       double  alfa = 0.0;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, piplus,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &neutron, &piplus, &W1);
+//       return przekroj_;
+//     }
+
+//   if (current == false &&  nukleon_in == proton && nukleon_out == proton && meson_out == pizero)
+//     {
+//       double  alfa = 0.0;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, pizero,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &proton, &pizero, &W1);
+//       return przekroj_;
+//     }
+
+//   if (current == false &&  nukleon_in == neutron && nukleon_out == neutron && meson_out == pizero)
+//     {
+//       double  alfa = 0.0;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, neutron, pizero,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &neutron, &pizero, &W1);
+//       return przekroj_;
+//     }
+
+//   if (current == false &&  nukleon_in == neutron && nukleon_out == proton && meson_out == piminus)
+//     {
+//       double  alfa = 0.0;
+//       przekroj_= kombinacja (FFset, delta_axial_mass, delta_C5A, E, W, nu, lepton_in, nukleon_in, proton, piminus,  current, alfa, W_min, W_max);
+//       py2ent_(&ip, &proton, &piminus, &W1);
+//       return przekroj_;
+//     }
 
 
 
 
 
-cout<<"poza!!!!!!!!!!!!"<<endl;
-cout<<"W="<<W/GeV<<endl;
-cout <<"N0="<<nukleon_in<<endl;
-cout <<"N1="<<nukleon_out<<endl;
-cout <<"ME="<<meson_out<<endl;
-return 0;
-}
+
+
+// cout<<"poza!!!!!!!!!!!!"<<endl;
+// cout<<"W="<<W/GeV<<endl;
+// cout <<"N0="<<nukleon_in<<endl;
+// cout <<"N1="<<nukleon_out<<endl;
+// cout <<"ME="<<meson_out<<endl;
+// return 0;
+// }
 
 

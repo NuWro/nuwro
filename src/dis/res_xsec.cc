@@ -47,8 +47,8 @@ inline double res_xsec::get_dis_spp(const int pion_code, const res_kinematics &k
 
 inline double res_xsec::get_delta_spp(const int pion_pdg, const int nucleon_pdg, const res_kinematics &kin,
                                       const params &p) {
-  return cr_sec_delta(p.delta_FF_set, rew.pion_axial_mass.val, rew.pion_C5A.val, kin.neutrino.t, kin.W, kin.q.t,
-                      kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, is_cc) *
+  return cr_sec_delta(p.delta_FF_set, rew.pion_axial_mass.val, rew.pion_C5A.val, kin.neutrino.t, kin.W,
+                      kin.q.t, kin.effective_mass, kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, is_cc) *
          alfadelta(j, k, l, pdg2spp(pion_pdg), kin.W);
 }
 
@@ -114,7 +114,7 @@ void res_xsec::set_xsec(res_kinematics &kin, const params &p, const int pion_pdg
 
   // delta contribution to single pion production
   delta_total = cr_sec_delta(p.delta_FF_set, rew.pion_axial_mass.val, rew.pion_C5A.val, kin.neutrino.E(), kin.W,
-                             kin.q.t, kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, is_cc) /
+                             kin.q.t, kin.effective_mass, kin.neutrino.pdg, kin.target.pdg, nucleon_pdg, pion_pdg, is_cc) /
                 SPPF(j, k, l, t, kin.W) * alfadelta(j, k, l, t, kin.W);
 
   // reduce cross section by removing the contribution from pionless delta decay
