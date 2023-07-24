@@ -308,6 +308,7 @@ int hybrid_ABCDE(double El_inc, double Q2, double W, double leptonmass, double n
   if (Had->kN[0] < nucleonmass){return -1;}
   Had->kN[2] = 0;
 
+  Had->W = W;
   Had->s = W*W;
 
   for (int i = 0 ; i < N ; i++)

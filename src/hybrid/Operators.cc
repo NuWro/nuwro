@@ -21,10 +21,14 @@ void GetOperator(Hadron_prime* kin, Reaction_parameters* par,  Matrix Operator[]
             Get_Res_ChPT(kin, par, BG, Resonances);
 	}
 
+
 	//Get Reggeized Background
 	Matrix ReChi[4];
 	if (kin->W > W_low){
-	    Get_ReChi(kin, par, ReChi);
+	    if( (-1.*kin->t) < kin->s  && -1.*kin->t < 10.*1e6) 
+	    {
+		    Get_ReChi(kin, par, ReChi);
+	    }
 	}
 
 	//Mixing the BG and Regge

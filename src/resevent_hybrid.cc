@@ -164,12 +164,14 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
   }
   if(p.res_hybrid_sampling == 1){
     e.flag.need_resample_dir = true;
+    e.flag.need_resample_phi = true;
   }
   // switch from tabs to dsdQ2dWdcth above the limits
   if (p.res_hybrid_sampling < 3 &&
       (kin.W > Wmax_hybrid || -kin.q * kin.q > Q2max_hybrid || -kin.q * kin.q < Q2min_hybrid)) {
     hybrid_xsec = hybrid_dsdQ2dWdcth;
     e.flag.need_resample_dir = false;
+    e.flag.need_resample_phi = true;
   }
 
   // pion momentum if masses were averaged
@@ -263,10 +265,9 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
   };
 
   e.flag.res_delta = false;
-  const double factor = (G * G * cos2thetac / 2) /
-                        (e.in[0].E() * e.in[0].E() / 2 /
-                         res_kinematics::avg_nucleon_mass / 1.) /
-                        cm2 * 1e38;
+  const double factor =
+      (G * G * cos2thetac / 2) /
+      (kin.neutrino.E() * kin.neutrino.E() / 2 / kin.effective_mass / 1.) / cm2 * 1e38;
 
   // 0: unset, random selection for final charge = 1, 0 channel
   // 211/111/-211: force final pion to be in certain channel

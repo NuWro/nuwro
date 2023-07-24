@@ -26,7 +26,7 @@ class flags
 
 		bool res_delta{false};  ///< true if RES pion comes from Delta
 		bool need_resample_dir{false};
-		bool need_resample_phi{true};
+		bool need_resample_phi{false};
 };
 
 using namespace std;
