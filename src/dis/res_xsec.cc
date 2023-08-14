@@ -119,5 +119,5 @@ void res_xsec::set_xsec(res_kinematics &kin, const params &p, const int pion_pdg
 
   // reduce cross section by removing the contribution from pionless delta decay
   // more details in: J. Żmuda and J.T. Sobczyk, Phys. Rev. C 87, 065503 (2013)
-  if ((p.nucleus_p + p.nucleus_n) > 7) delta_total *= pdd_red(neutrino_energy);
+  // if ((p.nucleus_p + p.nucleus_n) > 7) delta_total *= pdd_red(neutrino_energy);
 }
