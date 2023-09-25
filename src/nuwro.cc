@@ -167,9 +167,9 @@ void NuWro::init (int argc, char **argv)
 		_beam=create_beam(p,_detector);
 		if(_beam==NULL)
 			{
-                cerr<<"No beam defined."<<endl;
-                exit(5);
-            }
+        cerr<<"No beam defined."<<endl;
+        exit(5);
+      }
     }
 
   // load the input data
@@ -525,34 +525,32 @@ void NuWro::finishevent(event* e, params &p)
 	}
 }								 //end of finishevent
 
-
-void NuWro::raport(double i,double n,const char* text,int precision, int k, bool toFile)
+void NuWro::raport(double i, double n, const char* text, int precision, int k, string label, bool toFile)
 {
-	static int prev=-1;
-	int proc=precision*i/n;
-	if(proc!=prev)
-	{
-		prev=proc;
-		cerr.precision(3);
-		if(toFile)
-		{
-			_progress.seekp(ios_base::beg);
-			_progress << proc*100.0/precision<<" "<<text<<'\r'<<flush;
-			_progress.flush();
-		}
-		else
-		{
-			cerr << "        ";
-			cerr<<showpoint<<proc*100.0/precision<<" % of ";
-			if(k>=0)
-				cerr<<"dyn["<<k<<"] ";
-			cerr<<text<<'\r'<<flush;
-		}
-		cerr.precision();
+  static int prev=-1;
+  int proc=precision*i/n;
+  if(proc!=prev)
+  {
+    prev=proc;
+    cerr.precision(3);
+    if(toFile)
+    {
+      _progress.seekp(ios_base::beg);
+      _progress << proc*100.0/precision << " " << text << '\r' << flush;
+      _progress.flush();
+    }
+    else
+    {
+      cerr << "        ";
+      cerr << showpoint << proc*100.0/precision << " % of ";
+      if(k>=0)
+        cerr << label << " ";
+      cerr << text << '\r' << flush;
+    }
+    cerr.precision();
+  }
+}
 
-		//	   printf("%f3.1 %s\r", proc/10.0,text);
-	}
-}								 //end of report
 void NuWro::pot_report(ostream& o, bool format=false)
 {
 	double tot=0;
@@ -630,12 +628,11 @@ void NuWro::test_events(params & p)
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
-			
-				
+
 			_procesy.add (k, e->weight, bias);
 			e->weight/=_procesy.ratio(k); // make avg(weight)= total cross section
 			//~ if(_detector and _beam->nu_per_POT() != 0)
-				//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
+			//~   e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
 
 			if(e->weight>0)
 			{
@@ -674,7 +671,7 @@ void NuWro::test_events(params & p)
 					exit(12);
 			}
 			delete e;
-			raport(i+1,p.number_of_test_events,"test events ready... ",1000,-1,bool(a.progress));
+			raport(i+1,p.number_of_test_events,"test events ready... ",1000,-1,"",bool(a.progress));
 		}						 // end of nuwro loop
 		if(p.save_test_events)
 		{
@@ -682,7 +679,8 @@ void NuWro::test_events(params & p)
 			te->Close ();
 		}
 
-		cout<<endl;
+    cout << "        100. % of test events ready..." << endl;
+
 		_procesy.report();
 		_procesy.set_weights_to_avg ();
 		string prefix;
@@ -755,9 +753,11 @@ void NuWro::user_events(params &p)
 
 			delete e;
 			
-			raport(i+1,p.number_of_test_events,"analyser events ready... ",1000,-1,bool(a.progress));
+			raport(i+1,p.number_of_test_events,"analyser events ready... ",1000,-1,"",bool(a.progress));
 			p=p1;
 	}	// end of nuwro loop
+
+    cout << "        100. % of analyser events ready..." << endl;
 
 		A->partial_report();
 		_procesy.report();
@@ -846,15 +846,16 @@ void NuWro::real_events(params& p)
 					}
 					delete e;
 
-					raport(_procesy.ready(k),_procesy.desired(k),"events ready... ",1000,_procesy.dyn(k),bool(a.progress));
+					raport(_procesy.ready(k),_procesy.desired(k),"events ready... ",1000,_procesy.dyn(k),_procesy.label(k),bool(a.progress));
 				}
 				f1->Write ();
+
+        cout << "        100. % of " << _procesy.label(k) << " events ready..." << endl;
 
 		// elimination of spurious events for dynamics k
 		// by copying only last desired[k] events to outfile
 				if(p.mixed_order==0)
 				{
-					cout<<endl;
 					int nn = t1->GetEntries ();
 					int start = nn-_procesy.desired(k);
 					for (int jj = start; jj < nn; jj++)
@@ -863,12 +864,9 @@ void NuWro::real_events(params& p)
 						t1->GetEntry (jj);
 						tf->Fill ();
 						delete e;
-						raport(jj-start+1,nn-start,"events copied... ",100,_procesy.dyn(k),bool(a.progress));
+						raport(jj-start+1,nn-start,"events copied... ",100,_procesy.dyn(k),_procesy.label(k),bool(a.progress));
 					}
-					cout<<endl;
 				}
-				else
-					cout<<endl;
 
 				f1->Close ();
 				delete f1;
@@ -912,7 +910,7 @@ void NuWro::real_events(params& p)
 			tf->Fill();
 			ile--;
 			u[i]--;
-			raport(nn-ile,nn,"events copied... ",100,i,bool(a.progress));
+			raport(nn-ile,nn,"real events copied... ",100,-1,"",bool(a.progress));
 		}
 		delete e;
 		for (int k = 0; k < _procesy.size(); k++)
@@ -926,7 +924,7 @@ void NuWro::real_events(params& p)
 	}
 	ff->Write ();
 	ff->Close ();
-	cout << "        100. % of real events copied...  " << endl;
+	cout << "        100. % of real events copied..." << endl;
 	_progress.close();
 	delete ff;
 	_procesy.report();
@@ -937,7 +935,7 @@ void NuWro::real_events(params& p)
 	}
 
 	frame_top("Finalize the simulation");
-	cout << "        " << "-> Generated the output file: \"" << output << "\"" << endl;
+	cout << "     " << "-> Generated the output file: \"" << output << "\"" << endl;
 	frame_bottom();
 }
 
@@ -970,7 +968,7 @@ void NuWro::kaskada_redo(string input,string output)
 		//		delete e;
 		//if(i%1000==0)
 		//cout<<i/1000<<"/"<<nn/1000<<"\r"<<endl;
-		raport(i+1,nn," % events processed...",100,e->dyn,bool(a.progress));
+		raport(i+1,nn," % events processed...",100,e->dyn,_procesy.label(e->dyn),bool(a.progress));
 	}
 	cout<<endl;
 	fi->Close ();
@@ -988,7 +986,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 void NuWro::main (int argc, char **argv)
 {
-  	shhpythiaitokay_();
+  shhpythiaitokay_();
 	try
 	{
 		init(argc,argv);

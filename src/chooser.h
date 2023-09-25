@@ -75,6 +75,7 @@ class chooser
     bool accept(int i,double x,double bias=1); ///< add x and return true with probability xw/Mxw 
     bool active(int i){return proc[i].active;} ///< is the channel active?
     int dyn(int i) {return proc[i].dyn;}       ///< code for the dynamics
+    string label(int i) {return proc[i].label;}///< label for the dynamics
     double weight(int i) {return proc[i].W;}   ///< weight of i-th channel
     double total() {return proc[N-1].Wacc;}    ///< Sum of channel weigths 
     double count(int i) {return proc[i].n;}    ///< Number af additions to the bin

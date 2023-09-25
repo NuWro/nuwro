@@ -17,7 +17,7 @@ class NuWro
 		geomy* make_detector(params &p);
 		void makeevent(event* e, params &p);
 		void finishevent(event* e, params &p);
-		void raport(double i, double n, const char* text, int precision=1000, int k=-1, bool toFile=false);
+		void raport(double i, double n, const char* text, int precision=1000, int k=-1, string label="", bool toFile=false);
 		void init  (int argc, char **argv);
 		void test_events(params &p);
 		void user_events(params &p);
