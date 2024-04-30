@@ -517,8 +517,11 @@
     <param name="res_dis_blending_start" type="checkbox" ctype="double" default="2800">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>
-    <param name="res_dis_blending_end" type="checkbox" ctype="double" default="3200">
+  <param name="res_dis_blending_end" type="checkbox" ctype="double" default="3200">
     <description><![CDATA[random order of events in uotut file]]></description>
+  </param>
+  <param name="table_path" type="text" ctype="string" default="">
+    <description><![CDATA[The location to look for tabular date]]></description>
   </param>
 </params>
 

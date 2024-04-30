@@ -47,11 +47,11 @@ private:
     std::cout << "loading 2d hybrid grid from " << basepath << std::endl;
   }
 public:
-  static hybrid_grid_mmapio &get(char const *basepath = "/home/yan/misc/") { 
+  static hybrid_grid_mmapio &get(char const *basepath = "") { 
     static hybrid_grid_mmapio instance_dQ2dWdcth{std::string(basepath)};
     return instance_dQ2dWdcth;
   }
-  static hybrid_grid_mmapio &get2d(char const *basepath = "/home/yan/misc/") { 
+  static hybrid_grid_mmapio &get2d(char const *basepath = "") { 
     static hybrid_grid_mmapio instance_dQ2dW{std::string(basepath), 1};
     return instance_dQ2dW;
   }
@@ -165,6 +165,11 @@ void resevent_hybrid(params &p, event &e, nucleus& t, bool cc) // free nucleon o
   if(p.res_hybrid_sampling == 1){
     e.flag.need_resample_dir = true;
     e.flag.need_resample_phi = true;
+  }
+  // if tabularized grids are going to be used, load them here
+  if (p.res_hybrid_sampling != 4){
+    hybrid_grid_mmapio::get(p.table_path.c_str());
+    hybrid_grid_mmapio::get2d(p.table_path.c_str());
   }
   // switch from tabs to dsdQ2dWdcth above the limits
   if (p.res_hybrid_sampling < 3 &&
