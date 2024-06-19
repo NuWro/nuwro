@@ -43,10 +43,12 @@ Every stable release is tagged using the year followed by the month of the relea
 Currently involved in the project:
 
 * Jan Sobczyk
+* Artur Ankowski
+* [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 * Cezary Juszczak
 * [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
-* [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
-* Dmitry Zhuridov
+* Rwik Banerjee
+* Hemant Prasad
 
 Former members:
 
@@ -57,8 +59,11 @@ Former members:
 Significant contribution
 
 * Artur Kobyliński
-* Maciej Tabiszewski
+* Alexis Nikolakopoulos
 * Paweł Przewłocki
 * Luke Pickering
 * Patrick Stowell
-* Chris Thorpe
+* Maciej Tabiszewski
+* Christopher Thorpe
+* Qiyu Yan
+* Dmitry Zhuridov
