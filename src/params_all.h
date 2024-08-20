@@ -125,4 +125,7 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
+PARAM(bool,use_mh,0)\
+PARAM(int,mh_sample_interval,80)\
+PARAM(bool,use_weighted_channel,1)\
 

@@ -10,6 +10,7 @@
 #include "nucleus.h"
 #include "chooser.h"
 #include "input_data.h"
+#include "metropolis.h"
 
 class NuWro
 {
@@ -32,6 +33,10 @@ class NuWro
 		void pot_report(ostream&, bool format);
 		NuWro ();
 		~NuWro();
+		// Metropolis-Hastings algorithm:
+		void initialize_dynamics_list();
+		void real_events_mh(params &p);
+		event get_event();
 
 	private:
 		params p;
@@ -44,6 +49,17 @@ class NuWro
 		target_mixer *_mixer;
 		bool dismode;
 		input_data input;
+		// for metropolis-hastings algorithm
+		//  - list of enabled dynamical models
+		std::vector<int> enabled_dyns{};
+		//  - Sampler
+		Metropolis<event, size_t> sampler;
+		//  - state used to calculate xsec and acceptance rate
+		std::vector<double> channel_sampleing_weight{};
+		std::vector<double> channel_weight_sum{}, channel_weight_sum_fraction{};
+		std::unordered_map<int, double> channel_count_final{};
+		size_t accepted_count{};
+		bool accept{false};
 };
 
 extern NuWro nuwro;
