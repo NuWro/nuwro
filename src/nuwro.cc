@@ -507,7 +507,7 @@ void NuWro::finishevent(event* e, params &p)
 
 								 // copy particle from out to post if coherent interaction
 	
-	if (!e->flag.coh && !e->flag.lep)
+	if (!e->flag.coh && !e->flag.lep && (e->par.nucleus_n + e->par.nucleus_p > 1))
 	{
 		kaskada k(p, *e, &input);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true
