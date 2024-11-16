@@ -39,21 +39,21 @@ jobs:
           if [ "${{ github.ref_type }}" == "tag" ]; then
             docker build . \
               --file "${{ matrix.file }}" \
-              --tag "ghcr.io/${{ github.repository_owner }}/nuwro:${{ matrix.os }}${{ github.ref_name }}" \
-              --build-arg NUWRO_VERSION="${{ github.ref_name }}" \
+              --tag "ghcr.io/nuwro/nuwro:${{ matrix.os }}${{ github.ref_name }}" \
+              --build-arg NUWRO_VERSION="${{ github.ref_name }}"
           else
             docker build . \
               --file "${{ matrix.file }}" \
-              --tag "ghcr.io/${{ github.repository_owner }}/nuwro:${{ matrix.tag_latest }}" \
-              --build-arg NUWRO_VERSION="develop" \
+              --tag "ghcr.io/nuwro/nuwro:${{ matrix.tag_latest }}" \
+              --build-arg NUWRO_VERSION="master"
           fi
 
       - name: Push Docker image
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
-            docker push "ghcr.io/${{ github.repository_owner }}/nuwro:${{ matrix.os }}${{ github.ref_name }}"
+            docker push "ghcr.io/nuwro/nuwro:${{ matrix.os }}${{ github.ref_name }}"
           else
-            docker push "ghcr.io/${{ github.repository_owner }}/nuwro:${{ matrix.tag_latest }}"
+            docker push "ghcr.io/nuwro/nuwro:${{ matrix.tag_latest }}"
           fi
 
       - name: Delete old images
