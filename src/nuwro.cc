@@ -6,6 +6,7 @@
 #include "TTree.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "generatormt.h"
 #include "qelevent.h"
 #include "e_el_event.h"
 #include "e_spp_event.h"
@@ -35,6 +36,7 @@
 #include "rew/rewparams.h"
 #include "lepevent.h"
 #include "output.h"
+#include "TParameter.h"
 
 
 extern double SPP[2][2][2][3][40];
@@ -58,7 +60,13 @@ NuWro::~NuWro()
 }
 
 NuWro::NuWro()
-{
+    : sampler([this](event *e, size_t index) {
+        double bias = 1.;
+        if (this->dismode) {
+          bias = e->in[0].t;
+        }
+        return e->weight / bias / this->channel_sampleing_weight[index];
+      }) {
 	_mixer = NULL;
 	_detector = NULL;
 	_beam = NULL;
@@ -82,7 +90,47 @@ void NuWro :: set (params &par)
 	_nucleus = make_nucleus (par);
 	
 	ff_configure (par);
-	refresh_dyn (par);
+	if (!p.use_mh)
+		refresh_dyn (par);
+}
+
+void NuWro::initialize_dynamics_list() {
+		enabled_dyns.clear();
+		if (p.dyn_qel_cc)
+						enabled_dyns.push_back(0);
+		if (p.dyn_qel_nc)
+						enabled_dyns.push_back(1);
+		if (p.dyn_res_nc)
+						enabled_dyns.push_back(3);
+		if (p.dyn_res_cc)
+						enabled_dyns.push_back(2);
+		if (p.dyn_dis_cc)
+						enabled_dyns.push_back(4);
+		if (p.dyn_dis_nc)
+						enabled_dyns.push_back(5);
+		if (p.dyn_coh_cc)
+						enabled_dyns.push_back(6);
+		if (p.dyn_coh_nc)
+						enabled_dyns.push_back(7);
+		if (p.dyn_mec_cc)
+						enabled_dyns.push_back(8);
+		if (p.dyn_mec_nc)
+						enabled_dyns.push_back(9);
+		if (p.dyn_hyp_cc)
+						enabled_dyns.push_back(10);
+		if (p.dyn_lep)
+						enabled_dyns.push_back(12);
+		if (p.dyn_qel_el)
+						enabled_dyns.push_back(20);
+		if (p.dyn_res_el)
+						enabled_dyns.push_back(21);
+
+		// std::cout << enabled_dyns.size() << "channel enabled" << std::endl;
+		channel_weight_sum.resize(enabled_dyns.size());
+		channel_weight_sum_fraction.resize(enabled_dyns.size());
+		channel_sampleing_weight.resize(enabled_dyns.size());
+		for (auto &&k : channel_sampleing_weight)
+						k = 1. / enabled_dyns.size();
 }
 
 void NuWro :: refresh_target (params &par)
@@ -183,6 +231,10 @@ void NuWro::init (int argc, char **argv)
   cout << "     -> Extablishing the choice of dynamics..." << endl;
   refresh_dyn(p);
 
+	if (p.use_mh){
+		initialize_dynamics_list();
+	}
+
   frame_bottom();
 }
 
@@ -196,7 +248,7 @@ void NuWro::makeevent(event* e, params &p)
 		material mat;
 		do
 		{
-			nu=_beam->shoot(1<dyn && dyn<6 && dismode);
+			nu=_beam->shoot(((1<dyn && dyn<6) || p.use_mh) && dismode);
 			if(nu.travelled>0 && p.beam_weighted==0)
 			{
 				if(nu.travelled<frandom()*max_norm)
@@ -225,7 +277,7 @@ void NuWro::makeevent(event* e, params &p)
 	}
 	else
 	{
-		nu=_beam->shoot(1<dyn && dyn<6 && dismode);
+		nu=_beam->shoot(((1<dyn && dyn<6)||p.use_mh) && dismode);
 		nu.r=vec(nu.r)+p.beam_offset;
 	}
 
@@ -939,6 +991,133 @@ void NuWro::real_events(params& p)
 	frame_bottom();
 }
 
+event NuWro::get_event() {
+  event e{};
+  auto sample_channel = [&](double random_number) {
+    double sum = 0;
+    for (size_t i = 0; i < enabled_dyns.size(); i++) {
+      sum += channel_sampleing_weight[i];
+      if (random_number < sum)
+        return i;
+    }
+    return enabled_dyns.size() - 1;
+  };
+
+  auto update_channel_sampleing_weight = [&]() {
+    bool zero_exists = false;
+    for (size_t i = 0; i < enabled_dyns.size(); i++) {
+      channel_sampleing_weight[i] =
+          (channel_weight_sum[i] / channel_weight_sum_fraction[i]);
+      if (channel_sampleing_weight[i] == 0 ||
+          isnan(channel_sampleing_weight[i]) ||
+          isinf(channel_sampleing_weight[i])) {  // invaild weights
+        zero_exists = true;
+        break;
+      }
+    }
+    if (!zero_exists) {
+      double sum = std::accumulate(channel_sampleing_weight.begin(),
+                                   channel_sampleing_weight.end(), 0.);
+      for (auto &&v : channel_sampleing_weight) {
+        v /= sum;
+      }
+    } else {
+      for (auto &&v : channel_sampleing_weight) {
+        v = 1. / enabled_dyns.size();
+      }
+    }
+  };
+
+  // std::uniform_real_distribution<> dis(0, 1);
+  // std::uniform_int_distribution<> dis2(0, enabled_dyns.size() - 1);
+  bool accepted = false;
+  for (int j{}; j < p.mh_sample_interval; j++) {
+    auto e = new event();
+    auto channel_index = sample_channel(frandom());
+    // auto channel_index = dis2(gen);
+    e->dyn = enabled_dyns[channel_index];
+    makeevent(e, p);
+    auto thisbias = 1 / e->in[0].t;
+    auto biased_weight = e->weight * thisbias;
+    if (isnan(thisbias) || isnan(biased_weight)) { // ignore NaNs
+      j--;
+      continue;
+    }
+    channel_weight_sum[channel_index] += biased_weight;
+    channel_weight_sum_fraction[channel_index] += thisbias;
+    accepted |= sampler.update_state(e, channel_index);
+  }
+  if (p.use_weighted_channel)
+    update_channel_sampleing_weight();
+  accepted_count += accepted;
+  e = sampler.get_state();
+  channel_count_final[e.dyn]++;
+  finishevent(&e, p);
+  return e;
+}
+
+void NuWro::real_events_mh(params &p) {
+  dismode = true;
+  if (p.number_of_events < 1)
+    return;
+
+  frame_bottom();
+
+  frame_top("Run real events");
+
+  // std::unique_ptr<event> u_e();
+  // event *e = new event;
+  auto e = std::make_unique<event>();
+
+  string output = a.output;
+  int l = output.length();
+  if (l < 5 || string(".root") != output.c_str() + l - 5)
+    output = output + ".root";
+  TFile *ff = new TFile(output.c_str(), "recreate");
+  TTree *tf = new TTree("treeout", "Tree of events");
+  tf->Branch("e", "event", e.get());
+
+  // std::vector<size_t> channel_count_final{};
+  // channel_count_final.resize(enabled_dyns.size());
+  // int accepted_count{};
+  for (int i{}; i < p.number_of_events; i++) {
+    *e = get_event();
+    tf->Fill();
+  }
+  std::string xsec_log = a.output + ".xsec"s;
+  std::ofstream xsec_file(xsec_log);
+  double overall_xsec{};
+  for (size_t i = 0; i < enabled_dyns.size(); i++) {
+    if (channel_weight_sum[i]) {
+      std::stringstream ss{};
+      ss << "Channel " << enabled_dyns[i] << " weight avg: "
+         << channel_weight_sum[i] / channel_weight_sum_fraction[i] << '\n'
+         << " count: " << channel_count_final[enabled_dyns[i]] << '\n'
+         << '\n';
+      std::cout << ss.str();
+      xsec_file << ss.str();
+      overall_xsec += channel_weight_sum[i] / channel_weight_sum_fraction[i];
+    }
+  }
+  {
+    std::stringstream ss{};
+    ss << "Overall acceptance: " << (double)accepted_count / p.number_of_events
+       << '\n'
+       << "estimated xsec: " << overall_xsec << '\n';
+    std::cout << ss.str();
+    xsec_file << ss.str();
+  }
+  // TVectorD xsecs(1);
+  // xsecs[0] = overall_xsec;
+  tf->GetUserInfo()->Add(new TParameter<double>("xsec", overall_xsec));
+  ff->Write();
+  ff->Close();
+  delete ff;
+  frame_top("Finalize the simulation");
+  cout << "        "
+       << "-> Generated the output file: \"" << output << "\"" << endl;
+  frame_bottom();
+}
 
 void NuWro::kaskada_redo(string input,string output)
 {
@@ -998,10 +1177,12 @@ void NuWro::main (int argc, char **argv)
 			{
 				if(p.user_events>0)
 					user_events(p);
-				else
+				else if (!p.use_mh)
 				{
 					test_events(p);
 					real_events(p);
+				}else{
+					real_events_mh(p);
 				}
 			}
 		}
