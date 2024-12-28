@@ -48,7 +48,7 @@ int kaskada::kaskadaevent()
       nucl->remove_nucleon(e->in[i]); // ignores nonnucleons
   }
 
-  if(not par.kaskada_on)  // skip the cascade if it is turn off in params,
+  if (not par.kaskada_on) // skip the cascade if it is turn off in params,
                           // but make sure about the energy balance
   {
     while (parts.size () > 0)
@@ -65,7 +65,6 @@ int kaskada::kaskadaevent()
 
   while (parts.size () > 0 and nucl->Ar() > 0)  // main loop in cascade
   {
-
     particle p1 = parts.front();                // point a particle from a queue
     parts.pop();                                // remove this particle from a temp vector
     p = &p1;

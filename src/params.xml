@@ -551,7 +551,17 @@
   </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
-  </param> 
+  </param>
+  <param name="kaskada_events" type="checkbox" ctype="bool" default="0" >
+    <description><![CDATA[Use already generated events for kaskada]]></description>
+    <conditions>
+    <condition value="1" description="1">
+        <param name="kaskada_events_file" type="text" ctype="string" default="">
+          <description><![CDATA[Text file in a xsec,PDG,E,px,py,pz,... format]]></description>
+        </param>
+    </condition>
+    </conditions>
+  </param>
 </params>
 
 <!--
