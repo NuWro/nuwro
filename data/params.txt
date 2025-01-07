@@ -123,6 +123,9 @@ qel_axial_ff_set  = 1  // dipole,
 #qel_axial_ff_set = 2  // 2-fold parabolic modification of axial FF
 #qel_axial_ff_set = 3  // 3-fold parabolic modification of axial FF
 #qel_axial_ff_set = 4  // 4-fold parabolic modification of axial FF
+#qel_axial_ff_set = 8  // MINERvA axial FF, Nature 614, 48 (2023) 
+#qel_axial_ff_set = 9  // deuterium axial FF, Meyer et al., Phys. Rev. D 93, 113015 (2016)
+
 
 # Strangeness content:
 #qel_strange=0         // don't use the strangenes
@@ -134,6 +137,11 @@ delta_s = 0
 qel_cc_axial_mass = 1030 // [MeV] axial mass
 qel_nc_axial_mass = 1030 // [MeV] axial mass
 qel_s_axial_mass  = 1030 // [MeV] axial mass used in the strange dipole ff
+
+# 1sigma uncertainty for the MINERvA and deuterium axial FF (to be used with axial ff options 8 or 9)
+#qel_minerva_ff_scale = 0 // range from -1 to +1
+#qel_deuterium_ff_scale = 0 // range from -1 to +1
+
 
 ################################################################################
 # Use the values below to recover the old nc behaviour

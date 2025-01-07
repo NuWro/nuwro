@@ -69,6 +69,8 @@ PARAM(int,qel_strangeEM,0)\
 PARAM(double,delta_s,0)\
 PARAM(double,qel_cc_vector_mass,840)\
 PARAM(double,qel_cc_axial_mass,1030)\
+PARAM(double,qel_minerva_ff_scale,0)\
+PARAM(double,qel_deuterium_ff_scale,0)\
 PARAM(double,qel_nc_axial_mass,1030)\
 PARAM(double,qel_s_axial_mass,1030)\
 PARAM(bool,flux_correction,1)\
