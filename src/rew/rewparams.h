@@ -128,11 +128,16 @@ struct RewParams
 	RewParam zexp_a7;
 	RewParam zexp_a8;
 	RewParam zexp_a9;
+	
+	RewParam mva_errorBar;
+	RewParam deut_errorBar;
 
 	RewParam delta_s;
 	
 	RewParam qel_cc_vector_mass;
 	RewParam qel_cc_axial_mass;
+    RewParam qel_minerva_ff_scale;
+    RewParam qel_deuterium_ff_scale;
 	RewParam qel_nc_axial_mass;
 	RewParam qel_s_axial_mass;
 	RewParam qel_axial_2comp_gamma;
@@ -232,14 +237,15 @@ struct RewParams
 		delta_s("delta_s", -0.15, 0.1, 0.1, "rewQEL"),
 		
 		qel_cc_vector_mass("qel_cc_vector_mass", 840, 0.16, 0.16, "rewQEL"),
-		qel_cc_axial_mass("qel_cc_axial_mass", 1200, 0.16, 0.16, "rewQEL"),
+		qel_cc_axial_mass("qel_cc_axial_mass", 1200, 0.2, 0.2, "rewQEL"),//changed JS
+        qel_minerva_ff_scale("qel_minerva_ff_scale", 0, 1, 1, "rewQEL"),//new
+        qel_deuterium_ff_scale("qel_deuterium_ff_scale", 0, 1, 1, "rewQEL"),//new
 		qel_nc_axial_mass("qel_nc_axial_mass", 1350, 0.16, 0.16, "rewQEL"),
 		qel_s_axial_mass("qel_s_axial_mass", 1200, 0.16, 0.16, "rewQEL"),
 		qel_axial_2comp_gamma("qel_axial_2comp_gamma", 0.15, 0.1, 0.1, "rewQEL"),
 		qel_axial_2comp_alpha("qel_axial_2comp_alpha", 2.0, 0.1, 0.1, "rewQEL"),
 		qel_axial_3comp_theta("qel_axial_3comp_theta", 0.15, 0.1, 0.1, "rewQEL"),
 		qel_axial_3comp_beta("qel_axial_3comp_beta", 2.0, 0.1, 0.1, "rewQEL"),
-
 
 	    // RES
 	    pion_axial_mass("pion_axial_mass", 0.94, 0.1, 0.1, "rewRES"),
@@ -290,10 +296,12 @@ struct RewParams
 		delta_s.set(p.delta_s);		
 		qel_cc_vector_mass.set(p.qel_cc_vector_mass);  // TODO: remove?
 		qel_cc_axial_mass.set(p.qel_cc_axial_mass);
+        qel_minerva_ff_scale.set(p.qel_minerva_ff_scale);// JS new
+        qel_deuterium_ff_scale.set(p.qel_deuterium_ff_scale);// JS new
 		qel_nc_axial_mass.set(p.qel_nc_axial_mass);
 		qel_s_axial_mass.set(p.qel_s_axial_mass);
 		pion_axial_mass.set(p.pion_axial_mass);
-		pion_C5A.set(p.pion_C5A);  
+		pion_C5A.set(p.pion_C5A);
 	
 		return *this;
 	}

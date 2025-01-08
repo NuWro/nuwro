@@ -280,6 +280,8 @@
       <option key="2"><![CDATA[2-fold parabolic modification of axial FF]]></option>
       <option key="3"><![CDATA[3-fold parabolic modification of axial FF]]></option>
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
+      <option key="8"><![CDATA[MINERvA axial FF]]></option>
+      <option key="9"><![CDATA[deuterium axial FF]]></option>
     </options>
   </param>
   <param name="qel_rpa" type="select" ctype="int" default="1">
@@ -305,6 +307,12 @@
     </param>
   <param name="qel_cc_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass]]></description>
+  </param>
+  <param name="qel_minerva_ff_scale" type="text" ctype="double" default="0">
+    <description><![CDATA[1 sigma range for the MINERvA axial FF]]></description>
+  </param>
+  <param name="qel_deuterium_ff_scale" type="text" ctype="double" default="0">
+    <description><![CDATA[1 sigma range for the deuterium axial FF]]></description>
   </param>
   <param name="qel_nc_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass]]></description>
@@ -561,7 +569,7 @@
         </param>
     </condition>
     </conditions>
-  </param>
+  </param> 
 </params>
 
 <!--
