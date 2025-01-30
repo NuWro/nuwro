@@ -1,0 +1,65 @@
+---
+# Update NuWro container image registry with newest updates
+name: Image CD
+
+# The events that trigger the workflow
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false  # KS: Prevents cancellation of remaining jobs if one fails
+      matrix:
+        include:
+          - os: alma9
+            file: doc/docker/alma9/Dockerfile
+            tag_latest: alma9latest
+
+    name: Image CD ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            docker build . \
+              --file "${{ matrix.file }}" \
+              --tag "ghcr.io/nuwro/nuwro:${{ matrix.os }}${{ github.ref_name }}" \
+              --build-arg NUWRO_VERSION="${{ github.ref_name }}"
+          else
+            docker build . \
+              --file "${{ matrix.file }}" \
+              --tag "ghcr.io/nuwro/nuwro:${{ matrix.tag_latest }}" \
+              --build-arg NUWRO_VERSION="master"
+          fi
+
+      - name: Push Docker image
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            docker push "ghcr.io/nuwro/nuwro:${{ matrix.os }}${{ github.ref_name }}"
+          else
+            docker push "ghcr.io/nuwro/nuwro:${{ matrix.tag_latest }}"
+          fi
+
+      - name: Delete old images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'nuwro'
+          package-type: 'container'
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: 'true'

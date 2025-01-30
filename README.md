@@ -43,20 +43,27 @@ Every stable release is tagged using the year followed by the month of the relea
 Currently involved in the project:
 
 * Jan Sobczyk
-* Cezary Juszczak
-* [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
-* [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
+* Artur Ankowski
 * [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
+* Cezary Juszczak
+* [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
+* Rwik Banerjee
+* Hemant Prasad
 
 Former members:
 
+* [Tomasz Golan](http://www.ift.uni.wroc.pl/~tgolan/)
 * [Jarosław Nowak](http://www.lancaster.ac.uk/physics/about-us/people/jaroslaw-nowak)
 * Jakub Żmuda
 
 Significant contribution
 
 * Artur Kobyliński
-* Maciej Tabiszewski
+* Alexis Nikolakopoulos
 * Paweł Przewłocki
 * Luke Pickering
 * Patrick Stowell
+* Maciej Tabiszewski
+* Christopher Thorpe
+* Qiyu Yan
+* Dmitry Zhuridov

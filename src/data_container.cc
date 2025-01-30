@@ -15,9 +15,10 @@ data_container::data_container( string _input_path,
                                 string _param_name,       int _param_value,
                                 int _number_of_fields,    string *_data_fields,
                                 int *_interpolate_fields, double *_unit_fields ):
-                                param_name(_param_name),  param_value(_param_value),
-                                number_of_fields(_number_of_fields), nucl_dep(0),
-                                input_mid_point(0),       input_prev_bin(0)
+                                nucl_dep(0),              number_of_fields(_number_of_fields), 
+                                input_mid_point(0),       input_prev_bin(0) ,  
+                                param_name(_param_name),  param_value(_param_value)
+
 {
   generate_file_name( _input_path );          // generate file name using the provided params and the input path
   copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
@@ -30,10 +31,11 @@ data_container::data_container( string _input_path,
                                 int _number_of_fields,    string *_data_fields,
                                 int *_interpolate_fields, double *_unit_fields,
                                 int _protons,             int _neutrons ):
-                                param_name(_param_name),  param_value(_param_value),
-                                number_of_fields(_number_of_fields), nucl_dep(1),
+                                nucl_dep(1),                               
                                 protons(_protons),        neutrons(_neutrons),
-                                input_mid_point(0),       input_prev_bin(0)
+                                number_of_fields(_number_of_fields),
+                                input_mid_point(0),       input_prev_bin(0) ,  
+                                param_name(_param_name),  param_value(_param_value)
 {
   generate_file_name( _input_path );          // generate file name using the provided params and the input path
   copy_fields_information( _data_fields, _interpolate_fields, _unit_fields ); // copy the information to vectors
@@ -220,8 +222,7 @@ void data_container::count_data_points( ifstream &file_ifstream )
 
 void data_container::create_data_vector()
 {
-  vector<double> empty_array(number_of_fields);                    // create a placeholder for data
-  for(int i=0;i<number_of_fields;i++) empty_array[i] = NAN;        // fill it with NANs
+  vector<double> empty_array(number_of_fields,NAN);     // create a placeholder for data and fill it with NANs
 
   data.reserve(number_of_points);                                  // reserve proper amount of memory
   for(int i=0;i<number_of_points;i++) data.push_back(empty_array); // fill the vector with empty data

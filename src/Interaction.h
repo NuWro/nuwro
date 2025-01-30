@@ -12,7 +12,7 @@
 #include "piangle.h"
 #include "input_data.h"
 
-enum {nucleon_=10,pion_=20};
+enum {nucleon_=10,pion_=20,hyperon_=30};
 enum {elastic_=0, ce_=1, spp_=2, dpp_=3, tpp_=4, abs_=5};
 
 ////////////////////////////////////////
@@ -39,8 +39,11 @@ struct interaction_parameters
   particle p2;              //!< Target nucleon from nucleus.
   particle p[5];            //!< Results of scattering.
   int      n;               //!< Number of particles after scattering.
-};
 
+  // C Thorpe added Jan 2019 hyperon interactions
+  double sigma[6]; // 6 cross sections used in 2 particle hyperon scattering
+  int hyp_state;   // initial hyperon state
+};
 
 ////////////////////////////////////////
 // Utilities - general
@@ -59,7 +62,12 @@ inline int kod(int i)
     case 22: return 6;
     case 23: return 7;
     case 25: return 8;
-    case 24: return 11; 
+    case 24: return 11;
+    //C Thorpe: Adding hyperon processes
+    case 30: return 15; // hyperon (quasi)elastic
+    case 31: return 16; // hyperon lambda -> sigma
+    case 32: return 17; // hyperon sigma -> lambda
+	
     case 99: return 9;
     case 100: return 10;
     default: throw "invalid interaction code";
@@ -459,13 +467,13 @@ bool PiData::pion_ce (particle& p1, particle& p2, int &n, particle p[])
 	   int canal=((p1==PiPlus)-(p1==PiMinus))*2+(p2==Proton)+2;
 	   if(canal==0 || canal==5) return 0;
 		
-	   static const channel cnls[6][2]=
-	   {{1,"ee"},//-n
-		{1,".n"},//-p
-		{1,"-p"},//.n
-		{1,"+n"},//.p
-		{1,".p"},//+n
-		{1,"ff"} //+p
+	   static const channel cnls[6][1]=
+	   {{{1,"ee"}},//-n
+		  {{1,".n"}},//-p
+		  {{1,"-p"}},//.n
+		  {{1,"+n"}},//.p
+		  {{1,".p"}},//+n
+		  {{1,"ff"}} //+p
 	   };
 	   doit(n,cnls[canal],p);
 			return scatterAB (p1, p2, p[0], p[1], a1(1), a2(1), a3(1), a4(1), a5(1), a6(1), a7(1), a8(1)); 
@@ -481,12 +489,12 @@ bool PiData::pion_spp (particle& p1, particle& p2, int &n, particle p[])
     static const double f2c[]={0.65,0.90}; // pi charged
 
 	static const channel cnls[6][3]=
-	{ {f1c[0],"-n.",      1,"-p-", 1,"aaa"},//-n
-      {f2c[0],"+n-", f2c[1],"-p.", 1,".n."},//-p
-      {f2o[0],"+n-", f2o[1],"-p.", 1,".n."},//.n
-	  {f2o[0],"-p+", f2o[1],"+n.", 1,".p."},//.p
-	  {f2c[0],"-p+", f2c[1],"+n.", 1,".p."},//+n
-	  {f1c[0],"+p.",      1,"+n+", 1,"bbb"} //+p
+	{ {{f1c[0],"-n."},{      1,"-p-"},{ 1,"aaa"}},//-n
+    {{f2c[0],"+n-"},{ f2c[1],"-p."},{ 1,".n."}},//-p
+    {{f2o[0],"+n-"},{ f2o[1],"-p."},{ 1,".n."}},//.n
+	  {{f2o[0],"-p+"},{ f2o[1],"+n."},{ 1,".p."}},//.p
+	  {{f2c[0],"-p+"},{ f2c[1],"+n."},{ 1,".p."}},//+n
+	  {{f1c[0],"+p."},{      1,"+n+"},{ 1,"bbb"}} //+p
 	};
 	doit(n,cnls[canal],p);
     return scatter_n (n, p1, p2, p);
@@ -504,12 +512,12 @@ bool PiData::pion_dpp (particle& p1, particle& p2, int &n, particle p[])	// p[2]
     static const double f2[3] = {0.25, 0.50, 0.75};   
 
 	static const channel cnls[6][4]=
-	{{f1[0],"-n-+",f1[1],"-n..",    1,"-p-.",1,"    "},//-n
-	 {f2[0],".n..",f2[1],".n-+",f2[2],"-p..",1,"-p-+"},//-p
-	 {f2[0],".n..",f2[1],".n-+",f2[2],"-p..",1,"-p-+"},//.n
-	 {f2[0],"+n..",f2[1],"+n+-",f2[2],"+p-.",1,".p.."},//.p
-	 {f2[0],"+n..",f2[1],"+n+-",f2[2],"+p-.",1,".p.."},//+n
-	 {f1[0],"+p+-",f1[1],"+p..",    1,"+n+.",1,"    "} //+p
+	{{{f1[0],"-n-+"},{f1[1],"-n.."},{    1,"-p-."},{1,"    "}},//-n
+	 {{f2[0],".n.."},{f2[1],".n-+"},{f2[2],"-p.."},{1,"-p-+"}},//-p
+	 {{f2[0],".n.."},{f2[1],".n-+"},{f2[2],"-p.."},{1,"-p-+"}},//.n
+	 {{f2[0],"+n.."},{f2[1],"+n+-"},{f2[2],"+p-."},{1,".p.."}},//.p
+	 {{f2[0],"+n.."},{f2[1],"+n+-"},{f2[2],"+p-."},{1,".p.."}},//+n
+	 {{f1[0],"+p+-"},{f1[1],"+p.."},{    1,"+n+."},{1,"    "}} //+p
 	};	
     doit(n,cnls[canal],p);
     return scatter_n (n, p1, p2, p);
@@ -525,12 +533,12 @@ bool PiData::pion_tpp (particle& p1, particle& p2, int &n, particle p[])
     static const double f2[4] = {0.2, 0.4, 0.6, 0.8};
    
 	static  const channel cnls[6][5]=
-	{{f1[0],"-n...",f1[1],"-n-+.",f1[2],"-p-..",    1,"-p-+-",0,"     "},//-n
-	 {f2[0],".n...",f2[1],".n+-.",f2[2],"+n-+-",f2[3],"-p...",1,"-p+-."},//-p
-	 {f2[0],".n...",f2[1],".n+-.",f2[2],"+n-+-",f2[3],"-p...",1,"-p+-."},//.n
-	 {f2[0],"+n...",f2[1],"+n+-.",f2[2],".p...",f2[3],".p+-.",1,"+p-+-"},//.p
-	 {f2[0],"+n...",f2[1],"+n+-.",f2[2],".p...",f2[3],".p+-.",1,"+p-+-"},//+n
-	 {f1[0],"+n+..",f1[1],"+n++-",f1[2],"+p...",    1,"+p+-.",0,"     "} //+p
+	{{{f1[0],"-n..."},{f1[1],"-n-+."},{f1[2],"-p-.."},{    1,"-p-+-"},{0,"     "}},//-n
+	 {{f2[0],".n..."},{f2[1],".n+-."},{f2[2],"+n-+-"},{f2[3],"-p..."},{1,"-p+-."}},//-p
+	 {{f2[0],".n..."},{f2[1],".n+-."},{f2[2],"+n-+-"},{f2[3],"-p..."},{1,"-p+-."}},//.n
+	 {{f2[0],"+n..."},{f2[1],"+n+-."},{f2[2],".p..."},{f2[3],".p+-."},{1,"+p-+-"}},//.p
+	 {{f2[0],"+n..."},{f2[1],"+n+-."},{f2[2],".p..."},{f2[3],".p+-."},{1,"+p-+-"}},//+n
+	 {{f1[0],"+n+.."},{f1[1],"+n++-"},{f1[2],"+p..."},{    1,"+p+-."},{0,"     "}} //+p
 	};
     doit(n,cnls[canal],p);
     return scatter_n (n, p1, p2, p);
@@ -714,11 +722,14 @@ class Interaction
                                                    Interaction_parameters object keeps track of resulting particles
                                                    (table p) and the number of outgoing particles (n). */
     int process_id()                          //! Returns the process id.
-    { 
+    {
+      if(k1==hyperon_)  return hyperon_process_id(); // C Thorpe: Added hyperon process ids
+    
       return k1==nucleon_ ? nucleon_process_id() : PD.process_id(); 
     }
     const char* process_name()                //! Returns the process name.
     {
+      if(k1==hyperon_) return "any hyperon"; // process names have to be added
       return k1==nucleon_ ? nucleon_process_name() : PD.process_name();
     }
     void test ();                             //!< Test function.
@@ -741,9 +752,17 @@ class Interaction
     bool   nucleon_dpp(        particle  p1, particle  p2, int &n, particle p[] );
                                               //!< Scattering of p1, p2 with double pion production.
     int         nucleon_process_id();
+    int         hyperon_process_id();
                                               //!< Returns the nucleon process id.
     const char* nucleon_process_name();
                                               //!< Returns the nucleon process name.
+    //added C Thorpe Dec 2018
+    //calculates nucleon/hyperon cross section
+    void get_hyp_xsec(double &nY, double &pY, particle N, particle Y, double sigma[], int &hyp_state);
+    //scatters hyperons, particles p1 and p2 into p[]
+    bool hyperon_scattering(int hyp_state, particle& p1, particle& p2,nucleus t, int &n, particle p[],
+                           double sigma[], double sigma_p, double sigma_n);
+    bool hyperon_error(particle p1, particle p2, particle p[]);
 };
 
 ////////////////////////////////////////

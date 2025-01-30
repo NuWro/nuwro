@@ -5,6 +5,7 @@
 #include "../qel_sigma.h"
 #include "../rpa_2013.h"
 #include "rewparams.h"
+#include "../dis/LeptonMass.h"
 
 static double E_bind(params &p, nucleus &t, particle &N0) {
   /*

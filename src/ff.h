@@ -28,6 +28,9 @@ pair <double,double> f12(double q2, int kind);
 ///       2 - nc on neutron
 pair <double,double> fap(double q2, int kind);
 
+//Modified by C Thorpe
+//Second class current
+pair <double,double> g2(double q2,int kind);
 
 /// Pair Assigment helper structure
 struct list

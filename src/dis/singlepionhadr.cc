@@ -20,8 +20,8 @@
 //#include "dis2res.h"
 #include "event1.h"
 //#include "sobek.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 #include "singlepionhadr.h"
 #include "singlepion.h"
 

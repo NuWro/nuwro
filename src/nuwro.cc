@@ -9,7 +9,7 @@
 #include "qelevent.h"
 #include "e_el_event.h"
 #include "e_spp_event.h"
-#include "hipevent.h"
+#include "hypevent.h"
 #include "pdg.h"
 #include "chooser.h"
 #include "beam.h"
@@ -34,6 +34,9 @@
 #include "nucleusmaker.h"
 #include "Interaction.h"
 #include "rew/rewparams.h"
+#include "lepevent.h"
+#include "output.h"
+
 
 // extern double SPP[2][2][2][3][40];
 //extern double sppweight;
@@ -104,9 +107,9 @@ geomy* NuWro::make_detector(params &p)
 		try
 		{
 			if(p.geo_d.norm2()==0)
-				return new geomy(p.geo_file,p.geo_name);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert);
 			else
-				return new geomy(p.geo_file,p.geo_name,p.geo_volume,p.geo_d,p.geo_o);
+				return new geomy(p.geo_file,p.geo_name,p.geom_length_units,p.geom_density_convert,p.geo_volume,p.geo_d,p.geo_o);
 		}
 		catch(...)
 		{
@@ -125,6 +128,8 @@ geomy* NuWro::make_detector(params &p)
 
 void NuWro::init (int argc, char **argv)
 {
+	frame_top("Simulation parameters");
+
 	//dismode=false;
 	dismode=true;
 	set_dirs(argv[0]);
@@ -139,38 +144,48 @@ void NuWro::init (int argc, char **argv)
 		_progress.open(a.progress);
 	frandom_init(p.random_seed);
 
+	frame_bottom();
+
+	frame_top("Initialize the simulation");
+
 	if(p.beam_test_only==0 && p.kaskada_redo==0)
 		if(p.dyn_dis_nc or p.dyn_res_nc  or p.dyn_dis_cc or p.dyn_res_cc )
 	{
-		cout<<" Calculating the one pion functions ..."<<endl;
+		cout << "     -> Calculating the single-pion functions..." << endl;
 		singlepion (p);
-	}							 
+	}
 	if(p.kaskada_redo==0)
 	{
+		cout << "     -> Building the target nuclei..." << endl;
 		_nucleus = make_nucleus(p);
 		if(p.target_type==1)
 			_mixer=new target_mixer(p);
 		else
 			_mixer = NULL;
+		cout << "     -> Constructing the detector..." << endl;
 		_detector=make_detector(p);
         
-		cout<<"Creating the beam ..."<<endl;
+		cout << "     -> Creating the beam..." << endl;
 		_beam=create_beam(p,_detector);
 		if(_beam==NULL)
 			{
-                cerr<<"No beam defined."<<endl;
-                exit(5);
-            }
-
-
-	}
+        cerr<<"No beam defined."<<endl;
+        exit(5);
+      }
+    }
 
   // load the input data
+  cout << "     -> Loading external physical data..." << endl;
   input.initialize( p );
   input.load_data();
 
-	ff_configure(p);
-	refresh_dyn(p);	
+  cout << "     -> Configuring form factors..." << endl;
+  ff_configure(p);
+
+  cout << "     -> Extablishing the choice of dynamics..." << endl;
+  refresh_dyn(p);
+
+  frame_bottom();
 }
 
 void NuWro::makeevent(event* e, params &p)
@@ -225,12 +240,17 @@ void NuWro::makeevent(event* e, params &p)
 	else
 		_nucleus->reset();
 	e->in.push_back (nu);		 // insert neutrino
-	if(dyn<6 || dyn>=10)
+	if(dyn<6 || (dyn>=10 && dyn<12) || dyn==20)
 	{
 								 // insert target nucleon
 		e->in.push_back (_nucleus->get_nucleon());
 		e->in[0].r=e->in[1].r;
 		assert(e->in[1]*e->in[1]>0);
+	}
+	else if(dyn>=12 && dyn<14)
+	{
+		// insert target electron
+		e->in.push_back(particle(PDG::pdg_e, PDG::mass_e));
 	}
 
 	e->weight=0;
@@ -246,7 +266,8 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.dis = false;
 	e->flag.coh = false;
 	e->flag.mec = false;
-	e->flag.hip = false;
+	e->flag.hyp = false;
+	e->flag.lep = false;
 	
 	e->flag.anty = nu.pdg<0;
 
@@ -411,42 +432,46 @@ void NuWro::makeevent(event* e, params &p)
 			}
 			break;
 		case 10:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_la) // qel hiperon lambda
+			e->flag.hyp=e->flag.cc=true;
+			if(p.dyn_hyp_cc) // qel hyperon
 			{
-				hipevent (p, *e, *_nucleus, true); //Lambda
+				hypevent (p, *e, *_nucleus);
 			}
 			break;		
-		case 11:
-			e->flag.hip=e->flag.cc=true;
-			if (p.dyn_hip_si) // qel hiperon sigma
+		case 12:
+			e->flag.lep=true; //->flag.cc=true;
+			if (p.dyn_lep) // Neutrino-lepton
 			{
-				hipevent (p, *e, *_nucleus, false); // Sigma
+				lepevent (p, *e); //, true);
 			}
-			break;		
+			break;
 	}
 	else if(e->in[0].pdg==11) // electron scattering
 	{
-		switch(dyn)
+       	switch(dyn)
 		{
 			case 20:
-				e->flag.nc=true;
-			    if(p.eel_alg=="old")
+				// TODO: introduce a new flag el!
+				e->flag.qel=e->flag.nc=true;
+			    /*if(p.eel_alg=="old")
                     e_el_event(p,*e,*_nucleus,false); 
 			    else 	
                 if(p.eel_alg=="fast")
                     e_el_event2orig(p,*e,*_nucleus,false); 
                 else   // all remaining algorithms  
-                    e_el_event2(p,*e,*_nucleus,false); 
+                    e_el_event2(p,*e,*_nucleus,false); */
+                if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
+					sfevent (p, *e, *_nucleus);
+				else
+					qelevent1 (p, *e, *_nucleus, true);
 			    break;
-
-			case 21: 
-				e->flag.nc=true;
-			    if(p.eel_theta_lab>0) 	
-                    e_spp_event(p,*e,*_nucleus,false); 
-			    else // use negative theta to test new implementation	
-                    e_spp_event3(p,*e,*_nucleus,false); 
-			    break;
+			// case 21: 
+			// 	e->flag.nc=true;
+			//     if(p.eel_theta_lab>0) 	
+   //                  e_spp_event(p,*e,*_nucleus,false); 
+			//     else // use negative theta to test new implementation	
+   //                  e_spp_event3(p,*e,*_nucleus,false); 
+			//     break;
 		}
 	}
 	e->weight*=factor;
@@ -504,7 +529,7 @@ void NuWro::finishevent(event* e, params &p)
 
 								 // copy particle from out to post if coherent interaction
 	
-	if (!e->flag.coh )
+	if (!e->flag.coh && !e->flag.lep && (e->par.nucleus_n + e->par.nucleus_p > 1))
 	{
 		kaskada k(p, *e, &input);
 		k.kaskadaevent();		 // runs only if p.kaskada_on is true
@@ -522,57 +547,65 @@ void NuWro::finishevent(event* e, params &p)
 	}
 }								 //end of finishevent
 
-
-void NuWro::raport(double i,double n,const char* text,int precision, int k, bool toFile)
+void NuWro::raport(double i, double n, const char* text, int precision, int k, string label, bool toFile)
 {
-	static int prev=-1;
-	int proc=precision*i/n;
-	if(proc!=prev)
-	{
-		prev=proc;
-		cerr.precision(3);
-		if(toFile)
-		{
-			_progress.seekp(ios_base::beg);
-			_progress << proc*100.0/precision<<" "<<text<<'\r'<<flush;
-			_progress.flush();
-		}
-		else
-		{
-			if(k>=0)
-				cerr<<"Dyn["<<k<<"] ";
-			cerr<<showpoint<<proc*100.0/precision<<text<<'\r'<<flush;
-		}
-		cerr.precision();
+  static int prev=-1;
+  int proc=precision*i/n;
+  if(proc!=prev)
+  {
+    prev=proc;
+    cerr.precision(3);
+    if(toFile)
+    {
+      _progress.seekp(ios_base::beg);
+      _progress << proc*100.0/precision << " " << text << '\r' << flush;
+      _progress.flush();
+    }
+    else
+    {
+      cerr << "        ";
+      cerr << showpoint << proc*100.0/precision << " % of ";
+      if(k>=0)
+        cerr << label << " ";
+      cerr << text << '\r' << flush;
+    }
+    cerr.precision();
+  }
+}
 
-		//	   printf("%f3.1 %s\r", proc/10.0,text);
-	}
-}								 //end of report
-void NuWro::pot_report(ostream& o)
+void NuWro::pot_report(ostream& o, bool format=false)
 {
 	double tot=0;
 	if(_detector)
 	{
+		if(format)
+			frame_top("POT Report");
+		string tab(8,' ');
+		if(!format)
+			tab.clear();
 		double pd=_detector->nucleons_per_cm2();
+
 		for(int i=0;i<_procesy.size();i++)
 		if(_procesy.avg(i)>0)
 		{	
 			tot+=_procesy.avg(i);
 			double epp=_procesy.avg(i)*pd*_beam->nu_per_POT();
-			o   << "dyn["<<i<<"] events per POT = "<<epp<<endl;
-			o  <<"       POT per event = "<<1/epp<<endl;
+			o  <<tab<<"dyn["<<i<<"] events per POT = "<<epp<<endl;
+			o  <<tab<<"       POT per event = "<<1/epp<<endl;
 		}
 		double epp=tot*pd*_beam->nu_per_POT();
-			
-		o<<"Total: events per POT= "<<epp<<endl
-		 <<"       POT per event = "<<1/epp<<endl<<endl;
-		o<<" BOX nuclons per cm2 = "<<pd<<endl;
-		o<<"Total cross section  = "<<tot<<" cm2"<<endl;
-		o<<"Reaction probability = "<<tot*pd<<endl;
-		o<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;
-		o<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
-		o<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
-		
+	
+		o<<tab<<"Total: events per POT= "<<epp<<endl
+		 <<tab<<"       POT per event = "<<1.0/epp<<endl;
+		o<<tab<<" BOX nuclons per cm2 = "<<pd<<endl;
+		o<<tab<<"Total cross section  = "<<tot<<" cm2"<<endl;
+		o<<tab<<"Reaction probability = "<<tot*pd<<endl;
+		o<<tab<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;		
+		o<<tab<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
+		o<<tab<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
+		o<<tab<<"Total POT: " << p.number_of_events/epp << endl << endl;
+		if(format)
+			frame_bottom();
 	}
 }
 
@@ -582,6 +615,7 @@ void NuWro::pot_report(ostream& o)
 //////////////////////////////////////////////////////////////
 void NuWro::test_events(params & p)
 {
+	frame_top("Run test events");
 
 	if(p.number_of_test_events>0  && p.beam_test_only==0)
 	{
@@ -616,12 +650,11 @@ void NuWro::test_events(params & p)
 			double bias=1;
 			if(dismode && e->dyn>1 && e->dyn<6)
 				bias=e->in[0].t;
-			
-				
+
 			_procesy.add (k, e->weight, bias);
 			e->weight/=_procesy.ratio(k); // make avg(weight)= total cross section
 			//~ if(_detector and _beam->nu_per_POT() != 0)
-				//~ e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
+			//~   e->POT=e->weight * _detector->nucleons_per_cm2() / _beam->nu_per_POT();
 
 			if(e->weight>0)
 			{
@@ -660,7 +693,7 @@ void NuWro::test_events(params & p)
 					exit(12);
 			}
 			delete e;
-			raport(i+1,p.number_of_test_events," % of test events ready...",1000,-1,bool(a.progress));
+			raport(i+1,p.number_of_test_events,"test events ready... ",1000,-1,"",bool(a.progress));
 		}						 // end of nuwro loop
 		if(p.save_test_events)
 		{
@@ -668,7 +701,8 @@ void NuWro::test_events(params & p)
 			te->Close ();
 		}
 
-		cout<<endl;
+    cout << "        100. % of test events ready..." << endl;
+
 		_procesy.report();
 		_procesy.set_weights_to_avg ();
 		string prefix;
@@ -697,7 +731,7 @@ void NuWro::test_events(params & p)
 			totals << ' '<<0; // cross section of disabled channels
 
 		totals<<endl;
-		pot_report(cout);		
+		pot_report(cout,true);		
 		if(_detector)
 		{   ofstream  potinfo("POTinfo.txt");
 			pot_report(potinfo);
@@ -710,6 +744,7 @@ void NuWro::user_events(params &p)
 {
 	if(p.number_of_test_events<1 or p.user_events==0)
 		return;
+	frame_top("Run analyser events");
 	params p1=p;
 	Analyser * A=make_analyser(p);
 	if(!A) 
@@ -740,9 +775,11 @@ void NuWro::user_events(params &p)
 
 			delete e;
 			
-			raport(i+1,p.number_of_test_events," % of analyser events ready...",1000,-1,bool(a.progress));
+			raport(i+1,p.number_of_test_events,"analyser events ready... ",1000,-1,"",bool(a.progress));
 			p=p1;
 	}	// end of nuwro loop
+
+    cout << "        100. % of analyser events ready..." << endl;
 
 		A->partial_report();
 		_procesy.report();
@@ -758,14 +795,20 @@ void NuWro::real_events(params& p)
 	dismode=true;
 	if(p.number_of_events<1)
 		return;
-	
+
+	frame_top("Update channels ratio");
+
 	/// calculate desired number of events for each dynamics
 	_procesy.calculate_counts(p.number_of_events);
 	{							 /// Write cross sections and counts to screen and file
 		ofstream f((string(a.output)+".txt").c_str());
-		_procesy.short_report(cout);
+		_procesy.short_report(cout,true);
 		_procesy.short_report(f);
 	}
+
+  	frame_bottom();
+
+	frame_top("Run real events");
 
 	event *e = new event;
 
@@ -784,8 +827,8 @@ void NuWro::real_events(params& p)
 		xsections->SetBinError(i+1,_procesy.sigma(i));
 	}
 
-	TNamed version("NuWro version", VERSION);
-	version.Write();
+	//	TNamed version("NuWro version", VERSION );
+	//	version.Write();
 
 	/////////////////////////////////////////////////////////////
 	// The main loop in NPROC -- generate file with unweighted events
@@ -825,15 +868,16 @@ void NuWro::real_events(params& p)
 					}
 					delete e;
 
-					raport(_procesy.ready(k),_procesy.desired(k)," % of events ready...",1000,_procesy.dyn(k),bool(a.progress));
+					raport(_procesy.ready(k),_procesy.desired(k),"events ready... ",1000,_procesy.dyn(k),_procesy.label(k),bool(a.progress));
 				}
 				f1->Write ();
+
+        cout << "        100. % of " << _procesy.label(k) << " events ready..." << endl;
 
 		// elimination of spurious events for dynamics k
 		// by copying only last desired[k] events to outfile
 				if(p.mixed_order==0)
 				{
-					cout<<endl;
 					int nn = t1->GetEntries ();
 					int start = nn-_procesy.desired(k);
 					for (int jj = start; jj < nn; jj++)
@@ -842,12 +886,9 @@ void NuWro::real_events(params& p)
 						t1->GetEntry (jj);
 						tf->Fill ();
 						delete e;
-						raport(jj-start+1,nn-start," % events copied...",100,_procesy.dyn(k),bool(a.progress));
+						raport(jj-start+1,nn-start,"events copied... ",100,_procesy.dyn(k),_procesy.label(k),bool(a.progress));
 					}
-					cout<<endl;
 				}
-				else
-					cout<<endl;
 
 				f1->Close ();
 				delete f1;
@@ -891,7 +932,7 @@ void NuWro::real_events(params& p)
 			tf->Fill();
 			ile--;
 			u[i]--;
-			raport(nn-ile,nn," % events copied...",100,i,bool(a.progress));
+			raport(nn-ile,nn,"real events copied... ",100,-1,"",bool(a.progress));
 		}
 		delete e;
 		for (int k = 0; k < _procesy.size(); k++)
@@ -905,17 +946,19 @@ void NuWro::real_events(params& p)
 	}
 	ff->Write ();
 	ff->Close ();
+	cout << "        100. % of real events copied..." << endl;
 	_progress.close();
 	delete ff;
 	_procesy.report();
-	pot_report(cout);
+	pot_report(cout,true);
 	if(_detector)
 	{   ofstream  potinfo("POTinfo.txt");
 		pot_report(potinfo);
 	}
 
-	cout << "Output file: \"" << output << "\"" << endl;
-
+	frame_top("Finalize the simulation");
+	cout << "     " << "-> Generated the output file: \"" << output << "\"" << endl;
+	frame_bottom();
 }
 
 
@@ -947,7 +990,7 @@ void NuWro::kaskada_redo(string input,string output)
 		//		delete e;
 		//if(i%1000==0)
 		//cout<<i/1000<<"/"<<nn/1000<<"\r"<<endl;
-		raport(i+1,nn," % events processed...",100,e->dyn,bool(a.progress));
+		raport(i+1,nn," % events processed...",100,e->dyn,_procesy.label(e->dyn),bool(a.progress));
 	}
 	cout<<endl;
 	fi->Close ();
@@ -965,7 +1008,7 @@ void NuWro::kaskada_redo(string input,string output)
 
 void NuWro::main (int argc, char **argv)
 {
-  	shhpythiaitokay_();
+  shhpythiaitokay_();
 	try
 	{
 		init(argc,argv);
@@ -996,6 +1039,6 @@ void NuWro::main (int argc, char **argv)
 	}
 	catch(...)
 	{
-		cout<<"Nuwro failed"<<endl;
+		cout<<"NuWro failed"<<endl;
 	}
 }

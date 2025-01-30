@@ -11,14 +11,14 @@
 
 extern "C" int pycomp_(const int *);
 
-double pdd_red(double energy) {
+/*double pdd_red(double energy) {
   if (energy >= 1000)
     return 0.85;
   else if (energy > 750)
     return 0.65 + energy * 0.05 / 250.0;
   else  // if (en<=750)
     return 0.2 + energy * 0.2 / 250.0;
-}
+}*/
 
 res_xsec::res_xsec(res_kinematics &kin, const bool cc)
     : dis_pip(0),

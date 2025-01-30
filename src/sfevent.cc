@@ -39,7 +39,7 @@ double sfevent(params &par, event &e, nucleus &t) {
   is_on_n xor e.flag.cc ? N1.set_neutron() : N1.set_proton();
 
   // outgoing lepton pdg
-  // NC = the same as incoming neutrino
+  // NC = the same as incoming neutrino or electron
   // CC nu = neutrino pdg - 1
   // CC nubar = neutrino pdg + 1
   l1.pdg = l0.pdg;
@@ -99,8 +99,10 @@ double sfevent(params &par, event &e, nucleus &t) {
       return 0;
   }
 
-  // four-momentum transfer
-  vect q = N1 - N0;
+  // four-momentum transfer (hadronic side)
+  vect  q = N1 - N0;
+  // four-momentum transfer (leptonic side)
+  vect qq = l0 - l1;
   // sphere volume in cms
   const double vol = 4 * pi * mom_cms * mom_cms;
   // gradient for Dirac delta when integrating over k'
@@ -108,10 +110,18 @@ double sfevent(params &par, event &e, nucleus &t) {
   // surface scaling when going from lab (elipsoide) to cms (sphere)
   const double surfscale = sqrt(1 - pow2(v * dir_cms)) / sqrt(1 - v * v);
   // cross section
-  const double common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
-  const double val =
-      e.flag.cc ? common * cos2thetac * options.evalLH(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1)
-                : common * options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q, l0 * q, l1 * q, l0 * l1);
+  double common, val;
+  if(l0.pdg==11)
+  {
+    common = 1. / 137.03599908 / 137.03599908 / (qq*qq) / (qq*qq) * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
+    val = common * options.evalLHel(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1);
+  }
+  else
+  {
+    common = G * G / 8 / pi / pi * vol * (surfscale / graddelta) / (l1.E() * l0.E() * N0.E() * N1.E());
+    val = e.flag.cc ? common * cos2thetac * options.evalLH(q * q, l0 * N0, l1 * N0, q * N0, l0 * q, l1 * q, l0 * l1)
+                    : common * options.evalLHnc(q * q, l0 * N0, l1 * N0, N0 * q, l0 * q, l1 * q, l0 * l1);
+  }
 
   double q0_shift = 0.0;  // energy transfer shift due to FSI and/or Coulomb correction
 
@@ -152,8 +162,19 @@ double sfevent(params &par, event &e, nucleus &t) {
     return 0;
 
   // modify nucleon kinetic energy or xsec = 0 if not possible
-  if (N0.mass() > E + q0_shift)
+  /*if (N0.mass() > E + q0_shift)
     N0.t = N0.mass() - E - q0_shift;
+  else
+    return 0;*/
+  
+   if (N1.E() > N1.mass() - q0_shift)
+        N1.set_energy(N1.E() + q0_shift);
+  else
+    return 0;
+
+  //fixing a bug in initial nucleon energy
+  if (N0.mass() > E)
+    N0.t = N0.mass() - E;
   else
     return 0;
 
@@ -168,6 +189,24 @@ double sfevent(params &par, event &e, nucleus &t) {
   // add a spectator if on correlated pair
   if (par.sf_method == 1 and is_src(p, E, t.p, t.n, !is_on_n) and (l0.t - l1.t - N1.Ek() - N2.Ek()) > 14)
     e.out.push_back(N2);
+
+  // selection of events for electron scattering using acceptance information
+  if(l0.pdg==11)
+  {
+    double kosine=l1.z/l1.momentum();  
+    if ( kosine < (par.el_costh_lab-par.el_costh_del) || kosine > (par.el_costh_lab+par.el_costh_del) )
+    {
+      e.weight=0;
+      return 0;
+    }
+    else
+    {
+      e.weight /= 2*par.el_costh_del;
+      val      /= 2*par.el_costh_del;
+    }
+    // KN: the output should be the differential in costh!
+    //     (so the user doesn't have to remember what the width was)
+  }
 
   return val;
 }

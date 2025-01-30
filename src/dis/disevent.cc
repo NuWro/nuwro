@@ -20,8 +20,8 @@
 //#include "lorentz.h"
 //#include "dis2res.h"
 #include "event1.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 #include "pauli.h"
 #include "nucleus.h"
 
@@ -58,14 +58,15 @@ int numneu=p.nucleus_n;
 	case 1: _E_bind= p.nucleus_E_b;
 	break;
 	case 2: _E_bind= t.Ef(e.in[1]) + p.kaskada_w;
+    break;
+	case 3: _E_bind=p.nucleus_E_b;//Bodek-Ritchie, temporary prescription
 	break;
-	case 3: _E_bind=0;//temporary
-	break;
-	case 4: _E_bind = binen (ped, numpro, numneu);
+	case 4: _E_bind = binen (ped, numpro, numneu);//efective SF
 	break;
 	case 5: _E_bind= deuter_binen (ped);//deuterium 
 	break;
-	case 6: _E_bind= p.nucleus_E_b; //deuterium like Fermi gas
+	case 6: assert ( !"For a moment effective potential cannot be used for DIS" );
+        _E_bind = p.nucleus_E_b; //effective potential
 	break;
 	default: _E_bind=0;
 	}
@@ -169,8 +170,21 @@ double Meff2=Meff*Meff;
 //      Done by Jaroslaw Nowak
 //////////////////////////////////////////////
 
+
 //stabilne pi0
       pythia22->SetMDCY (pycomp_ (&pizero), 1, 0);
+
+	//C Thorpe: Stabalize hyperons
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Lambda) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Sigma) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaP) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::SigmaM) , 1, 0);
+
+      // C Thorpe: Stablize kaons
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kplus) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kzero) , 1, 0);
+      pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kminus) , 1, 0);
+
 
       pythia22->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off
       pythia22->SetMSTU (23, 1);	//It sets counter of errors at 0
@@ -305,7 +319,21 @@ double Meff2=Meff*Meff;
 	  if (ks[i] == 1)	//condition for a real particle in the final state
 	    {
 	      e.out.push_back (part);
-	    }
+        
+              // C Thorpe: If a hyperon, check if it can be moved to its potential
+              if(PDG::hyperon(part.pdg)){
+
+                if(p.nucleus_target && t.p + t.n > 1) part.set_fermi(t.hyp_BE(e.in[1].r.length(),part.pdg));
+
+                 // Check if hyperon can be generated in potential (performed at start of cascade)
+                 if( part.Ek() + part.his_fermi < 0 ){
+                    e.weight = 0.;
+                    return;
+                 }
+
+              }
+
+            }
 	}
 
     

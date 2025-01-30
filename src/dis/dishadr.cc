@@ -13,8 +13,8 @@
 #include "vect.h"
 #include "charge.h"
 #include "event1.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 
 TPythia6 *pythia2 = new TPythia6 ();
 extern "C" int pycomp_ (const int *);
@@ -29,6 +29,17 @@ dishadr (event & e, bool current, double hama, double entra)
 
 //stabilne pi0
   pythia2->SetMDCY (pycomp_ (&pizero), 1, 0);
+//C Thorpe: Adding Hyperons as stable dis particles
+  pythia2->SetMDCY (pycomp_ (&Lambda), 1, 0);
+  pythia2->SetMDCY (pycomp_ (&Sigma), 1, 0);
+  pythia2->SetMDCY (pycomp_ (&SigmaP), 1, 0);
+  pythia2->SetMDCY (pycomp_ (&SigmaM), 1, 0);
+
+  // C Thorpe: Stablize kaons
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kplus) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kzero) , 1, 0);
+  pythia22->SetMDCY ( pycomp_ (&DIS_PDG::Kminus) , 1, 0);
+
 
   pythia2->SetMSTU (20, 1);	//advirsory warning for unphysical flavour switch off
   pythia2->SetMSTU (23, 1);	//It sets counter of errors at 0

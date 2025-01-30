@@ -16,8 +16,8 @@
 #include "vect.h"
 #include "charge.h"
 //#include "lorentz.h"
-#include<TMCParticle.h>
-#include<TPythia6.h>
+#include <TMCParticle.h>
+#include <TPythia6.h>
 #include "singlepionhadr.h"
 #include "params.h"
 #include "singlepion.h"

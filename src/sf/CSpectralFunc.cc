@@ -18,7 +18,7 @@ class sftable
  
  sftable ()
  {
- 	 cout<<"sf init"<<endl;
+ 	 //cout<<"sf init"<<endl;
    for( int k1=0;k1<targEnd;k1++)
 	for( int k2=0;k2<mdEnd;k2++)
     for( int k3=0;k3<isoEnd;k3++)
@@ -30,10 +30,10 @@ class sftable
 	for( int k2=0;k2<mdEnd;k2++)
     for( int k3=0;k3<isoEnd;k3++)
       {if( t[k1][k2][k3])
-  	   cout<<"sf destroing "<<k1<<","<<k2<<","<<k3<<"..."<<endl; 	 
+  	   //cout<<"sf destroing "<<k1<<","<<k2<<","<<k3<<"..."<<endl; 	 
       delete t[k1][k2][k3];	 
       }
-	 cout<<"sf destroyed"<<endl;
+	 //cout<<"sf destroyed"<<endl;
 	}
 };
 

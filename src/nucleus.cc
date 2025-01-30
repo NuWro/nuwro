@@ -1,6 +1,8 @@
 #include "nucleus.h"
 #include "nucleus_data.h"
 #include "particle.h"
+
+#include <cassert>
    
 using namespace std;
 
@@ -10,12 +12,12 @@ using namespace std;
 nucleus::nucleus(params &par):
 	p   (par.nucleus_p),
 	n   (par.nucleus_n),
-	_Eb  (par.nucleus_E_b*MeV),
-	_kf  (par.nucleus_kf*MeV),
-	kMomDist(par.nucleus_target),
 	spectator(NULL),
 	d(NULL),
-	i(NULL)
+	i(NULL),
+	_Eb  (par.nucleus_E_b*MeV),
+	_kf  (par.nucleus_kf*MeV),
+	kMomDist(par.nucleus_target)
 {
 	using namespace PDG;
 	pr=p;
@@ -42,6 +44,9 @@ nucleus::nucleus(params &par):
 	{
 		_kf=par.nucleus_kf;
 	}
+	//set hyperon binding energy
+	Lambda_Eb = par.hyp_Lambda_Eb;
+	Sigma_Eb = par.hyp_Sigma_Eb;
 }
 
 double nucleus::density (double r)
@@ -107,32 +112,18 @@ particle nucleus::get_nucleon (vec r)
 		p0.set_momentum(deuterium());
 		return p0;
 	}
-	
-
-	/* model_target=
-	* 0 for free target; 
-	* 1 for Fermi gas; 
-	* 2 for local Fermi gas; 
-	* 3 for Bodek; 
-	* 4 for spectral function; 
-	* 5 for deuterium; 
-	* 6 for only proton in deuterium (for tests only);
-	*/
 
 	switch(kMomDist)
 	{
-		case  1: p0.set_momentum(rand_from_ball(_kf)); break; // fermi gas
+		case  1: p0.set_momentum(rand_from_ball(_kf)); break; // global fermi gas
 		case  2: p0.set_momentum(rand_from_ball(localkf(p0)));break; // local fermi gas		
-		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek
-		case  4: if(p==n && (p==6 || p==8))
-				{
-					p0.set_momentum(spectral_choice(p,n));	//spectral function for carbon and oxygen
-					break;
-				}
-		case 0: // proton
-		case 5: // deuterium
-		case 6: // deuterium
-				// use local fermi gas if H1 or H2 options used for other nucleus
+		case  3: p0.set_momentum(bodek_rand_from_ball(_kf)); break; //Bodek Ritchie
+		case  4: assert ("effective SF can be run only for carbon and oxygen" && p==n && (p==6 || p==8) ); //effective SF is defined only for two targets
+					p0.set_momentum(spectral_choice(p,n));	break;
+		case  0: // free nucleon
+		case  5: p0.set_momentum(deuterium()); break; //deuterium
+		case  6: p0.set_momentum(rand_from_ball(localkf(p0)));//effective potential
+
 		default: p0.set_momentum(rand_from_ball(localkf(p0)));  //local Fermi Gas
 	}
 
@@ -161,6 +152,7 @@ double nucleus :: Ef (particle &pa)
 		case 2: kmom = localkf (pa); break;
 		default: kmom = kF(); break;
 	};
+
 	
 	return sqrt(kmom*kmom + M*M) - M;
 }

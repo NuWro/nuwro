@@ -59,6 +59,7 @@ const double M( 0.50*(PDG::mass_proton+PDG::mass_neutron) );
 //~ const double piMass( 139.57018 );//charged pion mass
 
 const double M2(M*M);
+const double Mass2=M2;//added by JS
 const double piMass2(PDG::mass_piP*PDG::mass_piP);
 
 const double mu_p(2.792847351);

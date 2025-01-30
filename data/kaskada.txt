@@ -1,122 +1,126 @@
-# The paramaters file for the NuWro neutrino interactions simulation software
+################################################################################
 #
+# Example input for the Cascade Mode of the NuWro event generator
 #
-# the meaning of the paramaters descrobed in commented lines
+################################################################################
+
+# The number of events to be generated:
+number_of_events = 100000
+
+# Control the random seed persistence:
+random_seed  = 0     // 0 - use time(NULL) as a seed for random number generator
+#random_seed = 1     // 1 - read state from file "random_seed" or use time(NULL)
+#                           if file not found
+#random_seed = 12312 // others - use given number as the seed for the generator
+
+################################################################################
 #
+# Beam specification 
+#
+################################################################################
 
-# The number of events to generate i.e.
+# *default* scattering of 300 MeV positive pions
 
-number_of_test_events = 1000
-number_of_events   = 100000
+# Define the beam by hand:
+# (single type, monoenergetic [MeV], hadron PDG)
+beam_type       = 0
+beam_energy     = 300
+beam_particle   = 211
 
-random_seed= 0   // 0 - use time(NULL) as a seed for random number generator
-#random_seed= 1   // 1 - read state from file "random_seed"  or use seed=time(NULL) if file not found
-#random_seed=12312 // other values - use given number as the seed for the generator
+# The direction of the beam given as the corresponding vector
+beam_direction  = 0 0 1
 
-# beam_energy is the beam energy in MeV 
-# Can also be given in the form of the distribution 
-# Emin Emax val1 val2 ...  valn
+# The incident particle starting point
+#beam_placement = 0 // nucleus center
+#beam_placement = 1 // random nucleon's position:           transparency mode
+beam_placement  = 2 // just under the surface of the nucleus: scattering mode
 
+################################################################################
+#
+# Target specification
+#
+################################################################################
 
-################################################################################################
-beam_type = 0
-# total energy,not a kinetic energy
-#beam_energy = 378.6
-#beam_energy = 301.6
-beam_energy = 257.6
+# *default* predefined LFG Carbon target "C.txt"
 
-# the PDG code of the beam particle
-# 12 - nu_e    
-# 14 - nu_mu
-# 16 - nu_tau
-# -12 - anti_nu_e
-# -14 - anti_nu_mu
-# -16 - anti_nu_tau
+# Define the nucleus by hand:
+#nucleus_p = 6
+#nucleus_n = 6
 
-beam_particle      = 211
+# Models for the description of nucleus as a target:
+#nucleus_target = 0 // free target
+#nucleus_target = 1 // Fermi gas
+#nucleus_target = 2 // local Fermi gas
+#nucleus_target = 3 // Bodek-Ritchie Fermi gas
+#nucleus_target = 4 // "effective" spectral function (carbon or oxygen)
+#nucleus_target = 5 // deuterium
+#nucleus_target = 6 // effective potential
 
-# The direction of the beam given as a 3 coordinates of the vector alligned with the beam
+# Historical options to define the Fermi gas:
+#nucleus_E_b    =  34 // [MeV] binding energy 
+#nucleus_kf     = 220 // [MeV] Fermi momentum, used in Fermi gas model
 
-beam_direction     = 0 0 1
+# Enable Pauli blocking:
+pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 
-#beam_placement     = 0  //  nucleus center
-#beam_placement     = 1  // transparency mode: interaction starts at random nucleon 
-beam_placement     = 2  // scattering mode -  start just  under the surface of the nucleus 
- 
-# The following parameters specify the target 
+# It is convenient to include one of the predefined target specifications
+# with the @ char (or modify them as needed):
+@target/C.txt
+#@target/CH.txt
+#@target/ND280_975.txt
+#@target/proton.txt
+#@target/neutron.txt
+#@target/CH2.txt
 
-# number of protons
-nucleus_p	   = 6 
+################################################################################
+#
+# Final state interaction parameters
+#
+################################################################################
 
-# number of neutrons
-nucleus_n           = 6
+# Turn on the cascade:
+kaskada_on       = 1  // use (1) or not (0) the cascade 
 
-#proc_dis
-# density profile of the target 
-# 1 - means constant density
-# w wiekszosci do zawieszenia; zostawic tylko kf oraz Eb
+# Models for the description of nucleus in the cascade:
+#nucleus_model   = 0  // "flatnucleus" ball with constant density
+nucleus_model    = 1  // "anynucleus" i.e. realistic density profile
 
-# nucleus_density     = 1
-nucleus_E_b         =  27     // MeV
-# wykorzystany w qelevent.cc, target.h dalej jako Eb
-nucleus_kf          = 225   // MeV
+# Total work of the cascade W (Eb = Ef + W);
+kaskada_w        = 7  // literature [7 MeV, 9 MeV] 
 
-nucleus_model       = 1  // 0 - flatnucleus, 1 - /anynucleus
-nucleus_target = 2
+# Other cascade parameters:
+kaskada_writeall = 0 // store all intermedate particles in the event.all vector
+tau = 8.0            //
+step = 0.2           // length of one step in cascade
 
-#####################################################################################################
-#proc_qel_nc      = 1
-#proc_qel_cc      = 1
-#proc_qel         = 1
-#proc_dis         = 0
+# Global rescaling of the nucleon mean free path in the cascade;
+# It has been checked against transparency data that
+# the uncertainty here is not larger than +- 30%
+# -> see Phys.Rev. C 100 (2019) 015505
+kaskada_NN_mfp_scale = 1.0
 
-#dynamics
-dyn_qel_cc =1
-dyn_qel_nc =1
-dyn_res_cc =1
-dyn_res_nc =1
-dyn_dis_cc =1
-dyn_dis_nc =1
-dyn_coh_cc =1
-dyn_coh_nc =1
+# Input data for the cascade:
+kaskada_NN_xsec  = 2 // NN cross sections:  (0) Metropolis et al.,
+#                                           (2) PDG2016, (3) Liege
+kaskada_NN_inel  = 2 // NN inelastic frac.: (0) Metropolis et al.,
+#                          (1) Oset et al., (2) PDG2016 & Bystricky et al.
+kaskada_NN_angle = 3 // NN angular distr.:  (0) Metropolis et al., (3) Liege
+kaskada_NN_corr  = 1 // Effective density:  (0) No correlations,
+#                                           (1) Phys.Rev. C 100 (2019) 015505
+kaskada_piN_xsec = 1 // Full set of input data for pions: (0) Metropolis et al.,
+#                                                         (1) Oset et al.
 
-qel_cc_axial_mass= 1030   //MeV
-qel_nc_axial_mass= 1030   //MeV
-
-delta_FF_set=11
-# The choice of Delta production FF
-# 1 - Graczyk Sobczyk C5A=0.8228
-# 11 - Graczyk Sobczyk C5A=1.2
-# 2 - Paschos Lalakulich 2.12 MA=1.05 BNL fit
-# 3 - Paschos Lalakulich 2.12 MA=0.84 ANL fit
-# 4   Paschos Lalakulich page 4, bottom right
-# 5 - Paschos Lalakulich page 5, top left
-# 6 - Eq.(13), L. Alvarez-Ruso, S. K. Singh, M. J. Vincente Vascas, Phys. Rev. C 57, (1998) 2693
-
-spp_precision= 500
-res_dis_cut = 1600	//res dis boundary in MeV
-
-# qel_kinematics   = 0   // relativistic Czarek 
-# qel_kinematics   = 1   //
-# qel_kinematics   = 2  //
-# qel_kinematics   = 3  //momentum dependent kinematics
-# qel_kinematics   = 4  //momentum dependent kinematics with outgoing nucleon energy edjustment
-
-#   The choice of the kinematics for the qel interaction vertex  
-#   	0 - relativistic  
-#       1 - 
-#       2 - bodek 
-#       3 - momentum dependent potential
-#       4 - Fermi gas with 
-
-coh_mass_correction = 1  //Rein Sehgal correction to CC coherent single pion production
-
-# qel_relat        = 0  // relativistic correction is on
-# qel_relat        = 1  // relativistic correction is off
-
-kaskada_on 	 = 1  // use kaskade in qasielastic events 
-pauli_blocking   = 1 // enable Pauli blocking
-#xsec = 1
-formation_zone = nofz
-first_step = 0
-
+# Formation zone parameters:
+first_step = 0             // use (1) or not (0) the model for primary particles
+formation_zone    = fz-new // the recommended formation zone option
+#formation_zone   = nofz
+#formation_zone   = fz
+#formation_zone   = trans
+#formation_zone   = skat8
+#formation_zone   = cohl
+#formation_zone   = cosyn
+#formation_zone   = ranft
+#formation_zone   = rl
+#formation_zone   = delta
+#formation_zone   = const
+#formation_length = 1      // formation length in fm for formation_zone = const

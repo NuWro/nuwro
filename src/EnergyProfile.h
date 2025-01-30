@@ -118,30 +118,34 @@ inline void EnergyProfile::read(string s) {
   in >> Emin >> Emax;
   Emin *= MeV;
   Emax *= MeV;
-  if (!in) return;
-  n = 1;
+  if (!in || Emax==Emin) return;
+  
   double *bufor = new double[5000];
-  int i = 0;
-  while (in >> bufor[i]) i++;
-  if (i > 1) {
-    n = i;
-
-    prob = new double[n];
-    prob2 = new double[n];
-    Elow  = new double[n];
-    Ehigh = new double[n];
     
-    double prev1 = 0, prev2 = 0;
-    for (int i = 0; i < n; i++) {
+  while (in >> bufor[n]) 
+    n++;
 
-      Elow[i] = Emin + (i) * (Emax - Emin)/n;
-      Ehigh[i] = Emin + (i+1) * (Emax - Emin)/n;
-      double E = (Elow[i] + Ehigh[i]) / 2.0;
-	  
-      prob[i] = prev1 += bufor[i];
-      prob2[i] = prev2 += bufor[i] * E;
-    }
+  if (n == 0) 
+  {  n = 1;
+     bufor[0] = 1;
   }
+
+  prob = new double[n];
+  prob2 = new double[n];
+  Elow  = new double[n];
+  Ehigh = new double[n];
+  
+  double prev1 = 0, prev2 = 0;
+  for (int i = 0; i < n; i++) {
+
+    Elow[i] = Emin + (i) * (Emax - Emin)/n;
+    Ehigh[i] = Emin + (i+1) * (Emax - Emin)/n;
+    double E = (Elow[i] + Ehigh[i]) / 2.0;
+  
+    prob[i] = prev1 += bufor[i];
+    prob2[i] = prev2 += bufor[i] * E;
+  }
+  
   delete[] bufor;
 }
 
@@ -169,7 +173,7 @@ inline void EnergyProfile::readHistRoot(string f, string h, bool inMEV){
     cerr << "[ERROR ] : Cannot find flux input file: " << f << endl;
     exit(30);
   } else {
-    cout << "Opened flux succesfully!" << endl;
+    cout << "Opened flux successfully!" << endl;
   }
 
   spectrum = (TH1D*) infile->Get(h.c_str());
@@ -223,7 +227,7 @@ inline void EnergyProfile::readHistRoot(string f, string h, bool inMEV){
 /// specified by the constructor parameters
 inline double EnergyProfile::shoot(bool dis) {
   if (n == 0) return Emin;
-  if (n == 1) return Emin + frandom() * (Emax - Emin);
+  
   double *pro = dis ? prob2 : prob;
   double x = frandom() * pro[n - 1];
   int i = 0, j = n - 1;

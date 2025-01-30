@@ -129,51 +129,48 @@ double CSFOptions::evalLH(const double q4til2,
     double a2= 2.0*p4k4*p4kPrime4-M2*k4kPrime4+p4k4*kPrime4q4til+p4kPrime4*k4q4til-k4kPrime4*p4q4til;
     double a3= p4kPrime4*k4q4til-p4k4*kPrime4q4til;
     double a4= k4kPrime4*q4til2-2.0*k4q4til*kPrime4q4til;
-	
-	if (true) // neutrino scattering 
+
+	double f1,f2,fa,fp;
+	double f1x,f2x,fax,fpx;
+	if(m_qel_new!=1)
 	{
-		double f1,f2,fa,fp;
-		double f1x,f2x,fax,fpx;
-		if(m_qel_new!=1)
-		{
-		const double ge=FFGE(q4til2);
-		const double gm=FFGM(q4til2);
-		f1x=f1= (ge + tau*gm)/(1 + tau) ;
-		f2x=f2= (gm - ge)/(1 + tau) ;
-		fax=fa= FA(q4til2) ;
-		fpx=fp= 2.0*M2*fa/(piMass2 - q4til2) ;
-	    }
-	    
-		if(m_qel_new)
-		{
-         list(f1,f2)=f12(q4til2,0);
-         list(fa,fp)=fap(q4til2,0);
-         if(m_qel_new==2)
-         {
-         cout<<f1<< '\t'<<f2<<'\t'<<fa<< '\t'<<fp<<'\t'<<endl;
-         cout<<f1x<< '\t'<<f2x<<'\t'<<fax<< '\t'<<fpx<<'\t'<<endl<<endl;
-	     }
-	     }
+	const double ge=FFGE(q4til2);
+	const double gm=FFGM(q4til2);
+	f1x=f1= (ge + tau*gm)/(1 + tau) ;
+	f2x=f2= (gm - ge)/(1 + tau) ;
+	fax=fa= FA(q4til2) ;
+	fpx=fp= 2.0*M2*fa/(piMass2 - q4til2) ;
+	}
 
-		const double f11= f1*f1;
-		const double f22= f2*f2;
-		const double fa2= fa*fa;
-		const double fp2= fp*fp;
+  if(m_qel_new)
+  {
+    list(f1,f2)=f12(q4til2,0);
+    list(fa,fp)=fap(q4til2,0);
+    if(m_qel_new==2)
+    {
+      cout<<f1<< '\t'<<f2<<'\t'<<fa<< '\t'<<fp<<'\t'<<endl;
+       cout<<f1x<< '\t'<<f2x<<'\t'<<fax<< '\t'<<fpx<<'\t'<<endl<<endl;
+    }
+  }
 
-		const double ff= f1 + f2;
+	const double f11= f1*f1;
+	const double f22= f2*f2;
+	const double fa2= fa*fa;
+	const double fp2= fp*fp;
 
-		const double h1= fa2*(1.0+tau) + ff*ff*tau ;
-		const double h2= fa2 + f11 + f22*tau ;
-		      double h3= 2.0*fa*ff ;
-		
-		if (m_switchAntineut) 
-		   h3= -h3;
-		const double h4= 0.25*f22*(1.0-tau) + 0.5*f1*f2 + fa*fp - fp2*tau;
+	const double ff= f1 + f2;
 
-		const double lh= 2.0*(a1*h1 + a2*h2 + a3*h3 + a4 * h4) ;
+	const double h1= fa2*(1.0+tau) + ff*ff*tau ;
+	const double h2= fa2 + f11 + f22*tau ;
+		    double h3= 2.0*fa*ff ;
 
-		return  lh;
-	
+	if (m_switchAntineut) 
+		h3= -h3;
+	const double h4= 0.25*f22*(1.0-tau) + 0.5*f1*f2 + fa*fp - fp2*tau;
+
+	const double lh= 2.0*(a1*h1 + a2*h2 + a3*h3 + a4*h4) ;
+
+	return  lh;
 
 /*		const double a = M2*(m_leptMass2 - q4til2)/4.0*
  *                       (fa2*(4.0 - qM) - f11*(4.0 + qM) - qM*f22*(1.0 - tau) - 4.0*qM*f1*f2 
@@ -184,42 +181,6 @@ double CSFOptions::evalLH(const double q4til2,
 		const double su = 4.0*p4k4 + q4til2 - m_leptMass2;		
 		const int nuclNumb( m_N );
 		return  nuclNumb*(a + su*( c*su -(!m_switchAntineut)*b +(m_switchAntineut)*b ));*/
-	
-	}
-	else // electron scattering
-	{
-     //
-    double ge,gm,lh=0;
-    //for(int proton=0;proton<2;proton++)
-    {
-    if(proton)
-    {
-	  ge= FFGEp(q4til2) ;
-	  gm= FFGMp(q4til2) ;
-    }
-    else
-    {
-	  ge = FFGEn(q4til2);
- 	  gm = FFGMn(q4til2);
-    }
-    
-	double f1= (ge + tau*gm)/(1 + tau) ;
-	double f2= (gm - ge)/(1 + tau) ;
-//    list(F1,F2)=f12(q2,cc,proton,anty);
-
-	double f11= f1*f1 ;
-	double f22= f2*f2 ;
-
-	double ff= f1 + f2 ;
-
-	double h1= ff*ff*tau ;
-	double h2= f11 + f22*tau ;
-	double h4= 0.25*f22*(1.0-tau) + 0.5*f1*f2 ;
-
-	      lh+= 2.0*(a1*h1 +  a2*h2 + a4*h4 );
-	}
-	return lh;
-   }
 }
 
 double CSFOptions::evalLHnc(const double q4til2, 
@@ -285,4 +246,56 @@ double CSFOptions::evalLHnc(const double q4til2,
 	const double lh= 2.0*(a1*h1 + a2*h2 + a3*h3 + a4*h4);
 
 	return  lh;
+}
+
+double CSFOptions::evalLHel(const double q4til2, 
+						   const double p4k4, 
+						   const double p4kPrime4, 
+						   const double p4q4til,
+						   const double k4q4til,
+						   const double kPrime4q4til,
+						   const double k4kPrime4) const
+{
+	const double qM=q4til2/M2;
+	const double tau=-qM/4.0;
+
+  double a1= 2.0*M2*k4kPrime4;
+  double a2= 2.0*p4k4*p4kPrime4-M2*k4kPrime4+p4k4*kPrime4q4til+p4kPrime4*k4q4til-k4kPrime4*p4q4til;
+  double a3= p4kPrime4*k4q4til-p4k4*kPrime4q4til;
+  double a4= k4kPrime4*q4til2-2.0*k4q4til*kPrime4q4til;
+
+  double ge,gm,lh=0;
+
+  //for(int proton=0;proton<2;proton++)
+  // {
+  // if(proton)
+  // {
+  // ge= FFGEp(q4til2) ;
+	// gm= FFGMp(q4til2) ;
+  //  }
+  //  else
+  //  {
+  // ge = FFGEn(q4til2);
+ 	//  gm = FFGMn(q4til2);
+  //  }
+
+	// double f1= (ge + tau*gm)/(1 + tau) ;
+	// double f2= (gm - ge)/(1 + tau) ;
+//    list(F1,F2)=f12(q2,cc,proton,anty);
+
+  double f1, f2;
+  list(f1,f2)=f12(q4til2,(m_proton?10:11));
+
+	double f11= f1*f1 ;
+	double f22= f2*f2 ;
+
+	double ff= f1 + f2 ;
+
+	double h1= ff*ff*tau ;
+	double h2= f11 + f22*tau ;
+	double h4= 0.25*f22*(1.0-tau) + 0.5*f1*f2 ;
+
+	      lh+= 2.0*(a1*h1 +  a2*h2 + a4*h4 );
+	// }
+	return lh;
 }

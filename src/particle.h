@@ -17,92 +17,92 @@ using namespace PDG;
 class particle : public vect
 {
 
-	double _mass;    ///< on shell mass
+  double _mass;    ///< on shell mass
 public:
-	vect r;	         ///< position and time relative to the centre of the Nucleus event start time
-	int pdg;         ///< pdg code of the particle  
-	char ks;         ///< from HEP event
-	char orgin;      ///< from HEP event
-	double travelled;///< distance from creation // (or norm of initial neutrino)
-	int id;          ///< index in the vector 'all'
-	int mother;      ///< index of mother in the vector 'all'
-	int endproc;     ///< id of process that destroyed the particle
-	double his_fermi;
-	bool primary;
-  
-public:
-	inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
-	inline particle (int code,double mass);      ///< create particle at rest 
-	inline particle (double mass);               ///< create particle at rest 
-	inline particle (vect fourmomentum);         ///< create moving particle
-	inline bool operator==(particle& p2);        ///< check if self->pdg==pdg2
-	inline bool operator!=(particle& p2);        ///< check if self->pdg!=pdg2
-	inline double E ();                          ///< particle energy 
-	inline double energy ();                     ///< particle energy 
-	inline double Ek();                          ///< particle kinetic energy 
-	inline double mass ();                       ///< particle mass    
-	inline double m ();                          ///< particle mass    
-	inline int charge();                         ///< particle charge
-	inline double mass2 ();                      ///< mass squared
-	inline void set_mass (double mass);          ///< set particle mass and adjust energy
-	inline void set_pdg_and_mass (int pdg);      ///< set particle pdg and mass (based on pdg)
-	inline void set_pdg_and_mass (int pdg, double mass); ///< set particle pdg and mass
-	inline void set_proton (){set_pdg_and_mass(pdg_proton,mass_proton);}    ///< set particle pdg and mass
-	inline void set_neutron (){set_pdg_and_mass(pdg_neutron,mass_neutron);} ///< set particle pdg and mass
-	inline void set_pi (){set_pdg_and_mass(pdg_pi,mass_pi);}                ///< set particle pdg and mass
-	inline void set_piP (){set_pdg_and_mass(pdg_piP,mass_piP);}             ///< set particle pdg and mass
-	inline void set_piM (){set_pdg_and_mass(-pdg_piP,mass_piP);}            ///< set particle pdg and mass
-	inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy 
+  vect r;          ///< position and time relative to the centre of the Nucleus event start time
+  int pdg;         ///< pdg code of the particle  
+  char ks;         ///< from HEP event
+  char orgin;      ///< from HEP event
+  double travelled;///< distance from creation // (or norm of initial neutrino)
+  int id;          ///< index in the vector 'all'
+  int mother;      ///< index of mother in the vector 'all'
+  int endproc;     ///< id of process that destroyed the particle
+  double his_fermi;
+  bool primary;
 
-	inline void set_momentum (vec p);            ///< set particle momentum and adjust energy
-	inline void set_energy (double E);           ///< set particle energy and adjust momentum
-	inline vec p();                              ///< the momentum as a 3-vector
-	inline vect& p4();                           ///< the four-momentum 
-	inline vec v();                              ///< the velocity as a 3-vector
-	inline double v2();                          ///< the velocity squared
-	inline void krok_czasowy(double dt);         ///< move the particle by v*dt                  
-	inline void krok(double dl);                 ///< move the particle by dl                   
-	inline void krok(vec dl);                 ///< move the particle by dl                   
-	inline double momentum ();                   ///< value of the momentum 
-	inline double momentum2 ();                  ///< momenutm squared
-	inline bool is_valid();                             ///< checkes for nan in energy an momentum
-	inline bool decay (particle & p1, particle & p2);   ///< cause particle to decay into p1 and p2
-												 ///< (preserves the masses of p1 and p2)   
-										 
-	inline bool lepton ();						///true if lepton   
-	inline bool pion   ();						///true if pion
+public:
+  inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
+  inline particle (int code,double mass);      ///< create particle at rest 
+  inline particle (double mass);               ///< create particle at rest 
+  inline particle (vect fourmomentum);         ///< create moving particle
+  inline bool operator==(particle& p2);        ///< check if self->pdg==pdg2
+  inline bool operator!=(particle& p2);        ///< check if self->pdg!=pdg2
+  inline double E ();                          ///< particle energy 
+  inline double energy ();                     ///< particle energy 
+  inline double Ek();                          ///< particle kinetic energy 
+  inline double mass ();                       ///< particle mass    
+  inline double m ();                          ///< particle mass    
+  inline int charge();                         ///< particle charge
+  inline double mass2 ();                      ///< mass squared
+  inline void set_mass (double mass);          ///< set particle mass and adjust energy
+  inline void set_pdg_and_mass (int pdg);      ///< set particle pdg and mass (based on pdg)
+  inline void set_pdg_and_mass (int pdg, double mass); ///< set particle pdg and mass
+  inline void set_proton (){set_pdg_and_mass(pdg_proton,mass_proton);}    ///< set particle pdg and mass
+  inline void set_neutron (){set_pdg_and_mass(pdg_neutron,mass_neutron);} ///< set particle pdg and mass
+  inline void set_pi (){set_pdg_and_mass(pdg_pi,mass_pi);}                ///< set particle pdg and mass
+  inline void set_piP (){set_pdg_and_mass(pdg_piP,mass_piP);}             ///< set particle pdg and mass
+  inline void set_piM (){set_pdg_and_mass(-pdg_piP,mass_piP);}            ///< set particle pdg and mass
+  inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy 
+
+  inline void set_momentum (vec p);            ///< set particle momentum and adjust energy
+  inline void set_energy (double E);           ///< set particle energy and adjust momentum
+  inline vec p();                              ///< the momentum as a 3-vector
+  inline vect& p4();                           ///< the four-momentum 
+  inline vec v();                              ///< the velocity as a 3-vector
+  inline double v2();                          ///< the velocity squared
+  inline void krok_czasowy(double dt);         ///< move the particle by v*dt                  
+  inline void krok(double dl);                 ///< move the particle by dl                   
+  inline void krok(vec dl);                 ///< move the particle by dl                   
+  inline double momentum ();                   ///< value of the momentum 
+  inline double momentum2 ();                  ///< momenutm squared
+  inline bool is_valid();                             ///< checkes for nan in energy an momentum
+  inline bool decay (particle & p1, particle & p2);   ///< cause particle to decay into p1 and p2
+                         ///< (preserves the masses of p1 and p2)   
+                     
+  inline bool lepton ();            ///true if lepton   
+  inline bool pion   ();            ///true if pion
   inline bool nucleon();            ///true if nucleon
   inline bool proton();             ///true if proton
-	inline bool neutron();						///true if neutron
+  inline bool neutron();            ///true if neutron
 
-	inline particle& mom()                      ///mother particle !!! ONLY for elements of the vector all !!!
-	{  return this[mother-id];
-	}
+  inline particle& mom()                      ///mother particle !!! ONLY for elements of the vector all !!!
+  {  return this[mother-id];
+  }
 
-	inline int proc()                          /// how was the particle created !!! ONLY for elements of the vector all !!!
-	{  return this[mother-id].endproc;
-	}
+  inline int proc()                          /// how was the particle created !!! ONLY for elements of the vector all !!!
+  {  return this[mother-id].endproc;
+  }
 
 
-	inline int gen()                           /// which generation!!! ONLY for elements of the vector all !!!
-	{   
-		int ile=0;
-		particle* p=this;
-		while(p->id)
-		{
-		  p=&this[p->mother-id];
-		  ile++;
-		}
-		return ile;  
-	}
+  inline int gen()                           /// which generation!!! ONLY for elements of the vector all !!!
+  {   
+    int ile=0;
+    particle* p=this;
+    while(p->id)
+    {
+      p=&this[p->mother-id];
+      ile++;
+    }
+    return ile;  
+  }
 
-	inline double mcos(){return p().dir()*mom().p().dir();}
-	inline double Ek_in_frame(vec v);	///<
-	
-	friend ostream & operator<<(ostream & out,particle p)
-	{
-	   return out<<"["<<p.pdg<<"/"<<p._mass<<"]"<<vect(p)<<"@"<<p.r/fermi;
-	}
+  inline double mcos(){return p().dir()*mom().p().dir();}
+  inline double Ek_in_frame(vec v); ///<
+  
+  friend ostream & operator<<(ostream & out,particle p)
+  {
+     return out<<"["<<p.pdg<<"/"<<p._mass<<"]"<<vect(p)<<"@"<<p.r/fermi;
+  }
 };// class particle
 
 bool decay(vect v, particle & p1, particle & p2);  /// the total momentum is enough
@@ -116,9 +116,9 @@ bool particle::decay (particle & p1, particle & p2)
 
 
 
-double relative_speed(particle & a,particle &b);	///<
+double relative_speed(particle & a,particle &b);  ///<
 
-double Ek_in_frame(particle & a,vec v);	///<
+double Ek_in_frame(particle & a,vec v); ///<
 
 
 /// get cos takes value x with probablity 
@@ -219,17 +219,17 @@ void particle::set_momentum (vec p)
   // on the mass shell
 void particle::set_energy (double E)
   {
-	if(E<_mass)
-	{
-		cerr<<"E="<<E<<" mass="<<_mass<<endl;
-//		exit(31);
-	}
-	assert(E>=_mass);  
-		
+  if(E<_mass)
+  {
+    cerr<<"E="<<E<<" mass="<<_mass<<endl;
+//    exit(31);
+  }
+  assert(E>=_mass);  
+    
     t=E; 
     double k=sqrt((E*E-_mass*_mass)
                  /(x*x+y*y+z*z)
-		 );
+     );
     x*=k;
     y*=k;
     z*=k;
@@ -295,13 +295,13 @@ void particle::krok_czasowy(double dt)
 
 bool particle::lepton()
 {
-	int x=pdg>0?pdg:-pdg;
-	return x >= 11 && x <= 16;
+  int x=pdg>0?pdg:-pdg;
+  return x >= 11 && x <= 16;
 }
 
 bool particle::pion()
 {
-	 return pdg==111 || pdg==211 || pdg==-211;
+   return pdg==111 || pdg==211 || pdg==-211;
 }
 
 bool particle::nucleon()
@@ -316,7 +316,7 @@ bool particle::proton()
 
 bool particle::neutron()
 {   
-	return pdg==pdg_neutron;
+  return pdg==pdg_neutron;
 }
 
 double particle::Ek_in_frame (vec v)
@@ -331,7 +331,9 @@ double particle::Ek_in_frame (vec v)
 /// result = squared momentum of decay products (in cms) if decay possible
 ///          negative number if deacy is impossible
 inline double cms_momentum2(double M2,double ma2,double mb2)
-{ if(M2<ma2+mb2) return -1; 
+//cthorpe: I think it should be this
+{ if(M2 < ma2+mb2+2*sqrt(ma2)*sqrt(mb2)) return -1; // M^2 > (m1 + m2)^2 = m1^2 + m2^2 + 2*m1*m2
+//{ if(M2<ma2+mb2) return -1; 
   double X=M2+ma2-mb2;
   return X*X/4/M2-ma2;
 }

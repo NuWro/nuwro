@@ -2,8 +2,12 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <dirent.h>
 #include <math.h>
+#include <TGeoManager.h>
+#include <TList.h>
+#include <TGeoMaterial.h>
 
 #include "dirs.h"
 #include "jednostki.h"
@@ -68,7 +72,14 @@ data_container* input_data::get_nucl_data_container( int i, int protons, int neu
         return &nucl_containers[i][j];
       j++;
     }
-    throw "input_data error: Cannot find a requested nucleus.";
+    if ( par.target_type == 2 )
+    {
+      throw "input_data error: An unexpected isotope in detector simulation.";
+    }
+    else
+    {
+      throw "input_data error: Cannot find a requested nucleus.";
+    }
   }
   else
   {
@@ -104,7 +115,11 @@ void input_data::initialize_input_path()
 
 void input_data::initialize_nucl_list()
 {
-  if ( par.target_type )
+  if ( par.target_type == 0 )      // single nucleus target
+  {
+    nucl_list.push_back( par.nucleus_p * 1000 + par.nucleus_n );
+  }
+  else if ( par.target_type == 1 ) // multiple nuclei target
   {
     stringstream par_stream( par.target_content );
     string par_line;
@@ -116,10 +131,37 @@ void input_data::initialize_nucl_list()
       nucl_list.push_back( protons * 1000 + neutrons );
     }
   }
+  else if ( par.target_type == 2 ) // complex detector target
+  {
+    TList* materials = gGeoManager->GetListOfMaterials();
+    TGeoMaterial* mat;
+    TGeoMixture* mix;
+    for ( int i = 0; i < materials->GetSize(); i++ )
+    {
+      mat = (TGeoMaterial*) materials->At(i);
+      if ( mat->IsMixture() )
+      {
+        mix = (TGeoMixture*) mat;
+        for ( int j = 0; j < mix->GetNelements(); j++ )
+        {
+          nucl_list.push_back( mix->GetZmixt()[j] * 1000
+                      + (int)( mix->GetAmixt()[j] - mix->GetZmixt()[j] + 0.5) );
+        }
+      }
+      else
+      {
+        nucl_list.push_back( mat->GetZ() * 1000 + (int)( mat->GetA() - mat->GetZ() + 0.5) );
+      }
+    }
+  }
   else
   {
-    nucl_list.push_back( par.nucleus_p * 1000 + par.nucleus_n );
+    throw "input_data error: Cannot create the list of nuclei.";
   }
+
+  // check for duoble-couting in nucl_list
+  sort( nucl_list.begin(), nucl_list.end() );
+  nucl_list.erase( unique( nucl_list.begin(), nucl_list.end() ), nucl_list.end() );
 }
 
 ////////////////////////////////////////
