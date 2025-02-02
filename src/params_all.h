@@ -89,7 +89,7 @@ PARAM(int,spp_precision,500)\
 PARAM(double,res_dis_cut,1600)\
 PARAM(double,bkgrscaling,0.0)\
 PARAM(int,res_kind,1)\
-PARAM(int,res_hybrid_sampling,1)\
+PARAM(int,res_hybrid_sampling,4)\
 PARAM(int,res_hybrid_resampling,0)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\

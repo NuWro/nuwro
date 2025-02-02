@@ -406,7 +406,7 @@
       <option key="2"><![CDATA[Hybrid model]]></option>
     </options>
   </param>
-  <param name="res_hybrid_sampling" type="select" ctype="int" default="1">
+  <param name="res_hybrid_sampling" type="select" ctype="int" default="4">
     <description><![CDATA[The cross section used in the Hybrid model]]></description>
     <options>
       <option key="1"><![CDATA[2d tabularized]]></option>
