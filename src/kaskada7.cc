@@ -140,10 +140,28 @@ void kaskada::prepare_particles()
       // Add BE 
       if(par.nucleus_target) p1.set_fermi(nucl->hyp_BE(p1.r.length(),p1.pdg));
       else p1.set_fermi(0);
+        ////////// a new piece of code March 3, 2025 - fixing hyperon potential problem
+        if (p1.E() +p1.his_fermi< p1.mass())
+        {
+            p1.endproc=escape;
+            e->post.push_back (p1);
+            
+            if(par.kaskada_writeall)
+                e->all.push_back(p1);
+        }
+         else
+         {
+             p1.set_energy(p1.E() + p1.his_fermi);
 
+             parts.push(p1); // add particle to queue
+        }
+        ////////// the end of the new piece of code
+        ///
+        /*// before March 3, 2025 the below two lines where active
       p1.set_energy(p1.E() + p1.his_fermi);
 
       parts.push(p1); // add particle to queue
+        */
     }
     else              // if not a nucleon, pion nor hyperon
     {

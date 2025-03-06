@@ -86,9 +86,9 @@ PARAM(double,pion_axial_mass,0.94)\
 PARAM(double,pion_C5A,1.19)\
 PARAM(int,delta_angular,2)\
 PARAM(int,spp_precision,500)\
-PARAM(double,res_dis_cut,1600)\
+PARAM(double,res_dis_cut,1900)\
 PARAM(double,bkgrscaling,0.0)\
-PARAM(int,res_kind,1)\
+PARAM(int,res_kind,2)\
 PARAM(int,res_hybrid_sampling,4)\
 PARAM(int,res_hybrid_resampling,0)\
 PARAM(bool,coh_mass_correction,1)\
@@ -130,8 +130,8 @@ PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
-PARAM(double,res_dis_blending_start,2800)\
-PARAM(double,res_dis_blending_end,3200)\
+PARAM(double,res_dis_blending_start,1600)\
+PARAM(double,res_dis_blending_end,1900)\
 PARAM(string,table_path,"")\
 PARAM(bool,kaskada_events,0)\
 PARAM(string,kaskada_events_file,"")\
