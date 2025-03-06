@@ -393,13 +393,13 @@
   <param name="spp_precision" type="text" ctype="int" default="500">
     <description><![CDATA[recommended value is 500, this controls the precision in RES-DIS boundary region]]></description>
   </param>
-  <param name="res_dis_cut" type="text" ctype="double" default="1600">
+  <param name="res_dis_cut" type="text" ctype="double" default="1900">
     <description><![CDATA[res dis boundary in MeV, should be 1600]]></description>
   </param>
   <param name="bkgrscaling" type="text" ctype="double" default="0.0">
     <description><![CDATA[scaling of non resonant backgroung; should be in the range -1.3...+1.3]]></description>
   </param>
-  <param name="res_kind" type="select" ctype="int" default="1">
+  <param name="res_kind" type="select" ctype="int" default="2">
     <description><![CDATA[Switch between the standard spp (1) and the Hybrid (2) models]]></description>
     <options>
       <option key="1"><![CDATA[Standard spp model]]></option>
@@ -579,10 +579,10 @@
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>
-    <param name="res_dis_blending_start" type="checkbox" ctype="double" default="2800">
+    <param name="res_dis_blending_start" type="checkbox" ctype="double" default="1600">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>
-  <param name="res_dis_blending_end" type="checkbox" ctype="double" default="3200">
+  <param name="res_dis_blending_end" type="checkbox" ctype="double" default="1900">
     <description><![CDATA[random order of events in uotut file]]></description>
   </param>
   <param name="table_path" type="text" ctype="string" default="">

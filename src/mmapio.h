@@ -29,8 +29,8 @@ public:
       if (fd == -1) {
         throw std::runtime_error("open failed");
       }
-      struct stat64 file_stat;
-      if (fstat64(fd, &file_stat) == -1) {
+      struct stat file_stat;
+      if (fstat(fd, &file_stat) == -1) {
         throw std::runtime_error("fstat failed");
       }
       if (size) {

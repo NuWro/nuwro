@@ -186,6 +186,12 @@ qel_rpa  = 1      // Use rpa without effective mass of nucleon
 ################################################################################
 #   RES
 ################################################################################
+#The choice of SPP model
+
+#res_kind = 1 //the old Delta model
+res_kind = 2 //the new hybrid model
+
+res_hybrid_sampling = 4
 
 # The choice of Delta production FF
 
@@ -227,6 +233,15 @@ res_dis_cut   = 1600 // position of the boundary, default 1600 [MeV]
 # Ability to scale the background:
 bkgrscaling   = 0.0  // non-resonant background scaling;
 #                       should be between -1.3 ... +1.3; default value is 0.0
+
+res_dis_cut   = 1900 // for the new model
+res_dis_blending_start = 1600
+res_dis_blending_end = 1900
+
+#res_dis_cut   = 1600 // for the old model, default is 1600 [MeV]
+#res_dis_blending_start = 1300
+#res_dis_blending_end = 1600
+
 
 ################################################################################
 #   COH
