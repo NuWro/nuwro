@@ -103,6 +103,13 @@ PARAM(int,mec_pb_trials,30)\
 PARAM(bool,MEC_pauli_blocking,1)\
 PARAM(double,MEC_cm_direction,0.0)\
 PARAM(int,mec_scaling,0)\
+PARAM(bool,MEC_3p3h_dynamics,1)\
+PARAM(double,MEC_cm_direction_pp,0.0)\
+PARAM(int,MEC_cm_strength_pp,1)\
+PARAM(double,MEC_cm_direction_np,0.0)\
+PARAM(int,MEC_cm_strength_np,1)\
+PARAM(double,MEC_cm_direction_pn,0.0)\
+PARAM(int,MEC_cm_strength_pn,1)\
 PARAM(bool,hyp_lambda,1)\
 PARAM(bool,hyp_sigma_zero,1)\
 PARAM(bool,hyp_sigma_minus,1)\

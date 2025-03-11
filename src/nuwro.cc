@@ -403,6 +403,7 @@ void NuWro::makeevent(event* e, params &p)
 					case 3:mecevent_Nieves (p, *e, *_nucleus, true);break;
 					case 4:mecevent2 (p, *e, *_nucleus, true, true);break;
 					case 5:mecevent_SuSA (p, *e, *_nucleus, true);break;
+          case 6:mecevent_2020Valencia (p, *e, *_nucleus, true); break;
 					default:mecevent_tem (p, *e, *_nucleus, true);break;
 				}
 				for(int i=0;i<e->out.size();i++)

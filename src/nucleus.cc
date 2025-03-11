@@ -47,6 +47,28 @@ nucleus::nucleus(params &par):
 	//set hyperon binding energy
 	Lambda_Eb = par.hyp_Lambda_Eb;
 	Sigma_Eb = par.hyp_Sigma_Eb;
+
+
+  //Attaching appropriate hadronic grids according to the nucleus configuration 
+  if ((p+n) == 40) {  // Calcium grid 
+    W00.Attach_ptr(Ca40_W00pp, Ca40_W00np, Ca40_W00pn, Ca40_W00_3p3h);
+    W03.Attach_ptr(Ca40_W03pp, Ca40_W03np, Ca40_W03pn, Ca40_W03_3p3h);
+    W11.Attach_ptr(Ca40_W11pp, Ca40_W11np, Ca40_W11pn, Ca40_W11_3p3h);
+    W12.Attach_ptr(Ca40_W12pp, Ca40_W12np, Ca40_W12pn, Ca40_W12_3p3h);
+    W33.Attach_ptr(Ca40_W33pp, Ca40_W33np, Ca40_W33pn, Ca40_W33_3p3h);
+  } else if ((p+n) == 16) { // Oxygen grid
+      W00.Attach_ptr(O16_W00pp, O16_W00np, O16_W00pn, O16_W00_3p3h);
+      W03.Attach_ptr(O16_W03pp, O16_W03np, O16_W03pn, O16_W03_3p3h);
+      W11.Attach_ptr(O16_W11pp, O16_W11np, O16_W11pn, O16_W11_3p3h);
+      W12.Attach_ptr(O16_W12pp, O16_W12np, O16_W12pn, O16_W12_3p3h);
+      W33.Attach_ptr(O16_W33pp, O16_W33np, O16_W33pn, O16_W33_3p3h);
+    } else {    // Carbon Grid
+      W00.Attach_ptr(C12_W00pp, C12_W00np, C12_W00pn, C12_W00_3p3h);
+      W03.Attach_ptr(C12_W03pp, C12_W03np, C12_W03pn, C12_W03_3p3h);
+      W11.Attach_ptr(C12_W11pp, C12_W11np, C12_W11pn, C12_W11_3p3h);
+      W12.Attach_ptr(C12_W12pp, C12_W12np, C12_W12pn, C12_W12_3p3h);
+      W33.Attach_ptr(C12_W33pp, C12_W33np, C12_W33pn, C12_W33_3p3h);
+    }
 }
 
 double nucleus::density (double r)
