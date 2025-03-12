@@ -283,6 +283,21 @@ MEC_cm_direction          = 0  // in CM frame prefered directions along (>0.0)
 # -> see Phys.Rev. C 102 (2020) 015502
 mec_scaling = 0
 
+# Following parameters are used only by mec_kind = 6 2020 Valencia Model   
+
+MEC_3p3h_dynamics         = 0  // Turn ON(1) / OFF(0) 3p3h event topology in 2020 Valencia Model.
+
+######################################################################################################################################
+#   MEC nucleon sampling parameters (Only used by mec_kind = 6 for 2p2h dynamics)                                                    #
+#   Default parameter values are based on best fit values of nucleon distribution from Phys Rev. C 102 02461 by J.E. Sobczyk et. al. #
+######################################################################################################################################
+MEC_cm_direction_pp       = 0.77
+MEC_cm_strength_pp        = 4
+MEC_cm_direction_np       = 0.7
+MEC_cm_strength_np        = 3
+MEC_cm_direction_pn       = 0.8
+MEC_cm_strength_pn        = 4
+
 ################################################################################
 #   HYP
 ################################################################################
