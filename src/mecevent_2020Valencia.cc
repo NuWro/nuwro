@@ -468,68 +468,43 @@ double Valencia2020_dsdEdc(double E, int outgoing_pair, double q0, double Ep, do
   return result;
 }
 
-
 void Isospin_model_2p2h_2020Valencia (particle *in_p, particle *out_p, double ratio_pp, double ratio_np, bool &flag_2p2h_pn)
 {
+  // Variables and flags for anti neutrinos 
+  double& ratio_nn_antinu = ratio_pp;
+  double& ratio_pn_antinu = ratio_np;
+  bool& flag_2p2h_pn_antinu = flag_2p2h_pn;
 
-  if (frandom () < ratio_pp)
-  {
-    if(ap==1)
-    {
-      in_p[0].set_proton();
-      in_p[1].set_neutron();
-      out_p[0].set_neutron();
-      out_p[1].set_neutron();
-    }
-    else
-    {
-      in_p[0].set_neutron();
-      in_p[1].set_proton();
-      out_p[0].set_proton();
-      out_p[1].set_proton();
-    }
-  }
-  else
-  {
-    if(ap==1)
-    {
-      if (frandom () < ratio_np)
-      {
-            in_p[0].set_proton();
-            in_p[1].set_proton();
-            out_p[0].set_neutron();
-            out_p[1].set_proton();
-      }
-      else
-      {
-            in_p[0].set_proton();
-            in_p[1].set_proton();
-            out_p[0].set_neutron();
-            out_p[1].set_proton();
-            flag_2p2h_pn = true;
-            
+  if (ap) { // For anti-neutrinos
+    if (frandom() < ratio_nn_antinu) { // initial pairs will be np  
+      in_p[0].set_neutron(); in_p[1].set_proton();
+      out_p[0].set_neutron(); out_p[1].set_neutron();
+    } else {
+        if (frandom() < ratio_pn_antinu) {// initial pairs will be pp
+          in_p[0].set_proton(); in_p[1].set_proton();
+          out_p[0].set_neutron(); out_p[1].set_proton();
+          flag_2p2h_pn_antinu = true;
+        } else {  // Initial pairs will be pp
+            in_p[0].set_proton(); in_p[1].set_proton();
+            out_p[0].set_neutron(); out_p[1].set_proton();
+          }
       }
 
-    }
-    else
-    {
-      if (frandom () < ratio_np)
-      {
-            in_p[0].set_neutron();
-            in_p[1].set_neutron();
-            out_p[0].set_neutron();
-            out_p[1].set_proton();
-      }
-      else
-      {
-            in_p[0].set_neutron();
-            in_p[1].set_neutron();
-            out_p[0].set_neutron();
-            out_p[1].set_proton();
+  } 
+  else {
+    if (frandom() < ratio_pp) { // Initial pairs will be  np 
+      in_p[0].set_neutron(); in_p[1].set_proton();
+      out_p[0].set_proton(); out_p[1].set_proton();
+    } else {
+        if (frandom() < ratio_np) { // Initial pairs will be nn 
+          in_p[0].set_neutron(); in_p[1].set_neutron();
+          out_p[0].set_neutron(); out_p[1].set_proton();
+        } else { // Initial pairs will be nn
+            in_p[0].set_neutron(); in_p[1].set_neutron();
+            out_p[0].set_neutron(); out_p[1].set_proton();
             flag_2p2h_pn = true;
-            
+          }   
       }
-    }
   }
 }
 
@@ -537,90 +512,51 @@ void Isospin_model_2p2h_2020Valencia (particle *in_p, particle *out_p, double ra
 void Isospin_model_3p3h_2020Valencia (particle *in_p, particle *out_p, nucleus &T_nucleus)
 {
   
-  float no_of_protons = (float)T_nucleus.p;     // <- No of protons in the nucleus
-  float no_of_neutrons = (float)T_nucleus.n;    // <- No of neutron in the nucleus
+    float NP = (float)T_nucleus.p;     // <- No of protons in the nucleus
+    float NN = (float)T_nucleus.n;    // <- No of neutron in the nucleus
 
-  /*
-    * nnn -> nnp
-    * npn -> npp  Note : Permutation are not distinguishable
-    * npp -> ppp  Note : Permutation are not distinguishable
-  */
+    double ppp = (NP >= 3) ? (NP * (NP - 1) * (NP - 2)) / 6 : 0;      // inital pairs npp
+    double nnn = (NN >=3 ) ? (NN * (NN - 1) * (NN - 2)) / 6 : 0;      // inital pairs pnn
 
-  //Absolute ratios for initial NNN combinations
-  float total_combinations = no_of_protons*no_of_neutrons*(no_of_neutrons-1)/2 + no_of_neutrons*no_of_protons*(no_of_protons-1)/2 + no_of_neutrons*(no_of_neutrons-1)*(no_of_neutrons-2)/6;
-  double ratio_nnn = no_of_neutrons*(no_of_neutrons-1)*(no_of_neutrons-2)/6/total_combinations;
-  double ratio_npn = no_of_protons*no_of_neutrons*(no_of_neutrons-1)/2/total_combinations;
-  double ratio_npp = no_of_neutrons*no_of_protons*(no_of_protons-1)/2/total_combinations; 
+    double npp = (NP >= 2 && NN >= 1) ? ((NP * (NP - 1)) / 2) * NN : 0;   // initial pairs nnp 
+    double pnn = (NN >= 2 && NP >= 1) ? ((NN * (NN - 1)) / 2) * NP : 0;   // initial pairs ppn
 
-  double relative_ratio_npn = ratio_npn/(ratio_npn + ratio_npp); //relative ratio of initial pair npn because of if else conditon
+    double nnp = (NN >= 2 && NP >= 1) ? ((NN * (NN - 1)) / 2) * NP : 0;   // initial pairs nnn
+    double ppn = (NP >= 2 && NN >= 1) ? ((NP * (NP - 1)) / 2) * NN : 0;   // initial pairs ppp
 
-  if (ap==1) {
-    if (frandom() < ratio_nnn) {
-      in_p[0].set_proton();
-      in_p[1].set_proton();
-      in_p[2].set_proton();
-      out_p[0].set_neutron();
-      out_p[1].set_proton();
-      out_p[2].set_proton();
-    }
+    double total_pairs_nu = ppp + npp + nnp;
+    double total_pairs_antinu = nnn + pnn + ppn;
+
+    if (ap) {
+      if (frandom() < ppn/total_pairs_antinu) {
+        in_p[0].set_proton(); in_p[1].set_proton(); in_p[2].set_proton();
+        out_p[0].set_neutron(); out_p[1].set_proton(); out_p[2].set_proton();
+      } else {
+          if (frandom() < pnn/(pnn+nnn)) {
+            in_p[0].set_proton(); in_p[1].set_proton(); in_p[2].set_neutron();
+            out_p[0].set_neutron(); out_p[1].set_neutron(); out_p[2].set_proton();
+          } else {
+              in_p[0].set_proton(); in_p[1].set_neutron(); in_p[2].set_neutron();
+              out_p[0].set_neutron(); out_p[1].set_neutron(); out_p[2].set_neutron();
+            }
+        }
+    } 
+
     else {
-      if ( frandom() < ratio_npn ) {
-        in_p[0].set_neutron();
-        in_p[1].set_proton();
-        in_p[2].set_proton();
-
-        out_p[0].set_neutron();
-        out_p[1].set_neutron();
-        out_p[2].set_proton();
-      }
-      else 
-      {
-        in_p[0].set_neutron();
-        in_p[1].set_proton();
-        in_p[2].set_proton();
-
-        out_p[0].set_proton();
-        out_p[1].set_proton();
-        out_p[2].set_proton();
-      }
+      if (frandom() < nnp/total_pairs_nu) {
+        in_p[0].set_neutron(); in_p[1].set_neutron(); in_p[2].set_neutron();
+        out_p[0].set_neutron(); out_p[1].set_neutron(); out_p[2].set_proton();
+      } else {
+          if (frandom() < npp/(npp+ppp)) {
+            in_p[0].set_neutron(); in_p[1].set_neutron(); in_p[2].set_proton();
+            out_p[0].set_neutron(); out_p[1].set_proton(); out_p[2].set_proton();
+          } else {
+              in_p[0].set_neutron(); in_p[1].set_proton(); in_p[2].set_proton();
+              out_p[0].set_proton(); out_p[1].set_proton(); out_p[2].set_proton();
+            }
+        }   
     }
-
-  }
-  else {
-    if (frandom() < ratio_nnn) {
-      in_p[0].set_neutron();
-      in_p[1].set_neutron();
-      in_p[2].set_neutron();
-      out_p[0].set_neutron();
-      out_p[1].set_neutron();
-      out_p[2].set_proton();
-    }
-    else {
-      if ( frandom() < ratio_npn ) {
-        in_p[0].set_neutron();
-        in_p[1].set_proton();
-        in_p[2].set_neutron();
-
-        out_p[0].set_neutron();
-        out_p[1].set_proton();
-        out_p[2].set_proton();
-      }
-      else 
-      {
-        in_p[0].set_neutron();
-        in_p[1].set_proton();
-        in_p[2].set_proton();
-
-        out_p[0].set_proton();
-        out_p[1].set_proton();
-        out_p[2].set_proton();
-      }
-    }
-  }
-  
-
 }
-
 
 void Generate_nucleon_kinematics_2p2h(particle *inc_nucleon_mec, particle *out_nucleon_mec, bool &flag_2p2h_pn, nucleus &T, double &xsec_result, vect qqq,double mec_central, double mec_smearing, double binding, int ile_PB, double* sampling, int* strength)
 {

@@ -258,8 +258,9 @@ coh_mass_correction = 1 // Rein-Sehgal correction to CC coherent SPP
 # Choice of the model:
 #mec_kind = 1  // TEM model
 #mec_kind = 2  // Marteau model
-mec_kind  = 3  // Nieves model
+#mec_kind  = 3  // Nieves model
 #mec_kind = 5  // SuSAv2 model
+mec_kind = 6    // 2020 Valencia model (Phys. Rev. C. 102(2020) 024601)
 
 # Ratio of mixed isospin initial nucleon pairs:
 mec_ratio_pp = 0.85 // fraction of the initial neutron-proton pairs
