@@ -515,6 +515,9 @@ void Isospin_model_3p3h_2020Valencia (particle *in_p, particle *out_p, nucleus &
     float NP = (float)T_nucleus.p;     // <- No of protons in the nucleus
     float NN = (float)T_nucleus.n;    // <- No of neutron in the nucleus
 
+    if (ap) {NP--; NN++;}
+    else {NP++; NN--;}
+    
     double ppp = (NP >= 3) ? (NP * (NP - 1) * (NP - 2)) / 6 : 0;      // inital pairs npp
     double nnn = (NN >=3 ) ? (NN * (NN - 1) * (NN - 2)) / 6 : 0;      // inital pairs pnn
 
