@@ -460,25 +460,22 @@
   <param name="mec_scaling" type="text" ctype="int" default="0">
     <description><![CDATA[Phenomenological mec scaling based on the CC0pi data; works with the Valencia model and LFG]]></description>
   </param>
-  <param name="MEC_3p3h_dynamics" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[ Turn ON(1) / OFF(0) 3p3h dyanamics in Nieves Model. (flag_2p2h=true,flag_3p3h=false) for 2p2h and (flag_2p2h=false, flag_3p3h=true) for 3p3h dynamics]]></description>
-  </param>
-  <param name="MEC_cm_direction_pp" type="checkbox" ctype="double" default="0.0">
+  <param name="MEC_cm_direction_pp" type="checkbox" ctype="double" default="0.77">
      <description><![CDATA[ in CM frame prefered directions along. Only for pp-outgoing nucleon events !!]]></description>
    </param>
-   <param name="MEC_cm_strength_pp" type="checkbox" ctype="int" default="1">
+   <param name="MEC_cm_strength_pp" type="checkbox" ctype="int" default="4">
      <description><![CDATA[ in CM frame prefered strength of prefered direction for pp-outgoing nucleon events !!]]></description>
    </param>
-  <param name="MEC_cm_direction_np" type="checkbox" ctype="double" default="0.0">
+  <param name="MEC_cm_direction_np" type="checkbox" ctype="double" default="0.7">
      <description><![CDATA[ in CM frame prefered directions along. Only for np-outgoing nucleon events !!]]></description>
    </param>
-   <param name="MEC_cm_strength_np" type="checkbox" ctype="int" default="1">
+   <param name="MEC_cm_strength_np" type="checkbox" ctype="int" default="3">
      <description><![CDATA[ in CM frame prefered strength of prefered direction for np-outgoing nucleon events !!]]></description>
     </param>
-  <param name="MEC_cm_direction_pn" type="checkbox" ctype="double" default="0.0">
+  <param name="MEC_cm_direction_pn" type="checkbox" ctype="double" default="0.8">
      <description><![CDATA[ in CM frame prefered directions along. Only for pn-outgoing nucleon events !!]]></description>
    </param>
-   <param name="MEC_cm_strength_pn" type="checkbox" ctype="int" default="1">
+   <param name="MEC_cm_strength_pn" type="checkbox" ctype="int" default="4">
      <description><![CDATA[ in CM frame prefered strength of prefered direction for pn-outgoing nucleon events !!]]></description>
     </param>
   <param name="hyp_lambda" type="checkbox" ctype="bool" default="1">

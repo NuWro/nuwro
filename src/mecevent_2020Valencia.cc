@@ -116,7 +116,7 @@ void mecevent_2020Valencia (params & p, event & e, nucleus & t, bool cc)
   {
     weight_2p2h=Valencia2020_kin_and_weight_2p2h (e.in[0].E(), individual_weight, meclepton, mecnucleon_in, mecnucleon_out, flag_2p2h_pn, t, mec_central, mec_smearing, binding, ile_pb, mc_sampling, mc_strength);
     
-    if (p.MEC_3p3h_dynamics) weight_3p3h = Valencia2020_kin_and_weight_3p3h (e.in[0].E(), individual_weight, meclepton_3p3h, mecnucleon_3p3h_in, mecnucleon_3p3h_out, t, binding, ile_pb);
+    weight_3p3h = Valencia2020_kin_and_weight_3p3h (e.in[0].E(), individual_weight, meclepton_3p3h, mecnucleon_3p3h_in, mecnucleon_3p3h_out, t, binding, ile_pb);
   }
 
   double weight = weight_2p2h + weight_3p3h;
