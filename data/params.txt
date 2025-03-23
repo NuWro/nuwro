@@ -258,8 +258,9 @@ coh_mass_correction = 1 // Rein-Sehgal correction to CC coherent SPP
 # Choice of the model:
 #mec_kind = 1  // TEM model
 #mec_kind = 2  // Marteau model
-mec_kind  = 3  // Nieves model
+#mec_kind  = 3  // Nieves model
 #mec_kind = 5  // SuSAv2 model
+mec_kind = 6    // 2020 Valencia model (Phys. Rev. C. 102(2020) 024601)
 
 # Ratio of mixed isospin initial nucleon pairs:
 mec_ratio_pp = 0.85 // fraction of the initial neutron-proton pairs
@@ -282,6 +283,17 @@ MEC_cm_direction          = 0  // in CM frame prefered directions along (>0.0)
 # v/anu inclusive CC0pi data better
 # -> see Phys.Rev. C 102 (2020) 015502
 mec_scaling = 0
+
+######################################################################################################################################
+#   MEC nucleon sampling parameters (Only used by mec_kind = 6 for 2p2h dynamics)                                                    #
+#   Default parameter values are based on best fit values of nucleon distribution from Phys Rev. C 102 024601 by J.E. Sobczyk et. al. #
+######################################################################################################################################
+MEC_cm_direction_pp       = 0.77
+MEC_cm_strength_pp        = 4
+MEC_cm_direction_np       = 0.7
+MEC_cm_strength_np        = 3
+MEC_cm_direction_pn       = 0.8
+MEC_cm_strength_pn        = 4
 
 ################################################################################
 #   HYP

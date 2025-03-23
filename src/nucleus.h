@@ -9,7 +9,58 @@
 #include "isotopes.h"
 #include <stack>
 
+
+#include "MEC_data/C12/C12_pp.h"
+#include "MEC_data/C12/C12_np.h"
+#include "MEC_data/C12/C12_pn.h"
+#include "MEC_data/C12/C12_3p3h.h"
+#include "MEC_data/O16/O16_pp.h"
+#include "MEC_data/O16/O16_np.h"
+#include "MEC_data/O16/O16_pn.h"
+#include "MEC_data/O16/O16_3p3h.h"
+#include "MEC_data/Ca40/Ca40_pp.h"
+#include "MEC_data/Ca40/Ca40_np.h"
+#include "MEC_data/Ca40/Ca40_pn.h"
+#include "MEC_data/Ca40/Ca40_3p3h.h"
+
 using namespace std;
+
+
+
+// A class to load Valencia 2020 model hadronic tables Phys. Rev. C 102 (2020) 024601 J.E. Sobczyk
+// Class Implemented by Hemant Prasad on 23 / 11 / 2024
+class Response_function {
+  public:
+    double *_channel_pp;
+    double *_channel_np;
+    double *_channel_pn;
+    double *_channel_3p3h;
+    Response_function() {};
+    ~Response_function() {};
+
+    void Attach_ptr(double* ptr1, double* ptr2, double* ptr3, double* ptr4)   {
+      _channel_pp = ptr1;
+      _channel_np = ptr2;
+      _channel_pn = ptr3;
+      _channel_3p3h = ptr4;
+    }
+    double channel(int l, int k){
+      double value=0;
+      //int k = (int)( 0.5*(240 - n + 1) + (m-1) );
+      switch(l) {
+        case 0: value=_channel_pp[k];
+                break;
+        case 1: value=_channel_np[k];
+                break;
+        case 2: value=_channel_pn[k];
+                break;
+        case 3: value=_channel_3p3h[k];
+                break;
+      }
+      return value;
+    } 
+
+};
 
 /// this class implements the target nucleus
 /// it should take into account of the its radius, charge ,
@@ -50,6 +101,11 @@ class nucleus
 	// Hyperon potential at r=0
 	double Lambda_Eb;
 	double Sigma_Eb;
+  Response_function W00;          /// Component of hadronic tensor in (w,q) 
+  Response_function W03;          /// Component of hadronic tensor in (w,q)
+  Response_function W11;          /// Component of hadronic tensor in (w,q)
+  Response_function W12;          /// Component of hadronic tensor in (w,q)
+  Response_function W33;          /// Component of hadronic tensor in (w,q)
 
 	public:
 
@@ -84,6 +140,12 @@ class nucleus
 	bool pauli_blocking_old (particle &pa, double p0); ///< TRUE = PARTICLE IS BLOCKED (p0 - momentum of initial nucleon)
 
 	double hyp_BE(double r,int pdg);
+  
+  double GetValue_W00(int l, int k) {return W00.channel(l,k);}
+  double GetValue_W03(int l, int k) {return W03.channel(l,k);}
+  double GetValue_W11(int l, int k) {return W11.channel(l,k);}
+  double GetValue_W12(int l, int k) {return W12.channel(l,k);}
+  double GetValue_W33(int l, int k) {return W33.channel(l,k);}
 };
 
 ////////////////////////////////////////////////////////////////////////

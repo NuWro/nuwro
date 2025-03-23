@@ -17,7 +17,9 @@ inline vec rand_ort (vec a);
 inline vec rand_gauss (double sigma);
 inline double rand_gauss (double sigma, double average);
 inline vec rand_direc (vec a, double alpha);
+inline vec rand_direc2 (vec a, double alpha, int degree, double kappa);
 inline double fff (double kos, double par);
+inline double nucleon_sampling_function (double kos, double par, int n, double cosboundary);
 
 //inline vec rand_ort2 (vec a);
 
@@ -139,6 +141,13 @@ double fff (double kos, double par)
     return 1 + par*fabs(kos);
   }
 }
+double nucleon_sampling_function (double kos, double par, int n, double cosboundary)
+{
+  if (par > 0)
+  {  return (1 - par + par*std::pow(fabs(kos/cosboundary), n) ); }
+  else
+  {  return (1 + par*std::pow(std::fabs(kos/cosboundary),n) ); }
+}
 
 vec rand_direc (vec aa, double alpha)
 {
@@ -173,6 +182,34 @@ vec rand_direc (vec aa, double alpha)
   return ran;
 }
 
+vec rand_direc2(vec a, double alpha, int degree, double kappa)
+{
+  double kos = 0;
+  double spr = 0; 
+  double los = 0;
+  //First sample cos according to the nucleon_sampling_function
+  do {
+    kos = (2 * frandom() - 1) * kappa;
+    spr = nucleon_sampling_function(kos, alpha, degree, kappa);
+    los = frandom();
+  }while (spr < los);
+
+  //Create a vector with the sampled kos
+  double phi = 2.0*Pi*frandom();
+  vec dir = rand_dir();
+
+  vec drugi = vecprod(a, dir);
+  vec trzeci = vecprod(a, drugi);
+
+  vec base1 = a/a.length();
+  vec base2 = drugi/drugi.length();
+  vec base3 = trzeci/trzeci.length();
+
+  vec ran = base1*kos + (base2*sqrt(1 - std::pow(kos,2)))*std::cos(phi) + base3*sqrt(1 - std::pow(kos,2))*std::sin(phi);
+
+  return ran;
+
+}
 ////////////////////////////////////////////////////////////////
 /// random unit vec B orthogonal to A ( |B|=1 and B*A=0 )
 vec rand_ort (vec A) 

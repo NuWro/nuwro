@@ -45,7 +45,7 @@ DIS= charge.o LeptonMass.o parameters.o grv94_bodek.o dis_cr_sec.o  dis_nc.o dis
 	 dis_cc_proton.o fragmentation.o fragmentation_nc.o fragmentation_cc.o singlepion.o \
 	 disevent.o resevent2.o singlepionhadr.o alfa.o res_kinematics.o res_xsec.o
 	
-MEC= mecdynamics.o mecevent.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o\
+MEC= mecdynamics.o mecevent.o mecevent_tem.o mecevent_Nieves.o mecevent_2020Valencia.o mecevent_SuSA.o\
      mecevent_common.o mecdynamics2.o mecevent2.o   
 
 DIS_OBJS= $(addprefix src/dis/,$(DIS))
@@ -133,7 +133,7 @@ $(BIN)/reweight_to: $(addprefix src/, \
 
 $(BIN)/reweight_along: $(addprefix src/, \
 	event1.o event1Dict.o generatormt.o particle.o pauli.o cohevent2.o cohdynamics2.o qelevent1.o mecdynamics.o mecevent.o hypevent.o hyperon_interaction.o hyperon_cascade.o lepevent.o nu_e_el_sigma.o\
-	mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o\
+	mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_2020Valencia.o mecevent_SuSA.o mecevent_common.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
