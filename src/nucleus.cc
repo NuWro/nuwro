@@ -50,13 +50,13 @@ nucleus::nucleus(params &par):
 
 
   //Attaching appropriate hadronic grids according to the nucleus configuration 
-  if ((p+n) == 40) {  // Calcium grid 
+  if (p > 12) {  // Calcium grid 
     W00.Attach_ptr(Ca40_W00pp, Ca40_W00np, Ca40_W00pn, Ca40_W00_3p3h);
     W03.Attach_ptr(Ca40_W03pp, Ca40_W03np, Ca40_W03pn, Ca40_W03_3p3h);
     W11.Attach_ptr(Ca40_W11pp, Ca40_W11np, Ca40_W11pn, Ca40_W11_3p3h);
     W12.Attach_ptr(Ca40_W12pp, Ca40_W12np, Ca40_W12pn, Ca40_W12_3p3h);
     W33.Attach_ptr(Ca40_W33pp, Ca40_W33np, Ca40_W33pn, Ca40_W33_3p3h);
-  } else if ((p+n) == 16) { // Oxygen grid
+  } else if ((p > 6) and (p<=12)) { // Oxygen grid
       W00.Attach_ptr(O16_W00pp, O16_W00np, O16_W00pn, O16_W00_3p3h);
       W03.Attach_ptr(O16_W03pp, O16_W03np, O16_W03pn, O16_W03_3p3h);
       W11.Attach_ptr(O16_W11pp, O16_W11np, O16_W11pn, O16_W11_3p3h);

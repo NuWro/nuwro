@@ -67,11 +67,6 @@ void mecevent_2020Valencia (params & p, event & e, nucleus & t, bool cc)
   particle meclepton_3p3h;
   ap=(e.in[0].pdg<0);
 
-  if ( std::abs(e.in[0].pdg) != 14 ) {
-    cerr << "Only muon neutrino available \n";
-    e.weight = 0;
-    return;
-  }
 
   meclepton_3p3h.pdg = meclepton.pdg = e.in[0].pdg-1+2*ap;
   meclepton.set_mass (PDG::mass (meclepton.pdg)); //set mass coresponding to pdg
@@ -84,13 +79,13 @@ void mecevent_2020Valencia (params & p, event & e, nucleus & t, bool cc)
 
   // Binding energy / Correlation within the medium 
 
-  switch(p.nucleus_p) {
-    case 6: Bmec = ap ? E_corr[1] : E_corr[0]; break;
-    case 8: Bmec = ap ? E_corr[3] : E_corr[2]; break;
-    case 40: Bmec = ap ? E_corr[5] : E_corr[4]; break;
-    default: Bmec = ap ? E_corr[1] : E_corr[0]; break;  // By default Carbon grid is set in src/nucleus.cc so Bmec is set as E_corr of Carbon
-  }
- 
+  if (p.nucleus_p > 12) {
+    Bmec = ap ? E_corr[5] : E_corr[4];
+  } else if ( (p.nucleus_p <=12) and (p.nucleus_p > 6) ) {
+      Bmec = ap ? E_corr[3] : E_corr[2];
+    } else {
+        Bmec = ap ? E_corr[1] : E_corr[0];
+      } 
 
 
   double q0max = e.in[0].energy() - ml - Bmec;
