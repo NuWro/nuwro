@@ -3234,7 +3234,6 @@ isotope isotopes[]={
 
 const int N_isotopes=sizeof(isotopes)/sizeof(isotope);
 
-
 isotope* isotope_find(int Z, int N)
 {
 	int A=Z+N;

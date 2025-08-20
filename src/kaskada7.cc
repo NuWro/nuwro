@@ -1,10 +1,6 @@
 #include "kaskada7.h"
 #include "fsi.h"
 
-////////////////////////////////////////
-// Public methods
-////////////////////////////////////////
-
 kaskada::kaskada(params &p, event &e1, input_data *input)
 {
   par = p;
@@ -16,97 +12,430 @@ kaskada::kaskada(params &p, event &e1, input_data *input)
   max_step = par.step * fermi;    // set maximum step defined in params
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
+
+
   I = new Interaction(input->get_data_container(0), input->get_data_container(1), input->get_data_container(2),
                       par.kaskada_piN_xsec);
   corr_func = input->get_nucl_data_container(0, par.nucleus_p, par.nucleus_n);
 }
-
-////////////////////////////////////////
-
 kaskada::~kaskada()
 {
   delete nucl;
   delete I;
 }
 
-////////////////////////////////////////
-
 int kaskada::kaskadaevent()
 {
   int result = 0;
+  bool nucleon_interaction_occurred = false; // Tracks if any nucleon has interacted in the cascade
 
-  if (e->weight <= 0)
-    return result;
+  if (e->weight <= 0) return result;
+  
+  prepare_particles();
 
-  prepare_particles();    // copy all nucleons and pions from primary vertex (out) to queue
-                          // and other particles to output (post)
-
-  if (e->in[0].lepton())  // if lepton scattering -> remove nucleon from primary vertex 
-                          // (in pion or nucleon scattering there is no primary vertex just the cascade)
-  {
+  if (e->in[0].lepton()) {
+  
     for(int i=1;i< e->in.size();i++)
-      nucl->remove_nucleon(e->in[i]); // ignores nonnucleons
+      nucl->remove_nucleon(e->in[i]);
+      
   }
 
-  if (not par.kaskada_on) // skip the cascade if it is turn off in params,
-                          // but make sure about the energy balance
-  {
-    while (parts.size () > 0)
-    {
+  // FSI OFF
+  if (par.FSI_on == 0) {
+  
+    while (parts.size () > 0) {
+    
       particle p1 = parts.front();    // point a particle from a queue
       parts.pop();                    // remove this particle from a temp vector
-      p = &p1;
+      p = &p1;                        // working pointer `p` refers to this particle
+      leave_nucleus();                // check if the particle is jailed or escapes (and returns on the mass shell)
       
-      leave_nucleus();    // check if the particle is jailed or escapes (and returns on the mass shell)
+    }
+    
+    // Adjust potential correction for outgoing nucleons for SF events
+    if (par.sf_method != 0) {
+    
+     for (int i = 0; i < e->post.size(); ++i) {
+    
+      particle &p1 = e->post[i];
+      
+      if (p1.pdg == pdg_proton || p1.pdg == pdg_neutron) {
+        // For neutrons, correction = 0.0 (no Coulomb).
+        double U = (p1.pdg == pdg_proton ? -e->averageCE : 0.0);
+        
+        if (p1.Ek() > -U) p1.set_energy(p1.E() + U);
+        else return 0;
+        
+      }
+     }
     }
 
     return result;
   }
+  
+  // Non-QE events OR QE events using LFG (sf_method == 0) : Full cascade for all particles in `parts`
+  if ( (e->flag.qel && (par.sf_method == 0)) || (!e->flag.qel) ) {
+  
+      while (!parts.empty() && nucl->Ar() > 0) { // while queue has particles and nucleus not exhausted
+      
+        particle p1 = parts.front();
+        parts.pop();
+        p = &p1;
 
-  while (parts.size () > 0 and nucl->Ar() > 0)  // main loop in cascade
-  {
-    particle p1 = parts.front();                // point a particle from a queue
-    parts.pop();                                // remove this particle from a temp vector
-    p = &p1;
+        X = prepare_interaction();
+        if (!move_particle()) continue;
+        if (X.r >= radius) leave_nucleus();
 
-    X = prepare_interaction();                  // set the density and the total cross section
-                                                // calculate free path
-
-    if (!move_particle()) continue;             // propagate particle, returns false if jailed
-
-    if (X.r >= radius)                          // particle leaves nucleus
-      leave_nucleus();
-    else if( max_step < X.freepath              // no interaction during max_step 
-         or !make_interaction()                 // or unable to generate kinematics or Pauli blocking
-         or !finalize_interaction())            // or there was problem with finalizing interaction
-    {
-      if (nucleon (p1.pdg)) e->nod[13]++;
-      if (pion (p1.pdg)) e->nod[12]++;
-      if (hyperon (p1.pdg)) e->nod[14]++;
-      parts.push (*p);                          // interaction did not happend, 
-                                                // p should be further propagated 
+        else {
+        
+          if (max_step < X.freepath || !make_interaction() || !finalize_interaction()) {
+          
+            if (nucleon(p->pdg)) e->nod[13]++;
+            if (pion(p->pdg))   e->nod[12]++;
+            if (hyperon(p->pdg)) e->nod[14]++;
+            parts.push(*p);
+            
+          }
+        }
+      }
+      
+    clean();
+    
     }
-  }
 
-  clean();  // if nucleus has evaporated the part queue may not be empty
+  // QE events using Spectral Function (sf_method != 0) : Choose transparent/non-transparent + correlated/uncorrelated loops
+  // FSI implemented consistently for QE channel by RWIK DHARMAPAL BANERJEE, 2025
+  if (e->flag.qel && (par.sf_method != 0)) {
+
+      // Transparent events
+      if (e->flag.isTransparent) {
+
+        // Transparent & Uncorrelated: just leave nucleus
+        if (!e->flag.isCorrelated) {
+        
+           while (parts.size() > 0) {
+        
+           particle p1 = parts.front();
+           parts.pop();
+           p = &p1;
+           leave_nucleus();
+        
+           }
+        
+        clean();
+        
+        }
+
+        // Transparent & Correlated: first nucleon leaves, second gets full cascade
+        if (e->flag.isCorrelated) {
+        
+          while (!parts.empty() && nucl->Ar()>0) {
+          
+            particle p1 = parts.front();
+            parts.pop();
+            p = &p1;
+
+            if (p1.nucleon_id == 1) leave_nucleus();
+
+            else if (p1.nucleon_id == 2) {
+
+              X = prepare_interaction();
+              if (!move_particle()) continue;
+              if (X.r >= radius) leave_nucleus();
+
+              else if ( max_step < X.freepath || !make_interaction() || !finalize_interaction() ) {
+              
+                  if (nucleon(p1.pdg)) e->nod[13]++;
+                  if (pion(p1.pdg))    e->nod[12]++;
+                  if (hyperon(p1.pdg)) e->nod[14]++;
+                  parts.push(*p);
+             }
+            }
+           }
+          
+          clean();
+        }
+      }
+
+      // Non-Transparent events
+      if (!e->flag.isTransparent) {
+
+        // Non-Transparent & Uncorrelated: full cascade with possible re-draw if no interaction
+        if (!e->flag.isCorrelated) {
+        
+          // Standard cascade loop
+          while (!parts.empty() && nucl->Ar() > 0) {
+          
+            particle p1 = parts.front();
+            parts.pop();
+            p = &p1;
+
+            X = prepare_interaction();
+            if (!move_particle()) continue;
+            if (X.r >= radius) leave_nucleus(); 
+
+            else {
+            
+              if ( max_step < X.freepath || !make_interaction() || !finalize_interaction() ) {
+              
+                if (nucleon(p1.pdg)) e->nod[13]++;
+                if (pion(p1.pdg))    e->nod[12]++;
+                if (hyperon(p1.pdg)) e->nod[14]++;
+                parts.push(*p);
+                
+              }
+              else {
+              
+                if (nucleon(p1.pdg)) {
+                  // At least one nucleon interacted
+                  nucleon_interaction_occurred = true;
+                  
+                }
+               }
+              }
+           }
+
+          // If no nucleon interaction → redraw cascade with reduced mean free path
+          if (!nucleon_interaction_occurred)
+          {
+            int redrawAttempts = 0;
+
+              // Clean up post-state: remove nucleons so we can retry cascade
+              std::vector<particle> newPost;
+              for (const particle &pt : e->post) {
+                  if (!nucleon(pt.pdg))
+                    newPost.push_back(pt); 
+              }
+              e->post = newPost;
+              
+            // Keep track of mean free path scaling for retries
+            double original_scale = par.kaskada_NN_mfp_scale;
+            double effective_scale = original_scale;
+
+            // Redraw loop: each attempt reduces mean free path artificially
+            while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !nucleon_interaction_occurred) {
+
+              effective_scale *= nucl->effective_mfp_scale;
+              par.kaskada_NN_mfp_scale = effective_scale;
+
+              // Reset cascade queue with initial nucleons
+              while (!parts.empty()) parts.pop(); 
+              std::vector<particle> initialNucleons;
+              for (const particle &pt : e->out) {
+                if (nucleon(pt.pdg)) initialNucleons.push_back(pt);
+              }
+              for (const particle &pn : initialNucleons) parts.push(pn);
+
+              // Re-run cascade
+              while (!parts.empty() && nucl->Ar() > 0) {
+              particle pt = parts.front();
+              parts.pop();
+              p = &pt;
+
+              X = prepare_interaction();
+              if (!move_particle()) continue;
+              if (X.r >= radius) leave_nucleus();
+
+              else {
+              
+                 if (max_step < X.freepath || !make_interaction() || !finalize_interaction()) {
+                 
+                     if (nucleon(pt.pdg)) e->nod[13]++;
+                     if (pion(pt.pdg))   e->nod[12]++;
+                     if (hyperon(pt.pdg)) e->nod[14]++;
+                     parts.push(pt);
+                     
+                 }
+                 else {
+                 
+                     if (nucleon(pt.pdg)) {
+                     
+                        nucleon_interaction_occurred = true;
+                        
+                     }
+                 }
+                }
+               }
+
+              redrawAttempts++;
+
+              }
+
+        clean();
+        
+        par.kaskada_NN_mfp_scale = original_scale; // restore scale
+
+       }
+      }
+
+        // Non-Transparent & Correlated: both nucleons can interact, redraw if N1 fails to interact
+        if (e->flag.isCorrelated) {
+
+    bool firstNucleonInteracted = false;
+
+    // Initial cascade pass
+    while (!parts.empty() && nucl->Ar()>0) {
+    
+      particle p1 = parts.front();
+      parts.pop();
+      p = &p1;
+
+      X = prepare_interaction();
+      if (!move_particle()) continue;
+      if (X.r >= radius) leave_nucleus();
+
+      else {
+      
+      if (max_step < X.freepath || !make_interaction() || !finalize_interaction()) {
+      
+        if (nucleon(p1.pdg)) e->nod[13]++;
+        if (pion (p1.pdg)) e->nod[12]++;
+        if (hyperon (p1.pdg)) e->nod[14]++;
+        parts.push(p1);
+        
+      }
+      else {
+      
+          if (nucleon(p1.pdg)) {
+          
+              nucleon_interaction_occurred = true;
+              if (p1.nucleon_id == 1) firstNucleonInteracted = true;
+              
+          }
+        }
+      }
+    }
+    
+            // If no interaction for N1 → clean post and redraw only N1
+            if (!nucleon_interaction_occurred && !firstNucleonInteracted) {
+
+              int redrawAttempts = 0;
+              
+              double cosine_N1 = e->out[1].z / e->out[1].momentum();
+              std::vector<particle> newPost;
+              
+              // Remove perfect N1 copies from `post`
+              for (size_t i = 0; i < e->post.size(); ++i) {
+              
+                if (!nucleon(e->post[i].pdg)) {
+                    newPost.push_back(e->post[i]);
+                }
+                
+                if (nucleon(e->post[i].pdg)) {
+                
+                   double cosine_post = e->post[i].z / e->post[i].momentum();
+                   
+                   if (fabs(cosine_post - cosine_N1) >= nucl->cosine_threshold) {
+                   newPost.push_back(e->post[i]);
+                   }
+                 }
+               }
+               
+               e->post = newPost;
+
+              double original_scale = par.kaskada_NN_mfp_scale;
+              double effective_scale = original_scale;
+
+              // Redraw attempts only for N1 with progressively shorter mfp
+              while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !nucleon_interaction_occurred && !firstNucleonInteracted) {
+
+                effective_scale *= nucl->effective_mfp_scale;
+                par.kaskada_NN_mfp_scale = effective_scale;
+
+                // Reset queue only with N1
+                while (!parts.empty()) parts.pop();
+                std::vector<particle> initialNucleons;
+                for (const particle &pt : e->out) {
+                  if (nucleon(pt.pdg) and (pt.nucleon_id == 1)) initialNucleons.push_back(pt);
+                }
+                for (const particle &pn : initialNucleons) parts.push(pn);
+
+                while (!parts.empty() && nucl->Ar() > 0) {
+                
+                particle pt = parts.front();
+                parts.pop();
+                p = &pt;
+
+                X = prepare_interaction();
+                if (!move_particle()) continue;
+                if (X.r >= radius) leave_nucleus();
+
+                else {
+                
+                   if (max_step < X.freepath || !make_interaction() || !finalize_interaction()) {
+                   
+                       if (nucleon(pt.pdg)) e->nod[13]++;
+                       if (pion(pt.pdg))    e->nod[12]++;
+                       if (hyperon(pt.pdg)) e->nod[14]++;
+                       parts.push(pt);
+                       
+                   }
+                   else {
+                   
+                       if (nucleon(pt.pdg)) {
+                       
+                          nucleon_interaction_occurred = true;
+                          if (pt.nucleon_id == 1) {
+                              firstNucleonInteracted = true;
+                          }
+                       }
+                    }
+                 }
+                 }
+                 
+          redrawAttempts++;
+          
+          }
+
+          clean();
+          par.kaskada_NN_mfp_scale = original_scale;
+
+         }
+        }
+       }
+   }
+
+  clean();
+
+  // Adjust potential correction for outgoing nucleons
+  double U(0.0);
+  
+  if (par.sf_method != 0) {
+   for (int i = 0; i < e->post.size(); ++i) {
+  
+    particle &p1 = e->post[i];
+    
+    if (p1.pdg == pdg_proton || p1.pdg == pdg_neutron) {
+      // Coulomb effect is already taken into account into optical potential for protons
+      U = p1.pdg == pdg_proton ? e->optical_potential : e->optical_potential - e->averageCE;
+      
+      if (p1.Ek() > -U) p1.set_energy(p1.E() + U);
+      else return 0;
+      
+    }
+   }
+  }
 
   return result;
 }
 
-////////////////////////////////////////
-// Private methods
-////////////////////////////////////////
-
 void kaskada::prepare_particles()
-{ 
+{
+
+  // Loop over every particle from the primary vertex.
   for (int i = 0; i < e->out.size(); i++)
   {
     particle p1 = e->out[i];
+    // If this is one of the two QE–SF nucleons, tag it.
+    if (nucleon(p1.pdg)) {
+      if      (i == 1) p1.nucleon_id = 1;
+      else if (i == 2) p1.nucleon_id = 2;
+    }
 
     if (nucleon_or_pion (p1.pdg)) // formation zone for both nucleons and pions
-    {           
+    {
       if (nucleon (p1.pdg))
-      { 
+      {
         p1.primary = true;
 
         // add the binding energy substracted in the primary vertex
@@ -118,18 +447,18 @@ void kaskada::prepare_particles()
           p1.set_energy (p1.E() + par.nucleus_E_b);
 
         p1.set_fermi(nucl->Ef(p1));
- 
+
         if (p1.Ek() <= par.kaskada_w + p1.his_fermi)  // jailed nucleon if its kinetic energy
                                                       // is lower than binding energy
         {
           p1.endproc=jailed;
           nucl->insert_nucleon (p1);
-          if(par.kaskada_writeall) 
+          if(par.kaskada_writeall)
             e->all.push_back(p1);
           continue;
         }
       }
-      
+
       double fz = formation_zone(p1, par, *e);        // calculate formation zone
       p1.krok(fz);      // move particle by a distance defined by its formation zone
 
@@ -137,7 +466,7 @@ void kaskada::prepare_particles()
     }
     else if(hyperon (p1.pdg)) // if a hyperon
     {
-      // Add BE 
+      // Add BE
       if(par.nucleus_target) p1.set_fermi(nucl->hyp_BE(p1.r.length(),p1.pdg));
       else p1.set_fermi(0);
         ////////// a new piece of code March 3, 2025 - fixing hyperon potential problem
@@ -145,7 +474,7 @@ void kaskada::prepare_particles()
         {
             p1.endproc=escape;
             e->post.push_back (p1);
-            
+
             if(par.kaskada_writeall)
                 e->all.push_back(p1);
         }
@@ -167,19 +496,17 @@ void kaskada::prepare_particles()
     {
       p1.endproc=escape;
       e->post.push_back (p1);
-      
-      if(par.kaskada_writeall) 
+
+      if(par.kaskada_writeall)
         e->all.push_back(p1);
     }
   }
-  
+
   for (int i = 0; i<18; i++)  // number of dynamics defined in proctable.h
      e->nod[i] = 0;
 
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place
 }
-
-////////////////////////////////////////
 
 interaction_parameters kaskada::prepare_interaction()
 {
@@ -196,7 +523,7 @@ interaction_parameters kaskada::prepare_interaction()
   res.dens_p = res.dens * nucl->frac_proton ();
   res.n = 2;
 
-  I->total_cross_sections (*p, *nucl, res); // calculate cross sections xsec_p and xsec_n
+  I->total_cross_sections (*p, *nucl, res); // calculate cross sections xsec_p and xsec_n // rwik
 
   corr_func->set_input_point( p->travelled );
   double corr_ii = corr_func->get_value( 1 );
@@ -235,8 +562,6 @@ interaction_parameters kaskada::prepare_interaction()
   return res;
 }
 
-////////////////////////////////////////
-
 bool kaskada::move_particle()
 {
   p->krok (min (max_step, X.freepath));   // propagate by no more than max_step
@@ -251,9 +576,9 @@ bool kaskada::move_particle()
     {
       p->endproc=jailed;
       nucl->insert_nucleon (*p);
-      if(par.kaskada_writeall) 
+      if(par.kaskada_writeall)
         e->all.push_back(*p);
-      return false;                       // nucleon was jailed  
+      return false;                       // nucleon was jailed
     }
     else
       return true;                        // nucleon was not jailed
@@ -265,17 +590,15 @@ bool kaskada::move_particle()
     if(p->Ek() < p->his_fermi)
     {
       p->endproc=jailed;
-      if(par.kaskada_writeall) 
+      if(par.kaskada_writeall)
 	      e->all.push_back(*p);
-      return false;                       // hyperon was jailed  
+      return false;                       // hyperon was jailed
     }
     return true; // hyperon was not jailed
   }
 
   return true;
 }
-
-////////////////////////////////////////
 
 bool kaskada::leave_nucleus()
 {
@@ -286,7 +609,7 @@ bool kaskada::leave_nucleus()
     {
       p->endproc=jailed;
       nucl->insert_nucleon (*p);
-      if(par.kaskada_writeall) 
+      if(par.kaskada_writeall)
         e->all.push_back(*p);
       return false;                     // particle did not escape
     }
@@ -311,14 +634,12 @@ bool kaskada::leave_nucleus()
 
   p->endproc=escape;
   e->post.push_back (*p);
-  
+
   if(par.kaskada_writeall)
     e->all.push_back (*p);
-    
+
   return true;                          // particle has escaped
 }
-
-////////////////////////////////////////
 
 bool kaskada::make_interaction()
 {
@@ -332,23 +653,17 @@ bool kaskada::make_interaction()
     if(loop==0)
       procid=I->process_id();
     ++rep;++loop;
-    cout<<I->process_id()<<'/'<<loop<<','<<endl;
-    cout<<int(rep*1000./call)/10.<<" % repeated"<<endl;
     double suma=0;
-    cout<<"["<<nucl->p<<","<<nucl->n<<"/"<<nucl->Zr()<<","<<nucl->Nr()<<"]"<<p->pdg<<' '<<X.p2<<':'<<endl;
     for(int i=0;i<X.n;i++)
     {
       suma+=X.p[i].mass();
-      cout<<' '<<X.p[i].pdg;
     }
-    cout<<endl<<p->mass()+X.p2.mass()<<' '<<suma<<endl;
 //CJ  cout<<" Interaction: "<<I.process_name()<<" ("<<I.process_id()<<") ";
 //    assert(procid==I->process_id());
-/* KN: Is it important to keep the lines above? */
     if(loop>100)
       return false;   // it was impossible to make kinematics
   }
-  
+
   for (int i = 0; i < X.n; i++)
     if (!X.p[i].is_valid ())
     {
@@ -359,7 +674,6 @@ bool kaskada::make_interaction()
       return false;
     }
 
-  //TODO check this
   if(nucl->pauli_blocking (X.p, X.n)) return false;
 
   // C Thorpe: Check if hyperon can be moved to new value of potential.
@@ -378,14 +692,12 @@ bool kaskada::make_interaction()
   }
   else if(PDG::hyperon(X.p[0].pdg)) X.p[0].set_fermi(p->his_fermi);
 
-  //JTS - removed assertion below 
+  //JTS - removed assertion below
   //assert(check(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
   //assert(check2(*p,X.p2,nucl->spectator,X.n,X.p,I->process_id()));
 
   return true;
 }
-
-////////////////////////////////////////
 
 bool kaskada::finalize_interaction()
 {
@@ -410,7 +722,7 @@ bool kaskada::finalize_interaction()
 
     int n_he = -1;
     int n_le = -1;
-    
+
     for (int i = 0; i < X.n; i++)
       if (nucleon(X.p[i].pdg))
       {
@@ -438,7 +750,7 @@ bool kaskada::finalize_interaction()
     {
       X.p[i].endproc=jailed;
       nucl->insert_nucleon (X.p[i]);
-      if(par.kaskada_writeall) 
+      if(par.kaskada_writeall)
         e->all.push_back(X.p[i]);
       continue;
     }
@@ -448,7 +760,7 @@ bool kaskada::finalize_interaction()
       if(X.p[i].Ek() < X.p[i].his_fermi)
       {
         X.p[i].endproc=jailed;
-        if(par.kaskada_writeall) 
+        if(par.kaskada_writeall)
           e->all.push_back(X.p[i]);
         continue;
       }
@@ -492,8 +804,6 @@ bool kaskada::finalize_interaction()
   return true;
 }
 
-////////////////////////////////////////
-
 void kaskada::clean()
 {
   while(! parts.empty())
@@ -504,15 +814,13 @@ void kaskada::clean()
 
     if(par.kaskada_writeall)
       e->all.push_back(p0);
-    
+
     parts.pop();
   }
 
   e->pr=nucl->Zr();
   e->nr=nucl->Nr();
 }
-
-////////////////////////////////////////
 
 bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, particle p[],int k)
 {
@@ -525,7 +833,7 @@ bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, parti
   {
     cout<<endl<<"Proc:"<<k<<endl;
     cout<<p1<<endl<<p2<<endl;
-    if(spect) 
+    if(spect)
       cout<<(*spect)<<endl;
     cout<<endl;
     while(i<n)
@@ -535,8 +843,6 @@ bool kaskada::check (particle & p1, particle & p2, particle *spect, int n, parti
   return ch1==0;
 }
 
-////////////////////////////////////////
-
 bool kaskada::check2 (particle & p1, particle & p2, particle *spect, int n, particle p[],int k)
 {
   vect p4=p1+p2;
@@ -544,12 +850,12 @@ bool kaskada::check2 (particle & p1, particle & p2, particle *spect, int n, part
   int i=n;
   while(i)
     p4-=p[--i];
-  double prec=0.001*MeV;  
+  double prec=0.001*MeV;
   if(abs(p4.t)>prec ||abs(p4.x)>prec ||abs(p4.y)>prec ||abs(p4.z)>prec)
   {
     cout<<endl<<"Proc:"<<k<<" delta p4 = "<<p4<<endl;
     cout<<p1<<endl<<p2<<endl;
-    if(spect) 
+    if(spect)
       cout<<(*spect)<<endl;
     cout<<endl;
     while(i<n)

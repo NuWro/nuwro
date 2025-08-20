@@ -32,7 +32,7 @@ nucleus::nucleus(params &par):
 	
 	if(par.nucleus_model==1)
 	{	
-		d=best_data(p,n);
+		d=best_data(p,n,(unsigned char)par.density_model);
 		_r=d->r() * cbrt( A() / d->A() );
 		_kf=d->kF();
 	}

@@ -1,8 +1,11 @@
 #ifndef _particle_h_
 #define _particle_h_
+
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
+
 #include "generatormt.h"
 #include "vect.h"
 #include "pdg.h"
@@ -24,6 +27,7 @@ public:
   char ks;         ///< from HEP event
   char orgin;      ///< from HEP event
   double travelled;///< distance from creation // (or norm of initial neutrino)
+  uint8_t nucleon_id = 0; // 0=other, 1=first nucleon, 2=second nucleon 
   int id;          ///< index in the vector 'all'
   int mother;      ///< index of mother in the vector 'all'
   int endproc;     ///< id of process that destroyed the particle
@@ -52,7 +56,7 @@ public:
   inline void set_pi (){set_pdg_and_mass(pdg_pi,mass_pi);}                ///< set particle pdg and mass
   inline void set_piP (){set_pdg_and_mass(pdg_piP,mass_piP);}             ///< set particle pdg and mass
   inline void set_piM (){set_pdg_and_mass(-pdg_piP,mass_piP);}            ///< set particle pdg and mass
-  inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy 
+  inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy  
 
   inline void set_momentum (vec p);            ///< set particle momentum and adjust energy
   inline void set_energy (double E);           ///< set particle energy and adjust momentum

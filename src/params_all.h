@@ -73,10 +73,14 @@ PARAM(double,qel_minerva_ff_scale,0)\
 PARAM(double,qel_deuterium_ff_scale,0)\
 PARAM(double,qel_nc_axial_mass,1030)\
 PARAM(double,qel_s_axial_mass,1030)\
-PARAM(bool,flux_correction,1)\
-PARAM(int,sf_method,0)\
-PARAM(bool,sf_fsi,1)\
-PARAM(bool,sf_coulomb,1)\
+PARAM(bool,flux_correction,0)\
+PARAM(int,density_model,1)\
+PARAM(int,sf_method,1)\
+PARAM(int,sf_transparency_scale,1)\
+PARAM(int,sf_transparency_table_idx,1)\
+PARAM(bool,sf_nuclearRecoil,1)\
+PARAM(bool,sf_CoulombDistortion,1)\
+PARAM(bool,sf_src,1)\
 PARAM(int,sf_pb,1)\
 PARAM(bool,cc_smoothing,1)\
 PARAM(int,delta_FF_set,1)\
@@ -119,7 +123,7 @@ PARAM(double,hyp_axial_mass,1030)\
 PARAM(bool,hyp_effmass,true)\
 PARAM(double,hyp_Lambda_Eb,27)\
 PARAM(double,hyp_Sigma_Eb,-70)\
-PARAM(bool,kaskada_on,1)\
+PARAM(bool,FSI_on,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\

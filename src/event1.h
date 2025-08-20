@@ -12,14 +12,14 @@ class flags
 	public:
 		/// primary vertex flags
 		bool qel;        ///< (quasi) elastic       (qel == dyn/2==0)
-		bool res;        ///< resontant             (res == dyn/2==1) 
+		bool res;        ///< resontant             (res == dyn/2==1)
 		bool dis;        ///< deep inelastic        (dis == dyn/2==2)
 		bool coh;        ///< coherent              (coh == dyn/2==3)
 		bool mec;        ///< meson exhange current (mec == dyn/2==4)
-		bool hyp;        ///< hyperon production    
-    bool lep;        ///< neutrino-lepton                
+		bool hyp;        ///< hyperon production
+    bool lep;        ///< neutrino-lepton
 
-		bool nc;         ///< neutral current       (nc == dyn%2)     
+		bool nc;         ///< neutral current       (nc == dyn%2)
 		bool cc;         ///< charged current       (cc == !nc)
 
 		bool anty;       ///< true if antineutrino (anty==in[0].pdg<0)
@@ -27,6 +27,9 @@ class flags
 		bool res_delta{false};  ///< true if RES pion comes from Delta
 		bool need_resample_dir{false};
 		bool need_resample_phi{false};
+
+		bool isTransparent;// true for transparent events in sf qel //new
+		bool isCorrelated; // true for correlated events in sf qel //new
 };
 
 using namespace std;
@@ -34,9 +37,9 @@ using namespace std;
 class event:public TObject
 {
 	public:
-		flags flag;               ///< flags for convenient filtering of the events in root scripts  
-		params par;               ///< copy of all the input parameters 
-		                          ///< NOTE: some parameters (e.g. nucleus_p, nucleus_n) can vary 		                          
+		flags flag;               ///< flags for convenient filtering of the events in root scripts
+		params par;               ///< copy of all the input parameters
+		                          ///< NOTE: some parameters (e.g. nucleus_p, nucleus_n) can vary
 		                          ///< from event to event (e.g. in case of the detector simulation)
 		vector < particle > in;	  ///< vector of incoming particles
 		vector < particle > temp; ///< vector of temporary particles (daughters of primary vertex in DIS)
@@ -45,17 +48,17 @@ class event:public TObject
 		vector < particle > all;  ///< vector of all particles (inclluding temporary fsi particles)
 
 		double weight;	        ///< cross section of current event in cm^2 (set to total cross section on saving to file)
-		double norm;            ///< norm of the initial neutrino (for weighted beams; not used) 
+		double norm;            ///< norm of the initial neutrino (for weighted beams; not used)
 		vec r;                  ///< position of the event inside the detector
 		double density;         ///< density of the detector matter in point of the interaction
 		int dyn;		        ///< dynamics channel of the primary vertex. Possible values are:
 		                        ///< 0,1 - qel  cc/nc - (quasi) elastic
 		                        ///< 2,3 - res  cc/nc - resonant (via delta) with some background
 		                        ///< 4,5 - dis  cc/nc - deep inelastric
-		                        ///< 6,7 - coh  cc/nc - coherent 
-		                        ///< 8,9 - mec  cc/nc - meson exhchange current 
+		                        ///< 6,7 - coh  cc/nc - coherent
+		                        ///< 8,9 - mec  cc/nc - meson exhchange current
 		                        ///< 12 - lep  cc/nc - neutrino-lepton interaction
-		                        ///< 20 -  eel  nc - elastic electron scattering 
+		                        ///< 20 -  eel  nc - elastic electron scattering
 
 		int nod[18];            ///< number of rescattering interactions of given type:
 		                        ///< 0 - nucleon elastic,
@@ -80,13 +83,16 @@ class event:public TObject
 		int nr;     ///< number of neutrons in the residual nucleus
 		double r_distance; //< distance from nucleus center of absorption point (if happened)
 
+		double optical_potential = 0.0; //new
+		double averageCE = 0.0; //new
+
 		double res_jacobian; ///< store Jacobian calculated in RES for random kinematics
 		double res_angrew;   ///< store xsec factor coming from angular distribution (for Delta)
 		particle res_nu;     ///< store neutrino for reweighting
 		vect res_q;          ///< store q for reweighting
 
 		event ():weight(0),norm(1){}///< default constructor
-		inline void check();        ///< stop program if event weight or momentum of any particle is NaN (not a number) 
+		inline void check();        ///< stop program if event weight or momentum of any particle is NaN (not a number)
 		inline void clear_fsi();    ///< clear the fsi intermediate particles tracks
 		inline particle nu ();	    ///< initial neutrino
 		inline particle N0 ();	    ///< initial nucleon
@@ -94,16 +100,16 @@ class event:public TObject
 		inline double q0 ();	    ///< energy transfer
 		inline double qv ();	    ///< momentum transfer
 		inline double q2 ();	    ///< momentum transfer squared
-		inline double s ();         ///< s - variable 
+		inline double s ();         ///< s - variable
 		inline double costheta ();  ///< cos theta lab
 		inline double E ();         ///< initial neutrino energy
 		inline int charge (int r);  ///< total charge: 0 - initial, 1 - before fsi, 2 - after fsi
 		inline double W ();         ///< invariant mass (before fsi, all particles except the rescattered lepton)
 		inline int n ();            ///< number of particles after primery vertex (before fsi)
 		inline int f ();            ///< number of particles leaving nucleous
-		inline int nof (int pdg);                     ///< number of particles after primery vertex 
-		inline int nof (int pdg1,int pdg2);           ///< number of particles after primery vertex 
-		inline int nof (int pdg1,int pdg2,int pdg3);  ///< number of particles after primery vertex 
+		inline int nof (int pdg);                     ///< number of particles after primery vertex
+		inline int nof (int pdg1,int pdg2);           ///< number of particles after primery vertex
+		inline int nof (int pdg1,int pdg2,int pdg3);  ///< number of particles after primery vertex
 		inline int fof (int pdg);                     ///< number of particles leaving nucleus
 		inline int fof (int pdg1, int pdg2);          ///< number of particles leaving nucleus
 		inline int fof (int pdg1, int pdg2, int pdg3);///< number of particles leaving nucleus
@@ -137,9 +143,9 @@ class event:public TObject
 		inline int proton_pair_number1 (bool fsi, double thr);
 		inline int proton_pair_number2 (bool fsi, double thr);
 		inline double part_max_mom (int pdg, bool fsi);         ///< maximal momentum of particle pdg
-		inline double part_sec_mom (int pdg, bool fsi);         ///< second largest momentum of particle pdg 
+		inline double part_sec_mom (int pdg, bool fsi);         ///< second largest momentum of particle pdg
 		inline double vert_act (double pion_threshold, bool fsi, double proton_threshold);
-		inline double Erec (double Bin);                        ///< reconstructed neutrino energy 
+		inline double Erec (double Bin);                        ///< reconstructed neutrino energy
 		inline double Q2rec (double Bin); ///reconstructed Q2
 		inline double proton_recoil ();
 		inline double neutron_recoil ();
@@ -232,7 +238,7 @@ double event::costheta ()
 }
 
 
-/// neutrino energy 
+/// neutrino energy
 double event::E ()
 {
 	return in[0].t;
@@ -253,7 +259,7 @@ int event::f ()
 }
 
 
-/// number of particles with given pdg after primary vertex 
+/// number of particles with given pdg after primary vertex
 int event::nof (int pdg)
 {
 	int c = 0;
@@ -264,7 +270,7 @@ int event::nof (int pdg)
 }
 
 
-/// number of particles with given pdg after primary vertex 
+/// number of particles with given pdg after primary vertex
 int event::nof (int pdg1,int pdg2)
 {
 	int c = 0;
@@ -275,7 +281,7 @@ int event::nof (int pdg1,int pdg2)
 }
 
 
-/// number of particles with given pdg after primary vertex 
+/// number of particles with given pdg after primary vertex
 int event::nof (int pdg1,int pdg2,int pdg3)
 {
 	int c = 0;
@@ -334,7 +340,7 @@ int event::charge (int r)
 	return c;
 }
 
-/// invaraint mass 
+/// invaraint mass
 double event::W ()
 {
 	vect h = out[1];
@@ -343,7 +349,7 @@ double event::W ()
 	return sqrt (h * h);
 }
 
-/// 
+///
 double event::przod ()
 {
 	int licz = 0;
@@ -372,7 +378,7 @@ double event::przod ()
 	return licz;
 }
 
-/// 
+///
 double event::tyl ()
 {
 	int licz = 0;
@@ -559,7 +565,7 @@ double event::neutron_recoil()
 	{
 		if ( post[k].pdg == 2112 )
 			sum+=post[k].Ek();
-		
+
 	}
 	return sum;
 }
@@ -594,7 +600,7 @@ double event::meson_recoil_with_masses()
   double sum=0;
 	for (int k = 0; k<post.size(); k++)
 	{
-		if ( post[k].pdg == 211 || post[k].pdg == -211 ) 
+		if ( post[k].pdg == 211 || post[k].pdg == -211 )
 			sum+=post[k].t;
 		if ( post[k].pdg == 111 || post[k].pdg == 321 || post[k].pdg == -321 )
 			sum+=post[k].t;
@@ -607,7 +613,7 @@ double event::meson_recoil_without_masses()
   double sum=0;
 	for (int k = 0; k<post.size(); k++)
 	{
-		if ( post[k].pdg == 211 || post[k].pdg == -211 ) 
+		if ( post[k].pdg == 211 || post[k].pdg == -211 )
 			sum+=post[k].Ek();
 		if ( post[k].pdg == 111 || post[k].pdg == 321 || post[k].pdg == -321 )
 			sum+=post[k].t;
@@ -629,13 +635,13 @@ double event::neutral_kaon_recoil()
 
 double event::total_recoil_with_masses (double K0_fraction, double neutron_fraction)
 {
-  return meson_recoil_with_masses () + lepton_recoil() + photon_recoil() + proton_recoil() + 
+  return meson_recoil_with_masses () + lepton_recoil() + photon_recoil() + proton_recoil() +
   neutron_fraction*neutron_recoil() + K0_fraction*neutral_kaon_recoil() ;
 }
 
 double event::total_recoil_without_masses (double K0_fraction, double neutron_fraction)
 {
-  return meson_recoil_without_masses () + lepton_recoil() + photon_recoil() + proton_recoil() + 
+  return meson_recoil_without_masses () + lepton_recoil() + photon_recoil() + proton_recoil() +
   neutron_fraction*neutron_recoil() + K0_fraction*neutral_kaon_recoil() ;
 }
 
@@ -648,7 +654,7 @@ double event::total_hadr_post()
 }
 
 
-/// number of particles of given pdg with momentum above threshold before/after fsi 
+/// number of particles of given pdg with momentum above threshold before/after fsi
 int event::num_part_thr (int pdg, bool fsi, double threshold)
 {
 	int number = 0;
@@ -726,7 +732,7 @@ int event::num_part_two_thr_withincosine (int pdg, bool fsi, double threshold_mi
 
 
 
-/// cosine if the angle between the two outgoing protons
+/// cosine of the angle between the two outgoing protons
 double event::proton_cosine(bool fsi, double thr)
 {
 	int numer[2];
@@ -962,7 +968,7 @@ vect event::particle_max_mom(int pdg, bool fsi)
 	}
 	}
     }
-	
+
 	return particle_mom;
 }
 
@@ -993,7 +999,7 @@ vect event::particle_max_mom_withincosine (int pdg, bool fsi, double kosinus)
 	}
 	}
     }
-	
+
 	return particle_mom;
 }
 
@@ -1023,13 +1029,13 @@ vect event::particle_max_mom_withincosine_withinmomentum (int pdg, bool fsi, dou
 	}
 	}
     }
-	
+
 	return particle_mom;
 }
 
 
 /// second largest momentum of particle with given pdg before/after FSI (when fsi=0/1 resp.)
-double event::part_sec_mom (int pdg, bool fsi) 
+double event::part_sec_mom (int pdg, bool fsi)
 {
 	double mom [2]= {0.0, 0.0};
 	double memory;
@@ -1122,7 +1128,7 @@ double event::vert_act (double pion_threshold, bool fsi, double proton_threshold
 
 }
 
-/// Reconstructed neutrino energy 
+/// Reconstructed neutrino energy
 double event::Erec (double Bin)
 {
 	double massprim = in[1].mass() - Bin;
@@ -1136,7 +1142,7 @@ double event::Q2rec (double Bin)
 }
 
 
-/// stop program if event weight or momentum of any particle is NaN (not a number) 
+/// stop program if event weight or momentum of any particle is NaN (not a number)
 void event::check()
 {
 	for(int i=0;i<out.size();i++)

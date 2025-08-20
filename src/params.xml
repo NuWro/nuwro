@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<params> 
+<params>
   <param name="random_seed" type="text" ctype="int" default="0">
     <description>Control the random seed persistence
       0 - use time(NULL) as a seed for random number generator
@@ -125,7 +125,7 @@
 	        <description><![CDATA[Histogram name for nutaub]]></description>
 	      </param>
 	    </condition>
-      <condition value="7" description="Atmosferic neutrinos">
+      <condition value="7" description="Atmospferic neutrinos">
         <param name="beam_atmo_files" type="text" ctype="line" default="">
           <description></description>
         </param>
@@ -247,10 +247,10 @@
     <description><![CDATA[Cos theta lab for electron scattering]]></description>
   </param>
   <param name="el_costh_del" type="text" ctype="double" default="2">
-    <description><![CDATA[Electon scattering cos theta lab accuracy]]></description>
+    <description><![CDATA[Electron scattering cos theta lab accuracy]]></description>
   </param>
   <param name="eel_alg" type="text" ctype="string" default="old">
-    <description><![CDATA[electron elastic scattering algorithm: old, fast, Mott, Rutheford]]></description>
+    <description><![CDATA[electron elastic scattering algorithm: old, fast, Mott, Rutherford]]></description>
   </param>
   <param name="qel_kinematics" type="select" ctype="int" default="0">
     <description>Quasi elastic kinematics</description>
@@ -276,12 +276,12 @@
   <param name="qel_axial_ff_set" type="select" ctype="int" default="1">
     <description></description>
     <options>
-      <option key="1"><![CDATA[dipole]]>Axial forma factors</option>
+      <option key="1"><![CDATA[dipole]]>Axial form factors</option>
       <option key="2"><![CDATA[2-fold parabolic modification of axial FF]]></option>
       <option key="3"><![CDATA[3-fold parabolic modification of axial FF]]></option>
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
-      <option key="8"><![CDATA[MINERvA axial FF]]></option>
-      <option key="9"><![CDATA[deuterium axial FF]]></option>
+      <option key="8"><![CDATA[axial form factor determined by MINERvA, Nature 614, 48 (2023)]]></option>
+      <option key="9"><![CDATA[axial form factor from neutrino-deuteron scattering data, Meyer et al., Phys. Rev. D 93, 113015 (2016)]]></option>
     </options>
   </param>
   <param name="qel_rpa" type="select" ctype="int" default="1">
@@ -320,29 +320,42 @@
   <param name="qel_s_axial_mass" type="text" ctype="double" default="1030">
     <description><![CDATA[[MeV] axial mass used in the strange dipole ff]]></description>
   </param>
-  <param name="flux_correction" type="checkbox" ctype="bool" default="1">
+  <param name="flux_correction" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[no flux correction]]></description>
   </param>
-  <param name="sf_method" type="select" ctype="int" default="0">
+    <param name="density_model" type="select" ctype="int" default="1">
+    <description><![CDATA[measured charge density or point density, unfolded from the charge densities)]]></description>
+  </param>
+  <param name="sf_method" type="select" ctype="int" default="1">
     <description><![CDATA[For certain nuclei (C12, O16, Ar40, Ca40, Fe56) it is possible to use the spectral function model instead of the Fermi gas model in the quasi ellastic events. For other nuclei the parameter is ignored.]]></description>
     <options>
       <option key="0"><![CDATA[don't use spectral function]]></option>
-      <option key="1"><![CDATA[use grid spectral function: (C12, O16, Ar40, Fe56)]]></option>
-      <option key="2"><![CDATA[use factorized spectral function: (O16, Ar40, Ca40)]]></option>
+      <option key="1"><![CDATA[Jlab SF for Argon, new grid SF for C, grid SF for O, Fe]]></option>
+      <option key="2"><![CDATA[old grid SF for C and Ar]]></option>
+      <option key="3"><![CDATA[factorized SF for O, Ar, Ca]]></option>
     </options>
   </param>
-  <param name="sf_fsi" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[Turn on/off FSI for spectral function]]></description>
+  <param name="sf_transparency_scale" type="select" ctype="int" default="1">
+    <description><![CDATA[Scaling for the nuclear transparency]]></description>
   </param>
-  <param name="sf_coulomb" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[Turn on/off Couloumb correction for spectral function]]></description>
+  <param name="sf_transparency_table_idx" type="select" ctype="int" default="1">
+    <description><![CDATA[Switch between theoretical and Monte Carlo transparency]]></description>
+  </param>
+  <param name="sf_nuclearRecoil" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[Turn on/off nuclear recoil]]></description>
+  </param>
+    <param name="sf_CoulombDistortion" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[Turn on/off Coulomb distortion]]></description>
+  </param>
+   <param name="sf_src" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[Turn on/off short range correlations]]></description>
   </param>
   <param name="sf_pb" type="select" ctype="int" default="1">
     <description><![CDATA[Pauli blocking model for SF.]]></description>
     <options>
-      <option key="0"><![CDATA[average Fermi momentum]]></option>
-      <option key="1"><![CDATA[local Fermi momentum]]></option>
-      <option key="2"><![CDATA[TG approach - use MC method to decide about PB, according to a nucleon momentum distribution given by spectral function]]></option>
+      <option key="1"><![CDATA[average Fermi momentum]]></option>
+      <option key="2"><![CDATA[local Fermi momentum]]></option>
+      <option key="3"><![CDATA[TG approach - use MC method to decide about PB, according to a nucleon momentum distribution given by spectral function]]></option>
     </options>
   </param>  <param name="cc_smoothing" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[A little performace gain in the QEL channel can be obtained by using: cc_smoothing=1]]></description>
@@ -455,37 +468,37 @@
     <description><![CDATA[enable (1) or not (0) Pauli blocking of final nucleons in Nieves model]]></description>
   </param>
    <param name="MEC_cm_direction" type="checkbox" ctype="double" default="0.0">
-     <description><![CDATA[ in CM frame prefered directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1]]></description>
+     <description><![CDATA[ in CM frame preferred directions along (>0.0) or perpendicular (<0.0) wrt momentum transfer; | | cannot be larger than 1]]></description>
   </param>
   <param name="mec_scaling" type="text" ctype="int" default="0">
     <description><![CDATA[Phenomenological mec scaling based on the CC0pi data; works with the Valencia model and LFG]]></description>
   </param>
   <param name="MEC_cm_direction_pp" type="checkbox" ctype="double" default="0.77">
-     <description><![CDATA[ in CM frame prefered directions along. Only for pp-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred directions along. Only for pp-outgoing nucleon events !!]]></description>
    </param>
    <param name="MEC_cm_strength_pp" type="checkbox" ctype="int" default="4">
-     <description><![CDATA[ in CM frame prefered strength of prefered direction for pp-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred strength of preferred direction for pp-outgoing nucleon events !!]]></description>
    </param>
   <param name="MEC_cm_direction_np" type="checkbox" ctype="double" default="0.7">
-     <description><![CDATA[ in CM frame prefered directions along. Only for np-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred directions along. Only for np-outgoing nucleon events !!]]></description>
    </param>
    <param name="MEC_cm_strength_np" type="checkbox" ctype="int" default="3">
-     <description><![CDATA[ in CM frame prefered strength of prefered direction for np-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred strength of preferred direction for np-outgoing nucleon events !!]]></description>
     </param>
   <param name="MEC_cm_direction_pn" type="checkbox" ctype="double" default="0.8">
-     <description><![CDATA[ in CM frame prefered directions along. Only for pn-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred directions along. Only for pn-outgoing nucleon events !!]]></description>
    </param>
    <param name="MEC_cm_strength_pn" type="checkbox" ctype="int" default="4">
-     <description><![CDATA[ in CM frame prefered strength of prefered direction for pn-outgoing nucleon events !!]]></description>
+     <description><![CDATA[ in CM frame preferred strength of preferred direction for pn-outgoing nucleon events !!]]></description>
     </param>
   <param name="hyp_lambda" type="checkbox" ctype="bool" default="1">
-    <description>Lambda baryon production</description> 
+    <description>Lambda baryon production</description>
   </param>
   <param name="hyp_sigma_zero" type="checkbox" ctype="bool" default="1">
-    <description>Sigma zero baryon production</description> 
+    <description>Sigma zero baryon production</description>
   </param>
   <param name="hyp_sigma_minus" type="checkbox" ctype="bool" default="1">
-    <description>Sigma minus baryon production</description> 
+    <description>Sigma minus baryon production</description>
   </param>
   <param name="hyp_g2_Re_part" type="text" ctype="double" default="0">
     <description>Real part of g2 form factor></description>
@@ -512,8 +525,8 @@
   <param name="hyp_Sigma_Eb" type="text" ctype="double" default="-70">
     <description>Sigma binding energy at max density; [10 MeV; -150 MeV]</description>
   </param>
-  <param name="kaskada_on" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[use (1) or not (0) the cascade]]></description>
+  <param name="FSI_on" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[use (1) or not (0) for final state interactions]]></description>
   </param>
   <param name="kaskada_w" type="text" ctype="double" default="7">
     <description><![CDATA[[MeV] work function]]></description>
@@ -523,24 +536,24 @@
   </param>
   <param name="kaskada_writeall" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[Store all intermediate FSI particles int the event::all vector]]></description>
-  </param> 
+  </param>
   <param name="formation_zone" type="select" ctype="string" default="fz-new">
     <description><![CDATA[Name of formation zone model]]></description>
     <options>
       <option key="fz"><![CDATA[fz - ]]></option>
       <option key="fz-new"><![CDATA[fz-new - ]]></option>
-      <option key="trans"><![CDATA[trans - ]]></option>   
-      <option key="skat8"><![CDATA[skat8 - ]]></option>   
-      <option key="cohl"><![CDATA[cohl - ]]></option>   
-      <option key="cosyn"><![CDATA[cosyn - ]]></option>   
-      <option key="ranft"><![CDATA[tranft - ]]></option>    
-      <option key="rl"><![CDATA[rl - ]]></option>   
-      <option key="delta"><![CDATA[delta - ]]></option>   
-      <option key="nofz"><![CDATA[nofz - ]]></option>   
+      <option key="trans"><![CDATA[trans - ]]></option>
+      <option key="skat8"><![CDATA[skat8 - ]]></option>
+      <option key="cohl"><![CDATA[cohl - ]]></option>
+      <option key="cosyn"><![CDATA[cosyn - ]]></option>
+      <option key="ranft"><![CDATA[tranft - ]]></option>
+      <option key="rl"><![CDATA[rl - ]]></option>
+      <option key="delta"><![CDATA[delta - ]]></option>
+      <option key="nofz"><![CDATA[nofz - ]]></option>
     </options>
   </param>
   <param name="tau" type="text" ctype="double" default="8">
-    <description><![CDATA[parametr in the ranft fz model]]></description>
+    <description><![CDATA[parameter in the ranft fz model]]></description>
   </param>
   <param name="formation_length" type="text" ctype="double" default="1">
     <description><![CDATA[formation length in fm for formation_zone = const]]></description>
@@ -595,13 +608,13 @@
     <description><![CDATA[enable (1) or not (0) Pauli blocking]]></description>
   </param>
   <param name="mixed_order" type="checkbox" ctype="bool" default="1">
-    <description><![CDATA[random order of events in uotut file]]></description>
+    <description><![CDATA[random order of events in output file]]></description>
   </param>
     <param name="res_dis_blending_start" type="checkbox" ctype="double" default="1600">
-    <description><![CDATA[random order of events in uotut file]]></description>
+    <description><![CDATA[random order of events in output file]]></description>
   </param>
   <param name="res_dis_blending_end" type="checkbox" ctype="double" default="1900">
-    <description><![CDATA[random order of events in uotut file]]></description>
+    <description><![CDATA[random order of events in output file]]></description>
   </param>
   <param name="table_path" type="text" ctype="string" default="">
     <description><![CDATA[The location to look for tabular date]]></description>
@@ -615,7 +628,7 @@
         </param>
     </condition>
     </conditions>
-  </param> 
+  </param>
 </params>
 
 <!--

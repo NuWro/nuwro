@@ -29,7 +29,7 @@ mecevent (params & p, event & e, nucleus & t, bool cc)
 	e.flag.qel = false;
 	e.flag.coh = false;
 	e.flag.mec = true;
-	bool fsi = p.kaskada_on;
+	bool fsi = p.FSI_on;
 //	double fermimom = p.nucleus_kf;							 
 //	double potwell = sqrt(fermimom*fermimom + 939*939) - 939;//Fermi energy
 //  double ebinding = 8*MeV;

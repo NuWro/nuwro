@@ -304,7 +304,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.qel=e->flag.cc=true;
 			if (p.dyn_qel_cc) // qel cc
 			{
-				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
+				if(p.sf_method>0)
 					sfevent (p, *e, *_nucleus);
 				else
 					qelevent1 (p, *e, *_nucleus, false);
@@ -314,7 +314,7 @@ void NuWro::makeevent(event* e, params &p)
 			e->flag.qel=e->flag.nc=true;
 			if (p.dyn_qel_nc) // qel nc
 			{
-				if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
+				if(p.sf_method>0)
 					sfevent (p, *e, *_nucleus);
 				else
 				qelevent1 (p, *e, *_nucleus, true);
@@ -461,7 +461,7 @@ void NuWro::makeevent(event* e, params &p)
                     e_el_event2orig(p,*e,*_nucleus,false); 
                 else   // all remaining algorithms  
                     e_el_event2(p,*e,*_nucleus,false); */
-                if(p.sf_method>0 and has_sf(*_nucleus, p.sf_method))
+                if(p.sf_method>0)
 					sfevent (p, *e, *_nucleus);
 				else
 					qelevent1 (p, *e, *_nucleus, true);
@@ -533,7 +533,7 @@ void NuWro::finishevent(event* e, params &p)
 	if (!e->flag.coh && !e->flag.lep && (e->par.nucleus_n + e->par.nucleus_p > 1))
 	{
 		kaskada k(p, *e, &input);
-		k.kaskadaevent();		 // runs only if p.kaskada_on is true
+		k.kaskadaevent();		 // runs only if p.FSI_on is true
 	}
 	else
 //	if(e->post.size()==0)   // copy out to post if no fsi
