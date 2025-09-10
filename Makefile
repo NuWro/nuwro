@@ -15,14 +15,14 @@ DEBUG         = 1
 #DEBUGON = -g
 ifeq ($(OS),Darwin)
   # Flags for OSX
-  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I/Users/hprasad/ROOTEGPythia6/build/Darwin/include
+ CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I${ROOTEGPythia6_ROOT}/include
 else
   # Flags for others
- CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I/Users/hprasad/ROOTEGPythia6/build/Darwin/include
+ CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I${ROOTEGPythia6_ROOT}/include
 # CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` --std=c++17 -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-deprecated-register -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS)
  
 endif
-LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -L/Users/hprasad/ROOTEGPythia6/build/Darwin/lib -Wl,-rpath,/Users/hprasad/ROOTEGPythia6/build/Darwin/lib -lEGPythia6 -lPythia6 -lGeom -lMinuit -lgfortran $(QTLIBS)
+LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -L${ROOTEGPythia6_ROOT}/lib -Wl,-rpath,${ROOTEGPythia6_ROOT}/lib -lEGPythia6 -lPythia6 -lGeom -lMinuit -lgfortran $(QTLIBS)
 LD            = g++
 CXX           = g++
 CC            = g++
