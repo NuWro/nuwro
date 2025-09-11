@@ -78,7 +78,7 @@ PARAM(int,sf_method,0)\
 PARAM(bool,sf_fsi,1)\
 PARAM(bool,sf_coulomb,1)\
 PARAM(int,sf_pb,1)\
-PARAM(bool,cc_smoothing,1)\
+PARAM(bool,cc_smoothing,0)\
 PARAM(int,delta_FF_set,1)\
 PARAM(int,e_spp_ff_set,4)\
 PARAM(int,delta_selfenergy,0)\
@@ -94,7 +94,7 @@ PARAM(int,res_hybrid_resampling,0)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(int,coh_kind,2)\
-PARAM(int,mec_kind,3)\
+PARAM(int,mec_kind,6)\
 PARAM(double,mec_ratio_pp,0.85)\
 PARAM(double,mec_ratio_ppp,0.8)\
 PARAM(double,mec_central_motion,0.0)\
