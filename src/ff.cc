@@ -18,43 +18,11 @@
 #include "sfevent.h"
 #include "sf/GConstants.h"
 using namespace std;
-double inline pow2(double x) { return x * x; }
-/// Form Factor Parameters
-static double MA_cc = 1030 * MeV;
-static double MA_nc = 1030 * MeV;
-static const double MA_cc_mec = 1014 * MeV;  // axial mass for MEC is fixed in TEM model
-static const double MA_nc_mec = 1014 * MeV;
-static double MA_s = 1030 * MeV;
-static double MA_hyp = 1030 * MeV; // C Thorpe Added Hyperon axial mass parameter
-static const double Dipole_Lambda = 5.6; //C Thorpe: Lambda parameter used in dipole form factors // default 1030 MeV // March 2019
-static double delta_s = 0;
-static int axialFFset = 0;
-static const int strangeFFset = 0;
-static int strange = 0;
-//Constants associated with SU(3) representation of axial currents
-static const double Axial_F = 0.463;
-static const double Axial_D = 0.804;
-static const double Axial_x = Axial_F/(Axial_F+Axial_D);
-//Second class current setup
-//real and imaginary components at Q2=0
-static double Rg20 = 0;
-static double Ig20 = 0;
-//symmetry breaking setup
-static bool sym_break = false;
-static double p_AEp[7] = {1., 0.9927, 0.9898, 0.9975, 0.9812, 0.9340, 1.};
-static double p_AMp[7] = {1., 1.0011, 0.9992, 0.9974, 1.0010, 1.0003, 1.};
-static double p_AEn[7] = {1., 1.1011, 1.1392, 1.0203, 1.1093, 1.5429, 0.9706};
-static double p_AMn[7] = {1., 0.9958, 0.9877, 1.0193, 1.0350, 0.9164, 0.7300};
-static double p_AAx[7] = {1., 0.9958, 0.9877, 1.0193, 1.0350, 0.9164, 0.7300};
-// 2 and 3 Component Form Factor parameters
-static double axial_ff_beta = 0.0;
-static double axial_ff_theta = 0.0;
-static double axial_ff_gamma = 0.0;
-static double axial_ff_alpha = 0.0;
+constexpr inline double pow2(double x) { return x * x; }
+
 static double mva_errorBar = 0.0;//new JS
 static double deut_errorBar = 0.0;//new JS
 // strange =0 nie strange FF  strange =1 old implementation (recover old bahaviour)  strange =2 new implementation (uses strange axial mass != nc axial mass)
-static int strangeEM = 0;
 struct FF
 {
   double Q2;
@@ -90,6 +58,7 @@ double comp2_FA(const double q2, const double ma); // 2 Component Model
 double comp3_FA(const double q2, const double ma); // 3 Component Model
 double zexp_FA(const double q2, const double ma); // Z-expansion Model
 double MINERvA_FA(const double q2, const double sigma ); // axial form factor determined by MINERvA, Nature 614, 48 (2023)//changed JS
+double LQCD_FA(const double q2, const double bandSwitch); // Average LQCD form factor obtained from A. Meyer via private communication
 // IMPLEMENTATION
 /// Calculate F1,F2
 pair<double, double> FF::f12(int kind)
@@ -210,7 +179,6 @@ pair<double, double> FF::f12(int kind)
   }
   return pair<double, double>(f1, f2);
 }
-
 // dipole electric form factor G_E^V
 FF DipoleFF(const double q2)
 {
@@ -415,10 +383,11 @@ pair<double, double> f12(double q2, int kind)
 
   return ff.f12(kind);
 }
+
 //____________________________________
 // AXIAL FORM FACTOR FUNCTIONS
 //____________________________________
-//____________________________________
+
 /// BBBA07 Dipole
 double bbba07_FA(double q2, double ma)
 {
@@ -435,7 +404,7 @@ double comp2_FA(double q2, double ma)
   double gterm = 1.0 / pow2(1.0 + axial_ff_gamma * q2);
   double aterm = (1.0 - axial_ff_alpha + \
 		  (axial_ff_alpha * (ma_axl * ma_axl) / (ma_axl*ma_axl + q2)));
-  return -1.267 * gterm * aterm;
+  return gA * gterm * aterm;
 }
 //____________________________________
 /// 3 Component model
@@ -443,7 +412,7 @@ double comp3_FA(double q2, double ma)
 {
   (void) ma; // MA Ignored for this function
   double comp2_term = comp2_FA(q2, ma);
-  double exp_term = - 1.267 * sqrt( axial_ff_theta) * axial_ff_beta * \
+  double exp_term = gA * sqrt( axial_ff_theta) * axial_ff_beta * \
     exp(axial_ff_theta + axial_ff_beta * q2);
   return comp2_term + exp_term;
 }
@@ -462,7 +431,7 @@ double zexp_GetZ(double q2)
   double den = sqrt(zexp_tc - q2) + sqrt(zexp_tc - zexp_t0);
   return num/den;
 }
-void PrintZExpTerms(bool showFA)//this can be removed - JS
+void PrintZExpTerms(bool showFA)
 {
   cout << " ZEXP State! " << endl;
   cout << " ------------------" << endl;
@@ -591,11 +560,46 @@ void zexp_applyq0limit()
   {
     FA = FA + pow(z, i)* zexp_aterms[i];
   }
-  zexp_aterms[0]= -1.267 - FA;
+  zexp_aterms[0]= gA - FA;
   return;
 }
-// axial form factor determined by MINERvA, Nature 614, 48 (2023) : implementation by A. Ankowski
 
+// Average LQCD axial form factor
+double LQCD_FA(const double q2, const double /*bandSwitch*/)
+{
+    constexpr double tcut = 161604.0;   // (3 m_pi)^2 in MeV^2
+    constexpr double t0   = -500000.0;  // MeV^2
+
+    // Ensure physical domain: q² must be < tcut
+    if (q2 >= tcut) return 0.0;
+
+    const double sqrt1 = std::sqrt(tcut - q2);
+    const double sqrt2 = std::sqrt(tcut - t0);
+    const double z = (sqrt1 - sqrt2) / (sqrt1 + sqrt2);
+
+    constexpr double a[] = {
+        0.7174202,   // a0
+       -1.720897,    // a1
+        0.3098271,   // a2
+        1.621258,    // a3
+       -0.2750699,   // a4
+       -1.252979,    // a5
+        0.6004408    // a6
+    };
+
+    double FA = 0.0, z_power = 1.0;
+    for (int k = 0; k <= 6; ++k)
+    {
+        FA += a[k] * z_power * (-1);
+        z_power *= z;
+    }
+    
+//        std::cout << -q2/1e6 << " " << FA << std::endl;
+
+    return FA;
+}
+
+// axial form factor determined by MINERvA, Nature 614, 48 (2023) : implementation by A. Ankowski
 double MINERvA_parametrization(const double qSq, const double bandWeight)
 {
     static const double tCut( 9*std::pow(139.6*MeV, 2) );
@@ -681,28 +685,26 @@ double MINERvA_parametrization(const double qSq, const double bandWeight)
     }
 
     const double uncSq(   coefficients[0] + z*( coefficients[1] + z*( coefficients[2] + z*( coefficients[3] + z*( coefficients[4] + z*( coefficients[5] + z*( coefficients[6] + z*( coefficients[7] + z*( coefficients[8] + z*( coefficients[9] + z*( coefficients[10] + z*( coefficients[11] + z*( coefficients[12] + z*( coefficients[13] + z*( coefficients[14] + z*( coefficients[15] + z*coefficients[16] ) ) ) ) ) ) ) ) ) ) ) ) ) ) )   );
-    
+
     return zExp - bandWeight * (sqrt( uncSq ));
 }
 
-//double mva_errorBar( 0.5 ); // Upper limit = 1, Lower limit = -1
+//double mva_errorBar( 0.0 ); // Upper limit = 1, Lower limit = -1
 double MINERvA_FA(const double qSq, const double ma)
 {
     double weight = mva_errorBar;
     return MINERvA_parametrization( qSq, weight );
 }
 
-
-/// Standard Dipole
+// Standard Dipole
 double dipole_FA(double q2, double ma)
 {
   return gA / pow2(1 - q2 / ma / ma);
 }
 
 // axial form factor from neutrino-deuteron scattering data, Meyer et al., Phys. Rev. D 93, 113015 (2016)
-double deuterium_FA_parametrization(const double qSq, const int bandSwitch)
+double deuterium_FA_parametrization(const double qSq, const double bandSwitch)
 {
-//static std::ofstream outFile;
     static const double tCut( 9*std::pow(140.0*MeV, 2) );
     static const double t0( -0.28*GeV2 );
     static const double dummy( sqrt(tCut - t0) );
@@ -796,22 +798,15 @@ double deuterium_FA_parametrization(const double qSq, const int bandSwitch)
 
     const double uncSq(   coefficients[0] + z*( coefficients[1] + z*( coefficients[2] + z*( coefficients[3] + z*( coefficients[4] + z*( coefficients[5] + z*( coefficients[6] + z*( coefficients[7] + z*( coefficients[8] + z*( coefficients[9] + z*( coefficients[10] + z*( coefficients[11] + z*( coefficients[12] + z*( coefficients[13] + z*( coefficients[14] + z*( coefficients[15] + z*coefficients[16] ) ) ) ) ) ) ) ) ) ) ) ) ) ) )   );
 
-    //return uncSq;
-
-    /*    if (outFile.is_open())
-    {
-        outFile << -qSq/1e6 << "\t" << -zExp - sqrt( uncSq )<< std::endl;
-    }*/
-
     return (bandSwitch > 0) ? zExp - sqrt( uncSq ) : zExp + sqrt( uncSq );
 }
 
-//double deutFA_errorBar( 0.0 ); // Upper limit = 1, Lower limit = -1
 double deuterium_FA( const double qSq, const double ma )
 {
     double weight = deut_errorBar;
     return deuterium_FA_parametrization(qSq, weight);
 }
+
 // Calculate the axial form factors
 pair<double, double> fap(double q2, int kind)
 {
@@ -915,7 +910,7 @@ pair<double, double> fap(double q2, int kind)
   }
   return pair<double, double>(Fa, Fp);
 }
-double axialcorr(int axialFF, double q2)//correction to dipole axial FF - JS
+double axialcorr(int axialFF, double q2)
 {
   double min;   // maximal reduction
   double max;   // maximal enhancement
@@ -954,7 +949,7 @@ pair<double,double>g2(double q2,int kind){
   // assume dipole form with same axial mass as g1
   double Rg2 = (-1)*Rg20/(pow(1-q2/(MA_hyp*MA_hyp),2));
   double Ig2 = (-1)*Ig20/(pow(1-q2/(MA_hyp*MA_hyp),2));
-  switch(kind)
+  switch (kind)
   {
   //Lambda zero production
   case 12:
@@ -1023,9 +1018,10 @@ void ff_configure(params & p)
   axialFFset = p.qel_axial_ff_set;
   switch(axialFFset)
   {
+  // correct?
   case 1:
   case 2:
-  case 3: Axialfromq2 = dipole_FA; break;
+  case 3: Axialfromq2 = dipole_FA;  break;
   case 4: Axialfromq2 = bbba07_FA;
     for(int i=0;i<7;i++)
       p_AAx[i] = (&rew.bba07_AAx1)[i].val;
@@ -1057,15 +1053,18 @@ void ff_configure(params & p)
     //    PrintZExpTerms(true);
     //    sleep(5);
     break;
-  case 8:
-          mva_errorBar = rew.qel_minerva_ff_scale.val;//jancheck
-    Axialfromq2 = MINERvA_FA;
-    break;
-    case 9:
-          deut_errorBar = rew.qel_deuterium_ff_scale.val;//jancheck
-    Axialfromq2 = deuterium_FA;
-    //deutFA_errorBar = rew.deutFA_errorBar.val;
-    break;
+    case 8:
+      mva_errorBar = rew.qel_minerva_ff_scale.val;//jancheck
+      Axialfromq2 = MINERvA_FA;
+      break;
+      case 9:
+      deut_errorBar = rew.qel_deuterium_ff_scale.val;//jancheck
+      Axialfromq2 = deuterium_FA;
+      //deutFA_errorBar = rew.deutFA_errorBar.val;
+      break;
+     case 10:
+      Axialfromq2 = LQCD_FA;
+      break;
   default:
     throw("bad axial ffset");
     break;
@@ -1076,10 +1075,6 @@ void ff_configure(params & p)
   MA_cc = rew.qel_cc_axial_mass.val;
   MA_nc = rew.qel_nc_axial_mass.val;
   MA_s = rew.qel_s_axial_mass.val;
-    
-  //mva_errorBar = rew.qel_minerva_ff_scale.val;//jancheck
-  //deut_errorBar = rew.qel_deuterium_ff_scale.val;//jancheck
-    
   //locate parameter values in params
   //hyperon axial mass
   MA_hyp = p.hyp_axial_mass;
@@ -1091,4 +1086,3 @@ void ff_configure(params & p)
   if(p.hyp_su3_sym_breaking)
   sym_break = true;
 }
-//________________________________________________________

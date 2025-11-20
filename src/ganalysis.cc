@@ -2067,7 +2067,7 @@ void test2_mec_old_cc :: set_params ()
 	P.beam_particle = 14;
 	P.beam_energy = "1000";
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.mec_kind = 1;
 	
@@ -2092,7 +2092,7 @@ void test2_mec_new_cc :: set_params ()
 	P.beam_particle = 14;
 	P.beam_energy = "1000";
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.mec_kind = 0;
 	
@@ -2140,7 +2140,7 @@ void test_mec_nc :: set_params ()
 	P.read("data/target/C.txt");
 	P.read("data/beam/nuintF.txt");
 
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.qel_nc_axial_mass = 1030;
 	
@@ -3126,7 +3126,7 @@ void mb_nce_both :: start ()
 
 	if (mb_nce_mode == 3)
 	{
-		P.kaskada_on = 0;
+		P.FSI_on = 0;
 		
 		cout << "QEL on Hydrogen" << endl;
 					
@@ -4251,7 +4251,7 @@ void energy_test :: set_params ()
 	
 	P.mec_kind = 1;	
 	
-	P.kaskada_on = 1;
+	P.FSI_on = 1;
 }
 
 void niwg_nieves :: set_params ()
@@ -4275,7 +4275,7 @@ void niwg_nieves :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 1;
+	P.FSI_on = 1;
 }
 
 void niwg_nieves :: calculate (event *e)
@@ -4336,7 +4336,7 @@ void niwg_nieves2 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 1;
+	P.FSI_on = 1;
 }
 
 void niwg_nieves2 :: calculate (event *e)
@@ -4427,7 +4427,7 @@ void bodek :: set_params ()
 	P.dyn_coh_nc = 0;
 	P.dyn_mec_nc = 0;
 		
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 2; //1 - gfg, 2 - lfg
 	P.sf_method = 1;
@@ -4454,7 +4454,7 @@ void phd1 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 1; //1 - gfg, 2 - lfg
 	P.sf_method = 0;
@@ -4488,7 +4488,7 @@ void phd2 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	P.pauli_blocking = 0;
 	P.nucleus_target = 1; //1 - gfg, 2 - lfg
 	P.sf_method = 0;
@@ -4522,7 +4522,7 @@ void phd3 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 2; //1 - gfg, 2 - lfg
 	P.sf_method = 0;
@@ -4560,7 +4560,7 @@ void phd5 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 2; //1 - gfg, 2 - lfg
 	P.sf_method = 0;
@@ -4708,7 +4708,7 @@ void mec_bu :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 2; //1 - gfg, 2 - lfg
 	P.sf_method = 0;
@@ -4744,7 +4744,7 @@ void mec_bu2 :: set_params ()
 	
 	P.mec_kind = 3;	
 	
-	P.kaskada_on = 0;
+	P.FSI_on = 0;
 	
 	P.nucleus_target = 2; //1 - gfg, 2 - lfg
 	P.sf_method = 0;

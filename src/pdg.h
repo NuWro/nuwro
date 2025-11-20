@@ -346,7 +346,7 @@ namespace PDG
   const double mass_Kstar_892P = 0.89166 * GeV;
   const double mass_Kstar_892 = 0.8961 * GeV;
   const double mass_KP = 0.493677 * GeV;
-  const double mass_K = 0.497648 * GeV;
+  const double mass_K = 0.497614 * GeV; 
   const double mass_Lambda_1405 = 1.407 * GeV;
   const double mass_Lambda_1520 = 1.5195 * GeV;
   const double mass_Lambda_1600 = 1.6 * GeV;
@@ -455,14 +455,14 @@ namespace PDG
   const double mass_chi_c0_1P = 3.41519 * GeV;
   const double mass_chi_c1_1P = 3.51059 * GeV;
   const double mass_chi_c2_1P = 3.55626 * GeV;
-  const double mass_e = 0.000510999 * GeV;
+  const double mass_e = 0.510998910*MeV; 
   const double mass_etaprim_958 = 0.95778 * GeV;
   const double mass_eta_1295 = 1.294 * GeV;
   const double mass_eta_1405 = 1.4103 * GeV;
   const double mass_eta_1475 = 1.476 * GeV;
   const double mass_eta_2_1645 = 1.617 * GeV;
   const double mass_eta_c_1S = 2.9796 * GeV;
-  const double mass_eta = 0.54775 * GeV;
+  const double mass_eta = 0.54751 * GeV;
   const double mass_f_0_1500 = 1.507 * GeV;
   const double mass_f_0_1710 = 1.714 * GeV;
   const double mass_f_0_980 = 0.98 * GeV;
@@ -477,17 +477,17 @@ namespace PDG
   const double mass_f_4_2050 = 2.034 * GeV;
   const double mass_gamma = 0 * GeV;
   const double mass_h_1_1170 = 1.17 * GeV;
-  const double mass_mu = 0.105658 * GeV;
-  const double mass_n = 0.939565 * GeV;
-  const double mass_neutron = 0.939565 * GeV;
+  const double mass_mu = 0.105658367 * GeV; 
+  const double mass_n = 939.56536*MeV;
+  const double mass_neutron = 939.56536*MeV;
   const double mass_nu_e = 0 * GeV;
   const double mass_nu_mu = 0 * GeV;
   const double mass_nu_tau = 0 * GeV;
   const double mass_omega_1650 = 1.67 * GeV;
   const double mass_omega_3_1670 = 1.667 * GeV;
   const double mass_omega_782 = 0.78259 * GeV;
-  const double mass_pP = 0.938272 * GeV;
-  const double mass_proton = 0.938272 * GeV;
+  const double mass_pP = 938.27203*MeV;
+  const double mass_proton = 938.27203*MeV;
   const double mass_phi_1020 = 1.01946 * GeV;
   const double mass_phi_1680 = 1.68 * GeV;
   const double mass_phi_3_1850 = 1.854 * GeV;
@@ -501,8 +501,8 @@ namespace PDG
   const double mass_pi_1800 = 1.812 * GeV;
   const double mass_pi_2_1670P = 1.6724 * GeV;
   const double mass_pi_2_1670 = 1.6724 * GeV;
-  const double mass_piP = 0.13957 * GeV;
-  const double mass_pi = 0.134977 * GeV;
+  const double mass_piP = 0.13957018 * GeV; 
+  const double mass_pi = 0.1349766 * GeV; 
   const double mass_psi_2S = 3.68609 * GeV;
   const double mass_psi_3770 = 3.77 * GeV;
   const double mass_psi_4040 = 4.04 * GeV;
@@ -517,11 +517,11 @@ namespace PDG
   const double mass_rho_770P = 0.7758 * GeV;
   const double mass_rho_770 = 0.7758 * GeV;
   const double mass_t23 = 174 * GeV;
-  const double mass_tau = 1.77699 * GeV;
+  const double mass_tau = 1.77684 * GeV; 
 
   inline bool nucleon (int pdg)
   {
-    return pdg == pdg_proton 
+    return pdg == pdg_proton
         or pdg == pdg_neutron;
   }
 
@@ -529,15 +529,15 @@ namespace PDG
   {
     return pdg == pdg_proton
         or pdg == pdg_neutron
-        or pdg == pdg_pi 
-        or pdg == pdg_piP 
+        or pdg == pdg_pi
+        or pdg == pdg_piP
         or pdg == -pdg_piP;
   }
-  
+
   inline bool pion (int pdg)
   {
-    return pdg == pdg_pi 
-        or pdg == pdg_piP 
+    return pdg == pdg_pi
+        or pdg == pdg_piP
         or pdg == -pdg_piP;
   }
 

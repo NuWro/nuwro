@@ -82,7 +82,7 @@ double gridfun2d::value(const double p, const double e) const {
 // generate removal energy for given momentum p
 double gridfun2d::generateE(const double p) const {
   // how close to bin center to skip interpolation
-  static const double epsilon = 1.0;  // MeV
+  static const double epsilon = 0.1;  // MeV 
   // make sure momentum is within the range (and the SF table is given)
   if (p < pMin || p >= pMax || table == NULL) return 0.0;
 
@@ -147,50 +147,13 @@ double gridfun2d::generateE(const double p) const {
 
   static std::default_random_engine generator;
   static std::normal_distribution<double> distribution(0.0, e_bin_width/2.0);
+  double result = e_center + distribution(generator);
+  
+  if (std::isnan(result)) {
+  
+  throw std::runtime_error("Result is NaN!");
+  }
 
-  return e_center + distribution(generator);
+  return result;
 }
 
-// double gridfun2d::generateE(const double p) const {
-//   if (p < pMin || p >= pMax || table == NULL) return 0.0;
-
-//   double rp = (p - pMin) / (pMax - pMin) * pRes - 0.5;
-//   const int np = floor(rp);
-//   const double pR = rp - np;
-//   double s = 0;
-
-//   for (int i = 0; i < eRes; i++)
-//     s += (erow[i] = (1 - pR) * val(np, i) + pR * val(np + 1, i));
-
-//   //    for(int i=eRes-1;i>0;i--)
-//   //       erow[i]-=(erow[i]-erow[i-1])/2;
-//   //    erow[0]/=2;
-
-//   double des = frandom() * (s - 0.25 * erow[0] - 0.25 * erow[eRes - 1]);
-
-//   double real = 0.25 * erow[0];
-
-//   if (des < 0.25 * erow[0])
-//     return eMin + sqrt(des / erow[0]) * (eMax - eMin) / eRes;
-
-//   int i = 0;
-//   while (real < des and i < eRes) {
-//     real += (erow[i] + erow[i + 1]) / 2;
-//     i++;
-//   }
-//   // now real>=res
-//   if (i == eRes)
-//     return eMax - sqrt((des - real) / erow[eRes - 1]) * (eMax - eMin) / eRes;
-//   else  // now real>=des
-//   {
-//     double a = erow[i - 1];
-//     double b = erow[i];
-//     double P = real - des;
-//     double x;
-//     if (a == b)
-//       x = P / a;
-//     else
-//       x = (sqrt(b * b + 2 * P * (a - b)) - b) / (a - b);
-//     return eMin + (eMax - eMin) / eRes * (i - x);
-//   }
-// }

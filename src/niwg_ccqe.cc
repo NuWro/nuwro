@@ -34,10 +34,10 @@ int ccqe_sim_help(string *tarpar, string en)
 int ccqe_sim()
 {
 	string tarpar[4];	
-	tarpar[0] = "-p 'nucleus_p = 0' -p 'nucleus_n = 1' -p 'nucleus_target = 0' -p 'kaskada_on = 0' -p 'pauli_blocking = 0' ";
-	tarpar[1] = "-p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'nucleus_target = 1' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' ";
-	tarpar[2] = "-p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'nucleus_target = 4' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' ";
-	tarpar[3] = "-p 'nucleus_p = 26' -p 'nucleus_n = 30' -p 'nucleus_target = 1' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' ";
+	tarpar[0] = "-p 'nucleus_p = 0' -p 'nucleus_n = 1' -p 'nucleus_target = 0' -p 'FSI_on = 0' -p 'pauli_blocking = 0' ";
+	tarpar[1] = "-p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'nucleus_target = 1' -p 'FSI_on = 0' -p 'pauli_blocking = 1' ";
+	tarpar[2] = "-p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'nucleus_target = 4' -p 'FSI_on = 0' -p 'pauli_blocking = 1' ";
+	tarpar[3] = "-p 'nucleus_p = 26' -p 'nucleus_n = 30' -p 'nucleus_target = 1' -p 'FSI_on = 0' -p 'pauli_blocking = 1' ";
 	
 	for (int energy = 200; energy < 1000; energy += 50)
 	{

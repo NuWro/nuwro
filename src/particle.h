@@ -1,8 +1,11 @@
 #ifndef _particle_h_
 #define _particle_h_
+
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
+
 #include "generatormt.h"
 #include "vect.h"
 #include "pdg.h"
@@ -19,11 +22,13 @@ class particle : public vect
 
   double _mass;    ///< on shell mass
 public:
+
   vect r;          ///< position and time relative to the centre of the Nucleus event start time
   int pdg;         ///< pdg code of the particle  
   char ks;         ///< from HEP event
   char orgin;      ///< from HEP event
   double travelled;///< distance from creation // (or norm of initial neutrino)
+  uint8_t nucleon_id = 0; // 0=other, 1=first nucleon, 2=second nucleon 
   int id;          ///< index in the vector 'all'
   int mother;      ///< index of mother in the vector 'all'
   int endproc;     ///< id of process that destroyed the particle
@@ -31,6 +36,7 @@ public:
   bool primary;
 
 public:
+
   inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
   inline particle (int code,double mass);      ///< create particle at rest 
   inline particle (double mass);               ///< create particle at rest 
@@ -52,7 +58,7 @@ public:
   inline void set_pi (){set_pdg_and_mass(pdg_pi,mass_pi);}                ///< set particle pdg and mass
   inline void set_piP (){set_pdg_and_mass(pdg_piP,mass_piP);}             ///< set particle pdg and mass
   inline void set_piM (){set_pdg_and_mass(-pdg_piP,mass_piP);}            ///< set particle pdg and mass
-  inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy 
+  inline void set_fermi (double x){his_fermi=x;}            ///< set fermi energy  
 
   inline void set_momentum (vec p);            ///< set particle momentum and adjust energy
   inline void set_energy (double E);           ///< set particle energy and adjust momentum
@@ -297,6 +303,11 @@ bool particle::lepton()
 {
   int x=pdg>0?pdg:-pdg;
   return x >= 11 && x <= 16;
+}
+
+inline bool lepton(int pdg) { // particle::?
+    int a = std::abs(pdg);
+    return a >= 11 && a <= 16;  // e±, μ±, τ± and neutrinos
 }
 
 bool particle::pion()
