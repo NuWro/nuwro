@@ -19,10 +19,10 @@ class nucleus_data
 	double _max_rr_dens;
 	double _kF;
 	double _Mf;
-	unsigned char _model_tag;            //new
+	unsigned char _model_tag;            
 
     public:
-    //new
+   
     nucleus_data(int p0, 
                  int n0, 
 		 double (*fun)(double[],double),
@@ -42,7 +42,7 @@ class nucleus_data
 	double dens(double r);
 	double kF();
 	double Mf();
-	unsigned char model_tag() const { return _model_tag; } //new
+	unsigned char model_tag() const { return _model_tag; } 
 
 	private:
 	double kf_helper(double r)

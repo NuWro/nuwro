@@ -51,7 +51,7 @@ string data_dir;
 #include "nuwro.h"
 
 NuWro::~NuWro()
-{		
+{
 	delete _mixer;
 	delete _detector;
 	delete _beam;
@@ -67,9 +67,9 @@ NuWro::NuWro()
 }
 
 void NuWro :: set (params &par)
-{	
+{
 	p = par;
-	
+
 	frandom_init(par.random_seed);
 
 	dismode = false;
@@ -77,11 +77,11 @@ void NuWro :: set (params &par)
 	if(par.target_type == 1)
 		_mixer = new target_mixer (par);
 	_detector = make_detector (par);
-	
+
 	_beam = create_beam (par,_detector);
 
 	_nucleus = make_nucleus (par);
-	
+
 	ff_configure (par);
 	refresh_dyn (par);
 }
@@ -101,7 +101,7 @@ geomy* NuWro::make_detector(params &p)
 {
 	if(p.target_type!=2)
 		return NULL;
-		
+
 	if(p.geo_file.length())
 	{
 		try
@@ -118,7 +118,7 @@ geomy* NuWro::make_detector(params &p)
 		}
 	}
 	else
-	{	
+	{
 		cerr<<"Failed to make detector. Parameter geo_file must not be empty if target_type=2."<<endl;
 		exit(4);
 		return NULL;
@@ -164,7 +164,7 @@ void NuWro::init (int argc, char **argv)
 			_mixer = NULL;
 		cout << "     -> Constructing the detector..." << endl;
 		_detector=make_detector(p);
-        
+
 		cout << "     -> Creating the beam..." << endl;
 		_beam=create_beam(p,_detector);
 		if(_beam==NULL)
@@ -205,7 +205,7 @@ void NuWro::makeevent(event* e, params &p)
 					continue;
 				if(nu.travelled>max_norm)
 					max_norm=nu.travelled;
-			}			
+			}
 			nu.travelled=0;
 			nu.r=vec(nu.r)+p.beam_offset;
 			if(nu.r.x==0 && nu.r.y==0 && nu.r.z==0)
@@ -260,7 +260,7 @@ void NuWro::makeevent(event* e, params &p)
 
 	e->flag.cc  = false;
 	e->flag.nc  = false;
-				  
+
 	e->flag.qel = false;
 	e->flag.res = false;
 	e->flag.dis = false;
@@ -268,7 +268,7 @@ void NuWro::makeevent(event* e, params &p)
 	e->flag.mec = false;
 	e->flag.hyp = false;
 	e->flag.lep = false;
-	
+
 	e->flag.anty = nu.pdg<0;
 
 	if(p.beam_test_only)
@@ -278,7 +278,7 @@ void NuWro::makeevent(event* e, params &p)
 		return;
 	}
 	double factor=1.0;
-								 
+
 	if(p.cc_smoothing and dyn==0) //only in qel_cc
 	{
 		if(e->in[0].pdg>0)
@@ -293,14 +293,14 @@ void NuWro::makeevent(event* e, params &p)
 		}
 	}
 	e->par =p;
-	
-	
+
+
 	if(  // (anty)-neutrino interaction
 	   abs(nu.pdg)==12 or abs(nu.pdg)==14 or abs(nu.pdg)==16
 	  )
 	switch (dyn)
 	{
-		case 0: 
+		case 0:
 			e->flag.qel=e->flag.cc=true;
 			if (p.dyn_qel_cc) // qel cc
 			{
@@ -309,7 +309,7 @@ void NuWro::makeevent(event* e, params &p)
 				else
 					qelevent1 (p, *e, *_nucleus, false);
 			}
-			break;				 
+			break;
 		case 1:
 			e->flag.qel=e->flag.nc=true;
 			if (p.dyn_qel_nc) // qel nc
@@ -319,7 +319,7 @@ void NuWro::makeevent(event* e, params &p)
 				else
 				qelevent1 (p, *e, *_nucleus, true);
 			}
-			break;				 
+			break;
 		case 2:
 			e->flag.res=e->flag.cc=true;
 			if (p.dyn_res_cc) // res cc
@@ -333,7 +333,7 @@ void NuWro::makeevent(event* e, params &p)
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
-			break;				
+			break;
 		case 3:
 			e->flag.res=e->flag.nc=true;
 			if (p.dyn_res_nc) // res nc
@@ -351,7 +351,7 @@ void NuWro::makeevent(event* e, params &p)
 				if (p.pauli_blocking)
 					mypauli_spp (*e, *_nucleus);
 			}
-			break;				
+			break;
 		case 5:
 			e->flag.dis=e->flag.nc=true;
 			if (p.dyn_dis_nc) //dis nc
@@ -361,7 +361,7 @@ void NuWro::makeevent(event* e, params &p)
 					mypauli_spp (*e, *_nucleus);
 			}
 			break;
-		case 6:                  
+		case 6:
 			e->flag.coh=e->flag.cc=true;
 			if (p.dyn_coh_cc) // coh cc
 			{
@@ -375,7 +375,7 @@ void NuWro::makeevent(event* e, params &p)
 				else          cohevent2   (p, *e, *_nucleus, true);
 			}
 			break;
-		case 7:                  
+		case 7:
 			e->flag.coh=e->flag.nc=true;
 			if (p.dyn_coh_nc) // coh nc
 			{
@@ -423,7 +423,7 @@ void NuWro::makeevent(event* e, params &p)
 				switch(p.mec_kind)
 				{
 					case 1: mecevent_tem(p, *e, *_nucleus, false);break;
-					default: mecevent_tem (p, *e, *_nucleus, false);break; 
+					default: mecevent_tem (p, *e, *_nucleus, false);break;
 				}
 				for(int i=0;i<e->out.size();i++)
 				{
@@ -438,7 +438,7 @@ void NuWro::makeevent(event* e, params &p)
 			{
 				hypevent (p, *e, *_nucleus);
 			}
-			break;		
+			break;
 		case 12:
 			e->flag.lep=true; //->flag.cc=true;
 			if (p.dyn_lep) // Neutrino-lepton
@@ -455,23 +455,23 @@ void NuWro::makeevent(event* e, params &p)
 				// TODO: introduce a new flag el!
 				e->flag.qel=e->flag.nc=true;
 			    /*if(p.eel_alg=="old")
-                    e_el_event(p,*e,*_nucleus,false); 
-			    else 	
+                    e_el_event(p,*e,*_nucleus,false);
+			    else
                 if(p.eel_alg=="fast")
-                    e_el_event2orig(p,*e,*_nucleus,false); 
-                else   // all remaining algorithms  
+                    e_el_event2orig(p,*e,*_nucleus,false);
+                else   // all remaining algorithms
                     e_el_event2(p,*e,*_nucleus,false); */
                 if(p.sf_method>0)
 					sfevent (p, *e, *_nucleus);
 				else
 					qelevent1 (p, *e, *_nucleus, true);
 			    break;
-			// case 21: 
+			// case 21:
 			// 	e->flag.nc=true;
-			//     if(p.eel_theta_lab>0) 	
-   //                  e_spp_event(p,*e,*_nucleus,false); 
-			//     else // use negative theta to test new implementation	
-   //                  e_spp_event3(p,*e,*_nucleus,false); 
+			//     if(p.eel_theta_lab>0)
+   //                  e_spp_event(p,*e,*_nucleus,false);
+			//     else // use negative theta to test new implementation
+   //                  e_spp_event3(p,*e,*_nucleus,false);
 			//     break;
 		}
 	}
@@ -480,8 +480,8 @@ void NuWro::makeevent(event* e, params &p)
 	if (e->weight == 0)
 	{
 		e->out.clear ();
-								
-		e->out.push_back (e->in[0]);    
+
+		e->out.push_back (e->in[0]);
 		e->out.push_back (e->in[1]);
 	}
 	//      e->check();
@@ -529,7 +529,7 @@ void NuWro::finishevent(event* e, params &p)
 	//e->nr=_nucleus->Nr(); 	// 2. powoduje break, segmentation fault
 
 								 // copy particle from out to post if coherent interaction
-	
+
 	if (!e->flag.coh && !e->flag.lep && (e->par.nucleus_n + e->par.nucleus_p > 1))
 	{
 		kaskada k(p, *e, &input);
@@ -588,21 +588,21 @@ void NuWro::pot_report(ostream& o, bool format=false)
 
 		for(int i=0;i<_procesy.size();i++)
 		if(_procesy.avg(i)>0)
-		{	
+		{
 			tot+=_procesy.avg(i);
 			double epp=_procesy.avg(i)*pd*_beam->nu_per_POT();
 			o  <<tab<<"dyn["<<i<<"] events per POT = "<<epp<<endl;
 			o  <<tab<<"       POT per event = "<<1/epp<<endl;
 		}
 		double epp=tot*pd*_beam->nu_per_POT();
-	
+
 		o<<tab<<"Total: events per POT= "<<epp<<endl
 		 <<tab<<"       POT per event = "<<1.0/epp<<endl;
 		o<<tab<<" BOX nuclons per cm2 = "<<pd<<endl;
 		o<<tab<<"Total cross section  = "<<tot<<" cm2"<<endl;
 		o<<tab<<"Reaction probability = "<<tot*pd<<endl;
-		o<<tab<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;		
-		o<<tab<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;	
+		o<<tab<<"Average BOX density  = "<<_detector->density()/g*cm3<<" g/cm3"<< endl;
+		o<<tab<<"Estimated BOX mass   = "<<_detector->vol_mass()/kg<<" kg"<<endl;
 		o<<tab<<"Fraction of protons  = "<<_detector->frac_proton()<<endl;
 		o<<tab<<"Total POT: " << p.number_of_events/epp << endl << endl;
 		if(format)
@@ -628,9 +628,9 @@ void NuWro::test_events(params & p)
 		TTree *t1=NULL;
 		event *e=NULL;
 		if(p.save_test_events)
-		{	
+		{
 			dismode=false;
-			te=new TFile((string("weighted.")+a.output).c_str(),"recreate");						
+			te=new TFile((string("weighted.")+a.output).c_str(),"recreate");
 			t1 = new TTree ("treeout", "Tree of events");
 			e = new event ();
 			t1->Branch ("e", "event", &e);
@@ -638,12 +638,12 @@ void NuWro::test_events(params & p)
 		}
 
 		refresh_dyn(p);
-		  
+
 		int saved=0;
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			e = new event ();
-			int k= _procesy.choose(); 
+			int k= _procesy.choose();
 			e->dyn = _procesy.dyn(k); // choose dynamics
 			if(_mixer)
 				_mixer->prepare(p);
@@ -673,9 +673,9 @@ void NuWro::test_events(params & p)
 			}
 			switch(p.save_test_events)
 			{
-				case 0: 
+				case 0:
 					break;
-				case 1: 
+				case 1:
 					// finishevent(e, p);
 					t1->Fill ();
 					break;
@@ -685,7 +685,7 @@ void NuWro::test_events(params & p)
 						saved++;
 						e->weight=e->weight*saved/(i+1);
 						finishevent(e, p);
-						t1->Fill ();						
+						t1->Fill ();
 					}
 					break;
 				default:
@@ -709,17 +709,17 @@ void NuWro::test_events(params & p)
 		string prefix;
 //		if(strlen(a.output)>5 && string(".root")==a.output[strlen(a.output)-5])
 			prefix="";
-//		else 
+//		else
 //			prefix=a.output;
 		hq2.plot(prefix+"q2.txt",GeV2,1e-38*cm2/GeV2);
 		hq0.plot(prefix+"q0.txt",GeV,1e-38*cm2/GeV);
 		hqv.plot(prefix+"qv.txt",GeV,1e-38*cm2/GeV);
 		hT.plot(prefix+"T.txt",GeV,1e-38*cm2/GeV);
-		
+
 		ofstream totals ((prefix+"totals.txt").c_str(),ios::app);
 		totals<<p.beam_energy;
 		double tot=0;
-		
+
 		int j=0;
 		for(int i=0;i<_procesy.size();i++)
 		{
@@ -732,7 +732,7 @@ void NuWro::test_events(params & p)
 			totals << ' '<<0; // cross section of disabled channels
 
 		totals<<endl;
-		pot_report(cout,true);		
+		pot_report(cout,true);
 		if(_detector)
 		{   ofstream  potinfo("POTinfo.txt");
 			pot_report(potinfo);
@@ -748,7 +748,7 @@ void NuWro::user_events(params &p)
 	frame_top("Run analyser events");
 	params p1=p;
 	Analyser * A=make_analyser(p);
-	if(!A) 
+	if(!A)
 		return;
 	for(A->start(); !A->end(); A->step())
 	{
@@ -756,10 +756,10 @@ void NuWro::user_events(params &p)
 		for (int i = 0; i < p.number_of_test_events; i++)
 		{
 			event *e = new event ();
-								 
+
 			int k = _procesy.choose ();///< choose bin
 			e->dyn = _procesy.dyn(k);  ///< choose dynamics
-			
+
 			A->prepare_event(*e);
 			if(_mixer)
 				_mixer->prepare(p);
@@ -775,7 +775,7 @@ void NuWro::user_events(params &p)
 			_procesy.add (k, e->weight, bias);
 
 			delete e;
-			
+
 			raport(i+1,p.number_of_test_events,"analyser events ready... ",1000,-1,"",bool(a.progress));
 			p=p1;
 	}	// end of nuwro loop
@@ -784,7 +784,7 @@ void NuWro::user_events(params &p)
 
 		A->partial_report();
 		_procesy.report();
-	
+
 	}	// end of analyser loop
 	A->final_report();
 	delete A;

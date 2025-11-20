@@ -77,8 +77,8 @@ class nucleus
 	particle *spectator;  ///< nucleon on which absorbtion took place
 
         int MAX_EVENT_REDRAWS = 10;
-        double effective_mfp_scale = 0.25;
-        double cosine_threshold = 0.001;
+        double effective_mfp_scale = 0.5;
+        double cosine_threshold = 0.01;
 
 	private:
 

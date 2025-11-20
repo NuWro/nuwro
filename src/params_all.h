@@ -124,6 +124,7 @@ PARAM(bool,hyp_effmass,true)\
 PARAM(double,hyp_Lambda_Eb,27)\
 PARAM(double,hyp_Sigma_Eb,-70)\
 PARAM(bool,FSI_on,1)\
+PARAM(bool,U_switch,1)\
 PARAM(double,kaskada_w,7)\
 PARAM(bool,kaskada_redo,0)\
 PARAM(bool,kaskada_writeall,0)\

@@ -95,7 +95,6 @@ CSFOptions::CSFOptions(params &par, bool cc, bool is_proton, bool anty)
 
 }
 
-//new constant name change : M2->Mass2
 double CSFOptions::evalLH(const double q4til2,
 			  const double p4k4,
 			  const double p4kPrime4,

@@ -58,6 +58,7 @@ double comp2_FA(const double q2, const double ma); // 2 Component Model
 double comp3_FA(const double q2, const double ma); // 3 Component Model
 double zexp_FA(const double q2, const double ma); // Z-expansion Model
 double MINERvA_FA(const double q2, const double sigma ); // axial form factor determined by MINERvA, Nature 614, 48 (2023)//changed JS
+double LQCD_FA(const double q2, const double bandSwitch); // Average LQCD form factor obtained from A. Meyer via private communication
 // IMPLEMENTATION
 /// Calculate F1,F2
 pair<double, double> FF::f12(int kind)
@@ -563,6 +564,41 @@ void zexp_applyq0limit()
   return;
 }
 
+// Average LQCD axial form factor
+double LQCD_FA(const double q2, const double /*bandSwitch*/)
+{
+    constexpr double tcut = 161604.0;   // (3 m_pi)^2 in MeV^2
+    constexpr double t0   = -500000.0;  // MeV^2
+
+    // Ensure physical domain: q² must be < tcut
+    if (q2 >= tcut) return 0.0;
+
+    const double sqrt1 = std::sqrt(tcut - q2);
+    const double sqrt2 = std::sqrt(tcut - t0);
+    const double z = (sqrt1 - sqrt2) / (sqrt1 + sqrt2);
+
+    constexpr double a[] = {
+        0.7174202,   // a0
+       -1.720897,    // a1
+        0.3098271,   // a2
+        1.621258,    // a3
+       -0.2750699,   // a4
+       -1.252979,    // a5
+        0.6004408    // a6
+    };
+
+    double FA = 0.0, z_power = 1.0;
+    for (int k = 0; k <= 6; ++k)
+    {
+        FA += a[k] * z_power * (-1);
+        z_power *= z;
+    }
+    
+//        std::cout << -q2/1e6 << " " << FA << std::endl;
+
+    return FA;
+}
+
 // axial form factor determined by MINERvA, Nature 614, 48 (2023) : implementation by A. Ankowski
 double MINERvA_parametrization(const double qSq, const double bandWeight)
 {
@@ -1018,13 +1054,16 @@ void ff_configure(params & p)
     //    sleep(5);
     break;
     case 8:
-            mva_errorBar = rew.qel_minerva_ff_scale.val;//jancheck
+      mva_errorBar = rew.qel_minerva_ff_scale.val;//jancheck
       Axialfromq2 = MINERvA_FA;
       break;
       case 9:
-            deut_errorBar = rew.qel_deuterium_ff_scale.val;//jancheck
+      deut_errorBar = rew.qel_deuterium_ff_scale.val;//jancheck
       Axialfromq2 = deuterium_FA;
       //deutFA_errorBar = rew.deutFA_errorBar.val;
+      break;
+     case 10:
+      Axialfromq2 = LQCD_FA;
       break;
   default:
     throw("bad axial ffset");

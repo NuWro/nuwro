@@ -282,6 +282,7 @@
       <option key="4"><![CDATA[4-fold parabolic modification of axial FF]]></option>
       <option key="8"><![CDATA[axial form factor determined by MINERvA, Nature 614, 48 (2023)]]></option>
       <option key="9"><![CDATA[axial form factor from neutrino-deuteron scattering data, Meyer et al., Phys. Rev. D 93, 113015 (2016)]]></option>
+      <option key="10"><![CDATA[Average LQCD axial form factor obtained from A Meyer]]></option>
     </options>
   </param>
   <param name="qel_rpa" type="select" ctype="int" default="1">
@@ -323,7 +324,7 @@
   <param name="flux_correction" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[no flux correction]]></description>
   </param>
-    <param name="density_model" type="select" ctype="int" default="1">
+  <param name="density_model" type="select" ctype="int" default="1">
     <description><![CDATA[measured charge density or point density, unfolded from the charge densities)]]></description>
   </param>
   <param name="sf_method" type="select" ctype="int" default="1">
@@ -355,7 +356,6 @@
     <options>
       <option key="1"><![CDATA[average Fermi momentum]]></option>
       <option key="2"><![CDATA[local Fermi momentum]]></option>
-      <option key="3"><![CDATA[TG approach - use MC method to decide about PB, according to a nucleon momentum distribution given by spectral function]]></option>
     </options>
   </param>  <param name="cc_smoothing" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[A little performace gain in the QEL channel can be obtained by using: cc_smoothing=1]]></description>
@@ -527,6 +527,9 @@
   </param>
   <param name="FSI_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) for final state interactions]]></description>
+  </param>
+  <param name="U_switch" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[use (1) or not (0) to swap between optical potential or NuWro work funciton in cascade for SF events]]></description>
   </param>
   <param name="kaskada_w" type="text" ctype="double" default="7">
     <description><![CDATA[[MeV] work function]]></description>

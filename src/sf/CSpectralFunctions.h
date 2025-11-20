@@ -15,7 +15,7 @@
 #include "CInterpolatedData2D.h"
 
 /// Class: CSpectralFunctions
-/// Encapsulates proton/neutron spectral functions and momentum distributions for different nuclei 
+/// Encapsulates proton/neutron spectral functions and momentum distributions for different nuclei
 class CSpectralFunctions
 {
     public:
@@ -70,7 +70,7 @@ class CSpectralFunctions
                     m_pNormalization = 5.99978;
                     foldingFNormalization = 0.120103;
                     break;
-                                
+
                 case C12_SF:
                     m_Z = carbonZ;
                     m_N = carbonN;
@@ -94,7 +94,7 @@ class CSpectralFunctions
                     m_N = oxygenN;
                     pHoleSFName<<"data/sf/pke_16O.dat";
                     transparencyNameA<<"data/sf/transp_16O.dat";
-                    transparencyNameB<<"data/sf/transp_16O_MC.dat";                    
+                    transparencyNameB<<"data/sf/transp_16O_MC.dat";
                     realOPName<<"data/sf/realOP_16O_EDAI.dat";
                     foldingFName<<"data/sf/foldingF_12C.dat";
                     m_pLorentz = new CLorentzDistrib(1.28, 149.0*MeV, 87.0*MeV, 0.0, 800*MeV);
@@ -140,7 +140,7 @@ class CSpectralFunctions
                     m_threshold_E2_n = 25.199*MeV;
                     ///
                     transparencyNameA<<"data/sf/transp_40Ar.dat";
-                    transparencyNameB<<"data/sf/transp_40Ar_MC.dat";                    
+                    transparencyNameB<<"data/sf/transp_40Ar_MC.dat";
                     realOPName<<"data/sf/realOP_40Ar_EDAD_fit3.dat";
                     foldingFName<<"data/sf/foldingF_12C.dat";
                     m_targetMass = argon40Mass;
@@ -157,7 +157,7 @@ class CSpectralFunctions
                     m_N = ironN;
                     pHoleSFName<<"data/sf/pke_56Fe.dat";
                     transparencyNameA<<"data/sf/transp_56Fe.dat";
-                    transparencyNameB<<"data/sf/transp_56Fe_MC.dat";                    
+                    transparencyNameB<<"data/sf/transp_56Fe_MC.dat";
                     realOPName<<"data/sf/realOP_56Fe_EDAD_fit1.dat";
                     foldingFName<<"data/sf/foldingF_12C.dat";
                     m_pLorentz = new CLorentzDistrib(1.23, 176.5*MeV, 68.0*MeV, 0.0, 800*MeV);
@@ -187,7 +187,7 @@ class CSpectralFunctions
                    {
                    throw std::runtime_error("Failed to initialize m_pHoleSF.");
                    }
-                // momentum distribution (from integrating SF over E)                   
+                // momentum distribution (from integrating SF over E)
                 m_pMomDistrib = new CInterpolatedData( m_pHoleSF->get_xDistribution(), m_pHoleSF->get_xRes(), MeV, 4*Pi, m_pHoleSF->get_xStart(), m_pHoleSF->get_xStep(), m_pHoleSF->get_xStop(), false);
 
                 if ( m_switchIsospinAsymmetry )
@@ -204,7 +204,7 @@ class CSpectralFunctions
 
             else
             {
-                // Separated MF and correlated parts            
+                // Separated MF and correlated parts
                 m_pNormalization_MF /= pow(MeV,4);
                 m_pHoleSF_MF =  new CInterpolatedData2D( pHoleMFSFName.str(), MeV, MeV, 1.0/m_pNormalization_MF, false );
                 m_pMomDistrib_MF = new CInterpolatedData( m_pHoleSF_MF->get_xDistribution(), m_pHoleSF_MF->get_xRes(), MeV, 4*Pi, m_pHoleSF_MF->get_xStart(), m_pHoleSF_MF->get_xStep(), m_pHoleSF_MF->get_xStop(), false);
@@ -285,7 +285,7 @@ class CSpectralFunctions
                 delete m_foldingF;
             }
         };
-        
+
         /// proton SF value at (p,E)
         inline double eval_protonSF(const double p, const double removE) const
         {
@@ -609,6 +609,12 @@ class CSpectralFunctions
             vec k_local(kx_local, ky_local, kz_local);
             //  std::cout << k_local.length() << std::endl;
             vec k_rotated = k_local.fromZto(p_direction);
+            if (k_rotated.length() < 1e-6 || !std::isfinite(k_rotated.length())) {
+                std::cerr << "[DBG][SF] Zero-mom (after rotation): "
+                          << "removalE=" << removalE
+                          << " kNorm=" << kNorm
+                          << " p_direction=(" << p_direction.x << "," << p_direction.y << "," << p_direction.z << ")\n";
+            }
 
             return k_rotated;
         }
@@ -676,11 +682,11 @@ class CSpectralFunctions
         inline double eval_realOP(const double tPPrime) const { return m_realOP->linearI(tPPrime); }
         /// scaled transparency table from selected transparency table (0=theory, 1=MC)
         inline double eval_sqrtOfTransparency(const double tPPrime, const double scale, int table_idx) const { return sqrt(scale * m_transparency[table_idx]->linearI(tPPrime)); }
-        /// transparency table from selected transparency table (0=theory, 1=MC)  
+        /// transparency table from selected transparency table (0=theory, 1=MC)
         inline double eval_sqrtOfTransparency(const double tPPrime, int table_idx) const { return sqrt(m_transparency[table_idx]->linearI(tPPrime)); }
         /// Folding function
         inline double eval_foldingF(const double differ) const { return m_foldingF->linearI(differ); }
-        
+
         // Basic getters
         inline TargetNucleus get_target() const { return m_target; }
         inline int get_N() const { return m_N; }
@@ -696,8 +702,8 @@ class CSpectralFunctions
         /// Removal-energy coverage for protons/neutrons (taking energy shift into account)
         inline double get_eMin() const
         {
-            return m_switchIsospinAsymmetry 
-            ? std::min(m_pHoleSF->get_yStart(), m_nHoleSF->get_yStart() + m_neutronEnergyShift) 
+            return m_switchIsospinAsymmetry
+            ? std::min(m_pHoleSF->get_yStart(), m_nHoleSF->get_yStart() + m_neutronEnergyShift)
             : std::min(m_pHoleSF->get_yStart(), m_pHoleSF->get_yStart() + m_neutronEnergyShift);
         }
 
@@ -705,10 +711,10 @@ class CSpectralFunctions
 
         inline double get_eMax() const
         {
-            return m_switchIsospinAsymmetry 
-            ? std::max( m_nHoleSF->get_yStop() + m_neutronEnergyShift, m_pHoleSF->get_yStop() ) 
+            return m_switchIsospinAsymmetry
+            ? std::max( m_nHoleSF->get_yStop() + m_neutronEnergyShift, m_pHoleSF->get_yStop() )
             : std::max(m_pHoleSF->get_yStop(), m_pHoleSF->get_yStop() + m_neutronEnergyShift);
-        }        
+        }
         /// Global correlated fraction for protons: ∫corr / (∫mf + ∫corr)
         double get_corrProtonFraction() const
         {
@@ -777,7 +783,7 @@ class CSpectralFunctions
         const bool m_switchSeparation;    // MF+corr split (Ar40 only)
         const bool m_switchFSI;           // whether to load FSI-related tables
         bool m_switchIsospinAsymmetry;    // Ar: treat p and n with different inputs
-        
+
         int m_N = 0;                      // neutron number
         int m_Z = 0;                      // proton number
         double m_targetMass = 0.0;        // nuclear mass

@@ -6,11 +6,11 @@
 
 # The number of events used to calculate the cross sections:
 
-number_of_test_events = 50000000
+number_of_test_events = 100000
 
 # The number of equally weighted events to be saved:
 
-number_of_events      = 10
+number_of_events      = 10000
 
 # Control the random seed persistence:
 random_seed  = 0     // 0 - use time(NULL) as a seed for random number generator
@@ -29,21 +29,21 @@ random_seed  = 0     // 0 - use time(NULL) as a seed for random number generator
 # Define the beam by hand:
 # (single flavor, monoenergetic [MeV], lepton PDG)
 beam_type     = 0
-beam_energy   = 250
-beam_particle = 11
+beam_energy   = 2000
+beam_particle = 14
 
-# It is convenient to include one of the predefined beam specifications
-# with the @ char (or modify them as needed):
 #@beam/ANL.txt
 #@beam/ND280.txt
 #@beam/nomad.txt
-#@beam/newMB.txt
+#@beam/mb_numu.txt
 
 ################################################################################
 #
 # Target specification
 #
 ################################################################################
+
+# *default* predefined LFG Carbon target "C.txt"
 
 # Define the nucleus by hand:
 nucleus_p = 6
@@ -58,6 +58,9 @@ nucleus_n = 6
 #nucleus_target = 5 // deuterium
 #nucleus_target = 6 // effective potential
 
+density_model = 1 // point density (Available for C, O, Ar, Fe)
+#density_model = 2 // charge_density
+
 # Historical options to define the Fermi gas:
 #nucleus_E_b    =  34 // [MeV] binding energy
 #nucleus_kf     = 220 // [MeV] Fermi momentum, used in Fermi gas model
@@ -67,15 +70,12 @@ pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 
 # It is convenient to include one of the predefined target specifications
 # with the @ char (or modify them as needed):
-#@target/C.txt
+#@target/H2O.txt
 #@target/CH.txt
 #@target/ND280_975.txt
 #@target/proton.txt
 #@target/neutron.txt
 #@target/CH2.txt
-
-density_model = 1 // point density unfolded from the charge density
-#density_model = 2 // measured charge density
 
 ################################################################################
 #
@@ -83,21 +83,21 @@ density_model = 1 // point density unfolded from the charge density
 #
 ################################################################################
 
-dyn_qel_cc =0      // Quasi elastic charged current
+dyn_qel_cc =1      // Quasi elastic charged current
 dyn_qel_nc =0      // Quasi elastic neutral current
-dyn_res_cc =0      // Resonant charged current
+dyn_res_cc =1      // Resonant charged current
 dyn_res_nc =0      // Resonant neutral current
-dyn_dis_cc =0      // Deep inelastic charged current
+dyn_dis_cc =1      // Deep inelastic charged current
 dyn_dis_nc =0      // Deep inelastic neutral current
-dyn_coh_cc =0      // Coherent charged current
+dyn_coh_cc =1      // Coherent charged current
 dyn_coh_nc =0      // Coherent neutral current
-dyn_mec_cc =0      // Meson exchange charged current
+dyn_mec_cc =1      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
-dyn_hyp_cc =0      // Quasi elastic hyperon production
-dyn_lep    =0      // Neutrino-electron
+dyn_hyp_cc =1      // Quasi elastic hyperon production
+dyn_lep    =1      // Neutrino-electron
 # Standard output of total sigma [cm^2 / nucleon]
 
-dyn_qel_el =1      // (Quasi) elastic electron scattering
+dyn_qel_el =0      // (Quasi) elastic electron scattering
 # The output in d sigma / d costheta [cm^2 / nucleon]
 # -> see "Electron scattering parameters"
 
@@ -120,12 +120,13 @@ qel_vector_ff_set  = 2 // BBBA05, hep-ex/0602017 BBBA05 for Q2<18 GeV
 #qel_vector_ff_set = 6 // (1990:) parametryzacja JS z old qelcc
 
 # Axial Form factors:
-qel_axial_ff_set  = 1  // dipole,
+#qel_axial_ff_set  = 1 // dipole,
 #qel_axial_ff_set = 2  // 2-fold parabolic modification of axial FF
 #qel_axial_ff_set = 3  // 3-fold parabolic modification of axial FF
 #qel_axial_ff_set = 4  // 4-fold parabolic modification of axial FF
-#qel_axial_ff_set = 8  // MINERvA axial FF, Nature 614, 48 (2023)
+qel_axial_ff_set = 8  // MINERvA axial FF, Nature 614, 48 (2023)
 #qel_axial_ff_set = 9  // deuterium axial FF, Meyer et al., Phys. Rev. D 93, 113015 (2016)
+#qel_axial_ff_set = 10  // Average LQCD form factor
 
 # Strangeness content:
 #qel_strange=0         // don't use the strangenes
@@ -162,8 +163,7 @@ flux_correction  = 0    // no flux correction
 ################################################################################
 
 #sf_method  = 0 // do not use SF
-sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O, Fe
-
+sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe - recommended default option
 #sf_method = 2 // old grid SF for C and Ar
 #sf_method = 3 // factorized SF for O, Ar, Ca
 
@@ -171,10 +171,10 @@ sf_transparency_table_idx = 1 # Transparency
 #                               1 - Theoretical, 2 - NuWro MC
 sf_transparency_scale = 1  # Scale transparency
 #                            [0.97,1.03] for table_idx = 1
-#                            [0.7,1.3] for table_idx =2 
-sf_nuclearRecoil = 1       # Nuclear recoil
-sf_CoulombDistortion = 1   # Couloumb distortion
-sf_src = 1                 # Short range NN correlations
+#                            [0.7,1.3] for table_idx =2
+sf_nuclearRecoil = 1      # Nuclear recoil
+sf_CoulombDistortion = 1  # Couloumb distortion
+sf_src = 1                # Short range NN correlations
 sf_pb      = 1             # Pauli blocking method used for SF:
 #                            1- average Fermi momentum, 2- local Fermi momentum
 #################################################################################
@@ -248,7 +248,6 @@ res_dis_blending_end = 1900
 #res_dis_cut   = 1600 // for the old model, default is 1600 [MeV]
 #res_dis_blending_start = 1300
 #res_dis_blending_end = 1600
-
 
 ################################################################################
 #   COH
@@ -336,15 +335,20 @@ hyp_su3_sym_breaking = 0 // SU(3) symmetry breaking
 #
 ################################################################################
 
-# Turn on FSI:
-FSI_on       = 1  // use (1) or not (0) 
+# Turn on FSI
+FSI_on       = 1  // use (1) or not (0)
+
+# Total work of the cascade W (Eb = Ef + W);
+kaskada_w        = 7  // literature [7 MeV, 9 MeV]
+
+# For sf_method != 0 
+# U_switch = 1 → use optical potential U (kaskada_w = 0);
+# U_switch = 0 → ignore U and keep kaskada_w
+U_switch = 1
 
 # Models for the description of nucleus in the cascade:
 #nucleus_model   = 0  // "flatnucleus" ball with constant density
 nucleus_model    = 1  // "anynucleus" i.e. realistic density profile
-
-# Total work of the cascade W (Eb = Ef + W);
-kaskada_w        = 7  // literature [7 MeV, 9 MeV]
 
 # Other cascade parameters:
 kaskada_writeall = 0 // store all intermedate particles in the event.all vector
@@ -389,8 +393,8 @@ formation_zone    = fz-new // the recommended formation zone option
 
 # The normalization of events is in d sigma / d costheta [cm^2 / nucleon]
 # Parameters for the outgoing electron:
-el_costh_lab = 0.5   // defines cosine of the scattered electron
-el_costh_del = 0.01 // defines angular acceptance for the scattered electron
+el_costh_lab = 0.5 // defines cosine of the scattered electron
+el_costh_del = 0.001 // defines angular acceptance for the scattered electron
 #                       ( the acceptance in cosine is from (el_costh_lab -
 #                         el_costh_del) to (el_costh_lab + el_costh_del),
 #                         the width is 2*el_costh_del )

@@ -35,7 +35,7 @@ static const double MeV = 1;
 static const double eV = MeV / 1E6;
 static const double GeV = 1000 * MeV;
 static const double GeV2 = GeV*GeV;
-static const double Unit =  931.494028 * MeV; //new
+static const double Unit =  931.494028 * MeV;
 
 
 static const double sek = 1 / (6.58211889 * 1E-22 * MeV);
@@ -51,8 +51,8 @@ static const double J = kg * metr * metr / (sek * sek);
 
 const double G = 1.16639 * 1E-5 / (GeV * GeV);
 //const double cos2thetac = 0.97418 * 0.97418;	//cos(Cabibbo angle)^2
-const double cos2thetac = 0.97418*0.97418; //new
-const double sin2thetaW = 0.23116; //new
+const double cos2thetac = 0.97418*0.97418; 
+const double sin2thetaW = 0.23116; 
 //----------------------------------------------------------------------
 
 
@@ -115,7 +115,7 @@ static const double pc = parsec;
 //
 static const double radian      = 1.;
 static const double milliradian = 1.e-3*radian;
-static const double degree = (Pi/180.0)*radian; //new
+static const double degree = (Pi/180.0)*radian;
 
 static const double   steradian = 1.;
 

@@ -1,17 +1,27 @@
 #include "event1.h"
 #include "params.h"
+
 #include <cmath>
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <chrono>
+#include <array>
+#include <iostream>
+#include <algorithm>
+#include <map>
+#include <cassert>
+#include <queue>
+
 #include "generatormt.h"
 #include "vect.h"
-#include <queue>
 #include "pdg.h"
 #include "nucleus.h"
+
 #include <TROOT.h>
 #include <TTree.h>
+
 #include "beam.h"
 //#include "Metropolis.h"
 #include "Interaction.h"
@@ -58,11 +68,14 @@ class kaskada
     int kaskadaevent();                           //!< Runs the cascade.
 
   private:
+    double U_evt;                                 //!< optical potential cached
     void prepare_particles();                     //!< Handles the particles from the input (out) vector.
                                                   /*!< Nucleons and pions are prepared and added to the queue as off-shell particles.
                                                        Other particles are copied directly to the output vector (post) */
+    void prepare_single_nucleon_for_redraw(particle pN, int index);   /*!< Handle nucleons from the input vector in the
+                                                                      cascade redrawing stage as off-shell particles. */
     interaction_parameters prepare_interaction(); //!< Calculates the free path.
-                                                  /*!< The free path depends on the density and the total cross section. 
+                                                  /*!< The free path depends on the density and the total cross section.
                                                        The density is set for a current position.
                                                        The cross section is set according to the kinetic energy and particle type. */
     bool move_particle();                         //!< Propagates the particle.
@@ -78,10 +91,11 @@ class kaskada
     void clean ();                                //!< Cleans after the cascade.
                                                   /*!< Clears the queue and remembers the residual nucleus. */
 
+    // Helpers
     bool check  (particle & p1, particle & p2,
                  particle *spect, int n, particle p[], int k);  //!< Checks if the charge is conserved
     bool check2 (particle & p1, particle & p2,
                  particle *spect, int n, particle p[], int k);  //!< Checks if the fourmomentum is conserved
-    
-    //void procinfo(particle p1, particle p2, int n, particle p[]); // (empty function?)
+    void printPDGCounts(const std::vector<particle>& vec, const std::string &vecName,const event* e);
+    void printPartsPDGCounts(const std::queue<particle>& q, const std::string &name,const event* e);
 };

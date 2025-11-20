@@ -22,6 +22,7 @@ class particle : public vect
 
   double _mass;    ///< on shell mass
 public:
+
   vect r;          ///< position and time relative to the centre of the Nucleus event start time
   int pdg;         ///< pdg code of the particle  
   char ks;         ///< from HEP event
@@ -35,6 +36,7 @@ public:
   bool primary;
 
 public:
+
   inline particle(){travelled=x=y=z=t=_mass=pdg=mother=0;id=-1;his_fermi=0;}
   inline particle (int code,double mass);      ///< create particle at rest 
   inline particle (double mass);               ///< create particle at rest 
@@ -301,6 +303,11 @@ bool particle::lepton()
 {
   int x=pdg>0?pdg:-pdg;
   return x >= 11 && x <= 16;
+}
+
+inline bool lepton(int pdg) { // particle::?
+    int a = std::abs(pdg);
+    return a >= 11 && a <= 16;  // e±, μ±, τ± and neutrinos
 }
 
 bool particle::pion()

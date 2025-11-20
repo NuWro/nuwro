@@ -6,7 +6,7 @@
 
 using namespace std;
 
-template < class T > 
+template < class T >
 static inline T pow2 (T x)
 {
 	return x * x;
@@ -14,14 +14,14 @@ static inline T pow2 (T x)
 
 static inline double bessj0(double x)
 {
-	if(fabs(x)<0.000001) 
+	if(fabs(x)<0.000001)
 		return cos(x);
 	else
 		return sin(x)/x;
 }
 
 static double MI2(double rms2, double q,double r)
-{ 
+{
 	double qr=q*r;
 	double r2=r*r;
 	double cosqr=cos(qr);
@@ -30,7 +30,7 @@ static double MI2(double rms2, double q,double r)
 }
 
 static double MI(double rms2, double q,double r)
-{ 
+{
 	double qr=q*r;
 	double r2=r*r;
 	double r3=r2*r;
@@ -38,29 +38,29 @@ static double MI(double rms2, double q,double r)
 	double sinqr=sin(qr);
 	return (-cosqr*qr+sinqr)/r3
 		//  + (((cosqr*qr/6-sinqr/2)*qr -cosqr)*qr+sinqr)*rms2/r2/r3;
-			+(cosqr*qr*qr-2*cosqr-2*sinqr*qr)/r2/r2/6; 
+			+(cosqr*qr*qr-2*cosqr-2*sinqr*qr)/r2/r2/6;
 }
 
 static double prfMI(double t[3], double r)
-{ 
+{
 	static double const twoPi2=2*Pi*Pi;
-	if(r==0) 
-		r=0.00001; 
+	if(r==0)
+		r=0.00001;
 	double rms2=t[0]*t[0];
 	return max(0.0, (MI2(rms2,200,r)-MI2(rms2,0.01,r))/twoPi2);
 }
 
-///density profile for the HO model 
+///density profile for the HO model
 static double prfHO(double t[3], double r)
 {
-	double x=r/t[0],x2=x*x; 
+	double x=r/t[0],x2=x*x;
 	return t[2]*(1+t[1]*x2)*exp(-x2);
 }
 
 ///density profile for the MHO model
 static double prfMHO(double t[3], double r)
 {
-	double x=r/t[0]; 
+	double x=r/t[0];
 	return (t[2]*(1+t[1]*x*x)*exp(-x*x));
 }
 
@@ -76,7 +76,7 @@ static double prf3pF(double t[4], double r)
 	double x=r/t[0];
 	return t[3]*
 	       (1+t[2]*x*x)
-			/(1+exp((r-t[0])/t[1])); 
+			/(1+exp((r-t[0])/t[1]));
 }
 
 ///density profile for the 3pG model
@@ -88,35 +88,35 @@ static double prf3pG(double t[4], double r)
 
 ///density profile for the FB model
 static double prfFB(double fb[],  double r)
-{ 
+{
 	if(r>fb[0]) // fb[0]- radius
 		return 0;
-	double suma=0; 
+	double suma=0;
 	double x=Pi*r/fb[0];
 	for(int j=1; j<=17 and fb[j] ; j++)
-	{   
+	{
 		suma+=fb[j]*bessj0(j*x);
-	}	
-	return max(0.,suma);	
+	}
+	return max(0.,suma);
 }
 
 ///density profile for the SOG model
 static double prfSOG(double sog[],double r)
-{ 
+{
 	static const double twoPi32=2*Pi*sqrt(Pi);
 	//double rms=sog[0];
 	double g=sog[1]/sqrt(1.5);
 	double coef=twoPi32*g*g*g;
 	double suma=0;
 	for(int j=2; j<25 ; j+=2)
-	{  
+	{
 		double Ri=sog[j];
 		double Qi=sog[j+1];
 		double Ai=Qi/(coef*(1+2*pow2(Ri/g)));
 
 		suma+=Ai*(exp(-pow2((r-Ri)/g))+exp(-pow2((r+Ri)/g)));
-	}	
-	return max(0.,suma);	
+	}
+	return max(0.,suma);
 }
 
 static double prfUG(double ug[],double r)
@@ -124,10 +124,10 @@ static double prfUG(double ug[],double r)
 	double xi=1.5/ug[0]/ug[0];
 	return ug[1]*exp( -r*r*xi);
 }
-	
-	// Uniform Gaussian model 
+
+	// Uniform Gaussian model
 	static double ug_11_12 [2]= {2.946, 0.296785};
-	
+
 	// Harmonic-oscillator model (HO): a, alfa, rho0(calculated)
 	static double ho_3_4 [3]= {1.772  , 0.327, 0.151583};
 	static double ho_4_5 [3]= {1.776  , 0.631, 0.148229};
@@ -140,7 +140,7 @@ static double prfUG(double ug[],double r)
 	// Modified harmonic-oscillator model (MHO): a, alfa, rho0(calculated)
 	static double mho_6_7[3]= {1.6359, 1.40316, 0.171761};
 	static double mho_6_8[3]= {1.734 , 1.3812 , 0.156987};
-	
+
 	//                        show MI złe rms-y
 	static double mi_1_0[4]= {0.86212 , 0.36 , 1.18  ,1};
 	static double mi_1_1[4]= {2.1166  , 0.21 , 0.77  ,1};
@@ -178,13 +178,13 @@ static double prfUG(double ug[],double r)
 	static double _2pF_39_50[3]= {4.76   ,0.57129,0.172486};
 	static double _2pF_41_52[3]= {4.875  ,0.57329,0.168620};
 
-	static double _2pF_79_118[3]={6.386  ,0.53527, 0.168879}; 
-	static double _2pF_Th232a[3]={6.7915 ,0.57115, 0.165272}; 
-	static double _2pF_Th232b[3]={6.851  ,0.518  , 0.163042}; 
-	static double _2pF_U238a[3]= {6.8054 ,0.60516, 0.167221}; 
-	static double _2pF_U238b[3]= {6.874  ,0.556  , 0.164318}; 
+	static double _2pF_79_118[3]={6.386  ,0.53527, 0.168879};
+	static double _2pF_Th232a[3]={6.7915 ,0.57115, 0.165272};
+	static double _2pF_Th232b[3]={6.851  ,0.518  , 0.163042};
+	static double _2pF_U238a[3]= {6.8054 ,0.60516, 0.167221};
+	static double _2pF_U238b[3]= {6.874  ,0.556  , 0.164318};
 
-	// Three-parameter Fermi model: c=a   , z=alfa,        w, rho0 (calculated)	
+	// Three-parameter Fermi model: c=a   , z=alfa,        w, rho0 (calculated)
 	static double   _3pF_7_7[4]= {2.57000 ,0.5052 ,-0.18070 ,0.0127921 };
 	static double   _3pF_7_8[4]= {2.33430 ,0.4985 , 0.13930 ,0.011046  };
 	static double _3pF_12_12a[4]={3.10833 ,0.6079 ,-0.16330 ,0.00707021};
@@ -203,7 +203,7 @@ static double prfUG(double ug[],double r)
 	static double _3pF_28_32[4]= {4.4891  ,0.5369 ,-0.2668  ,0.00293736};
 	static double _3pF_28_33[4]= {4.4024  ,0.5401 ,-0.1983  ,0.00290083};
 	static double _3pF_28_34[4]= {4.4425  ,0.5386 ,-0.2090  ,0.0028575 };
-	static double _3pF_28_36[4]= {4.5211  ,0.5278 ,-0.2284  ,0.00277699}; 
+	static double _3pF_28_36[4]= {4.5211  ,0.5278 ,-0.2284  ,0.00277699};
 
 	// Three-parameter Gaussian model: c=a, z=alfa,      w , rho0 (calculated)
 	static double _3pG_16_16[4]= {2.549   ,2.1911 ,0.16112 ,0.00700992};
@@ -224,36 +224,36 @@ static double prfUG(double ug[],double r)
 								0.46834e-2, 0.52042e-2, 0.38280e-2, 0.25661e-2, 0.14182e-2,
 								0.61390e-3, 0.22929e-3};
 //C12(6,6)Ca80
-	static double fb_6_6a_chargeDensity[18]={8.0, 0.15721e-1, 0.38732e-1, 0.36808e-1, 0.14671e-1,-0.43277e-2, 
+	static double fb_6_6a_chargeDensity[18]={8.0, 0.15721e-1, 0.38732e-1, 0.36808e-1, 0.14671e-1,-0.43277e-2,
 							   -0.97752e-2,-0.68908e-2,-0.27631e-2,-0.63568e-3, 0.71809e-5,
 								0.18441e-3, 0.75066e-4, 0.51069e-4, 0.14308e-4, 0.23170e-5,
 								0.68465e-6, 0};
-								
-	static double fb_6_6a_pointDensity[18]={ 8.00043364, 
-	                                         0.01524311, 0.04341582, 0.03984473, 0.01843899, -0.00501202, -0.01579038, 
-	                                         -0.01155837, -0.00453332, -0.00194829, -0.00044933, 0.00099081, 0.00005054, 
+
+	static double fb_6_6a_pointDensity[18]={ 8.00043364,
+	                                         0.01524311, 0.04341582, 0.03984473, 0.01843899, -0.00501202, -0.01579038,
+	                                         -0.01155837, -0.00453332, -0.00194829, -0.00044933, 0.00099081, 0.00005054,
 	                                         -0.00085590, 0.00047011, 0.00056445, -0.00111315, 0.00057377};
-																
+
 //C12(6,6)Re82
 	static double fb_6_6b[18]={8.0,  0.15737e-1, 0.38897e-1, 0.37085e-1, 0.14795e-1,-0.44831e-2,
-								  -0.10057e-1,-0.68696e-2,-0.28813e-2,-0.77229e-3, 0.66908e-4, 
+								  -0.10057e-1,-0.68696e-2,-0.28813e-2,-0.77229e-3, 0.66908e-4,
 								   0.10636e-3,-0.36864e-4,-0.50135e-5, 0.94550e-5,-0.47687e-5,
 								   0, 0};
 //N15(7,8)Vr86
-	static double fb_7_8[18]={7.0, 0.25491e-1, 0.50618e-1, 0.29822e-1, -0.55196e-2, -0.15913e-1, 
-							      -0.76184e-2,-0.23992e-2,-0.47940e-3,           0,           0, 
-							                0,          0,          0,           0,           0, 
+	static double fb_7_8[18]={7.0, 0.25491e-1, 0.50618e-1, 0.29822e-1, -0.55196e-2, -0.15913e-1,
+							      -0.76184e-2,-0.23992e-2,-0.47940e-3,           0,           0,
+							                0,          0,          0,           0,           0,
 							                0, 	        0};
 
 //O16(8,8)La82
-	static double fb_8_8_chargeDensity[18]= {8.0, 0.20238e-1, 0.44793e-1, 0.33533e-1, 0.35030e-2,-0.12293e-1, 
-								  -0.10329e-1,-0.34036e-2,-0.41627e-3,-0.94435e-3,-0.25771e-3, 
+	static double fb_8_8_chargeDensity[18]= {8.0, 0.20238e-1, 0.44793e-1, 0.33533e-1, 0.35030e-2,-0.12293e-1,
+								  -0.10329e-1,-0.34036e-2,-0.41627e-3,-0.94435e-3,-0.25771e-3,
 								   0.23759e-3,-0.10603e-3, 0.41480e-4, 0,0,
 								   0, 0};
-								   
-	static double fb_8_8_pointDensity[18]= { 8.00049515, 
-	                                         0.02019217, 0.05017159, 0.03650542, 0.00516551, -0.01675677, -0.01575877, 
-	                                         -0.00505903, -0.00164696, -0.00181031, 0.00003029, 0.00006469, -0.00058935, 
+
+	static double fb_8_8_pointDensity[18]= { 8.00049515,
+	                                         0.02019217, 0.05017159, 0.03650542, 0.00516551, -0.01675677, -0.01575877,
+	                                         -0.00505903, -0.00164696, -0.00181031, 0.00003029, 0.00006469, -0.00058935,
 	                                         0.00073632, 0.00017952, -0.00104117, 0.00099052, -0.00034560};
 
 //Al27(13,14)Ro86
@@ -261,7 +261,7 @@ static double prfUG(double ug[],double r)
 								   0.23010e-2, 0.10794e-2, 0.12574e-3,-0.13021e-3, 0.56563e-4,
 							      -0.18011e-4, 0.42869e-5, 0, 0, 0,
 								   0,0};
-								  
+
 //Si28(14,14)Mi82
 	static double fb_14_14[18]={8.0, 0.33495e-1, 0.59533e-1, 0.20979e-1,-0.16900e-1,-0.14998e-1,
 								  -0.93248e-3, 0.33266e-2, 0.59244e-3,-0.40013e-3, 0.12242e-3,
@@ -277,15 +277,15 @@ static double prfUG(double ug[],double r)
 								  -0.46722e-2, 0.24804e-2, 0.14760e-2,-0.30168e-3, 0.48346e-4,
 								   0.00000e0, -0.51570e-5, 0.30261e-5, 0, 0,
 								   0, 0};
-//P31(15,16)Mi82 
-	static double fb_15_16[18]={8.0,  0.35305e-1, 0.59642e-1, 0.17274e-1,-0.19303e-1,-0.13545e-1, 
+//P31(15,16)Mi82
+	static double fb_15_16[18]={8.0,  0.35305e-1, 0.59642e-1, 0.17274e-1,-0.19303e-1,-0.13545e-1,
 								   0.63209e-3, 0.35462e-2, 0.83653e-3,-0.47904e-3, 0.19099e-3,
 								  -0.69611e-4, 0.23196e-4, -0.77780e-5,0,0,
 								  0,0};
 //S32(16,16)Ry83b
-	static double fb_16_16[18]={8.0,  0.37251e-1, 0.60248e-1, 0.14748e-1,-0.18352e-1,-0.10347e-1, 
+	static double fb_16_16[18]={8.0,  0.37251e-1, 0.60248e-1, 0.14748e-1,-0.18352e-1,-0.10347e-1,
 								   0.30461e-2, 0.35277e-2,-0.39834e-4,-0.97177e-4, 0.92279e-4,
-								  -0.51931e-4, 0.22958e-4,-0.86609e-5, 0.28879e-5,-0.86632e-6, 
+								  -0.51931e-4, 0.22958e-4,-0.86609e-5, 0.28879e-5,-0.86632e-6,
 								   0, 0};
 //S34(16,18)Ry83b
 	static double fb_16_18[18]={8,0.37036e-1, 0.58506e-1, 0.12082e-1,-0.19022e-1,-0.83421e-2,
@@ -302,12 +302,12 @@ static double prfUG(double ug[],double r)
 								  -0.43204e-4, 0.91988e-3,-0.41205e-3, 0.11971e-3,-0.19801e-4,
 								  -0.43204e-5, 0.61205e-5,-0.37803e-5, 0.18001e-5,-0.77407e-6,
 							       0, 0};
-							       
-	static double fb_18_22_pointDensity[18] = { 9.00052458,
-	                                            0.06770131, 0.13118807, 0.04445544, -0.03861778, -0.04030809, 
-	                                            -0.00091135, 0.00639945, -0.00452227, 0.00054216, 0.00209039, 
-	                                            -0.00177965, 0.00077199, -0.00058557, -0.00054448, 0.00279485, -0.00316697, 0.00122534};
-							       				       						       
+
+	static double fb_18_22_pointDensity[18] = {9.00051447, 0.03049435, 0.05906711, 0.02004217,
+		                                         -0.01741058, -0.01814531, -0.00039990, 0.00285990,
+																						 -0.00202572, 0.00025578, 0.00091830, -0.00078574,
+																						 0.00035888, -0.00030213, -0.00021802, 0.00128401, -0.00152466, 0.00062320};
+
 //Ca40(20,20)Em83b
    static double fb_20_20[18]={8.0,  0.44846e-1, 0.61326e-1,-0.16818e-2,-0.26217e-1,-0.29725e-2,
 								   0.85534e-2, 0.35322e-2,-0.48258e-3,-0.39346e-3, 0.20338e-3,
@@ -315,8 +315,8 @@ static double prfUG(double ug[],double r)
 								   0,0};
 //Ca48(20,24)Em83b
    static double fb_20_24[18]={8.0,  0.44782e-1, 0.59523e-1,-0.74148e-2,-0.29466e-1,-0.28350e-3,
-								   0.10829e-1, 0.30465e-2,-0.10237e-2,-0.17830e-3, 0.55391e-4, 
- 								  -0.22644e-4, 0.82671e-5,-0.27343e-5, 0.82461e-6,-0.22780e-6, 
+								   0.10829e-1, 0.30465e-2,-0.10237e-2,-0.17830e-3, 0.55391e-4,
+ 								  -0.22644e-4, 0.82671e-5,-0.27343e-5, 0.82461e-6,-0.22780e-6,
 								   0,0};
 //Ti48(22,26)Se85
    static double fb_22_26[18]={10.0, 0.27850e-1, 0.55432e-1, 0.26369e-1,-0.17091e-1,-0.21798e-1,
@@ -326,7 +326,7 @@ static double prfUG(double ug[],double r)
 //Ti48(22,28)Se85
 	static double fb_22_28[18]={9.5, 0.31818e-1, 0.58556e-1, 0.19637e-1,-0.24309e-1,-0.18748e-1,
 								   0.33741e-2, 0.89961e-2, 0.37954e-2,-0.41238e-3, 0.12540e-3,
-								   0, 0, 0, 0, 0, 
+								   0, 0, 0, 0, 0,
 								   0, 0};
 //Cr50(24,26)Li83c
    static double fb_24_26[18]={9.0,  0.39174e-1, 0.61822e-1, 0.68550e-2,-0.30170e-1,-0.98745e-2,
@@ -340,7 +340,7 @@ static double prfUG(double ug[],double r)
 								   0,0};
 //Cr54(24,30)Li83c
 	static double fb_24_30[18]={9.0, 0.39002e-1, 0.60305e-1, 0.45845e-2,-0.30723e-1,-0.91355e-2,
-								   0.93251e-2, 0.60583e-2,-0.15602e-2,-0.76809e-3, 0.76809e-3, 
+								   0.93251e-2, 0.60583e-2,-0.15602e-2,-0.76809e-3, 0.76809e-3,
 								  -0.34804e-3, 0, 0, 0, 0,
 								   0, 0};
 //Fe54(26,28)Wo76
@@ -353,12 +353,12 @@ static double prfUG(double ug[],double r)
 								   0.10844e-1, 0.49123e-2,-0.22144e-2,-0.18146e-3, 0.37261e-3,
 								  -0.23296e-3, 0.11494e-3,-0.50596e-4, 0.20652e-4,-0.79428e-5,
 								   0.28986e-5,-0.10075e-5};
-								   
-   static double fb_26_30_pointDensity[18] = { 9.00072200, 
-                                               0.04231463, 0.06605488, -0.00095655, -0.03714238, -0.01080343, 
-                                               0.01555390, 0.00624856, -0.00255266, -0.00054963, -0.00029042, 
+
+   static double fb_26_30_pointDensity[18] = { 9.00072200,
+                                               0.04231463, 0.06605488, -0.00095655, -0.03714238, -0.01080343,
+                                               0.01555390, 0.00624856, -0.00255266, -0.00054963, -0.00029042,
                                                0.00098031, -0.00038472, -0.00071218, 0.00113815, -0.00090063, 0.00064549, -0.00028920};
-								   								   
+
 //Fe58(26,32)Wo76
    static double fb_26_32[18]={9.0, 0.41791e-1, 0.60524e-1,-0.14978e-2,-0.31183e-1,-0.58013e-2,
 								   0.10611e-1, 0.41629e-2,-0.29045e-5, 0.54106e-3,-0.38689e-3,
@@ -398,12 +398,12 @@ static double prfUG(double ug[],double r)
    static double fb_28_34[18]={9.0,  0.44581e-1, 0.61478e-1,-0.69425e-2,-0.33126e-1,-0.24964e-2,
 								   0.12674e-1, 0.37148e-2,-0.20881e-2, 0.30193e-3, 0.57573e-4,
 								  -0.77965e-4, 0.46906e-4,-0.22724e-4, 0.98243e-5,-0.39250e-5,
-								   0.14732e-5, 0.52344e-6}; 
+								   0.14732e-5, 0.52344e-6};
 //Ni64(28,36)Wo76
    static double fb_28_36[18]={9.0,  0.44429e-1, 0.60116e-1,-0.92003e-2,-0.33452e-1,-0.52856e-3,
-								   0.13156e-1, 0.35152e-2,-0.21671e-2, 0.46497e-4, 0.25366e-3, 
+								   0.13156e-1, 0.35152e-2,-0.21671e-2, 0.46497e-4, 0.25366e-3,
 								  -0.18438e-2, 0.96874e-4,-0.44224e-4, 0.18493e-4,-0.72361e-5,
-								  -0.72361e-5,-0.93929e-6}; 
+								  -0.72361e-5,-0.93929e-6};
 //Cu63(29,34)Sc77
    static double fb_29_34[18]={9.0,  0.45598e-1, 0.60706e-1,-0.78616e-2,-0.31638e-1,-0.14447e-2,
 								   0.10953e-1, 0.42578e-2,-0.24224e-3,-0.30067e-3, 0.23903e-3,
@@ -424,7 +424,7 @@ static double prfUG(double ug[],double r)
 								   0.97083e-2, 0.14091e-2,-0.70813e-3, 0.20809e-3,-0.48275e-4,
 								   0.12680e-5, 0.91369e-6,-0.14874e-5, 0.88831e-6,-0.41689e-6,
 								   0.17283e-6,-0.65968e-7};
-//Zn68(30,38)Wo76 
+//Zn68(30,38)Wo76
    static double fb_30_38[18]={9.0,  0.46654e-1, 0.58827e-1,-0.12283e-1,-0.29865e-1, 0.25669e-2,
 								   0.10235e-1, 0.31861e-2,-0.17351e-3,-0.42979e-3, 0.33700e-3,
 								  -0.18435e-3, 0.87043e-4,-0.37612e-4, 0.15220e-4,-0.58282e-5,
@@ -439,7 +439,7 @@ static double prfUG(double ug[],double r)
 								   0.87849e-2, 0.49187e-2,-0.15189e-2,-0.17385e-2,-0.16794e-3,
 								  -0.11746e-3, 0.65768e-4,-0.30691e-4, 0.13051e-5,-0.52251e-5,
 								   0,0};
-//Ge72(32,40)Ma84 
+//Ge72(32,40)Ma84
    static double fb_32_40[18]={10.0, 0.38083e-1, 0.59342e-1, 0.47718e-2,-0.29953e-1,-0.88476e-2,
 								   0.96205e-2, 0.47901e-2,-0.16869e-2,-0.15406e-2,-0.97230e-4,
 								  -0.47640e-4,-0.15669e-5, 0.67076e-5,-0.44500e-5, 0.22158e-5,
@@ -480,23 +480,23 @@ static double prfUG(double ug[],double r)
 								   0.46236e-3, 0.94909e-3,-0.38930e-3,-0.14808e-3, 0.19622e-3,
 								  -0.40197e-4,-0.71949e-4};
 //Mo94(42,52)La86
-	static double fb_42_52[18]={12,  0.30661e-1, 0.58828e-1, 0.20396e-1,-0.28830e-1,-0.25077e-1, 
-								   0.44768e-2, 0.13127e-1, 0.19548e-2,-0.61403e-2,-0.35825e-2, 
-								   0.73790e-3, 0.61882e-3,-0.40556e-3,-0.55748e-5,-0.12453e-3, 
+	static double fb_42_52[18]={12,  0.30661e-1, 0.58828e-1, 0.20396e-1,-0.28830e-1,-0.25077e-1,
+								   0.44768e-2, 0.13127e-1, 0.19548e-2,-0.61403e-2,-0.35825e-2,
+								   0.73790e-3, 0.61882e-3,-0.40556e-3,-0.55748e-5,-0.12453e-3,
 								  -0.57812e-4,-0.21657e-4};
 //Mo96(42,54)La86
-	static double fb_42_54[18]={12,  0.30564e-1, 0.58013e-1, 0.19255e-1,-0.28372e-1,-0.23304e-1, 
-								   0.49894e-2, 0.12126e-1, 0.10496e-2,-0.62592e-2,-0.32814e-2, 
+	static double fb_42_54[18]={12,  0.30564e-1, 0.58013e-1, 0.19255e-1,-0.28372e-1,-0.23304e-1,
+								   0.49894e-2, 0.12126e-1, 0.10496e-2,-0.62592e-2,-0.32814e-2,
 								   0.89668e-3, 0.50636e-3,-0.43412e-3, 0.71531e-4, 0.76745e-4,
 								  -0.54316e-4, 0.23386e-6};
 //Mo98(42,56)Dr75
-	static double fb_42_56[18]={12,  0.30483e-1, 0.57207e-1, 0.17888e-1,-0.28388e-1,-0.21778e-1, 
-								   0.56780e-2, 0.11236e-1, 0.82176e-3,-0.50390e-2,-0.23877e-2, 
+	static double fb_42_56[18]={12,  0.30483e-1, 0.57207e-1, 0.17888e-1,-0.28388e-1,-0.21778e-1,
+								   0.56780e-2, 0.11236e-1, 0.82176e-3,-0.50390e-2,-0.23877e-2,
 								   0.71492e-3, 0.29839e-3,-0.31408e-3, 0.80177e-3, 0.43682e-4,
 								  -0.51394e-4, 0.22293e-4};
 //Mo100(42,58)Dr75
 	static double fb_42_58[18]={12,  0.30353e-1, 0.56087e-1, 0.16057e-1,-0.28767e-1,-0.20683e-1,
-								   0.62429e-2, 0.11058e-1, 0.11502e-2,-0.39395e-2,-0.14978e-2, 
+								   0.62429e-2, 0.11058e-1, 0.11502e-2,-0.39395e-2,-0.14978e-2,
 								   0.76350e-3, 0.10554e-3,-0.25658e-3, 0.10964e-3, 0.10015e-4,
 								  -0.40341e-4, 0.25744e-4};
 //Pd104(46,58)La86
@@ -531,7 +531,7 @@ static double prfUG(double ug[],double r)
 								   0,0};
 //Sm148(62,86)Mo81
    static double fb_62_86b[18]={9.25,0.73859e-1, 0.24023e-1,-0.59437e-1, 0.10761e-1, 0.17022e-1,
-                                  -0.11401e-1,-0.18102e-2, 0.93011e-3, 0.98012e-3,-0.12601e-2, 
+                                  -0.11401e-1,-0.18102e-2, 0.93011e-3, 0.98012e-3,-0.12601e-2,
                                   -0.17402e-2,0,0,0,0,
                                    0,0};
 //Sm150(62,88)Mo81
@@ -550,17 +550,17 @@ static double prfUG(double ug[],double r)
 								   0,0,0,0,0,
 								   0,0};
 //Sm154(62,92)Ho80
-   static double fb_62_92[18]={10.5,0.55859e-1, 0.44002e-1,-0.40342e-1,-0.17989e-1, 0.19817e-1, 
+   static double fb_62_92[18]={10.5,0.55859e-1, 0.44002e-1,-0.40342e-1,-0.17989e-1, 0.19817e-1,
 								   0.51643e-2,-0.60212e-2,-0.23127e-2, 0.47024e-3, 0,
 								   0,0,0,0,0,
 								   0,0};
 //Gd154(64,90)He82
-   static double fb_64_90[18]={10.0,0.63832e-1, 0.36983e-1,-0.48193e-1,-0.51046e-2, 0.19805e-1, 
+   static double fb_64_90[18]={10.0,0.63832e-1, 0.36983e-1,-0.48193e-1,-0.51046e-2, 0.19805e-1,
 								  -0.82574e-3,-0.46942e-2,0,0,0,
 								   0,0,0,0,0,
 								   0,0};
 //Gd158(64,94)Mu84
-   static double fb_64_94[18]={10.5,0.57217e-1, 0.43061e-1,-0.41996e-1,-0.17203e-1, 0.19933e-1, 
+   static double fb_64_94[18]={10.5,0.57217e-1, 0.43061e-1,-0.41996e-1,-0.17203e-1, 0.19933e-1,
 								   0.51060e-2,-0.73665e-2,-0.20926e-2, 0.21883e-2,0,
 								   0,0,0,0,0,
 								   0,0};
@@ -646,9 +646,9 @@ static double prfUG(double ug[],double r)
 		2.0, 0.152243,
 		2.5, 0.051564,
 		3.0, 0.053023,
-		0,0, 
+		0,0,
 
-		0,0, 
+		0,0,
 		0,0
 	};
 //He3(2,1)MC77
@@ -671,7 +671,7 @@ static double prfUG(double ug[],double r)
 		0,0,
 		0,0
 	};
-//He4(2,2)Si82	
+//He4(2,2)Si82
 	static double sog_2_2[26]=
 	{
 		1.6768,1.00,
@@ -697,19 +697,19 @@ static double prfUG(double ug[],double r)
 		2.4696, 1.20,
 
 		0.0, 0.016690,
-		0.4, 0.050325, 
-		1.0, 0.128621, 
-		1.3, 0.180515, 
-		1.7, 0.219097, 
+		0.4, 0.050325,
+		1.0, 0.128621,
+		1.3, 0.180515,
+		1.7, 0.219097,
 
-		2.3, 0.278416, 
+		2.3, 0.278416,
 		2.7, 0.058779,
-		3.5, 0.057817, 
-		4.3, 0.007739, 
-		5.4, 0.002001, 
+		3.5, 0.057817,
+		4.3, 0.007739,
+		5.4, 0.002001,
 
 		6.7, 0.000007,
-		0, 0 
+		0, 0
 	};
 //O16(8,8)Si70b
 	static double sog_8_8[26]=
@@ -731,7 +731,7 @@ static double prfUG(double ug[],double r)
 		5.9, 0.002096,
 		6.4, 0.000002
 	};
-//Mg24(12,12)Li74 
+//Mg24(12,12)Li74
 	static double sog_12_12[26]=
 	{
 		3.027, 1.25,
@@ -748,7 +748,7 @@ static double prfUG(double ug[],double r)
 		4.7, 0.000002,
 		5.2, 0.010876,
 
-		6.1, 0.000002, 
+		6.1, 0.000002,
 		7.0, 0.000002
 	};
 //Si28(14,14)Li74
@@ -769,45 +769,45 @@ static double prfUG(double ug[],double r)
 		5.5, 0.000938,
 
 		6.0, 0.000002,
-		6.9, 0.002366 
+		6.9, 0.002366
 	};
 //S32(16,16)Li74
 	static double sog_16_16[26]=
 	{
-		3.258, 1.35, 
+		3.258, 1.35,
 
 		0.4, 0.045356,
 		1.1, 0.067478,
-		1.7, 0.172560, 
+		1.7, 0.172560,
 		2.5, 0.324870,
-		3.2, 0.254889, 
-		
+		3.2, 0.254889,
+
 		4.0, 0.101799,
 		4.6, 0.022166,
-		5.0, 0.002081, 
+		5.0, 0.002081,
 		5.5, 0.005616,
 		6.3, 0.000020,
-		
+
 		7.3, 0.000020,
 		7.7, 0.003219
-	}; 
+	};
 //K39(19,20)Si74
     static double sog_19_20[26]=
     {
 		3.427, 1.45,
 
 		0.4, 0.043308,
-		0.9, 0.036283, 
+		0.9, 0.036283,
 		1.7, 0.110517,
-		2.1, 0.147676, 
-		2.6, 0.189541, 
-		
+		2.1, 0.147676,
+		2.6, 0.189541,
+
 		3.2, 0.274173,
 		3.7, 0.117691,
 		4.2, 0.058273,
 		4.7, 0.000006,
 		5.5, 0.021380,
-		
+
 		5.9, 0.000002,
 		6.9, 0.001145
 	};
@@ -821,13 +821,13 @@ static double prfUG(double ug[],double r)
 		1.8, 0.167853,
 		2.7, 0.317962,
 		3.2, 0.155450,
-		
+
 		3.6, 0.161897,
 		4.3, 0.053763,
 		4.6, 0.032612,
 		5.4, 0.004803,
 		6.3, 0.004541,
-		
+
 		6.6, 0.000015,
 		8.1, 0.002218
 	};
@@ -840,15 +840,15 @@ static double prfUG(double ug[],double r)
 		1.7, 0.064201,
 		2.1, 0.203813,
 		2.9, 0.259070,
-		
+
 		3.4, 0.307899,
-		4.3, 0.080585, 
-		5.2, 0.008498, 
+		4.3, 0.080585,
+		5.2, 0.008498,
 		5.7, 0.000025,
 		6.2, 0.000005,
-		
+
 		6.5, 0.000004,
-		7.4, 0.001210 
+		7.4, 0.001210
 	};
 //Ni58(28,30)Ca80b
 	static double sog_28_30[26]=
@@ -886,7 +886,7 @@ static double prfUG(double ug[],double r)
 		6.1, 0.048157,
 
 		7.1, 0.001367,
-		8.1, 0.000509 
+		8.1, 0.000509
 	};
 //Sn124(50,74)Ca82a
 	static double sog_50_74[26]=
@@ -906,13 +906,13 @@ static double prfUG(double ug[],double r)
 		6.1, 0.043193,
 
 		7.1, 0.001319,
-		8.1, 0.000036 
-	}; 
+		8.1, 0.000036
+	};
 //Tl205(81,124)Fr83
 	static double sog_81_124[26]=
 	{
 		5.479, 1.70,
-		
+
 		0.6, 0.007818,
 		1.1, 0.022853,
 		2.1, 0.000084,
@@ -978,30 +978,30 @@ nucleus_data dens_data[]=
 		nucleus_data( 6,  6, prfFB,  fb_6_6b   ),
 		nucleus_data( 7,  8, prfFB,  fb_7_8    ),
 		nucleus_data( 8,  8, prfFB,  fb_8_8_pointDensity, 1),
-		nucleus_data( 8,  8, prfFB,  fb_8_8_chargeDensity,2),  
-		nucleus_data(13, 14, prfFB,  fb_13_14  ),  
-		nucleus_data(14, 14, prfFB,  fb_14_14  ), 
-		nucleus_data(14, 15, prfFB,  fb_14_15  ), 
-		nucleus_data(14, 16, prfFB,  fb_14_16  ), 
-		nucleus_data(15, 16, prfFB,  fb_15_16  ), 
-		nucleus_data(16, 16, prfFB,  fb_16_16  ), 
+		nucleus_data( 8,  8, prfFB,  fb_8_8_chargeDensity,2),
+		nucleus_data(13, 14, prfFB,  fb_13_14  ),
+		nucleus_data(14, 14, prfFB,  fb_14_14  ),
+		nucleus_data(14, 15, prfFB,  fb_14_15  ),
+		nucleus_data(14, 16, prfFB,  fb_14_16  ),
+		nucleus_data(15, 16, prfFB,  fb_15_16  ),
+		nucleus_data(16, 16, prfFB,  fb_16_16  ),
 		nucleus_data(16, 18, prfFB,  fb_16_18  ),
 		nucleus_data(16, 20, prfFB,  fb_16_20  ),
-		nucleus_data(18, 22, prfFB,  fb_18_22_pointDensity, 1), 
-		nucleus_data(18, 22, prfFB,  fb_18_22_chargeDensity,2), 
-		nucleus_data(20, 20, prfFB,  fb_20_20  ), 
-		nucleus_data(20, 24, prfFB,  fb_20_24  ), 
-		nucleus_data(22, 26, prfFB,  fb_22_26  ), 
+		nucleus_data(18, 22, prfFB,  fb_18_22_pointDensity, 1),
+		nucleus_data(18, 22, prfFB,  fb_18_22_chargeDensity,2),
+		nucleus_data(20, 20, prfFB,  fb_20_20  ),
+		nucleus_data(20, 24, prfFB,  fb_20_24  ),
+		nucleus_data(22, 26, prfFB,  fb_22_26  ),
 		nucleus_data(22, 28, prfFB,  fb_22_28  ),
-		nucleus_data(24, 26, prfFB,  fb_24_26  ), 
-		nucleus_data(24, 28, prfFB,  fb_24_28  ), 
+		nucleus_data(24, 26, prfFB,  fb_24_26  ),
+		nucleus_data(24, 28, prfFB,  fb_24_28  ),
 		nucleus_data(24, 30, prfFB,  fb_24_30  ),
-		nucleus_data(26, 28, prfFB,  fb_26_28  ), 
-		nucleus_data(26, 30, prfFB,  fb_26_30_pointDensity, 1), 		
-		nucleus_data(26, 30, prfFB,  fb_26_30_chargeDensity,2), 
-		nucleus_data(26, 32, prfFB,  fb_26_32  ), 
+		nucleus_data(26, 28, prfFB,  fb_26_28  ),
+		nucleus_data(26, 30, prfFB,  fb_26_30_pointDensity, 1),
+		nucleus_data(26, 30, prfFB,  fb_26_30_chargeDensity,2),
+		nucleus_data(26, 32, prfFB,  fb_26_32  ),
 		nucleus_data(27, 32, prfFB,  fb_27_32  ),
-		nucleus_data(28, 30, prfFB,  fb_28_30a ), 
+		nucleus_data(28, 30, prfFB,  fb_28_30a ),
 		nucleus_data(28, 30, prfFB,  fb_28_30b ),
 		nucleus_data(28, 32, prfFB,  fb_28_32a ),
 		nucleus_data(28, 32, prfFB,  fb_28_32b ),
@@ -1019,7 +1019,7 @@ nucleus_data dens_data[]=
 		nucleus_data(32, 42, prfFB,  fb_32_42  ),
 		nucleus_data(32, 44, prfFB,  fb_32_44  ),
 		nucleus_data(38, 40, prfFB,  fb_38_40  ),
-		nucleus_data(40, 50, prfFB,  fb_40_50  ), 
+		nucleus_data(40, 50, prfFB,  fb_40_50  ),
 		nucleus_data(40, 52, prfFB,  fb_40_52  ),
 		nucleus_data(40, 54, prfFB,  fb_40_54  ),
 		nucleus_data(42, 50, prfFB,  fb_42_50  ),
@@ -1070,7 +1070,7 @@ nucleus_data dens_data[]=
 		nucleus_data(50, 74, prfSOG, sog_50_74 ),
 		nucleus_data(81,124, prfSOG, sog_81_124),
 		nucleus_data(82,124, prfSOG, sog_82_124),
-		nucleus_data(82,126, prfSOG, sog_82_126),		
+		nucleus_data(82,126, prfSOG, sog_82_126),
 
 		nucleus_data( 3,  4,  prfHO,  ho_3_4   ),
 		nucleus_data( 4,  5,  prfHO,  ho_4_5   ),
@@ -1081,7 +1081,7 @@ nucleus_data dens_data[]=
 		nucleus_data( 8, 10,  prfHO,  ho_8_10  ),
 
 		nucleus_data( 6,  7, prfMHO,  mho_6_7  ),
-		nucleus_data( 6,  8, prfMHO,  mho_6_8  ),			
+		nucleus_data( 6,  8, prfMHO,  mho_6_8  ),
 
 		nucleus_data(7,   7, prf3pF, _3pF_7_7  ),
 		nucleus_data(7 ,  8, prf3pF, _3pF_7_8  ),
@@ -1139,7 +1139,7 @@ nucleus_data dens_data[]=
 		nucleus_data(38, 50, prf2pF, _2pF_38_50),
 		nucleus_data(39, 50, prf2pF, _2pF_39_50),
 		nucleus_data(41, 52, prf2pF, _2pF_41_52),
-		
+
 		nucleus_data(79, 118, prf2pF, _2pF_79_118),
 		nucleus_data(90, 142, prf2pF, _2pF_Th232a),
 		nucleus_data(90, 142, prf2pF, _2pF_Th232b),
@@ -1154,22 +1154,22 @@ nucleus_data dens_data[]=
 		nucleus_data( 11,  12, prfUG, ug_11_12    ),
 
 		nucleus_data( 0,  0,      0,          0)
-		
-		
+
+
 	};
-	
+
 double nucleus_data::dens(double r)
 {
     double X=dens_fun(dens_params,r/fermi)/fermi3;
-    
-    if(dens_fun==prf3pF 
-       || dens_fun==prf3pG 
+
+    if(dens_fun==prf3pF
+       || dens_fun==prf3pG
        || dens_fun==prfSOG)
-       return X*(_p+_n);  
-       
+       return X*(_p+_n);
+
     if(dens_fun==prfFB)
        return X*(_p+_n)/_p; // normalized to mass number
-       
+
     return X;
 }
 
@@ -1189,18 +1189,18 @@ const char*  nucleus_data::name()
 }
 
 double nucleus_data::r()
-{  
+{
 	if(_r==0)
 	{
-		if(dens_fun==prfFB) 
-			return _r=dens_params[0]*fermi;	
+		if(dens_fun==prfFB)
+			return _r=dens_params[0]*fermi;
 		double r0=0;
 		double r1=20.0*fermi;
 		double oldrs=r1;
 		double rs=0;
 		double ds0=1e-7*dens(0);
 		do
-		{ 
+		{
 			oldrs=rs;
 			rs=(r0+r1)/2;
 			double ds=dens(rs);
@@ -1209,16 +1209,16 @@ double nucleus_data::r()
 			else
 				r1=rs;
 		}
-		while(rs!=oldrs); 
+		while(rs!=oldrs);
 		_r=rs;
-	}	
+	}
 	return _r;
 }
 
 double nucleus_data::random_r()
-{   
+{
 	if(_max_rr_dens==0)
-	{	
+	{
 		double R=r(),d=0;
 		for(double a=0;a<R;a+=R/100)
 			_max_rr_dens=max(_max_rr_dens,a*a*dens(a));
@@ -1227,9 +1227,9 @@ double nucleus_data::random_r()
 	++j;
     double r0=r(),r1;
     do
-    { 
+    {
 		++i;
-		r1 = r0*frandom(); 
+		r1 = r0*frandom();
     }
     while ( r1*r1*dens(r1) < frandom ()*_max_rr_dens);
 //    cout<<i*1./j<<endl;
@@ -1259,22 +1259,22 @@ double nucleus_data::Mf()
 }
 
 nucleus_data* best_data(int p, int n, unsigned char model_tag)
-{ 
+{
     int p0=p, n0=n, x=1e9;
-	
+
     nucleus_data *d = nullptr;
-	
+
 	for(nucleus_data *data=dens_data; data->p() >0; data++)
-	{   
-	        if (model_tag && data->model_tag() != model_tag) continue; //new
+	{
+	        if (model_tag && data->model_tag() != model_tag) continue;
 
 		int x1=pow2(data->p()-p0)+pow2(data->n()-n0)+pow2(data->p()+data->n()-p0-n0);
-		
-		if(x1<x) 
+
+		if(x1<x)
 		{
 			x=x1;
 			d=data;
-			if(x==0) 
+			if(x==0)
 			 return data;
 		}
 	}
@@ -1286,16 +1286,16 @@ nucleus_data* best_data(int p, int n)
 {
     return best_data(p, n, 0);  // 0 == ignore tags
 }
-						
+
 double density(double r_,int p, int n)
-{  
-	double A=p+n; 
-	
+{
+	double A=p+n;
+
 	if(p>83) ///< for big nuclei use rescaled Pb profile
 		return ::density(r_*cbrt((82+126)/A),82,126);
 
 	double r=r_;
-	
+
 	nucleus_data *d=best_data(p,n);
 	r*=cbrt(A/d->A());  // and scale its size if needed
     return max(d->dens(r),0.);
@@ -1303,7 +1303,7 @@ double density(double r_,int p, int n)
 
 double Meff(double kf)
 {
-	static const double MEF[3000]= 
+	static const double MEF[3000]=
 	{
 		938.919,938.918,938.918,938.918,938.917,938.915,938.913,938.909,938.904,
 		938.899,938.891,938.882,938.871,938.858,938.843,938.826,938.806,938.784,
@@ -1646,6 +1646,6 @@ double Meff(double kf)
 
 	if(i>2999)
 		return 2;//or maybe tablica_Mef[2999];
-	else 
+	else
 		return  MEF[i]*(1-x) + MEF[i+1]*x;
 }

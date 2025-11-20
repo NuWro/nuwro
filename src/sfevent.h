@@ -17,7 +17,7 @@ double random_omega();
 // return Couloumb correction to neutron energy levels
 double coulomb_correction_neutron(int p, int n);
 // Approximate kinetic energy
-double tPPrime_approx(const double eK, const double cosOfScattAngle, const bool EM, const bool NC, const double m_leptSq, const double m_nucl); //new
+double tPPrime_approx(const double eK, const double cosOfScattAngle, const bool EM, const bool NC, const double m_leptSq, const double m_nucl); 
 
 
 #endif

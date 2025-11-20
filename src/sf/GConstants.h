@@ -120,6 +120,7 @@ const double M2(M*M);
 const double piMass2( PDG::mass_piP * PDG::mass_piP );
 const double pMass( 938.27203 * MeV );
 const double nMass( 939.56536 * MeV );
+const double eMass( 0.510998910*MeV );
 const double mu_p(2.792847351);
 const double mu_n(-1.91304273);
 //const double xi(mu_p - mu_n - 1.0);

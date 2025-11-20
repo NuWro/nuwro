@@ -25,6 +25,7 @@ typedef std::tuple<TargetNucleus, bool, bool> SFKey;
 // Generate kinematics and calculate cross section using SF
 double sfevent(params &par, event &e, nucleus &t)
 {
+
   static std::map<SFKey, CSpectralFunctions*> sfCache;
 
     particle &l0 = e.in[0];  // incoming lepton
@@ -45,11 +46,11 @@ double sfevent(params &par, event &e, nucleus &t)
   const bool is_distorted = par.sf_CoulombDistortion == 1;       // true for coulomb distortion
   const bool switchFSI = par.FSI_on == 1;                        // true for FSI
   const bool switchSeparation = par.sf_src == 1;                 // true for SRC
-  
+
   int method = par.sf_method;
 
   // Event-specific flags
-  bool isCorrelated = false; 
+  bool isCorrelated = false;
   double pot( 0.0 ), common( 1.0 ), crossSectionValue( 1.0 );
   double factor = is_anti ? -1 : 1 ;
 
@@ -91,17 +92,19 @@ double sfevent(params &par, event &e, nucleus &t)
    // Set the target nucleus
    TargetNucleus target = ( proton == carbonZ and neutron == carbonN ) ? C12_newSF :
                           ( proton == oxygenZ and neutron == oxygenN ) ? O16_SF :
-                          ( (proton == argonZ and neutron == argonN) or (proton == calciumZ and neutron == calciumN) ) ? Ar40_SF :
-                          ( proton == ironZ and neutron == ironN ) ? Fe56_SF :
+                          ( proton == argonZ and neutron == argonN )   ? Ar40_SF :
+                          ( proton == ironZ and neutron == ironN )     ? Fe56_SF :
                           TargetNucleus::Unsupported;
    if (target == TargetNucleus::Unsupported) return 0;
 
     // Create the spectral function object for sf_method = 1
     SFKey key = std::make_tuple(target, switchSeparation, switchFSI);
+
     CSpectralFunctions *sf; // CSpectralFunctions instance
+
     auto it = sfCache.find( key );
     if (it != sfCache.end()) sf = it->second;
-    else 
+    else
     {
           sf = new CSpectralFunctions(target, switchSeparation, switchFSI);
           sfCache[ key ] = sf;
@@ -112,61 +115,61 @@ double sfevent(params &par, event &e, nucleus &t)
   double maxCE = ( is_distorted ) ? factor * sf->get_CoulombMaxEnergy() : 0;
 
   particle l0eff = l0;
-  
+
   if (is_electron) l0eff.set_energy( l0.E() + averCE );
-  
-  e.averageCE = averCE; // Store the avarage Coulomb energy in event class for later use in Cascade
+
+  e.averageCE = averCE; // Store the avarage Coulomb energy in event class for later use in cascade
 
   CSFOptions xsec( par, e.flag.cc, !is_on_n, is_anti ); // Create cross-section object
 
   // Draw the missing momentum and removal energy according to probability distribution given by SF based on MF or correlation
   double p(0.0), E(0.0);
-  
+
   // new implementation of SF and nuclear corrections by RWIK DHARMAPAL BANERJEE, 2025
-  if (method == 1) 
+  if (method == 1)
   {
-    if (switchSeparation and target_argon) 
+    if (switchSeparation and target_argon)
     {
         double corrFraction = is_anti ? sf->get_corrProtonFraction() : sf->get_corrNeutronFraction();
-        if (frandom11() < corrFraction) 
+        if (frandom11() < corrFraction)
         {
             // Sample from correlated spectral function
             isCorrelated = true;
-            if (is_on_n) 
+            if (is_on_n)
             {
                 p = sf->generateNeutronMomentum_corr();
                 E = sf->generateNeutronRemovalEnergy_corr(p);
             }
-            else 
+            else
             {
                 p = sf->generateProtonMomentum_corr();
                 E = sf->generateProtonRemovalEnergy_corr(p);
             }
         }
-        else 
+        else
         {
             // Sample from mean-field spectral function
             isCorrelated = false;
-            if (is_on_n) 
+            if (is_on_n)
             {
                 p = sf->generateNeutronMomentum_MF();
                 E = sf->generateNeutronRemovalEnergy_MF(p);
             }
-            else 
+            else
             {
                 p = sf->generateProtonMomentum_MF();
                 E = sf->generateProtonRemovalEnergy_MF(p);
             }
         }
      }
-     else 
+     else
      {
         // Use total spectral function
         p = is_on_n ? sf->generateNeutronMomentum() : sf->generateProtonMomentum();
         E = is_on_n ? sf->generateNeutronRemovalEnergy(p) : sf->generateProtonRemovalEnergy(p);
      }
-   } 
-   else if (method == 2 or method == 3) // old implementations
+   }
+   else if (method == 2 or method == 3) // old SF implementations
    {
     // Create the spectral function object
     CSpectralFunc *sf_ = xsec.get_SF();
@@ -174,7 +177,6 @@ double sfevent(params &par, event &e, nucleus &t)
     E = sf_->generateE(p);
 
     if (is_on_n) E += coulomb_correction_neutron(proton, neutron);
-    isCorrelated = switchSeparation && is_src(p, E, proton, neutron, !is_on_n);
   }
 
   N0.set_momentum( rand_dir() * p ); // set target nucleon momentum randomly from Fermi sphere
@@ -187,7 +189,7 @@ double sfevent(params &par, event &e, nucleus &t)
 
     N2.set_momentum( spectatorNucleonMomentum );
   }
-  else 
+  else
     N2.set_momentum( -N0.p() ); // Back-to-back approximation
 
   // Apply Nuclear recoil
@@ -196,17 +198,19 @@ double sfevent(params &par, event &e, nucleus &t)
   const double residualNucleusEnergy = std::sqrt( pow2( residualNucleusMass ) + pow2( p ) ) ; // residual nucleus energy
 
   vect s = l0eff + N0; // s Mandelstam-like
-  s.t = is_recoiled ?
-        l0eff.E() + targNucleusMass - residualNucleusEnergy :
-        l0eff.E() + M - E;           // adjust the initial energy
+  s.t = is_recoiled
+        ? l0eff.E() + targNucleusMass - residualNucleusEnergy
+        : l0eff.E() + M - E;           // adjust the initial energy
   const double s2 = s * s;
   if (s2 < pow2( M + m )) return 0;  // Unphysical invariant mass
+
   const vec v = s.v();               // the velocity of cms frame
   const double mom_cms = sqrt( 0.25 * pow2( s2 + m2 - MSq ) / s2 - m2 );
   const vec dir_cms = rand_dir();
+
   l1.set_momentum( mom_cms * dir_cms );  // set lepton momenta (in cms)
   N1.set_momentum( -l1.p() );            // set nucleon momenta (in cms)
-        
+
   // Boost back to lab frame
   l1.boost( v );
   N1.boost( v );
@@ -220,7 +224,7 @@ double sfevent(params &par, event &e, nucleus &t)
   const double kPrimeSq_eff_max = pow2( E_l1 + maxCE ) - m2;
   const double kPrimeSq_eff = pow2( E_l1 + averCE ) - m2;
   const double focusingFactorOutgoingSq = kPrimeSq_eff_max / kPrimeSq_eff;
-  
+
   const double focusingFactorSq = ( focusingFactorIncomingSq * focusingFactorOutgoingSq );
 
   if (is_pauli_blocked and
@@ -239,12 +243,12 @@ double sfevent(params &par, event &e, nucleus &t)
   const double Factor = jacobian / energyDenominator;
 
   // Evaluate cross-section
-  if (is_electron) 
+  if (is_electron)
   {
     common = focusingFactorSq / pow2( reciprocalAlpha ) / ( qq*qq ) / ( qq*qq ) * Factor;
     crossSectionValue = common * xsec.evalLHel( q*q, l0eff*N0, l1*N0, q*N0, l0eff*q, l1*q, l0eff*l1 );
   }
-  else 
+  else
   {
     common =  focusingFactorSq * pow2( GF ) / 8 / Pi2 * Factor;
     crossSectionValue = e.flag.cc ? common * cos2ThetaC * xsec.evalLH( q*q, l0*N0, l1*N0, q*N0, l0*q, l1*q, l0*l1 )
@@ -253,14 +257,15 @@ double sfevent(params &par, event &e, nucleus &t)
 
    // FSI
    bool isTransparent = true;
-   if (switchFSI) 
+
+   if (switchFSI)
    {
        const double Tk = tPPrime_approx( e.in[0].E(), l1.p().z / l1.momentum(), is_electron, !is_cc_possible, m2, M ) ;
        const double rOP = sf->eval_realOP( Tk ); // Real part of the optical potential
-       pot = ( N1.pdg == pdg_neutron ) ? rOP - factor * averCE : rOP ;
-       isTransparent = ( frandom11() <= sf->eval_sqrtOfTransparency(Tk, par.sf_transparency_scale, par.sf_transparency_table_idx) );
+       pot = ( N1.pdg == pdg_neutron ) ? rOP - factor * averCE: rOP ; // correct for proton and neutron
 
-      if (!isTransparent) 
+       isTransparent = ( frandom11() <= sf->eval_sqrtOfTransparency(Tk, par.sf_transparency_scale, par.sf_transparency_table_idx) );
+      if (!isTransparent)
       {
           const double shift = pot + random_omega();
           if( l1.E() - l0eff.E() > shift ) return 0;
@@ -268,58 +273,62 @@ double sfevent(params &par, event &e, nucleus &t)
        }
    }
 
+   double U_Correlation = (pot > 0.0) ? pot : 0.0;   // repulsive piece
+   double U_MeanField   = (pot <= 0.0) ? pot : 0.0;  // attractive piece
+
    e.flag.isTransparent = isTransparent; // Assign to event flag
-   e.optical_potential = pot;            // Store the optical potential in event class for later use in Cascade
+   e.optical_potential  = U_MeanField;   // To be used in cascade
 
    // Apply nuclear effects
    double energyThreshold = is_anti ? pot : averCE + pot;
-   
    if (l1.Ek() > energyThreshold) l1.set_energy( l1.E() - averCE - pot );
    else return 0;
 
-   if (not is_on_n) 
-   {
-     if (N1.Ek() > -averCE) N1.set_energy( N1.E() + averCE );
-     else return 0;
-   }
+   double shift = is_on_n ? pot : (averCE + pot);
+   double threshold = is_on_n ? (N1.mass() - pot) : (N1.mass() - averCE - pot);
+   if (N1.E() > threshold) N1.set_energy( N1.E() + shift);
+   else return 0;
+
+   if (N0.mass() > E) N0.t = N0.mass() - E;
+   else return 0;
 
   // Cut on the excitation energy
   static const double minimalEX( 0.0 * MeV );
-  const double coefASq( targNucleusMass * minimalEX + 0.5 * ( minimalEX * minimalEX - m2 ) + l0.E() * l0.E() );
-  const double coefB ( l0.E() + targNucleusMass );
-  const double coefC ( l0.E() * ( l1.p().z / l1.momentum() ) );
-  const double radicand( std::pow( coefASq - coefB * l0.E() , 2 ) - ( coefB * coefB - coefC * coefC ) * m2 );
+  const double coefASq( targNucleusMass * minimalEX + 0.5 * ( minimalEX * minimalEX - m2 ) + l0eff.E() * l0eff.E() );
+  const double coefB ( l0eff.E() + targNucleusMass );
+  const double coefC ( l0eff.E() * ( l1.p().z / l1.momentum() ) );
+  const double radicand( std::pow( coefASq - coefB * l0eff.E() , 2 ) - ( coefB * coefB - coefC * coefC ) * m2 );
   const double root( radicand < 0.0 ? 0.0 : sqrt( radicand ) );
   const double minimalOmegaExact( ( coefASq * coefB - coefC * coefC * l0.E() - coefC * root ) / ( coefB * coefB - coefC * coefC ) );
-  if (l0.E() - l1.E() < minimalOmegaExact) return 0;
+  if (l0eff.E() - l1.E() < minimalOmegaExact) return 0;
 
   // Store event weight and final-state particles
   e.weight = crossSectionValue / cm2;    // Add cross-section as the weight
   e.in[1] = N0;                          // Update target nucleon state
   e.out.push_back(l1);                   // Add outgoing lepton to event.
   e.out.push_back(N1);                   // Non-transparent nucleon added to out
-  
+
   if ((method == 1 and !target_argon) or (method > 1))
     {
       if (switchSeparation and is_src(p, E, proton, neutron, !is_on_n) and (l0eff.t - l1.t - N1.Ek() - N2.Ek()) > 14)
         isCorrelated = true;
       else
         isCorrelated = false;
-    }    
-      
+    }
+
   e.flag.isCorrelated = isCorrelated;    // Assign to event flag
-  if (isCorrelated) e.out.push_back(N2); // Handle spectator nucleon for SRC events
+  if (isCorrelated && N2.momentum() > 1e-6) e.out.push_back(N2); // Handle spectator nucleon for SRC events
 
   // Apply acceptance cut for electron scattering
-  if (is_electron) 
+  if (is_electron)
   {
     double cosTheta = l1.p().z / l1.momentum();
-    if (cosTheta < (par.el_costh_lab - par.el_costh_del) or cosTheta > (par.el_costh_lab + par.el_costh_del)) 
+    if (cosTheta < (par.el_costh_lab - par.el_costh_del) or cosTheta > (par.el_costh_lab + par.el_costh_del))
     {
       e.weight = 0;
       return 0;
      }
-    else 
+    else
     {
       e.weight /= 2 * par.el_costh_del;
       crossSectionValue /= 2 * par.el_costh_del;
@@ -343,10 +352,10 @@ double tPPrime_approx( const double eK, const double cosOfScattAngle, const bool
     return tPPrime_approx;
 }
 
-bool has_sf(nucleus &t, int method) 
-{ 
+bool has_sf(nucleus &t, int method)
+{
   const int key = 1000 * t.Z() + t.N();
-  switch (key) 
+  switch (key)
   {
     case CARBON:
       return method == 2;
@@ -362,10 +371,10 @@ bool has_sf(nucleus &t, int method)
 }
 
 // Approximated SRC
-bool is_src(double p, double E, int Z, int N, bool is_on_p) 
+bool is_src(double p, double E, int Z, int N, bool is_on_p)
 {
   // oxygen
-  if (Z == 8 and N == 8) 
+  if (Z == 8 and N == 8)
   {
     if (p < 85 and E > 63) return true;
     if (p > 85 and p < 320 and E > (73.4 - 0.167 * p)) return true;
@@ -374,20 +383,20 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p)
   }
   // carbon
   // Benhar SF; basically for protons but taken the same for neutrons
-  if (Z == 6 and N == 6) 
+  if (Z == 6 and N == 6)
   {
     if (p < 330 and E > (52.27 + 0.00428 * p - 0.0004618 * p * p)) return true;
     if (p > 330) return true;
   }
   // iron
   // Benhar SF; basically for protons but taken the same for neutrons
-  if (Z == 26 and N == 30) 
+  if (Z == 26 and N == 30)
   {
     if (p < 335 and E > (60.41 + 0.004134 * p - 0.0004343 * p * p)) return true;
     if (p > 335) return true;
   }
   // argon
-  if (Z == 18 and N == 22) 
+  if (Z == 18 and N == 22)
   {
   if (is_on_p) {  // protons
     if (p < 230 and E > (49.11 - 0.08305 * p + 0.0008781 * p * p + 1.045e-7 * p * p * p - 8.312e-9 * p * p * p * p))
@@ -396,8 +405,8 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p)
     if (p > 230 and p < 395 and E > (-52.97 + 0.8571 * p - 0.001696 * p * p)) return true;
 
     if (p > 395) return true;
-  } 
-  else 
+  }
+  else
   {  // neutrons
     if (p < 225 and E > (50.03 - 0.0806 * p + 0.0006774 * p * p + 1.717e-6 * p * p * p - 1.236e-8 * p * p * p * p))
       return true;
@@ -412,7 +421,7 @@ bool is_src(double p, double E, int Z, int N, bool is_on_p)
 }
 
 // Gaussian fit to folding function
-double random_omega() 
+double random_omega()
 {
   static std::default_random_engine generator;
   static std::normal_distribution<double> distribution( -7.00637e-15, 88.3146 );
@@ -420,19 +429,19 @@ double random_omega()
 }
 
 // Coulomb correction to the neutron energy levels
-double coulomb_correction_neutron(int p, int n) 
+double coulomb_correction_neutron(int p, int n)
 {
   const int key = 1000 * p + n;
-  switch (key) 
+  switch (key)
   {
     case CARBON:
-      return carbon11Mass - boron11Mass + nMass - pMass - 0.510998910*MeV;  // carbon
+      return carbon11Mass - boron11Mass + nMass - pMass - eMass;  // carbon
     case OXYGEN:
-      return oxygen15Mass - nitrogen15Mass + nMass - pMass - 0.510998910*MeV; // oxygen
+      return oxygen15Mass - nitrogen15Mass + nMass - pMass - eMass; // oxygen
     case ARGON:
-      return (argon39Mass + nMass - argon40Mass) - (scandium47Mass + pMass + 0.510998910*MeV - titanium48Mass); // argon
+      return (argon39Mass + nMass - argon40Mass) - (scandium47Mass + pMass + eMass - titanium48Mass); // argon
     case CALCIUM:
-      return (argon39Mass + nMass - argon40Mass) - (scandium47Mass + pMass + 0.510998910*MeV - titanium48Mass); // calcium, taken same as argon
+      return (argon39Mass + nMass - argon40Mass) - (scandium47Mass + pMass + eMass - titanium48Mass); // calcium, taken same as argon
     default:
       return 0;
   }
