@@ -273,7 +273,7 @@
       <option key="6"><![CDATA[(1990:) parametryzacja JS z old qelcc]]></option>
     </options>
   </param>
-  <param name="qel_axial_ff_set" type="select" ctype="int" default="1">
+  <param name="qel_axial_ff_set" type="select" ctype="int" default="8">
     <description></description>
     <options>
       <option key="1"><![CDATA[dipole]]>Axial form factors</option>
@@ -357,7 +357,7 @@
       <option key="1"><![CDATA[average Fermi momentum]]></option>
       <option key="2"><![CDATA[local Fermi momentum]]></option>
     </options>
-  </param>  <param name="cc_smoothing" type="checkbox" ctype="bool" default="1">
+  </param>  <param name="cc_smoothing" type="checkbox" ctype="bool" default="0">
     <description><![CDATA[A little performace gain in the QEL channel can be obtained by using: cc_smoothing=1]]></description>
   </param>
   <param name="delta_FF_set" type="select" ctype="int" default="1">
@@ -440,13 +440,14 @@
   <param name="coh_kind" type="checkbox" ctype="int" default="2">
     <description><![CDATA[Switch between Rein-Sehgal (1) and Berger Sehgal(2) models]]></description>
   </param>
-  <param name="mec_kind" type="select" ctype="int" default="3">
+  <param name="mec_kind" type="select" ctype="int" default="6">
     <description><![CDATA[MEC model]]></description>
     <options>
       <option key="1"><![CDATA[TEM model]]></option>
       <option key="2"><![CDATA[Marteau model]]></option>
       <option key="3"><![CDATA[Nieves model]]></option>
       <option key="5"><![CDATA[SuSAv2 model]]></option>
+      <option key="6"><![CDATA[Valencia 2020 model]]></option>
     </options>
   </param>
   <param name="mec_ratio_pp" type="text" ctype="double" default="0.85">

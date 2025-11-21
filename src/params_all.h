@@ -62,7 +62,7 @@ PARAM(double,el_costh_del,2)\
 PARAM(string,eel_alg,"old")\
 PARAM(int,qel_kinematics,0)\
 PARAM(int,qel_vector_ff_set,2)\
-PARAM(int,qel_axial_ff_set,1)\
+PARAM(int,qel_axial_ff_set,8)\
 PARAM(int,qel_rpa,1)\
 PARAM(int,qel_strange,1)\
 PARAM(int,qel_strangeEM,0)\
@@ -82,7 +82,7 @@ PARAM(bool,sf_nuclearRecoil,1)\
 PARAM(bool,sf_CoulombDistortion,1)\
 PARAM(bool,sf_src,1)\
 PARAM(int,sf_pb,1)\
-PARAM(bool,cc_smoothing,1)\
+PARAM(bool,cc_smoothing,0)\
 PARAM(int,delta_FF_set,1)\
 PARAM(int,e_spp_ff_set,4)\
 PARAM(int,delta_selfenergy,0)\
@@ -98,7 +98,7 @@ PARAM(int,res_hybrid_resampling,0)\
 PARAM(bool,coh_mass_correction,1)\
 PARAM(bool,coh_new,1)\
 PARAM(int,coh_kind,2)\
-PARAM(int,mec_kind,3)\
+PARAM(int,mec_kind,6)\
 PARAM(double,mec_ratio_pp,0.85)\
 PARAM(double,mec_ratio_ppp,0.8)\
 PARAM(double,mec_central_motion,0.0)\
