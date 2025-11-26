@@ -29,7 +29,7 @@ random_seed  = 0     // 0 - use time(NULL) as a seed for random number generator
 # Define the beam by hand:
 # (single flavor, monoenergetic [MeV], lepton PDG)
 beam_type     = 0
-beam_energy   = 2000
+beam_energy   = 1000
 beam_particle = 14
 
 #@beam/ANL.txt
@@ -42,8 +42,6 @@ beam_particle = 14
 # Target specification
 #
 ################################################################################
-
-# *default* predefined LFG Carbon target "C.txt"
 
 # Define the nucleus by hand:
 nucleus_p = 6
@@ -126,7 +124,7 @@ qel_vector_ff_set  = 2 // BBBA05, hep-ex/0602017 BBBA05 for Q2<18 GeV
 #qel_axial_ff_set = 4  // 4-fold parabolic modification of axial FF
 qel_axial_ff_set = 8  // MINERvA axial FF, Nature 614, 48 (2023)
 #qel_axial_ff_set = 9  // deuterium axial FF, Meyer et al., Phys. Rev. D 93, 113015 (2016)
-#qel_axial_ff_set = 10  // Average LQCD form factor
+#qel_axial_ff_set = 10  // Average LQCD form factor (Obtained from A. Meyer)
 
 # Strangeness content:
 #qel_strange=0         // don't use the strangenes
@@ -158,12 +156,12 @@ flux_correction  = 0    // no flux correction
 
 ################################################################################
 #
-# Spectral Function model for quasielastic events (C, O, Ar, Ca, Fe)
+# Spectral function model for quasielastic events (C, O, Ar, Ca, Fe)
 #
 ################################################################################
 
 #sf_method  = 0 // do not use SF
-sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe - recommended default option
+sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe
 #sf_method = 2 // old grid SF for C and Ar
 #sf_method = 3 // factorized SF for O, Ar, Ca
 
@@ -175,8 +173,8 @@ sf_transparency_scale = 1  # Scale transparency
 sf_nuclearRecoil = 1      # Nuclear recoil
 sf_CoulombDistortion = 1  # Couloumb distortion
 sf_src = 1                # Short range NN correlations
-sf_pb      = 1             # Pauli blocking method used for SF:
-#                            1- average Fermi momentum, 2- local Fermi momentum
+sf_pb = 1                 # Pauli blocking method used for SF:
+#                           1- average Fermi momentum, 2- local Fermi momentum
 #################################################################################
 
 # A little performace gain in the QEL channel
@@ -342,7 +340,7 @@ FSI_on       = 1  // use (1) or not (0)
 kaskada_w        = 7  // literature [7 MeV, 9 MeV]
 
 # For sf_method != 0 
-# U_switch = 1 → use optical potential U (kaskada_w = 0);
+# U_switch = 1 → use optical potential U in cascade (kaskada_w = 0)
 # U_switch = 0 → ignore U and keep kaskada_w
 U_switch = 1
 
