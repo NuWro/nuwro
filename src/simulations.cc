@@ -848,8 +848,8 @@ void angle_test()
 void kendall_sim(string pdg, string p, string n, string pf, string eb)
 {
 	string beam = "-p 'beam_type = 0' -p 'beam_particle = " + pdg + "' ";
-	string target_fg = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 0' -p 'nucleus_E_b = " + eb + "' -p 'nucleus_kf = " + pf + "' ";
-	string target_sf = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'kaskada_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 1' ";
+	string target_fg = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'FSI_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 0' -p 'nucleus_E_b = " + eb + "' -p 'nucleus_kf = " + pf + "' ";
+	string target_sf = "-p 'target_type = 0' -p 'nucleus_p = " + p + "' -p 'nucleus_n = " + n + "' -p 'FSI_on = 0' -p 'pauli_blocking = 1' -p 'sf_method = 1' ";
 	
 	for (int i = 0; i < 23; i++)
 	{

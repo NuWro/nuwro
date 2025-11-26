@@ -1,6 +1,6 @@
 #include "jednostki.h"
 #include "kinsolver.h"
-#include <cassert>          
+#include <cassert>
 #include "particle.h"
 #include "qel_sigma.h"
 #include <iostream>
@@ -30,7 +30,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
   particle nu=e.in[0];               // neutrino (or electron)
   particle N0=e.in[1];               // initial nucleon
-  particle lepton;  
+  particle lepton;
   particle N1;
 
   N1.r=N0.r;
@@ -59,7 +59,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
         N0.set_mass(t.Mf());
         N1.set_mass(t.Mf());
         break;
-      default:  
+      default:
         N1.set_mass(PDG::mass(N1.pdg));
         break;
     }
@@ -81,7 +81,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
       case 2: _E_bind = t.Ef(N0) + p.kaskada_w; break; // LFG
       case 3: _E_bind = bodek_binding_energy(N0, t.p, t.n); break; // Bodek-Ritchie
       case 4: _E_bind = binen (N0.p(), p.nucleus_p, p.nucleus_n); break; // effective SF
-      case 5: _E_bind = deuter_binen (N0.p()); break; // deuterium 
+      case 5: _E_bind = deuter_binen (N0.p()); break; // deuterium
       case 6: _E_bind = 0; break; // effective potential
       default: _E_bind= 0;
     }
@@ -97,22 +97,22 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     return 0;
   }
 
-  // cross section (is 0 until the reaction occurs)   
-  double xsec = 0;    
+  // cross section (is 0 until the reaction occurs)
+  double xsec = 0;
   double q2,jakobian;
-  
+
   // parameter qel_kinematics is no longer used :)
-  
+
   if (!(p.nucleus_target==6)) // generic case
-    q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, N1,jakobian);   
+    q2 = czarek_kinematics2(_E_bind, nu, N0, lepton, N1,jakobian);
   else // effective momentum dependent potential
     q2=momentum_dependent_potential_kinematics(nu,N0,lepton,N1,jakobian);
-  
+
   vect nu4 = nu;
   nu4.boost (-N0.v ());  // go to nucleon rest frame
   double Enu0 = nu4.t;   // neutrino energy in target frame
   xsec = jakobian * qel_sigma(Enu0, q2, kind, nu.pdg<0, lepton.mass(), N0.mass());
-  
+
   /*
   /////////////////////////////////////////////////////////
   // Aligarh Model for QEL (includes second class current)
@@ -143,7 +143,7 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
 
   xsec = pf*Singh_Model(-q2,Enu0,kind-11,v1,v2,v3,v4,anti)*jakobian;
   */
-  
+
   // now take into account the neutrino flux and nucleon proper time
   // corrections to the cross section on the whole nucleus
   // int qel_relat=0;
@@ -157,12 +157,12 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
   }
 
   // (KN) TODO: can N1 have wrong mass here?
-  switch(p.qel_rpa) 
+  switch(p.qel_rpa)
   {
     case 2:
     case 3:
-      N1.set_mass(PDG::mass(N1.pdg)); // go back to real mass 
-    //N1.set_energy(e.in[1].t+max(nu.t-lepton.t,0.)); // recover the energy conservation 
+      N1.set_mass(PDG::mass(N1.pdg)); // go back to real mass
+    //N1.set_energy(e.in[1].t+max(nu.t-lepton.t,0.)); // recover the energy conservation
   }
 
   e.temp.push_back(lepton);
@@ -178,17 +178,17 @@ double qelevent1(params&p, event & e, nucleus &t,bool nc)
     {                    //          qv  ,   q0          ,    E        , nu_pdg, lepton_mass  ,    Meff  ,   kF  , version
       case 1:e.weight *= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(), N1.mass(), t.kF(), new_ver);break;
       case 3:e.weight *= ratio_rpa(e.qv(), e.q0()-_E_bind, nu.t-_E_bind, nu.pdg, lepton.mass(),    t.Mf(), t.kF(), new_ver);break;
-    } 
+    }
   }
-    
+
   if( p.pauli_blocking) // inlined mypauli_qel
     if(t.pauli_blocking_old(N1, N0.length()))
       e.weight = 0;
-    
+
   // selection of events for electron scattering using acceptance information
   if (nu.pdg==11)
   {
-    double kosine=lepton.z/lepton.momentum();  
+    double kosine=lepton.z/lepton.momentum();
     if ( kosine < (p.el_costh_lab-p.el_costh_del) || kosine > (p.el_costh_lab+p.el_costh_del) )
       e.weight=0;
     else

@@ -62,7 +62,6 @@ CSpectralFunc* createSF(const TargetElement i_target,
 			            carbon.PBlock,
 			            carbon.Beta 
 						);
-
 		case targO_Ben:
 			return f1=
 			       new CgridSpectralFunc(
@@ -72,8 +71,7 @@ CSpectralFunc* createSF(const TargetElement i_target,
 			            oxygen.PBlock,
 			            oxygen.Beta 
 						);
-
-
+						
 		case targAr_Ben:
 			return f1=
 			        new CgridSpectralFunc(
@@ -86,7 +84,7 @@ CSpectralFunc* createSF(const TargetElement i_target,
 			            argon.PBlock,
 			            argon.Beta
 						);
-
+						
 		case targFe_Ben:
 			return f1=
 			        new CgridSpectralFunc(

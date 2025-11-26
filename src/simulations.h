@@ -54,20 +54,20 @@ const string t2knu      = "-p 'beam_type = 0' -p 'beam_energy = 50 9450 38571.4 
 const string to1500     = "-p 'beam_type = 0' -p 'beam_energy = 0 1500 ' ";
 const string E40k     = "-p 'beam_type = 0' -p 'beam_energy = 40000 ' ";
 
-const string hydrogen   = "-p 'target_type = 0' -p 'nucleus_p = 1' -p 'nucleus_n = 0' -p 'nucleus_target = 0' -p 'kaskada_on = 0' -p 'pauli_blocking = 0' -p 'sf_method = 0' ";
-const string oxygen     = "-p 'target_type = 0' -p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string carbon     = "-p 'target_type = 0' -p 'nucleus_p = 6' -p 'nucleus_n = 6' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string calcium    = "-p 'target_type = 0' -p 'nucleus_p = 22' -p 'nucleus_n = 26' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string iron       = "-p 'target_type = 0' -p 'nucleus_p = 26' -p 'nucleus_n = 30' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string lithium    = "-p 'target_type = 0' -p 'nucleus_p = 3' -p 'nucleus_n = 4' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string aluminium  = "-p 'target_type = 0' -p 'nucleus_p = 13' -p 'nucleus_n = 14' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string copper     = "-p 'target_type = 0' -p 'nucleus_p = 29' -p 'nucleus_n = 34' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string neon       = "-p 'target_type = 0' -p 'nucleus_p = 10' -p 'nucleus_n = 10' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string barium     = "-p 'target_type = 0' -p 'nucleus_p = 56' -p 'nucleus_n = 82' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
-const string fneutron   = "-p 'target_type = 0' -p 'nucleus_p = 0' -p 'nucleus_n = 1' -p 'kaskada_on = 0' -p 'pauli_blocking = 0' -p 'sf_method = 0' ";
-const string nomdet     = "-p 'target_type = 0' -p 'target_content = 1 0 514x 0 0 0' -p 'target_content += 6 6 6430x 34 220 1' -p 'target_content += 7 7 592x 34 220 1' -p 'target_content += 8 8 2213x 34 220 1' -p 'target_content += 13 14 171x 34 220 1' -p 'target_content += 14 14 27x 34 220 1' -p 'target_content += 17 18 30x 34 220 1' -p 'target_content += 18 18 19x 34 220 1' -p 'target_content += 29 34 3x 34 220 1' -p 'kaskada_on = 1' -p 'pauli_blocking = 1' ";
+const string hydrogen   = "-p 'target_type = 0' -p 'nucleus_p = 1' -p 'nucleus_n = 0' -p 'nucleus_target = 0' -p 'FSI_on = 0' -p 'pauli_blocking = 0' -p 'sf_method = 0' ";
+const string oxygen     = "-p 'target_type = 0' -p 'nucleus_p = 8' -p 'nucleus_n = 8' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string carbon     = "-p 'target_type = 0' -p 'nucleus_p = 6' -p 'nucleus_n = 6' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string calcium    = "-p 'target_type = 0' -p 'nucleus_p = 22' -p 'nucleus_n = 26' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string iron       = "-p 'target_type = 0' -p 'nucleus_p = 26' -p 'nucleus_n = 30' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string lithium    = "-p 'target_type = 0' -p 'nucleus_p = 3' -p 'nucleus_n = 4' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string aluminium  = "-p 'target_type = 0' -p 'nucleus_p = 13' -p 'nucleus_n = 14' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string copper     = "-p 'target_type = 0' -p 'nucleus_p = 29' -p 'nucleus_n = 34' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string neon       = "-p 'target_type = 0' -p 'nucleus_p = 10' -p 'nucleus_n = 10' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string barium     = "-p 'target_type = 0' -p 'nucleus_p = 56' -p 'nucleus_n = 82' -p 'FSI_on = 1' -p 'pauli_blocking = 1' -p 'sf_method = 0' ";
+const string fneutron   = "-p 'target_type = 0' -p 'nucleus_p = 0' -p 'nucleus_n = 1' -p 'FSI_on = 0' -p 'pauli_blocking = 0' -p 'sf_method = 0' ";
+const string nomdet     = "-p 'target_type = 0' -p 'target_content = 1 0 514x 0 0 0' -p 'target_content += 6 6 6430x 34 220 1' -p 'target_content += 7 7 592x 34 220 1' -p 'target_content += 8 8 2213x 34 220 1' -p 'target_content += 13 14 171x 34 220 1' -p 'target_content += 14 14 27x 34 220 1' -p 'target_content += 17 18 30x 34 220 1' -p 'target_content += 18 18 19x 34 220 1' -p 'target_content += 29 34 3x 34 220 1' -p 'FSI_on = 1' -p 'pauli_blocking = 1' ";
 
-const string fsioff     = "-p 'kaskada_on = 0' ";
+const string fsioff     = "-p 'FSI_on = 0' ";
 const string sf         = "-p 'sf_method = 1' ";//-p 'nucleus_target = 4' ";
 
 std::string fzp (int fz);
