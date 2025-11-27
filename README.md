@@ -47,7 +47,7 @@ Currently involved in the project:
 * [Krzysztof Graczyk](http://www.ift.uni.wroc.pl/~kgraczyk/)
 * Cezary Juszczak
 * [Kajetan Niewczas](http://www.ift.uni.wroc.pl/~kniewczas/)
-* Rwik Banerjee
+* Rwik Dharmapal Banerjee
 * Hemant Prasad
 
 Former members:
