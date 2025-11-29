@@ -336,7 +336,7 @@
       <option key="3"><![CDATA[factorized SF for O, Ar, Ca]]></option>
     </options>
   </param>
-  <param name="sf_transparency_scale" type="select" ctype="int" default="1">
+  <param name="sf_transparency_scale" type="select" ctype="double" default="1">
     <description><![CDATA[Scaling for the nuclear transparency]]></description>
   </param>
   <param name="sf_transparency_table_idx" type="select" ctype="int" default="1">
