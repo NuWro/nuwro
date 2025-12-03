@@ -74,7 +74,7 @@ pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 #@target/proton.txt
 #@target/neutron.txt
 #@target/CH2.txt
-#@target/Ar.rxr
+#@target/Ar.txt
 
 ################################################################################
 #
