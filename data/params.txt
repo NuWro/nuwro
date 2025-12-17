@@ -35,7 +35,7 @@ beam_particle = 14
 #@beam/ANL.txt
 #@beam/ND280.txt
 #@beam/nomad.txt
-#@beam/mb_numu.txt
+#@beam/newMB.txt
 
 ################################################################################
 #
@@ -44,8 +44,8 @@ beam_particle = 14
 ################################################################################
 
 # Define the nucleus by hand:
-nucleus_p = 6
-nucleus_n = 6
+nucleus_p = 18
+nucleus_n = 22
 
 # Models for the description of nucleus as a target:
 #nucleus_target = 0 // free target
@@ -74,6 +74,7 @@ pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 #@target/proton.txt
 #@target/neutron.txt
 #@target/CH2.txt
+#@target/Ar.txt
 
 ################################################################################
 #

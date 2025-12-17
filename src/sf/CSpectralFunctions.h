@@ -8,11 +8,108 @@
 #include <sstream>
 #include <cmath>
 #include <vector>
+#include <string>
+#include <unistd.h>
+#include <limits.h>
+#include <array>
+#ifdef __APPLE__
+#include <mach-o/dyld.h> 
+#endif
+
 #include "GConstants.h"
 #include "pdg.h"
+
 #include "CLorentzDistrib2.h"
 #include "CInterpolatedData.h"
 #include "CInterpolatedData2D.h"
+
+// Determine the installation directory of the running NuWro executable.
+//
+// NuWro expects data files (e.g., "data/sf/...") to be located relative to 
+// the current working directory, which breaks whenever users run `nuwro` 
+// from outside the source/installation tree.
+//
+// This function solves the problem by:
+//   1. Reading the absolute path of the running executable.
+//   2. Stripping off the trailing "/bin/<executable>" component, giving the
+//      top-level NuWro installation directory.
+//   3. Caching the result for future calls.
+//
+// If anything fails, we fall back conservatively to ".", preserving the old behaviour.
+inline std::string nuwro_base()
+{
+    static std::string cached;
+    if (!cached.empty()) return cached;
+
+    char exe_path[PATH_MAX];
+    
+ // --- Linux ---------------------------------------------------------------
+#if defined(__linux__)
+    {
+        ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
+        if (len > 0) {
+            exe_path[len] = '\0';
+            cached = exe_path;
+            //            std::cout << "[DBG] Full exe path: " << cached << "\n";
+
+        }
+    }
+
+ // --- macOS / BSD -------------------------------------------------------
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+    {
+        uint32_t size = sizeof(exe_path);
+        if (_NSGetExecutablePath(exe_path, &size) == 0) {
+            cached = exe_path;
+        }
+    }
+
+ // --- Other systems ------------------------------------------------------
+#else
+    cached = ".";
+#endif
+
+    // If failed to detect anything, fallback to "."
+    if (cached.empty()) {
+        //std::cout << "[DBG] Failed to detect path → using '.'\n";
+        cached = ".";
+        return cached;
+    }
+
+    // At this point, cached contains the full executable path.
+    // Now strip the filename or "/bin/<name>" component.
+
+    // Prefer to remove "/bin/<something>"
+    std::size_t pos = cached.rfind("/bin/");
+    if (pos != std::string::npos) {
+        std::string before = cached;
+        cached = cached.substr(0, pos);
+        //        std::cout << "[DBG] Removed /bin/*: " << before << " → " << cached << "\n";
+
+        return cached;
+    }
+
+    // Fallback: strip only the filename component
+    pos = cached.rfind('/');
+    if (pos != std::string::npos) {
+        std::string before = cached;
+        cached = cached.substr(0, pos);
+        //        std::cout << "[DBG] Removed filename: " << before << " → " << cached << "\n";
+        return cached;
+    }
+
+    // Ultimate fallback
+    cached = ".";
+    return cached;
+}
+
+// Convert a relative SF-table path such as "data/sf/....dat"
+// into an absolute path based on the NuWro installation directory.
+inline std::string resolve_sf_path(const std::string& rel)
+{
+    return nuwro_base() + "/" + rel;
+}
+
 
 /// Class: CSpectralFunctions
 /// Encapsulates proton/neutron spectral functions and momentum distributions for different nuclei
@@ -55,13 +152,13 @@ class CSpectralFunctions
                case C12_newSF:
                     m_Z = carbonZ;
                     m_N = carbonN;
-                    pHoleSFName<<"data/sf/pke_12C_new.dat";
+                    pHoleSFName       << resolve_sf_path("data/sf/pke_12C_new.dat");
                     // Lorentz distribution used for MC sampling of momenta
                     m_pLorentz = new CLorentzDistrib(1.23, 149.5*MeV, 82.0*MeV, 0.0, 800*MeV);
-                    transparencyNameA<<"data/sf/transp_12C.dat";
-                    transparencyNameB<<"data/sf/transp_12C_MC.dat";
-                    realOPName<<"data/sf/realOP_12C_EDAI.dat";
-                    foldingFName<<"data/sf/foldingF_12C.dat";
+                    transparencyNameA << resolve_sf_path("data/sf/transp_12C.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_12C_MC.dat");
+                    realOPName        << resolve_sf_path("data/sf/realOP_12C_EDAI.dat");
+                    foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = carbon12Mass;
                     m_neutronEnergyShift = carbon11Mass - boron11Mass + nMass - pMass - 0.510998910*MeV;
                     m_CoulombAvEnergy  = 3.45273*MeV;
@@ -74,12 +171,12 @@ class CSpectralFunctions
                 case C12_SF:
                     m_Z = carbonZ;
                     m_N = carbonN;
-                    pHoleSFName<<"data/sf/pke_12C.dat";
+                    pHoleSFName       << resolve_sf_path("data/sf/pke_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.24, 150.0*MeV, 82.0*MeV, 0.0, 800*MeV);
-                    transparencyNameA<<"data/sf/transp_12C.dat";
-                    transparencyNameB<<"data/sf/transp_12C_MC.dat";
-                    realOPName<<"data/sf/realOP_12C_EDAI.dat";
-                    foldingFName<<"data/sf/foldingF_12C.dat";
+                    transparencyNameA << resolve_sf_path("data/sf/transp_12C.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_12C_MC.dat");
+                    realOPName        << resolve_sf_path("data/sf/realOP_12C_EDAI.dat");
+                    foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = carbon12Mass;
                     m_neutronEnergyShift = carbon11Mass - boron11Mass + nMass - pMass - 0.510998910*MeV;
                     m_CoulombAvEnergy  = 3.45273*MeV;
@@ -92,11 +189,11 @@ class CSpectralFunctions
                 case O16_SF:
                     m_Z = oxygenZ;
                     m_N = oxygenN;
-                    pHoleSFName<<"data/sf/pke_16O.dat";
-                    transparencyNameA<<"data/sf/transp_16O.dat";
-                    transparencyNameB<<"data/sf/transp_16O_MC.dat";
-                    realOPName<<"data/sf/realOP_16O_EDAI.dat";
-                    foldingFName<<"data/sf/foldingF_12C.dat";
+                    pHoleSFName       << resolve_sf_path("data/sf/pke_16O.dat");
+                    transparencyNameA << resolve_sf_path("data/sf/transp_16O.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_16O_MC.dat");
+                    realOPName        << resolve_sf_path("data/sf/realOP_16O_EDAI.dat");
+                    foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.28, 149.0*MeV, 87.0*MeV, 0.0, 800*MeV);
                     m_targetMass = oxygen16Mass;
                     m_neutronEnergyShift = oxygen15Mass - nitrogen15Mass + nMass - pMass - 0.510998910*MeV;
@@ -112,22 +209,22 @@ class CSpectralFunctions
                     m_Z = argonZ;
                     m_N = argonN;
                     ///total
-                    pHoleSFName<<"data/sf/pke_40Ar_exp.dat";
-                    nHoleSFName<<"data/sf/pke_48Ti_exp.dat";
+                    pHoleSFName       << resolve_sf_path("data/sf/pke_40Ar_exp.dat");
+                    nHoleSFName       << resolve_sf_path("data/sf/pke_48Ti_exp.dat");
                     m_pLorentz = new CLorentzDistrib(1.21, 162.5*MeV, 85.0*MeV, 0.0, 800*MeV);
                     m_nLorentz = new CLorentzDistrib(1.21, 167.5*MeV, 83.5*MeV, 0.0, 800*MeV);
                     m_pNormalization = 17.0217;///17.0217 is the fraction of 18.0 that was actually measured (94.57%)
                     m_nNormalization = 20.3208;///20.3208 is the fraction of 22.0 that was actually measured (92.37%)
                     ///MF
-                    pHoleMFSFName<<"data/sf/pke_40ArP_MF_exp.dat";
-                    nHoleMFSFName<<"data/sf/pke_48TiP_MF_exp.dat";
+                    pHoleMFSFName     << resolve_sf_path("data/sf/pke_40ArP_MF_exp.dat");
+                    nHoleMFSFName     << resolve_sf_path("data/sf/pke_48TiP_MF_exp.dat");
                     m_pLorentz_MF = new CLorentzDistrib(1.226, 162.0*MeV, 80.0*MeV, 0.0, 400*MeV);
                     m_nLorentz_MF = new CLorentzDistrib(1.226, 167.5*MeV, 78.0*MeV, 0.0, 400*MeV);
                     m_pNormalization_MF = 17.0217;///17.0217 is the fraction of 18.0 that was actually measured (94.57%)
                     m_nNormalization_MF = 20.3208;///20.3208 is the fraction of 22.0 that was actually measured (92.37%)
                     ///corr
-                    pHoleCorrSFName<<"data/sf/pke_40ArP_corr_exp.dat";
-                    nHoleCorrSFName<<"data/sf/pke_48TiP_corr_exp.dat";
+                    pHoleCorrSFName   << resolve_sf_path("data/sf/pke_40ArP_corr_exp.dat");
+                    nHoleCorrSFName   << resolve_sf_path("data/sf/pke_48TiP_corr_exp.dat");
                     m_pLorentz_corr = new CLorentzDistrib(1.376, 160.0*MeV, 313.0*MeV, 0.0, 1000*MeV);
                     m_nLorentz_corr = new CLorentzDistrib(1.376, 160.0*MeV, 313.0*MeV, 0.0, 1000*MeV);
                     //pHoleCorrSFName<<"data/sf/pke_40ArP_corr_exp_test.dat";
@@ -139,10 +236,10 @@ class CSpectralFunctions
                     m_threshold_E2_p = 24.100*MeV;
                     m_threshold_E2_n = 25.199*MeV;
                     ///
-                    transparencyNameA<<"data/sf/transp_40Ar.dat";
-                    transparencyNameB<<"data/sf/transp_40Ar_MC.dat";
-                    realOPName<<"data/sf/realOP_40Ar_EDAD_fit3.dat";
-                    foldingFName<<"data/sf/foldingF_12C.dat";
+                    transparencyNameA << resolve_sf_path("data/sf/transp_40Ar.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_40Ar_MC.dat");
+                    realOPName        << resolve_sf_path("data/sf/realOP_40Ar_EDAD_fit3.dat");
+                    foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = argon40Mass;
                     m_neutronEnergyShift = (argon39Mass + nMass - argon40Mass) - (scandium47Mass + pMass + 0.510998910*MeV - titanium48Mass);
                     m_CoulombAvEnergy = 7.26739*MeV;
@@ -155,11 +252,11 @@ class CSpectralFunctions
                 case Fe56_SF:
                     m_Z = ironZ;
                     m_N = ironN;
-                    pHoleSFName<<"data/sf/pke_56Fe.dat";
-                    transparencyNameA<<"data/sf/transp_56Fe.dat";
-                    transparencyNameB<<"data/sf/transp_56Fe_MC.dat";
-                    realOPName<<"data/sf/realOP_56Fe_EDAD_fit1.dat";
-                    foldingFName<<"data/sf/foldingF_12C.dat";
+                    pHoleSFName       << resolve_sf_path("data/sf/pke_56Fe.dat");
+                    transparencyNameA << resolve_sf_path("data/sf/transp_56Fe.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_56Fe_MC.dat");
+                    realOPName        << resolve_sf_path("data/sf/realOP_56Fe_EDAD_fit1.dat");
+                    foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.23, 176.5*MeV, 68.0*MeV, 0.0, 800*MeV);
                     m_targetMass = iron56Mass;
                     m_neutronEnergyShift = iron55Mass - manganese55Mass + nMass - pMass - 0.510998910*MeV;
