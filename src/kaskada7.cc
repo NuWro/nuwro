@@ -434,13 +434,13 @@ void kaskada::prepare_particles()
       {
         p1.primary = true;
 
-        double U = (par.U_switch == 1 and par.sf_method != 0)
+        double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
                     ? ((par.FSI_on == 1)
                         ? e->optical_potential
                         : (p1.pdg == pdg_proton ? -e->averageCE : 0.0))
                     : 0.0;
 
-        double kaskada_w = (par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+        double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
 
         // Tag primary and spectator nucleons form SF-event vertex
         if(e->flag.qel and par.sf_method != 0) {
@@ -603,13 +603,13 @@ bool kaskada::move_particle()
   if(p->nucleon())
   {
 
-    double U = (par.U_switch == 1 and par.sf_method != 0)
+    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
                 ? ((par.FSI_on == 1)
                     ? e->optical_potential
                     : (p->pdg == pdg_proton ? -e->averageCE : 0.0))
                 : 0.0;
 
-    double kaskada_w = (par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
 
     // jail nucleon if its kinetic energy is lower than "binding" energy
     if (p->Ek() <= kaskada_w + p->his_fermi - U)
@@ -646,13 +646,13 @@ bool kaskada::leave_nucleus()
   if (nucleon (p->pdg))
   {
 
-    double U = (par.U_switch == 1 and par.sf_method != 0)
+    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
                 ? ((par.FSI_on == 1)
                     ? e->optical_potential
                     : (p->pdg == pdg_proton ? -e->averageCE : 0.0))
                 : 0.0;
 
-    double kaskada_w = (par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
 
     // If KE still below (Ef + kaskada_w - U) at surface, jail nucleon
     if (p->Ek() <= p->his_fermi + kaskada_w - U)
@@ -796,13 +796,13 @@ bool kaskada::finalize_interaction()
     X.p[i].r = p->r;
     X.p[i].travelled = 0;
 
-    double U = (par.U_switch == 1 and par.sf_method != 0)
+    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
                 ? ((par.FSI_on == 1)
                     ? e->optical_potential
                     : (X.p[i].pdg == pdg_proton ? -e->averageCE : 0.0))
                 : 0.0;
 
-    double kaskada_w = (par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
 
     // jail nucleon if its kinetic energy is lower than work function
     if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= kaskada_w + X.p[i].his_fermi - U)
