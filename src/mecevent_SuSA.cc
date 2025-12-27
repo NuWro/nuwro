@@ -156,7 +156,13 @@ double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucle
         do
         {
           nucleon[0] = t.get_nucleon ();
-          vec N1=spectral_choice (6, 6); // we take SF carbon distribution; should be improved !!!
+            //modification of momentum sampling, JS December 2025
+            vec pos = vec(nucleon[0].r);
+            double pos_magnitude = pos.length();
+
+            vec N1 = rand_from_ball( t.localkf_(nucleon[0].pdg, pos_magnitude) );
+            
+          //vec N1=spectral_choice (6, 6); // we take SF carbon distribution; should be improved !!!
           nucleon[0].set_momentum(N1);
           vec ped2=-N1;                  // momenta are roughly back to back
 
@@ -167,7 +173,7 @@ double SuSA_kin_and_weight (double E, particle &meclep, particle *nucleon, nucle
             ped2.z = -N1.z*rand_gauss (mec_smearing, 1.0); 
           }
 
-          vec pos ( nucleon[0].r.x, nucleon[0].r.y, nucleon[0].r.z );
+          //vec pos ( nucleon[0].r.x, nucleon[0].r.y, nucleon[0].r.z );
           nucleon[1] = t.get_nucleon (pos); // the same position
 
           nucleon[1].set_momentum(ped2);

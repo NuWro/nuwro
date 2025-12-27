@@ -607,7 +607,7 @@ void Generate_nucleon_kinematics_2p2h(particle *inc_nucleon_mec, particle *out_n
       double Ek1_in = sqrt ( std::pow(N1.length() ,2) + Mass1 * Mass1 ) - Mass1;        // <-- K.E of nucleon assuming first nucleon has higher momentum 
       double Ek2_in = sqrt ( std::pow(N2.length(), 2) + Mass2 * Mass2 ) - Mass2;        // <-- K.E of nucleon assuming second nucleon has lower momentum 
       // ==> We provide an extra K.E of about ~ 15 MeV to initial nucleon. 0.8 fraction of the extra kinetic energy goes to nucleon with higher momentum <==
-      double E_KE = 14.3*MeV;
+        double E_KE = 0;// changed by JS in December 2025 due to weird structure in KDAR simulation; originally was 14.3*MeV
       double fraction = 0.5;
       double frac_Ek1_in = fraction * E_KE;
       double frac_Ek2_in = (1 - fraction) * E_KE; 
