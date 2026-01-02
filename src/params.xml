@@ -572,7 +572,7 @@
   <param name="step" type="text" ctype="double" default="0.2">
     <description><![CDATA[[fm] length of one step in cascade]]></description>
   </param>
-  <param name="kaskada_NN_mfp_scale" type="text" ctype="double" default="1">
+  <param name="kaskada_NN_mfp_scale" type="text" ctype="double" default="0.76">
     <description><![CDATA[Scale the mean free path for nucleons in the cascade]]></description>
   </param>
   <param name="kaskada_NN_xsec" type="select" ctype="int" default="2" >

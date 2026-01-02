@@ -133,7 +133,7 @@ PARAM(double,tau,8)\
 PARAM(double,formation_length,1)\
 PARAM(bool,first_step,1)\
 PARAM(double,step,0.2)\
-PARAM(double,kaskada_NN_mfp_scale,1)\
+PARAM(double,kaskada_NN_mfp_scale,0.76)\
 PARAM(int,kaskada_NN_xsec,2)\
 PARAM(int,kaskada_NN_inel,2)\
 PARAM(int,kaskada_NN_angle,3)\

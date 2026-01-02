@@ -50,7 +50,7 @@ nucleus_n = 22
 # Models for the description of nucleus as a target:
 #nucleus_target = 0 // free target
 #nucleus_target = 1 // Fermi gas
-#nucleus_target = 2 // local Fermi gas
+nucleus_target = 2 // local Fermi gas
 #nucleus_target = 3 // Bodek-Ritchie Fermi gas
 #nucleus_target = 4 // "effective" spectral function (carbon or oxygen)
 #nucleus_target = 5 // deuterium
@@ -234,7 +234,7 @@ delta_angular  = 2 // BNL distribution, produces 4-momenta of final pair:
 
 # It is recommended to keep the default values here:
 spp_precision = 500  // precision of he boundary, default 500
-res_dis_cut   = 1600 // position of the boundary, default 1600 [MeV]
+#res_dis_cut  = 1900 // boundary,
 
 # Ability to scale the background:
 bkgrscaling   = 0.0  // non-resonant background scaling;
@@ -358,7 +358,8 @@ step = 0.2           // length of one step in cascade
 # It has been checked against transparency data that
 # the uncertainty here is not larger than +- 30%
 # -> see Phys.Rev. C 100 (2019) 015505
-kaskada_NN_mfp_scale = 1.0
+# Later study, see e-Print: 2512.23350 [hep-ph] resulted in estimate s=0.76-0.04+0.06
+kaskada_NN_mfp_scale = 0.76
 
 # Input data for the cascade:
 kaskada_NN_xsec  = 2 // NN cross sections:  (0) Metropolis et al.,
