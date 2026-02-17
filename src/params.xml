@@ -342,10 +342,10 @@
   <param name="sf_transparency_table_idx" type="select" ctype="int" default="1">
     <description><![CDATA[Switch between theoretical and Monte Carlo transparency]]></description>
   </param>
-  <param name="sf_nuclearRecoil" type="checkbox" ctype="bool" default="1">
+  <param name="sf_recoil" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Turn on/off nuclear recoil]]></description>
   </param>
-    <param name="sf_CoulombDistortion" type="checkbox" ctype="bool" default="1">
+    <param name="sf_Coulomb" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[Turn on/off Coulomb distortion]]></description>
   </param>
    <param name="sf_src" type="checkbox" ctype="bool" default="1">

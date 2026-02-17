@@ -156,7 +156,7 @@ class CSpectralFunctions
                     // Lorentz distribution used for MC sampling of momenta
                     m_pLorentz = new CLorentzDistrib(1.23, 149.5*MeV, 82.0*MeV, 0.0, 800*MeV);
                     transparencyNameA << resolve_sf_path("data/sf/transp_12C.dat");
-                    transparencyNameB << resolve_sf_path("data/sf/transp_12C_MC.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_C12_MC.dat");
                     realOPName        << resolve_sf_path("data/sf/realOP_12C_EDAI.dat");
                     foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = carbon12Mass;
@@ -174,7 +174,7 @@ class CSpectralFunctions
                     pHoleSFName       << resolve_sf_path("data/sf/pke_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.24, 150.0*MeV, 82.0*MeV, 0.0, 800*MeV);
                     transparencyNameA << resolve_sf_path("data/sf/transp_12C.dat");
-                    transparencyNameB << resolve_sf_path("data/sf/transp_12C_MC.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_C12_MC.dat");
                     realOPName        << resolve_sf_path("data/sf/realOP_12C_EDAI.dat");
                     foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = carbon12Mass;
@@ -191,7 +191,7 @@ class CSpectralFunctions
                     m_N = oxygenN;
                     pHoleSFName       << resolve_sf_path("data/sf/pke_16O.dat");
                     transparencyNameA << resolve_sf_path("data/sf/transp_16O.dat");
-                    transparencyNameB << resolve_sf_path("data/sf/transp_16O_MC.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_O16_MC.dat");
                     realOPName        << resolve_sf_path("data/sf/realOP_16O_EDAI.dat");
                     foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.28, 149.0*MeV, 87.0*MeV, 0.0, 800*MeV);
@@ -237,7 +237,7 @@ class CSpectralFunctions
                     m_threshold_E2_n = 25.199*MeV;
                     ///
                     transparencyNameA << resolve_sf_path("data/sf/transp_40Ar.dat");
-                    transparencyNameB << resolve_sf_path("data/sf/transp_40Ar_MC.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_Ar40_MC.dat");
                     realOPName        << resolve_sf_path("data/sf/realOP_40Ar_EDAD_fit3.dat");
                     foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_targetMass = argon40Mass;
@@ -254,7 +254,7 @@ class CSpectralFunctions
                     m_N = ironN;
                     pHoleSFName       << resolve_sf_path("data/sf/pke_56Fe.dat");
                     transparencyNameA << resolve_sf_path("data/sf/transp_56Fe.dat");
-                    transparencyNameB << resolve_sf_path("data/sf/transp_56Fe_MC.dat");
+                    transparencyNameB << resolve_sf_path("data/sf/transp_Fe56_MC.dat");
                     realOPName        << resolve_sf_path("data/sf/realOP_56Fe_EDAD_fit1.dat");
                     foldingFName      << resolve_sf_path("data/sf/foldingF_12C.dat");
                     m_pLorentz = new CLorentzDistrib(1.23, 176.5*MeV, 68.0*MeV, 0.0, 800*MeV);

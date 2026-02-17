@@ -100,6 +100,9 @@ constexpr int ARGON = 18022;
 constexpr int CALCIUM = 20020;
 constexpr int IRON = 26030;
 
+constexpr double tinyP = 1e-6;
+constexpr double srcOmegaCut = 14.0; // MeV
+
 const double pi(4*atan(1.0));
 // Global constants
 const double GF( 1.16637e-5/GeV2 ); //Fermi constant
@@ -145,7 +148,7 @@ static double axial_ff_gamma = 0.0;
 static double axial_ff_alpha = 0.0;
 static double MA_cc = 1030 * MeV;
 static double MA_nc = 1030 * MeV;
-static double MA_s = 1030 * MeV;
+static double MA_s  = 1030 * MeV;
 static double MA_hyp = 1030 * MeV; // C Thorpe Added Hyperon axial mass parameter
 //static const double Dipole_Lambda = 5.6; //C Thorpe: Lambda parameter used in dipole form factors // default 1030 MeV // March 2019
 static double delta_s = 0;
