@@ -30,6 +30,7 @@ class flags
 
 		bool isTransparent;// true for transparent events in sf qel
 		bool isCorrelated; // true for correlated events in sf qel
+		
 };
 
 using namespace std;
@@ -85,8 +86,6 @@ class event:public TObject
 
 		double optical_potential = 0.0; 
 		double averageCE = 0.0;
-		double redraw = 0;
-		double scale = 0;
 
 		double res_jacobian; ///< store Jacobian calculated in RES for random kinematics
 		double res_angrew;   ///< store xsec factor coming from angular distribution (for Delta)
@@ -157,7 +156,6 @@ class event:public TObject
 		inline double lepton_recoil ();
 		inline double total_recoil_with_masses (double K, double N);
 		inline double total_recoil_without_masses (double K, double N);
-		inline double excitationE ();
 		inline double neutral_kaon_recoil ();
 		inline vec proton_max_mom();
 		inline vect particle_max_mom(int pdg, bool fsi);
@@ -646,13 +644,6 @@ double event::total_recoil_without_masses (double K0_fraction, double neutron_fr
 {
   return meson_recoil_without_masses () + lepton_recoil() + photon_recoil() + proton_recoil() +
   neutron_fraction*neutron_recoil() + K0_fraction*neutral_kaon_recoil() ;
-}
-
-double event::excitationE ()
-{
-  return in[0].E() - post[0].E() - meson_recoil_with_masses ()
-	- lepton_recoil() - photon_recoil() - proton_recoil() -
-  neutron_recoil() - neutral_kaon_recoil() ;
 }
 
 double event::total_hadr_post()

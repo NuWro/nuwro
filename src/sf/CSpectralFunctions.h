@@ -12,8 +12,9 @@
 #include <unistd.h>
 #include <limits.h>
 #include <array>
+#include <algorithm>
 #ifdef __APPLE__
-#include <mach-o/dyld.h> 
+#include <mach-o/dyld.h>
 #endif
 
 #include "GConstants.h"
@@ -25,8 +26,8 @@
 
 // Determine the installation directory of the running NuWro executable.
 //
-// NuWro expects data files (e.g., "data/sf/...") to be located relative to 
-// the current working directory, which breaks whenever users run `nuwro` 
+// NuWro expects data files (e.g., "data/sf/...") to be located relative to
+// the current working directory, which breaks whenever users run `nuwro`
 // from outside the source/installation tree.
 //
 // This function solves the problem by:
@@ -42,7 +43,7 @@ inline std::string nuwro_base()
     if (!cached.empty()) return cached;
 
     char exe_path[PATH_MAX];
-    
+
  // --- Linux ---------------------------------------------------------------
 #if defined(__linux__)
     {
@@ -113,8 +114,7 @@ inline std::string resolve_sf_path(const std::string& rel)
 
 /// Class: CSpectralFunctions
 /// Encapsulates proton/neutron spectral functions and momentum distributions for different nuclei
-class CSpectralFunctions
-{
+class CSpectralFunctions {
     public:
     /// Constructor
         /// i_target           = target nucleus enum
@@ -331,7 +331,6 @@ class CSpectralFunctions
                 m_realOP = new CInterpolatedData( realOPName.str(), MeV, MeV, false );
                 m_foldingF = new CInterpolatedData( foldingFName.str(), MeV, 1.0/MeV/foldingFNormalization, false );
             }
-
         };
 
 
@@ -430,6 +429,7 @@ class CSpectralFunctions
 
             return m_pMomDistrib_corr->linearI(p);
         }
+
         ///generates initial proton momentum according to the total momentum distribution
         double generateProtonMomentum() const
         {
@@ -872,7 +872,7 @@ class CSpectralFunctions
             if ( m_switchIsospinAsymmetry ) return m_nFermiMomentum;
                 return m_pFermiMomentum;
         }
-
+        
         const CInterpolatedData* m_foldingF;
 
     private:
@@ -880,7 +880,6 @@ class CSpectralFunctions
         const bool m_switchSeparation;    // MF+corr split (Ar40 only)
         const bool m_switchFSI;           // whether to load FSI-related tables
         bool m_switchIsospinAsymmetry;    // Ar: treat p and n with different inputs
-
         int m_N = 0;                      // neutron number
         int m_Z = 0;                      // proton number
         double m_targetMass = 0.0;        // nuclear mass

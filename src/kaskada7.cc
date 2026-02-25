@@ -27,40 +27,10 @@ kaskada::~kaskada()
 int kaskada::kaskadaevent()
 {
 
-  // Global counter of events processed by this cascade instance
-  static long long totalEvents = 0;
-  totalEvents++;
-
-  // Book-keeping for SF QE topology split
-  static int count_transp_corr = 0;
-  static int count_transp_uncorr = 0;
-  static int count_nontransp_corr = 0;
-  static int count_nontransp_uncorr = 0;
-
-if(e->flag.qel and par.sf_method != 0) {
-
-if (e->flag.isTransparent && e->flag.isCorrelated) {count_transp_corr++;}
-else if (e->flag.isTransparent && !e->flag.isCorrelated) {count_transp_uncorr++;}
-else if (!e->flag.isTransparent && e->flag.isCorrelated) {count_nontransp_corr++;}
-else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncorr++;}
-
-    // Uncomment block below if you want to periodically print SF topology fractions
-    if ((totalEvents % 10000) == 0) {
-        double total = totalEvents > 0 ? totalEvents : 1;
-        /*std::cout << std::fixed << std::setprecision(2);
-        std::cout << "\n[DIAG] After " << totalEvents << " events:\n"
-                  << "   Transparent + Correlated     : " << 100.0 * count_transp_corr / total << " %\n"
-                  << "   Transparent + Uncorrelated   : " << 100.0 * count_transp_uncorr / total << " %\n"
-                  << "   Non-transparent + Correlated : " << 100.0 * count_nontransp_corr / total << " %\n"
-                  << "   Non-transparent + Uncorr.    : " << 100.0 * count_nontransp_uncorr / total << " %\n"
-                  << std::endl;*/
-    }
-}
-
   int result = 0;
-  bool nucleon_interaction_occurred = false;
-  bool firstNucleonInteracted = false;
+  bool intercated = false;
   bool needs_final_clean = true;
+  const bool isQESF = (e->flag.qel && par.sf_method != 0);
 
   if (e->weight <= 0) return result;
 
@@ -85,6 +55,10 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
       leave_nucleus();                // check if the particle is jailed or escapes (and returns on the mass shell)
 
     }
+    
+  // Update remaining protons/neutrons in nucleus
+  e->pr=nucl->Zr();
+  e->nr=nucl->Nr();
 
     return result;
 
@@ -92,7 +66,7 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
 
   // Non-QE events Or QE events using LFG / GFG (sf_method == 0):
   //   → run the classical NuWro cascade for all 'parts'
-  if ( (e->flag.qel && (par.sf_method == 0)) || (!e->flag.qel) ) {
+  if (!isQESF) {
 
       while (!parts.empty() && nucl->Ar() > 0) { // while queue has particles and nucleus not exhausted
 
@@ -121,7 +95,7 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
   // QE events using Spectral Function (sf_method != 0):
   //   → treat transparent vs non-transparent, correlated vs uncorrelated
   // FSI implemented consistently for QE-SF channel by RWIK DHARMAPAL BANERJEE, 2025
-  if (e->flag.qel && (par.sf_method != 0)) {
+  if (isQESF) {
 
       // Transparent events
       if (e->flag.isTransparent)
@@ -143,7 +117,7 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
         }
 
         // Transparent & Correlated: first nucleon leaves, second gets standard cascade
-        else if (e->flag.isCorrelated)
+        else
         {
 
           while (!parts.empty() && nucl->Ar()>0)
@@ -171,14 +145,14 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
                    if (hyperon(p1.pdg)) e->nod[14]++;
                    parts.push(*p);
 
-             }
+              }
             }
           }
         }
       }
 
       // Non-Transparent events
-      else if (!e->flag.isTransparent)
+      else
       {
 
         // Non-Transparent & Uncorrelated: full cascade with possible re-draw if no interaction
@@ -210,14 +184,14 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
 
                 if (nucleon(p1.pdg) and (p1.nucleon_id==1)) {
                   // Flag that the struck nucleon (id==1) did undergo at least one interaction
-                  nucleon_interaction_occurred = true;
+                  intercated = true;
                 }
               }
              }
             }
 
           // If no struck nucleon interaction → redraw cascade with reduced mean free path
-          if (!nucleon_interaction_occurred)
+          if (!intercated)
           {
 
             int    redrawAttempts = 0;
@@ -225,12 +199,10 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
             double original_scale = par.kaskada_NN_mfp_scale;
             double effective_scale = original_scale;
 
-          this->U_evt = (par.U_switch == 1 and par.sf_method != 0) ? e->optical_potential : 0.0;
-
-          nucleon_interaction_occurred = false;
+          // safeguard
           while(!parts.empty()) parts.pop();
 
-          while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !nucleon_interaction_occurred) {
+          while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !intercated) {
 
           // Clean up post-state: remove non-leptons so we can retry cascade
           e->post.erase(
@@ -269,16 +241,20 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
                  }
                  else {
 
-                    if (nucleon(pt.pdg) and (pt.nucleon_id==1)) nucleon_interaction_occurred = true;
+                    if (nucleon(pt.pdg) and (pt.nucleon_id==1)) intercated = true;
 
                  }
                 }
                }
 
+               if(!parts.empty()) // safeguard
+               {
+                 while (!parts.empty()) parts.pop();
+               }
                redrawAttempts++;
 
               }
-              
+
        // Restore original mfp scale after redraw loop
        par.kaskada_NN_mfp_scale = original_scale;
 
@@ -289,7 +265,7 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
       }
 
         // Non-Transparent & Correlated: both nucleons can interact, redraw if N1 fails to interact
-        else if (e->flag.isCorrelated)
+        else
         {
 
     // First pass: standard cascade for both nucleons and secondaries
@@ -316,16 +292,16 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
       else {
 
           if (nucleon(p1.pdg) and (p1.nucleon_id == 1)) {
-          
+
           // Record if N1 (id=1) has interacted at least once
-          firstNucleonInteracted = true;
-          
+          intercated = true;
+
           }
         }
       }
     }
             // If no interaction for N1 → clean post and redraw only N1
-            if (!firstNucleonInteracted) {
+            if (!intercated) {
 
               int redrawAttempts = 0;
 
@@ -334,18 +310,10 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
               double original_scale = par.kaskada_NN_mfp_scale;
               double effective_scale = original_scale;
 
-              this->U_evt = (par.U_switch == 1 and par.sf_method != 0) ? e->optical_potential : 0.0;
-
-              nucleon_interaction_occurred = false;
-              while(!parts.empty()) parts.pop();
+              while(!parts.empty()) parts.pop(); // safeguard
 
               // Redraw attempts only for N1 with progressively shorter mfp
-              while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !firstNucleonInteracted) {
-
-                // Optional diagnostic: which nucleons we are about to remove
-                std::vector<particle> removedN1; 
-                std::copy_if( e->post.begin(), e->post.end(), std::back_inserter(removedN1), [&](particle &pt)
-                { return nucleon(pt.pdg) && fabs(pt.z / pt.momentum() - cosine_N1) < nucl->cosine_threshold;});
+              while (redrawAttempts < nucl->MAX_EVENT_REDRAWS && !intercated) {
 
                 // Remove nucleons close in direction to the original N1
                 e->post.erase( std::remove_if( e->post.begin(), e->post.end(), [&](particle &pt) {
@@ -384,12 +352,16 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
                    }
                    else {
 
-                       if (nucleon(pt.pdg) and (pt.nucleon_id == 1)) firstNucleonInteracted = true;
+                       if (nucleon(pt.pdg) and (pt.nucleon_id == 1)) intercated = true;
 
                      }
                    }
                  }
 
+          if(!parts.empty()) // safeguard
+          {
+            while (!parts.empty()) parts.pop();
+          }
           redrawAttempts++;
 
         }
@@ -405,11 +377,56 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
   }
 
   if (needs_final_clean) clean();
-  
+
+  // For rare QE events (~0.001%),if no nucleons but >=1 pion(s) in the final state, we identify them as unphysical,
+  // as for QE-SF events there are no nucleons in the final state to subtract the potential from - causing small orders of negative missing energies.
+  // We remove the mesons and insert out[1] (i.e. struck nucleon from vertex) into the final state, effectively making the event transparent.
+  if (e->flag.qel and !e->post.empty()) {
+
+    bool has_nucleon = false;
+    bool has_pion   = false;
+
+    for (auto &pt : e->post) {
+    
+    if (nucleon(pt.pdg)) has_nucleon = true;
+    if (pt.pdg == 111 || pt.pdg == 211 || pt.pdg == -211) has_pion = true;
+    if (has_nucleon) break;
+      
+    }
+
+    if (!has_nucleon && has_pion)
+    {
+
+      // remove pions from post
+      auto first = (e->post.size() > 1) ? (e->post.begin() + 1) : e->post.end();
+
+      e->post.erase(
+        std::remove_if(first, e->post.end(),
+          [](const particle &pt) {
+            const int pdg = pt.pdg;
+            return (pdg ==  211 || pdg == -211 || pdg ==  111);
+          }),
+        e->post.end()
+      );
+
+      // insert nucleon from primary vertex
+      if (e->out.size() > 1 && nucleon(e->out[1].pdg)) {
+
+        particle N1 = e->out[1];
+        N1.endproc   = escape;
+        N1.nucleon_id = 1;  
+        
+        leave_nucleus_for_single_nucleon(N1);
+
+        if (par.sf_method != 0) e->flag.isTransparent = true;
+      }
+    }
+  }
+
   // Update remaining protons/neutrons in nucleus
   e->pr=nucl->Zr();
   e->nr=nucl->Nr();
-
+ 
   return result;
 
 }
@@ -417,12 +434,6 @@ else if (!e->flag.isTransparent && !e->flag.isCorrelated) {count_nontransp_uncor
 // Build initial queue "parts" from event primary vertex e->out
 void kaskada::prepare_particles()
 {
-  static long long total_events_global = 0;
-  static long long events_with_1 = 0;
-  static long long events_with_2 = 0;
-  bool has_id1 = false;
-  bool has_id2 = false;
-
   // Loop over every particle from the primary vertex.
   for (int i = 0; i < e->out.size(); i++)
   {
@@ -434,29 +445,21 @@ void kaskada::prepare_particles()
       {
         p1.primary = true;
 
-        double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
-                    ? ((par.FSI_on == 1)
-                        ? e->optical_potential
-                        : (p1.pdg == pdg_proton ? -e->averageCE : 0.0))
-                    : 0.0;
-
-        double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+        double kaskada_w = use_optical_potential() ? 0.0 : par.kaskada_w;
 
         // Tag primary and spectator nucleons form SF-event vertex
         if(e->flag.qel and par.sf_method != 0) {
          if (i == 1) {
             p1.nucleon_id = 1;
-            has_id1 = true;
          }
          else if (i == 2) {
             p1.nucleon_id = 2;
-            has_id2 = true;
          }
       }
 
-        // add energy substracted in the primary vertex for GFG LFG and SF ( U is negative )
+        // add energy substracted in the primary vertex for GFG LFG and SF
         if (e->flag.qel and (par.sf_method != 0 or par.nucleus_target == 2)) {
-            p1.set_energy (p1.E() + nucl->Ef(p1) + kaskada_w - U);
+            p1.set_energy (p1.E() + nucl->Ef(p1) + kaskada_w);
         }
 
         else if (par.nucleus_target == 1 and (e->flag.qel or e->flag.res))
@@ -464,8 +467,8 @@ void kaskada::prepare_particles()
 
         p1.set_fermi(nucl->Ef(p1));
 
-        // If kinetic energy is below "barrier" = Ef + kaskada_w - U, jail back to nucleus
-        if (p1.Ek() <= kaskada_w + p1.his_fermi - U)  
+        // If kinetic energy is below "barrier" = Ef + kaskada_w, jail back to nucleus
+        if (p1.Ek() <= kaskada_w + p1.his_fermi)
         {
           p1.endproc=jailed;
           nucl->insert_nucleon (p1);
@@ -476,9 +479,9 @@ void kaskada::prepare_particles()
 
       double fz = formation_zone(p1, par, *e);        // calculate formation zone
       p1.krok(fz);      // move particle by a distance defined by its formation zone
-      
+
       parts.push (p1);  // put particle to a queue
-      
+
     }
 
     else if(hyperon (p1.pdg)) // if a hyperon
@@ -519,22 +522,38 @@ void kaskada::prepare_particles()
   for (int i = 0; i<18; i++)  // number of dynamics defined in proctable.h
      e->nod[i] = 0;
 
-  // Diagnostics: how often we see 1 vs 2 tagged nucleons
-  total_events_global++;
-  if (has_id1 && has_id2) events_with_2++;
-  else if (has_id1 || has_id2) events_with_1++;
-  // Uncomment for debugging distribution of 1-tag vs 2-tag events
-  if (total_events_global % 10000 == 0) {
-      double perc1 = 100.0 * events_with_1 / total_events_global;
-      double perc2 = 100.0 * events_with_2 / total_events_global;
-  /*  std::cout << std::fixed << std::setprecision(2)
-              << "\n[DIAG] After " << total_events_global << " events:\n"
-              << "  " << perc1 << "% had 1 tagged nucleon\n"
-              << "  " << perc2 << "% had 2 tagged nucleons\n";*/
-  }
-
   e->r_distance = 10;         // new JS ; default (large) value, if unchanged no absorption took place
 
+}
+
+// Prepare a single nucleon (typically N1) to be re-run in a redraw scenario:
+void kaskada::prepare_single_nucleon_for_redraw(const particle N1, int index)
+{
+
+  if (!nucleon(N1.pdg)) return;
+
+    particle pN = N1;
+    pN.primary = true;
+
+        if (index == 1) pN.nucleon_id = 1;
+        else if (index == 2) pN.nucleon_id = 2;
+        else pN.nucleon_id = 0;
+
+    pN.set_energy (pN.E() + nucl->Ef(pN));
+
+    pN.set_fermi(nucl->Ef(pN));
+
+    if (pN.Ek() <= pN.his_fermi)
+    {
+        pN.endproc = jailed;
+        nucl->insert_nucleon(pN);
+        if (par.kaskada_writeall) e->all.push_back(pN);
+        return;
+    }
+
+    double fz = formation_zone(pN, par, *e);
+    pN.krok(fz);
+    parts.push(pN);
 }
 
 // Prepare local interaction parameters at current particle position:
@@ -570,9 +589,14 @@ interaction_parameters kaskada::prepare_interaction()
       case pdg_neutron:
         res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
         res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
+        break;
+        
       case pdg_proton:
         res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
         res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
+        break;
+        
+      default:
         break;
     }
   }
@@ -603,16 +627,10 @@ bool kaskada::move_particle()
   if(p->nucleon())
   {
 
-    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
-                ? ((par.FSI_on == 1)
-                    ? e->optical_potential
-                    : (p->pdg == pdg_proton ? -e->averageCE : 0.0))
-                : 0.0;
-
-    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+    double kaskada_w = use_optical_potential() ? 0.0 : par.kaskada_w;
 
     // jail nucleon if its kinetic energy is lower than "binding" energy
-    if (p->Ek() <= kaskada_w + p->his_fermi - U)
+    if (p->Ek() <= kaskada_w + p->his_fermi)
     {
       p->endproc=jailed;
       nucl->insert_nucleon (*p);
@@ -642,19 +660,18 @@ bool kaskada::move_particle()
 bool kaskada::leave_nucleus()
 {
 
-  // Nucleons: do final "climb out of potential well" and possible jailing
+  // Nucleons: go through final "climb-out of potential well" and possible jailing
   if (nucleon (p->pdg))
   {
+  double U = (e->flag.qel && par.U_switch == 1 && par.sf_method != 0)
+             ? par.FSI_on == 1
+                 ? e->optical_potential
+                 : p->pdg == pdg_proton ? e->averageCE : 0.0
+             : 0.0;
 
-    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
-                ? ((par.FSI_on == 1)
-                    ? e->optical_potential
-                    : (p->pdg == pdg_proton ? -e->averageCE : 0.0))
-                : 0.0;
+    double kaskada_w = use_optical_potential() ? 0.0 : par.kaskada_w;
 
-    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
-
-    // If KE still below (Ef + kaskada_w - U) at surface, jail nucleon
+    // If KE still below (Ef - U) at surface, jail nucleon
     if (p->Ek() <= p->his_fermi + kaskada_w - U)
     {
       p->endproc=jailed;
@@ -663,7 +680,6 @@ bool kaskada::leave_nucleus()
       return false; // particle did not escape
     }
 
-      // Otherwise, remove Ef and kaskada_w and add U to energy (reverse of entrance)
       p->set_energy(p->E() - p->his_fermi - kaskada_w + U);
 
   }
@@ -686,11 +702,42 @@ bool kaskada::leave_nucleus()
   p->endproc=escape;
   e->post.push_back (*p);
   if(par.kaskada_writeall) e->all.push_back (*p);
+
   return true; // particle has escaped
+
+}
+
+bool kaskada::leave_nucleus_for_single_nucleon(particle &N)
+{
+  if (!nucleon(N.pdg)) return true;
+
+  double U = (e->flag.qel && par.U_switch == 1 && par.sf_method != 0)
+             ? par.FSI_on == 1
+                 ? e->optical_potential
+                 : N.pdg == pdg_proton ? e->averageCE : 0.0
+             : 0.0;
+
+  double kaskada_w = use_optical_potential() ? 0.0 : par.kaskada_w;
+
+  N.set_fermi(nucl->Ef(N));
+
+  if (N.Ek() <= N.his_fermi + kaskada_w - U) {
+    N.endproc = jailed;
+    nucl->insert_nucleon(N);
+    return false;
+  }
+
+  N.set_energy(N.E() - N.his_fermi - kaskada_w + U);
+  N.endproc = escape;
+  
+  e->post.push_back(N);
+  if(par.kaskada_writeall) e->all.push_back (N);
+  
+  return true;
   
 }
 
-// Generate scattering kinematics 
+// Generate scattering kinematics
 bool kaskada::make_interaction()
 {
   int loop = 0;
@@ -796,16 +843,10 @@ bool kaskada::finalize_interaction()
     X.p[i].r = p->r;
     X.p[i].travelled = 0;
 
-    double U = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0)
-                ? ((par.FSI_on == 1)
-                    ? e->optical_potential
-                    : (X.p[i].pdg == pdg_proton ? -e->averageCE : 0.0))
-                : 0.0;
-
-    double kaskada_w = (e->flag.qel and par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
+    double kaskada_w = use_optical_potential() ? 0.0 : par.kaskada_w;
 
     // jail nucleon if its kinetic energy is lower than work function
-    if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= kaskada_w + X.p[i].his_fermi - U)
+    if (nucleon (X.p[i].pdg) and X.p[i].Ek() <= kaskada_w + X.p[i].his_fermi)
     {
       X.p[i].endproc=jailed;
       nucl->insert_nucleon (X.p[i]);
@@ -862,42 +903,7 @@ bool kaskada::finalize_interaction()
   return true;
 }
 
-// Prepare a single nucleon (typically N1) to be re-run in a redraw scenario:
-void kaskada::prepare_single_nucleon_for_redraw(particle N1, int index)
-{
-
-  if (!nucleon(N1.pdg)) return;
-
-    particle pN = N1;
-    pN.primary = true;
-
-        if (index == 1) pN.nucleon_id = 1;
-        else if (index == 2) pN.nucleon_id = 2;
-        else pN.nucleon_id = 0;
-
-    // Here U comes from U_evt (set before redraw loop)
-    double U = U_evt;
-    double kaskada_w = (par.U_switch == 1 and par.sf_method != 0) ? 0.0 : par.kaskada_w;
-
-    // Reconstruct in-medium energy to consider off-shellness
-    pN.set_energy (pN.E() + nucl->Ef(pN) + kaskada_w - U);
-
-    pN.set_fermi(nucl->Ef(pN));
-
-    if (pN.Ek() <= kaskada_w + pN.his_fermi - U)
-    {
-        pN.endproc = jailed;
-        nucl->insert_nucleon(pN);
-        if (par.kaskada_writeall) e->all.push_back(pN);
-        return;
-    }
-
-    double fz = formation_zone(pN, par, *e);
-    pN.krok(fz);
-    parts.push(pN);
-}
-
-// Clean remaining 'parts' queue at the end of event 
+// Clean remaining 'parts' queue at the end of event
 void kaskada::clean()
 {
 
@@ -962,65 +968,3 @@ bool kaskada::check2 (particle & p1, particle & p2, particle *spect, int n, part
   return true;
 }
 
-// Plcae anywhere in kaskadaevent() to get a list of particles at the moment in a vector
-void kaskada::printPDGCounts(const std::vector<particle>& vec,const std::string &vecName,const event* e)
-{
-    std::map<int,int> counts;
-    for (const auto &p : vec) {
-        counts[p.pdg]++;
-    }
-
-    std::cout << "[DEBUG] Vector '" << vecName << "' size = "
-              << vec.size() << ". PDG distribution:" << std::endl;
-
-    for (const auto &kv : counts) {
-        std::cout << "    PDG " << kv.first << ": " << kv.second << std::endl;
-    }
-
-    if (e) {
-        std::cout << "  [FLAGS] isTransparent="
-                  << e->flag.isTransparent
-                  << ", isCorrelated="
-                  << e->flag.isCorrelated
-                  << std::endl;
-    } else {
-        std::cout << "  [FLAGS] (no event info provided)" << std::endl;
-    }
-}
-// Plcae anywhere in kaskadaevent() to get a list of particles at the moment in a queue
-void kaskada::printPartsPDGCounts(const std::queue<particle>& q,const std::string &name,const event* e)
-{
-    std::queue<particle> temp = q;  // copy the queue
-    std::map<int, int> pdg_counts;
-    std::map<int, int> id_counts;
-    int total_particles = 0;
-
-    while (!temp.empty()) {
-        const particle& p = temp.front();
-        temp.pop();
-        pdg_counts[p.pdg]++;
-        id_counts[p.nucleon_id]++;
-        total_particles++;
-    }
-
-    std::cout << "[DEBUG] Queue '" << name << "' contains "
-              << total_particles << " particles." << std::endl;
-
-    std::cout << "  PDG distribution:" << std::endl;
-    for (const auto& kv : pdg_counts)
-        std::cout << "    PDG " << kv.first << ": " << kv.second << std::endl;
-
-    std::cout << "  nucleon_id distribution:" << std::endl;
-    for (const auto& kv : id_counts)
-        std::cout << "    id=" << kv.first << ": " << kv.second << std::endl;
-
-    if (e) {
-        std::cout << "  [FLAGS] isTransparent="
-                  << e->flag.isTransparent
-                  << ", isCorrelated="
-                  << e->flag.isCorrelated
-                  << std::endl;
-    } else {
-        std::cout << "  [FLAGS] (no event info provided)" << std::endl;
-    }
-}

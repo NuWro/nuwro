@@ -9,7 +9,6 @@
 #include "isotopes.h"
 #include <stack>
 
-
 #include "MEC_data/C12/C12_pp.h"
 #include "MEC_data/C12/C12_np.h"
 #include "MEC_data/C12/C12_pn.h"
@@ -24,8 +23,6 @@
 #include "MEC_data/Ca40/Ca40_3p3h.h"
 
 using namespace std;
-
-
 
 // A class to load Valencia 2020 model hadronic tables Phys. Rev. C 102 (2020) 024601 J.E. Sobczyk
 // Class Implemented by Hemant Prasad on 23 / 11 / 2024
@@ -72,39 +69,40 @@ class nucleus
 {
 	public:
 
-	int p;                ///< initial number of protons
-	int n;                ///< initial number of neutrons
-	particle *spectator;  ///< nucleon on which absorbtion took place
-
-        int MAX_EVENT_REDRAWS = 10;
-        double effective_mfp_scale = 0.5;
-        double cosine_threshold = 0.01;
+	int p;                              ///< initial number of protons
+	int n;                              ///< initial number of neutrons
+	particle *spectator;                ///< nucleon on which absorbtion took place
+        int MAX_EVENT_REDRAWS = 10;         ///< maximum number of cascade-redraw loops
+        double effective_mfp_scale = 0.4;   ///< cascade-redraw scaling parameter
+        double cosine_threshold = 0.01;     ///< angular threshold to identify noninteracted struck nucleon
 
 	private:
 
 	nucleus_data *d;      ///< density profiles from experimental data
+	
 	public:
+	
 	isotope      *i;      ///< isotope data from: "The Ame2003 atomic mass evaluation (II)"  by G.Audi, A.H.Wapstra and C.Thibault
-					      ///< Nuclear Physics A729 p. 337-676, December 22, 2003.
-
-	int pr;			      ///< real number of protons
-	int nr;			      ///< real number of neutrons
+			      ///< Nuclear Physics A729 p. 337-676, December 22, 2003.
+	int pr;	              ///< real number of protons
+	int nr;		      ///< real number of neutrons
 	vect _p4;             ///< minus total fourmomentum of lost nucleons
-	double _r;			  ///< nucleus radius
-	double _Eb;			  ///< binding energy per nucleon (from exp data)
-	double _kf;			  ///< global Fermi momentum
-	int kMomDist;   	  ///< Type of nucleon momentum distribution:
+	double _r;	      ///< nucleus radius
+	double _Eb;           ///< binding energy per nucleon (from exp data)
+	double _kf;	      ///< global Fermi momentum
+	int kMomDist;         ///< Type of nucleon momentum distribution:
 						  /// 0 - free nucleon (forced for H1);
 						  /// 1 - Fermi gas (mean Fermi momentum);
 						  /// 2 - local Fermis gas;
 						  /// 3 - "bodek tail" in momentum distribution
 						  /// 4 - effective spectral function (for carbon and oxygen, else lFG);
 						  /// 5 - deuterium (forced for H2);
-              /// 6 - effective potential
+                                                  /// 6 - effective potential
 
 	// Hyperon potential at r=0
 	double Lambda_Eb;
 	double Sigma_Eb;
+	
   Response_function W00;          /// Component of hadronic tensor in (w,q)
   Response_function W03;          /// Component of hadronic tensor in (w,q)
   Response_function W11;          /// Component of hadronic tensor in (w,q)
@@ -121,20 +119,20 @@ class nucleus
 	int  Zr(){return pr;}                    ///< Z real
 	int  Nr(){return nr;}                    ///< N real
 	int  Ar(){return pr+nr;}                 ///< N real
-	double radius(){return _r;}	             ///< radius of nucleus
+	double radius(){return _r;}	         ///< radius of nucleus
 	double r(){return _r;}	                 ///< radius of nucleus
-	double V(particle &p);         			 ///< potential of nucleon p
+	double V(particle &p);         	         ///< potential of nucleon p
 	double frac_proton ();                   ///< percentage of protons
 	double frac_neutron ();                  ///< percentage of neutrons
 	double density (double r);               ///< nucleon density at dist r from center
 	double get_random_r ();                  ///< random distance from the center
-	bool remove_nucleon (particle P);	     ///< remove nucleon from the nucleus
-	void insert_nucleon (particle P);	     ///< insert nucleon back to the nucleus
+	bool remove_nucleon (particle P);        ///< remove nucleon from the nucleus
+	void insert_nucleon (particle P);        ///< insert nucleon back to the nucleus
 	double localkf (particle & pa);          ///< local Fermi momentum for particle (pdg and position dependent)
-	double localkf_ (int pdg, double r);      ///< local Fermi momentum from pdg code and  dist r from nucleus center
-	double kF(){return _kf;}	             ///< global Fermi momentum
-	double Ef (particle & pa);		 		 ///< nucleon Fermi energy dependent on kMomDist
-	double Mf();			                 ///< nucleon effective mass inside nucleus
+	double localkf_ (int pdg, double r);     ///< local Fermi momentum from pdg code and  dist r from nucleus center
+	double kF(){return _kf;}	         ///< global Fermi momentum
+	double Ef (particle & pa);		 ///< nucleon Fermi energy dependent on kMomDist
+	double Mf();			         ///< nucleon effective mass inside nucleus
 	double Ef();                             ///< nucleon Fermi energy
 	double Eb(){return _Eb;}                 ///< nucleon binding energy (from experimantal data)
 	particle get_nucleon (vec r);            ///< random nucleon located at r (used in Interaction.cc)
