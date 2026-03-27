@@ -59,7 +59,6 @@ enum FormFactors
 	JLabFF=4
 };
 
-
 // Atomic masses
 inline double getIsotopeMass( int Z, int N ) {
     isotope *iso = isotope_find( Z, N );
@@ -111,7 +110,7 @@ const double alpha( 7.2973525376e+4 ); //fine structure constant, *10^7
 const double reciprocalAlpha( 137.03599908 );
 const double M( 0.50 * ( PDG::mass_proton + PDG::mass_neutron ) );
 const double Mass2( M * M );
-const double fm_to_mev = 1.0 / 197.327;
+const double fm_to_mev = 1.0 / 197.3269804;
 const double fm2 = fm_to_mev * fm_to_mev;
 const double fm3 = fm_to_mev * fm_to_mev * fm_to_mev;
 //~ const double piMass( 139.57018 ); //charged pion mass

@@ -78,8 +78,8 @@ PARAM(int,density_model,1)\
 PARAM(int,sf_method,1)\
 PARAM(double,sf_transparency_scale,1)\
 PARAM(int,sf_transparency_table_idx,1)\
-PARAM(bool,sf_nuclearRecoil,1)\
-PARAM(bool,sf_CoulombDistortion,1)\
+PARAM(bool,sf_recoil,1)\
+PARAM(bool,sf_Coulomb,1)\
 PARAM(bool,sf_src,1)\
 PARAM(int,sf_pb,1)\
 PARAM(bool,cc_smoothing,0)\

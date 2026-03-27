@@ -68,12 +68,15 @@ class kaskada
     int kaskadaevent();                           //!< Runs the cascade.
 
   private:
-    double U_evt;                                 //!< optical potential cached
+    inline bool use_optical_potential() const {   //!< Helper: true for QE-SF events where optical potential treatment is enabled.
+                                                  
+        return (e->flag.qel && par.U_switch == 1 && par.sf_method != 0);
+    }  
     void prepare_particles();                     //!< Handles the particles from the input (out) vector.
                                                   /*!< Nucleons and pions are prepared and added to the queue as off-shell particles.
                                                        Other particles are copied directly to the output vector (post) */
-    void prepare_single_nucleon_for_redraw(particle pN, int index);   /*!< Handle nucleons from the input vector in the
-                                                                      cascade redrawing stage as off-shell particles. */
+    void prepare_single_nucleon_for_redraw(const particle pN, int index);   /*!< Handle nucleons from the input vector in the
+                                                                            cascade redrawing stage as off-shell particles. */
     interaction_parameters prepare_interaction(); //!< Calculates the free path.
                                                   /*!< The free path depends on the density and the total cross section.
                                                        The density is set for a current position.
@@ -84,6 +87,7 @@ class kaskada
     bool leave_nucleus();                         //!< Handles the particles propagated outside the nucleus.
                                                   /*!< If the particle is not jailed: it escapes, returns on-shell
                                                        and is added to the output vector (post). */
+    bool leave_nucleus_for_single_nucleon(particle &N); //!< same as leave_nucleus but only for single nucleon*/                                                   
     bool make_interaction();                      //!< Generates kinematics.
                                                   /*!< The interaction is rejected if the chosen kinematics violates Pauli blocking. */
     bool finalize_interaction();                  //!< Copies new particles to a queue.
@@ -96,6 +100,4 @@ class kaskada
                  particle *spect, int n, particle p[], int k);  //!< Checks if the charge is conserved
     bool check2 (particle & p1, particle & p2,
                  particle *spect, int n, particle p[], int k);  //!< Checks if the fourmomentum is conserved
-    void printPDGCounts(const std::vector<particle>& vec, const std::string &vecName,const event* e);
-    void printPartsPDGCounts(const std::queue<particle>& q, const std::string &name,const event* e);
 };
