@@ -34,9 +34,9 @@ int main(int argc,  char** argv)
  |                                  `-/+os+s  ./ohmN:.    sNNNy:`   .---.+`   |
  |    |\ |     |  |  _  _           :oooyysy: +oodMMd-`  .MMMMM/-   -----s/   |
  |    | \| |_| |/\| |  (_)           `.`oyy+d`   `mMMo-   yMMMyo`   .----d.   |
- |             __        __   __        .yyyoo    :MMN:.  :MMho.    `---h:    |
- |              _) /|   /  \ (__\        :yyoh-    sMMh-`.mMho-     ---h:     |
- |             /__  | . \__/  __/         oyy+h    `mMM+-mMho-     ---h:      |
+ |             __   __                  .yyyoo    :MMN:.  :MMho.    `---h:    |
+ |              _) |__    /|  /|         :yyoh-    sMMh-`.mMho-     ---h:     |
+ |             /__  __| . _|_ _|_         oyy+h    `mMM+-mMho-     ---h:      |
  |                                        .yyys+    -MMNmMh+-     ---h:       |
  |                                         :yyod.    sMMMh+-     ---h:        |
  |   Wrocław Neutrino Event Generator       oyy+h    `mMh-+.    ---h:         |
@@ -183,7 +183,7 @@ int main(int argc,  char** argv)
         int lepton_idx = -1;
         while(std::getline(line_sstream, field, ','))
         {
-          // read 
+          // read
           int pdg = std::stoi(field);
           particle new_particle(pdg, PDG::mass(pdg));
 
@@ -212,8 +212,8 @@ int main(int argc,  char** argv)
           new_particle.set_momentum(vec(fourmomentum[1],fourmomentum[2],fourmomentum[3]));
 
           // check the correctness of the four-momentum
-          if(std::fabs(fourmomentum[0] - new_particle.E()) > 1.e-1)
-            throw std::runtime_error("particles specified incorrectly (off-shell?) at event "  + std::to_string(i));
+          // if(std::fabs(fourmomentum[0] - new_particle.E()) > 1.e-1)
+          //   throw std::runtime_error("particles specified incorrectly (off-shell?) at event "  + std::to_string(i));
 
           // push the particle to the particles vector
           event_particles.push_back(new_particle);
