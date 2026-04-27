@@ -65,13 +65,13 @@ class kaskada
                                                   /*!< Takes the params file and the current event.
                                                        Generates a new nucleus for the cascade. */
     ~kaskada();                                   //!< The default destructor.
-    int kaskadaevent();                           //!< Runs the cascade.
+    int kaskadaevent(bool bare_kaskada = false);  //!< Runs the cascade.
 
   private:
     inline bool use_optical_potential() const {   //!< Helper: true for QE-SF events where optical potential treatment is enabled.
-                                                  
+
         return (e->flag.qel && par.U_switch == 1 && par.sf_method != 0);
-    }  
+    }
     void prepare_particles();                     //!< Handles the particles from the input (out) vector.
                                                   /*!< Nucleons and pions are prepared and added to the queue as off-shell particles.
                                                        Other particles are copied directly to the output vector (post) */
@@ -87,7 +87,7 @@ class kaskada
     bool leave_nucleus();                         //!< Handles the particles propagated outside the nucleus.
                                                   /*!< If the particle is not jailed: it escapes, returns on-shell
                                                        and is added to the output vector (post). */
-    bool leave_nucleus_for_single_nucleon(particle &N); //!< same as leave_nucleus but only for single nucleon*/                                                   
+    bool leave_nucleus_for_single_nucleon(particle &N); //!< same as leave_nucleus but only for single nucleon*/
     bool make_interaction();                      //!< Generates kinematics.
                                                   /*!< The interaction is rejected if the chosen kinematics violates Pauli blocking. */
     bool finalize_interaction();                  //!< Copies new particles to a queue.

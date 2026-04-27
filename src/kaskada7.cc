@@ -24,13 +24,13 @@ kaskada::~kaskada()
 }
 
 // Main cascade driver for a single event
-int kaskada::kaskadaevent()
+int kaskada::kaskadaevent(bool bare_kaskada)
 {
 
   int result = 0;
   bool intercated = false;
   bool needs_final_clean = true;
-  const bool isQESF = (e->flag.qel && par.sf_method != 0);
+  const bool isQESF = (e->flag.qel && par.sf_method != 0 && !bare_kaskada);
 
   if (e->weight <= 0) return result;
 
@@ -55,10 +55,10 @@ int kaskada::kaskadaevent()
       leave_nucleus();                // check if the particle is jailed or escapes (and returns on the mass shell)
 
     }
-    
-  // Update remaining protons/neutrons in nucleus
-  e->pr=nucl->Zr();
-  e->nr=nucl->Nr();
+
+    // Update remaining protons/neutrons in nucleus
+    e->pr=nucl->Zr();
+    e->nr=nucl->Nr();
 
     return result;
 
@@ -387,11 +387,11 @@ int kaskada::kaskadaevent()
     bool has_pion   = false;
 
     for (auto &pt : e->post) {
-    
+
     if (nucleon(pt.pdg)) has_nucleon = true;
     if (pt.pdg == 111 || pt.pdg == 211 || pt.pdg == -211) has_pion = true;
     if (has_nucleon) break;
-      
+
     }
 
     if (!has_nucleon && has_pion)
@@ -414,8 +414,8 @@ int kaskada::kaskadaevent()
 
         particle N1 = e->out[1];
         N1.endproc   = escape;
-        N1.nucleon_id = 1;  
-        
+        N1.nucleon_id = 1;
+
         leave_nucleus_for_single_nucleon(N1);
 
         if (par.sf_method != 0) e->flag.isTransparent = true;
@@ -426,7 +426,7 @@ int kaskada::kaskadaevent()
   // Update remaining protons/neutrons in nucleus
   e->pr=nucl->Zr();
   e->nr=nucl->Nr();
- 
+
   return result;
 
 }
@@ -590,12 +590,12 @@ interaction_parameters kaskada::prepare_interaction()
         res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
         res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
         break;
-        
+
       case pdg_proton:
         res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
         res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
         break;
-        
+
       default:
         break;
     }
@@ -729,12 +729,12 @@ bool kaskada::leave_nucleus_for_single_nucleon(particle &N)
 
   N.set_energy(N.E() - N.his_fermi - kaskada_w + U);
   N.endproc = escape;
-  
+
   e->post.push_back(N);
   if(par.kaskada_writeall) e->all.push_back (N);
-  
+
   return true;
-  
+
 }
 
 // Generate scattering kinematics

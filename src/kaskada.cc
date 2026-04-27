@@ -286,7 +286,7 @@ int main(int argc,  char** argv)
 
     // Run the cascade
     kaskada k(p,*e,&input);
-    k.kaskadaevent();
+    k.kaskadaevent(true);
     t2->Fill();
     delete e;
     raport(i+1,p.number_of_events,"cascade events ready...",1000);
