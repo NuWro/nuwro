@@ -26,47 +26,9 @@ void raport(double i, double n, const char* text, int precision)
 
 int main(int argc,  char** argv)
 {
-  cout << R"(
-  ____________________________________________________________________________
- |                                                                            |
- |                                                                            |
- |                                      `.``      `.       .-.        `       |
- |                                  `-/+os+s  ./ohmN:.    sNNNy:`   .---.+`   |
- |    |\ |     |  |  _  _           :oooyysy: +oodMMd-`  .MMMMM/-   -----s/   |
- |    | \| |_| |/\| |  (_)           `.`oyy+d`   `mMMo-   yMMMyo`   .----d.   |
- |             __   __                  .yyyoo    :MMN:.  :MMho.    `---h:    |
- |              _) |__    /|  /|         :yyoh-    sMMh-`.mMho-     ---h:     |
- |             /__  __| . _|_ _|_         oyy+h    `mMM+-mMho-     ---h:      |
- |                                        .yyys+    -MMNmMh+-     ---h:       |
- |                                         :yyod.    sMMMh+-     ---h:        |
- |   Wrocław Neutrino Event Generator       oyy+h    `mMh-+.    ---h:         |
- |   https://github.com/NuWro/nuwro         .yyss/  .s/y--oh   .--y-          |
- |                                           :yy+d`.sy+----d/ .--y-           |
- |   J. T. Sobczyk et al.                     oyy++syoy`.--:s.--y-            |
- |   Institute of Theoretical Physics         .yyssyoy.  ------y-             |
- |   University of Wrocław                     :yyyoh.   `----y-              |
- |   Poland                                     osoh.     .-:y-               |
- |                                              `-:.       .:-                |
- |                                                                            |
- |____________________________________________________________________________|
-             )";
-  cout << R"(
-  ____________________________________________________________________________
- |                                                                            |
- |              __                                                            |
- |             /    _   _  _  _   _|  _   |\/|  _   _|  _                     |
- |             \__ (_| _) (_ (_| (_| (-   |  | (_) (_| (-                     |
- |                                                                            |
- |                                                                            |
- |   Hadrons are introduced directly to the cascade model. Only selected      |
- |   parameters are active. The incident particle starting point follows      |
- |   the beam_placement parameter as                                          |
- |   (0) nucleus center                                                       |
- |   (1) random nucleon's position:           transparency mode               |
- |   (2) just under the surface of the nucleus: scattering mode               |
- |                                                                            |
- |____________________________________________________________________________|
-             )" << endl;
+  print_nuwro_banner();
+
+  print_cascade_mode_info();
 
   frame_top("Simulation parameters");
 

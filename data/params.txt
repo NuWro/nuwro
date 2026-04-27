@@ -340,7 +340,7 @@ FSI_on       = 1  // use (1) or not (0)
 # Total work of the cascade W (Eb = Ef + W);
 kaskada_w        = 7  // literature [7 MeV, 9 MeV]
 
-# For sf_method != 0 
+# For sf_method != 0
 # U_switch = 1 → use optical potential U in cascade (kaskada_w = 0)
 # U_switch = 0 → ignore U and keep kaskada_w
 U_switch = 1
@@ -398,4 +398,3 @@ el_costh_del = 0.001 // defines angular acceptance for the scattered electron
 #                       ( the acceptance in cosine is from (el_costh_lab -
 #                         el_costh_del) to (el_costh_lab + el_costh_del),
 #                         the width is 2*el_costh_del )
-# nothing
