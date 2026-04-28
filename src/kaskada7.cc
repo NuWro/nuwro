@@ -1,4 +1,7 @@
 #include "kaskada7.h"
+
+#include <algorithm>
+
 #include "fsi.h"
 
 // Constructor: set up cascade state from params, event and input_data
@@ -431,6 +434,11 @@ int kaskada::kaskadaevent(bool bare_kaskada)
 
 }
 
+void kaskada::set_shell_sampler(shell_sampler *sampler)
+{
+  shell_dist = sampler;
+}
+
 // Build initial queue "parts" from event primary vertex e->out
 void kaskada::prepare_particles()
 {
@@ -566,6 +574,11 @@ interaction_parameters kaskada::prepare_interaction()
   res.r   = p->r.length ();
 
   res.dens = nucl->density (res.r);
+  if(shell_dist && nucl->A()>1) // correct for the primary vertex dist.
+  {
+    res.dens = std::max(0.0, res.dens * nucl->A() - shell_dist->dens(res.r) * nucl->Ar())
+             / (nucl->A() - 1);
+  }
   assert(res.dens>=0);
 
   res.dens_n = res.dens * nucl->frac_neutron ();

@@ -8,6 +8,23 @@
 #include "dirs.h"
 #include "input_data.h"
 #include "output.h"
+#include "shell_sampler.h"
+#include <unordered_map>
+
+std::unordered_map<int, shell_sampler> shell_cache;
+
+shell_sampler& get_sampler(int shell)
+{
+    auto it = shell_cache.find(shell);
+
+    if (it == shell_cache.end()) {
+        std::string filename = "shell_" + std::to_string(shell) + ".txt";
+        auto [new_it, _] = shell_cache.emplace(shell, shell_sampler(filename));
+        return new_it->second;
+    }
+
+    return it->second;
+}
 
 void raport(double i, double n, const char* text, int precision)
 {
@@ -115,6 +132,9 @@ int main(int argc,  char** argv)
     e = new event;
     e->par = p;
 
+    // Zero means no shell information
+    int shell = 0;
+
     // process external events
     if(p.kaskada_events)
     {
@@ -129,6 +149,15 @@ int main(int argc,  char** argv)
         // read the cross section
         getline(line_sstream, field, ',');
         e->weight = std::stod(field);
+
+        // point of interaction, shell number, 0 is none
+        vec position = nucl->get_random_r()*rand_dir();
+        getline(line_sstream, field, ',');
+        shell = std::stoi(field);
+        stringstream shell_sstream;
+        shell_sstream << "shell_" << shell << ".txt";
+        if(shell > 0)
+          position = get_sampler(shell).r() * rand_dir();
 
         // read the interaction channel code
         getline(line_sstream, field, ',');
@@ -186,9 +215,6 @@ int main(int argc,  char** argv)
         {
           throw std::runtime_error("no lepton in the final state at event "  + std::to_string(i));
         }
-
-        // generate the point of interaction
-        vec position = nucl->get_random_r()*rand_dir();
 
         // isolate the lepton and put to out
         particle lepton = event_particles[lepton_idx];
@@ -286,6 +312,8 @@ int main(int argc,  char** argv)
 
     // Run the cascade
     kaskada k(p,*e,&input);
+    if(shell > 0)
+      k.set_shell_sampler(&get_sampler(shell));
     k.kaskadaevent(true);
     t2->Fill();
     delete e;

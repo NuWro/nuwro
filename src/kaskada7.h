@@ -1,3 +1,6 @@
+#ifndef _kaskada7_h_
+#define _kaskada7_h_
+
 #include "event1.h"
 #include "params.h"
 
@@ -28,6 +31,7 @@
 #include "proctable.h"
 #include "nucleusmaker.h"
 #include "input_data.h"
+#include "shell_sampler.h"
 
 using namespace std;
 using namespace PDG;
@@ -58,6 +62,7 @@ class kaskada
     double max_step;                              //!< Maximal step of propagation.
     double radius;                                //!< Radius of the nucleus.
     data_container* corr_func;                    //!< Correlation function for effective density.
+    shell_sampler* shell_dist;                    //!< Shell sampler if primary vertex has a specific wavefuntion.
 
   public:
     kaskada(params &p, event &e1, input_data *input);
@@ -66,6 +71,7 @@ class kaskada
                                                        Generates a new nucleus for the cascade. */
     ~kaskada();                                   //!< The default destructor.
     int kaskadaevent(bool bare_kaskada = false);  //!< Runs the cascade.
+    void set_shell_sampler(shell_sampler *sampler); //!< Sets up the shell sampler.
 
   private:
     inline bool use_optical_potential() const {   //!< Helper: true for QE-SF events where optical potential treatment is enabled.
@@ -101,3 +107,5 @@ class kaskada
     bool check2 (particle & p1, particle & p2,
                  particle *spect, int n, particle p[], int k);  //!< Checks if the fourmomentum is conserved
 };
+
+#endif
