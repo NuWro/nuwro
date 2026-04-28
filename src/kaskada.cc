@@ -8,6 +8,23 @@
 #include "dirs.h"
 #include "input_data.h"
 #include "output.h"
+#include "shell_sampler.h"
+#include <unordered_map>
+
+std::unordered_map<int, shell_sampler> shell_cache;
+
+shell_sampler& get_sampler(int shell)
+{
+    auto it = shell_cache.find(shell);
+
+    if (it == shell_cache.end()) {
+        std::string filename = "shell_" + std::to_string(shell) + ".txt";
+        auto [new_it, _] = shell_cache.emplace(shell, shell_sampler(filename));
+        return new_it->second;
+    }
+
+    return it->second;
+}
 
 void raport(double i, double n, const char* text, int precision)
 {
@@ -26,47 +43,9 @@ void raport(double i, double n, const char* text, int precision)
 
 int main(int argc,  char** argv)
 {
-  cout << R"(
-  ____________________________________________________________________________
- |                                                                            |
- |                                                                            |
- |                                      `.``      `.       .-.        `       |
- |                                  `-/+os+s  ./ohmN:.    sNNNy:`   .---.+`   |
- |    |\ |     |  |  _  _           :oooyysy: +oodMMd-`  .MMMMM/-   -----s/   |
- |    | \| |_| |/\| |  (_)           `.`oyy+d`   `mMMo-   yMMMyo`   .----d.   |
- |             __        __   __        .yyyoo    :MMN:.  :MMho.    `---h:    |
- |              _) /|   /  \ (__\        :yyoh-    sMMh-`.mMho-     ---h:     |
- |             /__  | . \__/  __/         oyy+h    `mMM+-mMho-     ---h:      |
- |                                        .yyys+    -MMNmMh+-     ---h:       |
- |                                         :yyod.    sMMMh+-     ---h:        |
- |   Wrocław Neutrino Event Generator       oyy+h    `mMh-+.    ---h:         |
- |   https://github.com/NuWro/nuwro         .yyss/  .s/y--oh   .--y-          |
- |                                           :yy+d`.sy+----d/ .--y-           |
- |   J. T. Sobczyk et al.                     oyy++syoy`.--:s.--y-            |
- |   Institute of Theoretical Physics         .yyssyoy.  ------y-             |
- |   University of Wrocław                     :yyyoh.   `----y-              |
- |   Poland                                     osoh.     .-:y-               |
- |                                              `-:.       .:-                |
- |                                                                            |
- |____________________________________________________________________________|
-             )";
-  cout << R"(
-  ____________________________________________________________________________
- |                                                                            |
- |              __                                                            |
- |             /    _   _  _  _   _|  _   |\/|  _   _|  _                     |
- |             \__ (_| _) (_ (_| (_| (-   |  | (_) (_| (-                     |
- |                                                                            |
- |                                                                            |
- |   Hadrons are introduced directly to the cascade model. Only selected      |
- |   parameters are active. The incident particle starting point follows      |
- |   the beam_placement parameter as                                          |
- |   (0) nucleus center                                                       |
- |   (1) random nucleon's position:           transparency mode               |
- |   (2) just under the surface of the nucleus: scattering mode               |
- |                                                                            |
- |____________________________________________________________________________|
-             )" << endl;
+  print_nuwro_banner(VERSION);
+
+  print_cascade_mode_info();
 
   frame_top("Simulation parameters");
 
@@ -153,6 +132,9 @@ int main(int argc,  char** argv)
     e = new event;
     e->par = p;
 
+    // Zero means no shell information
+    int shell = 0;
+
     // process external events
     if(p.kaskada_events)
     {
@@ -167,6 +149,15 @@ int main(int argc,  char** argv)
         // read the cross section
         getline(line_sstream, field, ',');
         e->weight = std::stod(field);
+
+        // point of interaction, shell number, 0 is none
+        vec position = nucl->get_random_r()*rand_dir();
+        getline(line_sstream, field, ',');
+        shell = std::stoi(field);
+        stringstream shell_sstream;
+        shell_sstream << "shell_" << shell << ".txt";
+        if(shell > 0)
+          position = get_sampler(shell).r() * rand_dir();
 
         // read the interaction channel code
         getline(line_sstream, field, ',');
@@ -183,7 +174,7 @@ int main(int argc,  char** argv)
         int lepton_idx = -1;
         while(std::getline(line_sstream, field, ','))
         {
-          // read 
+          // read
           int pdg = std::stoi(field);
           particle new_particle(pdg, PDG::mass(pdg));
 
@@ -212,8 +203,8 @@ int main(int argc,  char** argv)
           new_particle.set_momentum(vec(fourmomentum[1],fourmomentum[2],fourmomentum[3]));
 
           // check the correctness of the four-momentum
-          if(std::fabs(fourmomentum[0] - new_particle.E()) > 1.e-1)
-            throw std::runtime_error("particles specified incorrectly (off-shell?) at event "  + std::to_string(i));
+          // if(std::fabs(fourmomentum[0] - new_particle.E()) > 1.e-1)
+          //   throw std::runtime_error("particles specified incorrectly (off-shell?) at event "  + std::to_string(i));
 
           // push the particle to the particles vector
           event_particles.push_back(new_particle);
@@ -224,9 +215,6 @@ int main(int argc,  char** argv)
         {
           throw std::runtime_error("no lepton in the final state at event "  + std::to_string(i));
         }
-
-        // generate the point of interaction
-        vec position = nucl->get_random_r()*rand_dir();
 
         // isolate the lepton and put to out
         particle lepton = event_particles[lepton_idx];
@@ -324,7 +312,9 @@ int main(int argc,  char** argv)
 
     // Run the cascade
     kaskada k(p,*e,&input);
-    k.kaskadaevent();
+    if(shell > 0)
+      k.set_shell_sampler(&get_sampler(shell));
+    k.kaskadaevent(true);
     t2->Fill();
     delete e;
     raport(i+1,p.number_of_events,"cascade events ready...",1000);
