@@ -26,7 +26,7 @@ void raport(double i, double n, const char* text, int precision)
 
 int main(int argc,  char** argv)
 {
-  print_nuwro_banner();
+  print_nuwro_banner(VERSION);
 
   print_cascade_mode_info();
 
