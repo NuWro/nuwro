@@ -6,6 +6,9 @@
 
 # Detecting OS type
 OS := $(shell uname)
+F1F209_DIR := data/F1F209
+F1F209_LIB := $(F1F209_DIR)/libF1F209.so
+F1F209_RPATH := $(abspath $(F1F209_DIR))
 
 # get version tag using git describe
 
@@ -16,13 +19,19 @@ DEBUG         = 1
 ifeq ($(OS),Darwin)
   # Flags for OSX
  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I${ROOTEGPythia6_ROOT}/include
+ CXXFLAGS			+= -I${ORT_HOME}/include
 else
   # Flags for others
  CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wreorder -Wmissing-braces $(QTINCLUDEDIRS) -DVERSION=\"$(VERSION)\" -I${ROOTEGPythia6_ROOT}/include
+ CXXFLAGS			+= -I${ORT_HOME}/include
 # CXXFLAGS      = `${ROOTSYS}/bin/root-config --cflags` --std=c++17 -fPIC -O2 $(DEBUGON) -I src -Wl,--no-as-needed -Wall -Wno-deprecated-register -Wno-unused-variable -Wno-sign-compare -Wno-unused-function -Wno-unused-but-set-variable -Wno-reorder $(QTINCLUDEDIRS)
  
 endif
+# ONNX Runtime: set ORT_HOME to a prefix with include/onnxruntime/ and lib/libonnxruntime.
+# GPU: use an ORT build with CUDA EP on Linux/Windows; Apple Silicon can use CoreML EP from the default package.
 LDFLAGS       = `${ROOTSYS}/bin/root-config --libs` -L${ROOTEGPythia6_ROOT}/lib -Wl,-rpath,${ROOTEGPythia6_ROOT}/lib -lEGPythia6 -lPythia6 -lGeom -lMinuit -lgfortran $(QTLIBS)
+LDFLAGS			 += -L${ORT_HOME}/lib -lonnxruntime -Wl,-rpath,${ORT_HOME}/lib
+LDFLAGS      += -L$(F1F209_DIR) -lF1F209 -Wl,-rpath,$(F1F209_RPATH)
 LD            = g++
 CXX           = g++
 CC            = g++
@@ -50,7 +59,7 @@ MEC= mecdynamics.o mecevent.o mecevent_tem.o mecevent_Nieves.o mecevent_2020Vale
 
 DIS_OBJS= $(addprefix src/dis/,$(DIS))
 MEC_OBJS= $(addprefix src/,$(MEC))
-# ESPP_OBJS=$(patsubst %.cc,%.o,$(wildcard src/espp/*.cc)) src/e_spp_event.o 
+ESPP_OBJS=$(patsubst %.cc,%.o,$(wildcard src/espp/*.cc)) src/e_spp_event.o 
 SF_OBJS = $(patsubst %.cc,%.o,$(wildcard src/sf/*.cc))
 HYBRID_OBJS = $(patsubst %.cc,%.o,$(wildcard src/hybrid/*.cc)) src/resevent_hybrid.o
 GUI_OBJS = $(patsubst %.cc,%.o,$(wildcard src/gui/*.cc))
@@ -58,10 +67,15 @@ GUI_OBJS += $(patsubst src/gui/C%.cc,src/gui/moc_C%.o,$(wildcard src/gui/C*.cc))
 
 EVENT_OBJS =  $(addprefix src/, event1.o  pdg.o particle.o generatormt.o dirs.o event1Dict.o)
 
+NN_OBJS = src/NeuralNetworks/NN.o src/NeuralNetworks/EmpericalFits.o src/DNN_event.o src/Utilities.o
+
 BIN=bin
 #BIN=.
 
-all:            $(TRGTS)
+all:            $(F1F209_LIB) $(TRGTS)
+
+$(F1F209_LIB):
+		$(MAKE) -C $(F1F209_DIR) lib
 
 $(BIN)/whist: src/whist.o $(EVENT_OBJS) 
 		$(LINK.cc) $^ -o $@
@@ -71,48 +85,48 @@ $(BIN)/nuwro:   $(addprefix src/,\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o sfevent.o ff.o dirs.o rpa_2013.o\
         nucleus_data.o isotopes.o elements.o rew/PythiaQuiet.o rew/rewparams.o\
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o  main.o) \
-        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS) 
+        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS) $(NN_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
 
 $(BIN)/kaskada:  $(addprefix src/,\
         scatter.o kaskada7.o Interaction.o input_data.o data_container.o hyperon_cascade.o rew/rewparams.o\
-        nucleus.o kaskada.o fsi.o pitab.o nucleus_data.o isotopes.o elements.o) $(EVENT_OBJS)
+        nucleus.o kaskada.o fsi.o pitab.o nucleus_data.o isotopes.o elements.o) $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/myroot:  $(EVENT_OBJS) src/myroot.o
+$(BIN)/myroot:  $(EVENT_OBJS) src/myroot.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/event1.so: $(EVENT_OBJS)
+$(BIN)/event1.so: $(EVENT_OBJS) $(F1F209_LIB)
 		$(LD) -shared  $(LDFLAGS) $^ $(LIBS) -o $@
 
-$(BIN)/glue:    $(EVENT_OBJS) src/glue.o
+$(BIN)/glue:    $(EVENT_OBJS) src/glue.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/nuwro2neut:  $(EVENT_OBJS) src/nuwro2neut.o 
+$(BIN)/nuwro2neut:  $(EVENT_OBJS) src/nuwro2neut.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o
+$(BIN)/nuwro2nuance: $(EVENT_OBJS) src/nuwro2nuance.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/nuwro2rootracker: $(EVENT_OBJS) src/nuwro2rootracker.o
+$(BIN)/nuwro2rootracker: $(EVENT_OBJS) src/nuwro2rootracker.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/fsi: src/scatter.o src/kaskada7.o src/Interaction.o src/input_data.o src/data_container.o src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
-            src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/fsi_main.o  $(EVENT_OBJS)
+            src/fsi.o src/pitab.o src/calculations.o src/simulations.o src/vivisection.o src/plots.o  src/mplots.o  src/fsi_main.o  $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/mb_nce_run:   src/mb_nce.o src/mb_nce_run.o src/mb_nce_fit.o  src/scatter.o $(EVENT_OBJS)
+$(BIN)/mb_nce_run:   src/mb_nce.o src/mb_nce_run.o src/mb_nce_fit.o  src/scatter.o $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/niwg: src/scatter.o src/generatormt.o src/kaskada7.o src/Interaction.o src/input_data.o src/data_container.o  src/nucleus.o  src/nucleus_data.o src/isotopes.o src/elements.o\
-             src/fsi.o src/pitab.o src/calculations.o src/niwg_ccqe.o src/niwg_tech.o src/niwg_ccpi.o src/niwg.o  $(EVENT_OBJS)
+             src/fsi.o src/pitab.o src/calculations.o src/niwg_ccqe.o src/niwg_tech.o src/niwg_ccpi.o src/niwg.o  $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/ladek_topologies:  src/ladek_topologies.o src/fsi.o src/pitab.o $(EVENT_OBJS)
+$(BIN)/ladek_topologies:  src/ladek_topologies.o src/fsi.o src/pitab.o $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test:  src/test.o  src/nucleus.o src/nucleus_data.o src/isotopes.o src/elements.o $(EVENT_OBJS)
+$(BIN)/test:  src/test.o  src/nucleus.o src/nucleus_data.o src/isotopes.o src/elements.o $(EVENT_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 		
 $(BIN)/ganalysis: $(addprefix src/, \
@@ -120,7 +134,7 @@ $(BIN)/ganalysis: $(addprefix src/, \
 	mecdynamics2.o mecevent2.o mecevent_tem.o mecevent_Nieves.o mecevent_SuSA.o mecevent_common.o rew/PythiaQuiet.o\
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o ganalysis.o rew/rewparams.o) \
-        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS)
+        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS) $(NN_OBJS) $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
 $(BIN)/reweight_to: $(addprefix src/, \
@@ -128,7 +142,7 @@ $(BIN)/reweight_to: $(addprefix src/, \
         qel_sigma.o kinsolver.o kinematics.o target_mixer.o nucleus.o sfevent.o ff.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_to.o rew/PythiaQuiet.o) \
-        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS)
+        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS) $(NN_OBJS) $(F1F209_LIB)
 		$(LINK.cc)  $^ -o $@ 
 
 $(BIN)/reweight_along: $(addprefix src/, \
@@ -137,34 +151,37 @@ $(BIN)/reweight_along: $(addprefix src/, \
         qel_sigma.o kinsolver.o kinematics.o pdg.o target_mixer.o nucleus.o  sfevent.o ff.o dirs.o rpa_2013.o nucleus_data.o isotopes.o elements.o \
         nuwro.o beam.o nd280stats.o beamHist.o coh.o fsi.o pitab.o scatter.o kaskada7.o Interaction.o input_data.o data_container.o\
         rew/rewparams.o rew/Reweighters.o rew/rewQEL.o rew/rewRES.o rew/rewNorm.o rew/reweight_along.o rew/PythiaQuiet.o) \
-        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS)
+        $(EVENT_OBJS) $(SF_OBJS) $(DIS_OBJS) $(MEC_OBJS) $(ESPP_OBJS) $(HYBRID_OBJS) $(NN_OBJS) $(F1F209_LIB)
 		$(LINK.cc)  $^ -o $@ 
 
 
-$(BIN)/dumpParams:      src/dumpParams.o src/dirs.o
+$(BIN)/dumpParams:      src/dumpParams.o src/dirs.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_nucleus:   src/generatormt.o src/nucleus.o src/test_nucleus.o src/pdg.o src/dirs.o  src/nucleus_data.o src/isotopes.o src/elements.o
+$(BIN)/test_nucleus:   src/generatormt.o src/nucleus.o src/test_nucleus.o src/pdg.o src/dirs.o  src/nucleus_data.o src/isotopes.o src/elements.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_beam:	src/generatormt.o src/pdg.o src/test_beam.o 
+$(BIN)/test_beam:	src/generatormt.o src/pdg.o src/test_beam.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_beam_rf:      src/test_beam_rf.o src/particle.o  src/generatormt.o 
+$(BIN)/test_beam_rf:      src/test_beam_rf.o src/particle.o  src/generatormt.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_makehist:    src/test_makehist.o src/nd280stats.o
+$(BIN)/test_makehist:    src/test_makehist.o src/nd280stats.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
-$(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o
+$(BIN)/test_balancer:       src/test_balancer.cc  src/generatormt.o $(F1F209_LIB)
 		$(LINK.cc) $^ -o $@
 
 clean:;         @rm -f *.o *.d src/event1Dict.* src/event1Dict_rdict.pcm core\
 		 src/*.o src/*.d src/*/*.o src/*/*.d  src/gui/moc_* src/hybrid/*.o
+		@if [ -d "$(F1F209_DIR)" ]; then $(MAKE) -C $(F1F209_DIR) clean; fi
 
 
 distclean:;     @rm -f $(TRGTS) *.o *.d src/event1Dict.* */event1Dict_rdict.pcm core\
 		 src/*.o src/*.d src/*/*.o src/*/*.d src/gui/moc_* *.root *.root.txt src/hybrid/*.o
+		@if [ -d "$(F1F209_DIR)" ]; then $(MAKE) -C $(F1F209_DIR) clean; fi
+		@rm -f "$(F1F209_LIB)"
 
 
 src/event1Dict.h src/event1Dict.cc:  src/params_all.h src/params.h src/event1.h src/event1LinkDef.h src/event1.o
@@ -189,7 +206,7 @@ src/params_all.h:  src/params.xml src/params.h src/params.sed Makefile
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
- -include $(patsubst %.cc,%.d,$(wildcard  src/dis/*.cc src/sf/*.cc src/*.cc src/gui/*.cc)) src/event1Dict.d
+ -include $(patsubst %.cc,%.d,$(wildcard  src/dis/*.cc src/sf/*.cc src/*.cc src/gui/*.cc src/NeuralNetworks/*.cc)) src/event1Dict.d
 endif
 endif
 

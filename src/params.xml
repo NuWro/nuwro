@@ -238,10 +238,13 @@
     <description>Neutrino-electron scattering</description>
   </param>
   <param name="dyn_qel_el" type="checkbox" ctype="bool" default="0">
-    <description>Quasi elastic electron scattering</description>
+    <description><![CDATA[Quasi elastic electron scattering]]></description>
   </param>
   <param name="dyn_res_el" type="checkbox" ctype="bool" default="0">
-    <description>Electron SPP</description>
+    <description><![CDATA[single-pion production electron scattering]]></description>
+  </param>
+  <param name="dyn_mec_el" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[MEC electron scattering]]></description>
   </param>
   <param name="el_costh_lab" type="text" ctype="double" default="90">
     <description><![CDATA[Cos theta lab for electron scattering]]></description>
@@ -251,6 +254,12 @@
   </param>
   <param name="eel_alg" type="text" ctype="string" default="old">
     <description><![CDATA[electron elastic scattering algorithm: old, fast, Mott, Rutherford]]></description>
+  </param>
+  <param name="eel_theta_lab" type="text" ctype="double" default="37.1">
+    <description><![CDATA[Lab polar scattering angle (degrees) for elastic and single-pion electron scattering]]></description>
+  </param>
+  <param name="eel_dz" type="text" ctype="double" default="0.05">
+    <description><![CDATA[Half-width on cos(theta_lab) for electron scattering angular acceptance]]></description>
   </param>
   <param name="qel_kinematics" type="select" ctype="int" default="0">
     <description>Quasi elastic kinematics</description>
@@ -529,6 +538,45 @@
   </param>
   <param name="hyp_Sigma_Eb" type="text" ctype="double" default="-70">
     <description>Sigma binding energy at max density; [10 MeV; -150 MeV]</description>
+  </param>
+  <param name="NeuralNetwork_guided" type="checkbox" ctype="bool" default="1">
+    <description><![CDATA[use (1) or not use (0) NeuralNetwork fits]]></description>
+  </param>
+  <param name="HardwareSupport" type="checkbox" ctype="bool" default="0">
+    <description><![CDATA[CPU (0) GPU (1)]]></description>
+  </param>
+  <param name="NumberOfCores" type="text" ctype="int" default="4">
+    <description><![CDATA[Available number of CPU cores (default=4)]]></description>
+  </param>
+  <param name="NumberOfNetworks" type="text" ctype="int" default="50">
+    <description><![CDATA[Number of networks to produce the mean]]></description>
+  </param>
+  <param name="NeuralNetwork_model_dir" type="text" ctype="string" default="">
+    <description><![CDATA[Root directory for ONNX ensembles (subdirs C12, Fe56). Empty: use get_data_dir()/NeuralNetworks/EmpericalFits/]]></description>
+  </param>
+  <param name="eWro_mec_kind" type="select" ctype="int" default="1">
+    <description><![CDATA[eWro MEC model]]></description>
+    <options>
+      <option key="1"><![CDATA[Phase-space model]]></option>
+      <option key="2"><![CDATA[Niewczas-Jachowicz mean-field model]]></option>
+    </options>
+  </param>
+  <param name="eWro_mec_ratio_pn" type="text" ctype="double" default="0.90">
+    <description><![CDATA[Ratio of initial neutron-proton pair]]></description>
+  </param>    
+  <param name="eWro_mec_ratio_pp" type="text" ctype="double" default="0.05">
+    <description><![CDATA[Ratio of initial proton-proton pair]]></description>
+  </param>
+  <param name="eWro_mec_ratio_nn" type="text" ctype="double" default="0.05">
+    <description><![CDATA[Ratio of initial neutron-neutron pair]]></description>
+  </param>
+  <param name="eWro_spp_kind" type="select" ctype="int" default="3">
+    <description><![CDATA[eWro SPP model]]></description>
+    <options>
+      <option key="1"><![CDATA[Jakub Model 1]]></option>
+      <option key="2"><![CDATA[Jakub Model 2]]></option>
+      <option key="3"><![CDATA[Jakub Model 3]]></option>
+    </options>
   </param>
   <param name="FSI_on" type="checkbox" ctype="bool" default="1">
     <description><![CDATA[use (1) or not (0) for final state interactions]]></description>

@@ -82,23 +82,19 @@ pauli_blocking   = 1 // enable (1) or not (0) Pauli blocking
 #
 ################################################################################
 
-dyn_qel_cc =1      // Quasi elastic charged current
+dyn_qel_cc =0      // Quasi elastic charged current
 dyn_qel_nc =0      // Quasi elastic neutral current
-dyn_res_cc =1      // Resonant charged current
+dyn_res_cc =0      // Resonant charged current
 dyn_res_nc =0      // Resonant neutral current
-dyn_dis_cc =1      // Deep inelastic charged current
+dyn_dis_cc =0      // Deep inelastic charged current
 dyn_dis_nc =0      // Deep inelastic neutral current
-dyn_coh_cc =1      // Coherent charged current
+dyn_coh_cc =0      // Coherent charged current
 dyn_coh_nc =0      // Coherent neutral current
-dyn_mec_cc =1      // Meson exchange charged current
+dyn_mec_cc =0      // Meson exchange charged current
 dyn_mec_nc =0      // Meson exchange neutral current
-dyn_hyp_cc =1      // Quasi elastic hyperon production
-dyn_lep    =1      // Neutrino-electron
+dyn_hyp_cc =0      // Quasi elastic hyperon production
+dyn_lep    =0      // Neutrino-electron
 # Standard output of total sigma [cm^2 / nucleon]
-
-dyn_qel_el =0      // (Quasi) elastic electron scattering
-# The output in d sigma / d costheta [cm^2 / nucleon]
-# -> see "Electron scattering parameters"
 
 ################################################################################
 # Dynamics details and form factor parameters
@@ -162,7 +158,7 @@ flux_correction  = 0    // no flux correction
 ################################################################################
 
 #sf_method  = 0 // do not use SF
-sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe
+#sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe
 #sf_method = 2 // old grid SF for C and Ar
 #sf_method = 3 // factorized SF for O, Ar, Ca
 
@@ -268,7 +264,7 @@ coh_mass_correction = 1 // Rein-Sehgal correction to CC coherent SPP
 mec_kind = 6    // 2020 Valencia model (Phys. Rev. C. 102(2020) 024601)
 
 # Ratio of mixed isospin initial nucleon pairs:
-mec_ratio_pp = 0.85 // fraction of the initial neutron-proton pairs
+#mec_ratio_pp = 0.85 // fraction of the initial neutron-proton pairs
 
 # Flexibility of the hadron model for MEC:
 # -> see Phys.Rev. C 86 (2012) 015504
@@ -327,6 +323,96 @@ hyp_Sigma_Eb    = -70    // Sigma-nucleus potential strength; literature
 hyp_g2_Re_part       = 0 // Real part second class current
 hyp_g2_Im_part       = 0 // Imaginary part second class current
 hyp_su3_sym_breaking = 0 // SU(3) symmetry breaking
+
+
+################################################################################
+#
+#     eWro 
+$     Electron Scattering Parameters 
+################################################################################
+
+
+dyn_qel_el =0      // (Quasi) elastic electron scattering
+dyn_res_el =0      // Single-pion production electron scattering 
+dyn_mec_el =1      // Meson-exchange current electron scattering
+
+# The output in d sigma / d costheta [cm^2 / nucleon]
+# The normalization of events is in d sigma / d costheta [cm^2 / nucleon]
+
+# Parameters for the outgoing electron:
+el_costh_lab = 0.5 // defines cosine of the scattered electron
+el_costh_del = 0.001 // defines angular acceptance for the scattered electron
+#                       ( the acceptance in cosine is from (el_costh_lab -
+#                         el_costh_del) to (el_costh_lab + el_costh_del),
+#                         the width is 2*el_costh_del )
+
+#===========================================================================#
+############################################
+#                                          #
+# Spectral function model for              #
+# quasielastic events (C, O, Ar, Ca, Fe)   # 
+#                                          #
+############################################
+
+#sf_method  = 0 // do not use SF
+sf_method  = 1 // Jlab SF for Argon, new grid SF for C, grid SF for O and Fe
+#sf_method = 2 // old grid SF for C and Ar
+#sf_method = 3 // factorized SF for O, Ar, Ca
+
+sf_transparency_table_idx = 1 # Transparency
+#                               1 - Theoretical, 2 - NuWro MC
+sf_transparency_scale = 1  # Scale transparency
+#                            [0.97,1.03] for table_idx = 1
+#                            [0.947,1.079] for table_idx = 2
+sf_recoil = 1             # Nuclear recoil
+sf_Coulomb = 1            # Couloumb distortion
+sf_src = 1                # Short range NN correlations
+sf_pb = 1                 # Pauli blocking method used for SF:
+#                           1- average Fermi momentum, 2- local Fermi momentum
+#===========================================================================#
+
+NeuralNetwork_guided      = 0 // Use (1) or not use (0) Neural Network fits
+                              // from B. E. Kowal et al. 
+                              // see Phys. Rev. C 112, 055504 (2025)
+
+#########################################
+#   Hardware specification paramters    #
+#########################################
+HardwareSupport           = 0 // CPU (0) GPU (1)
+NumberOfCores             = 4 // Available number of CPU cores 
+
+
+NumberOfNetworks          = 50 // <- event weight is averaged over 
+                               // this many number of neural networks 
+
+#########################################
+#             eWro MEC kind             #
+#########################################
+# Choice of model 
+eWro_mec_kind             = 1     // Phase-space model
+                                  // see Phys. Rev. _ ___ (2026) ______
+#eWro_mec_kind             = 1    // Kajetan-Niewczas model 
+
+# Ratio of mixed isospin initial nucleon pairs:
+eWro_mec_ratio_pn = 0.90 // fraction of the initial neutron-proton pairs
+eWro_mec_ratio_pp = 0.05 // proton-proton pair 
+eWro_mec_ratio_nn = 0.05 // neutron-neutron pair 
+
+# MEC Nucleon-sampling parameters 
+MEC_cm_direction_pp       = 1.0
+MEC_cm_strength_pp        = 1
+MEC_cm_direction_np       = 1.0
+MEC_cm_strength_np        = 1
+MEC_cm_direction_pn       = 1.0
+MEC_cm_strength_pn        = 1
+
+#########################################
+#             eWro SPP kind             #
+#########################################
+# Choice of model 
+#eWro_spp_kind             = 1  // Jakub's Implementation (Simple Delta Model)
+#eWro_spp_kind             = 2  // Jakub's Implementation (?!)
+eWro_spp_kind             = 3   // Jakub's Implemenation (Based on Osipenko)
 
 ################################################################################
 #
@@ -387,15 +473,4 @@ formation_zone    = fz-new // the recommended formation zone option
 #formation_zone   = const
 #formation_length = 1      // formation length in fm for formation_zone = const
 
-################################################################################
-# Electron scattering paremeters
-################################################################################
-
-# The normalization of events is in d sigma / d costheta [cm^2 / nucleon]
-# Parameters for the outgoing electron:
-el_costh_lab = 0.5 // defines cosine of the scattered electron
-el_costh_del = 0.001 // defines angular acceptance for the scattered electron
-#                       ( the acceptance in cosine is from (el_costh_lab -
-#                         el_costh_del) to (el_costh_lab + el_costh_del),
-#                         the width is 2*el_costh_del )
 # nothing
