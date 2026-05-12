@@ -17,6 +17,7 @@ kaskada::kaskada(params &p, event &e1, input_data *input)
 
   I = new Interaction(input->get_data_container(0), input->get_data_container(1), input->get_data_container(2),par.kaskada_piN_xsec);
   corr_func = input->get_nucl_data_container(0, par.nucleus_p, par.nucleus_n);
+  shell_dist = nullptr;
 }
 
 // Destructor: free heap-allocated nuclear and interaction objects
