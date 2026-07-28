@@ -39,7 +39,7 @@ double lepevent(params& p, event& e) //, bool cc)
   double rand2 = frandom();
 
 double weight_tot = 0; // weight of given (multiple) channel
-double weight_[switch_sigma_max];
+ double weight_[4];
 for (int ii = 1; ii<=switch_sigma_max; ii++) // ii -> switch_sigma
 {
   out_state(kind, ii, neut_in, m_prime, lept_out, neut_out);
