@@ -44,7 +44,7 @@ const int Delta_minus = 1114;
 const int Lambda = 3122;
 const int Sigma = 3212;
 const int SigmaP = 3222;
-const int SigmaM = 3212;
+const int SigmaM = 3112;
 
 const int e = 11;
 const int nu_e = 12;
