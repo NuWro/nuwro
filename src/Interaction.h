@@ -668,9 +668,9 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 	  if (p2.pdg==pdg_neutron)
       t.remove_nucleon(p3a);
       if (p2.pdg==pdg_proton)
-      {t.remove_nucleon(p2a);
-      t.remove_nucleon(p2a);
-      t.insert_nucleon(p3a);
+      {t.remove_nucleon(p3a);
+      t.remove_nucleon(p3a);
+      t.insert_nucleon(p2a); // compensate for the target proton removed by the caller
       }
 	}
 	else
@@ -680,9 +680,9 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 	  if (p2.pdg==pdg_proton)
       t.remove_nucleon(p2a);
       if (p2.pdg==pdg_neutron)
-      {t.remove_nucleon(p3a);
-      t.remove_nucleon(p3a);
-      t.insert_nucleon(p2a);
+      {t.remove_nucleon(p2a);
+      t.remove_nucleon(p2a);
+      t.insert_nucleon(p3a); // compensate for the target neutron removed by the caller
       }
 	}
        }
