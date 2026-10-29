@@ -181,106 +181,107 @@ inline void doit(int& n,const channel a[],particle p[])
 
 class PiData
 {
-private:
+  private:
     int k2;
-	double Ek;
-	int ij;
-	int nE;
-	int iE;
-	double aE;
+	  double Ek;
+	  int ij;
+	  int nE;
+	  int iE;
+	  double aE;
     int nD;
     int iD;
     double aD;
     double maxdens;
-	int xsec;
-const double *E, *s[3], *F[3], *Fc[3],
-             *A[3], *B[3], *Cel[3], *Cinel[3], *Fp[3], *F2p;
-private:
-	inline double dval(const double *V)
-	{
-		if(nD==1)
+	  int xsec;
+    const double *E, *s[3], *F[3], *Fc[3],
+                 *A[3], *B[3], *Cel[3], *Cinel[3], *Fp[3], *F2p;
+    double scale[3];
+
+	  inline double dval(const double *V)
+	  {
+		  if(nD==1)
 			return V[iE];
-		int j=iE*nD+iD;
-//		int j=iE*nD+iD-1;//?? Sprawdzić
-		return (1-aD)*V[j]+aD*V[j+1];
-	}
-	inline double dval2(const double *V)
-	{
-  	    if(nD==1)
+		  int j=iE*nD+iD;
+      // int j=iE*nD+iD-1;//?? Sprawdzić
+		  return (1-aD)*V[j]+aD*V[j+1];
+	  }
+	  inline double dval2(const double *V)
+	  {
+  	  if(nD==1)
 			return (1-aE)*V[iE]+aE*V[iE+1];
-		int j=iE*nD+iD;
-//		int j=iE*nD+iD-1; //?? Sprawdzić
-		return ((1-aD)*V[j]+aD*V[j+1])*(1-aE) // V[iE][iD] , V[iE][iD+1]
-		      +((1-aD)*V[j+nD]+aD*V[j+nD+1])*aE; // V[iE+1][iD] , V[iE+1][iD+1]
-	}
-	inline double angle_par(bool cex, int z)
-	{
-		int start = 0; //start and end points in piAngle table
-		int end = 69;
+		  int j=iE*nD+iD;
+      // int j=iE*nD+iD-1; //?? Sprawdzić
+		  return ((1-aD)*V[j]+aD*V[j+1])*(1-aE) // V[iE][iD] , V[iE][iD+1]
+		        +((1-aD)*V[j+nD]+aD*V[j+nD+1])*aE; // V[iE+1][iD] , V[iE+1][iD+1]
+	  }
+    inline double angle_par(bool cex, int z)
+    {
+      int start = 0; //start and end points in piAngle table
+      int end = 69;
 
-		if (cex)
-		{
-			start = 210;
-			end = 279;
-		}
-		else if (ij == 1)
-		{
-			start = 70;
-			end = 139;
-		}
-		else if (ij == 2)
-		{
-			start = 140;
-			end = 209;
-		}
+      if (cex)
+      {
+        start = 210;
+        end = 279;
+      }
+      else if (ij == 1)
+      {
+        start = 70;
+        end = 139;
+      }
+      else if (ij == 2)
+      {
+        start = 140;
+        end = 209;
+      }
 
-		int bin = 0;
+      int bin = 0;
 
-		if (Ek <= piAngle[start][0]) return piAngle[start][z];
-		if (Ek >= piAngle[end][0]) return piAngle[end][z];
+      if (Ek <= piAngle[start][0]) return piAngle[start][z];
+      if (Ek >= piAngle[end][0]) return piAngle[end][z];
 
-		for (int i = start; start < end; i++)
-		{
-			if (Ek > piAngle[i][0] and Ek <= piAngle[i+1][0])
-			{
-				bin = i;
-				break;
-			}
-		}
+      for (int i = start; start < end; i++)
+      {
+        if (Ek > piAngle[i][0] and Ek <= piAngle[i+1][0])
+        {
+          bin = i;
+          break;
+        }
+      }
 
-		double E2 = piAngle[bin+1][0] - Ek;
-		double E1 = Ek - piAngle[bin][0];
+      double E2 = piAngle[bin+1][0] - Ek;
+      double E1 = Ek - piAngle[bin][0];
 
-		return (E1*piAngle[bin+1][z] + E2*piAngle[bin][z])/(E1+E2);
-	}
-	void dump(const double *V)
-	{
-		if(nD>1) cout<<endl;
-		for (int i=0;i<nE;i++)
-	    {
-	      if(nD>1) cout<<setw(8)<<E[i]<<": ";
-		  for(int j=0;j<max(nD,1);j++)
-	        cout<<setw(10)<<V[i*max(nD,1)+j]<<' ';
-	       if (nD>1) cout<<endl;
-	    }
-       cout<<endl;
-	}
-	void dump()
-	{
-#define echo(x) cout<<#x<<":"; dump(x);
-			  echo(s[0]);echo(s[1]);echo(s[2]);
-//              echo(F[0]);echo(F[1]);echo(F[2]);
-//              echo(Fc[0]);echo(Fc[1]);echo(Fc[2]);
-//              echo(A[0]);echo(A[1]);echo(A[2]);
-//              echo(B[0]);echo(B[1]);echo(B[2]);
-//              echo(Cel[0]);echo(Cel[1]);echo(Cel[2]);
-//              echo(Cinel[0]);echo(Cinel[1]);echo(Cinel[2]);
-//              echo(Fp[0]);echo(Fp[1]);echo(Fp[2]);
-//              echo(F2p);
-     }
+      return (E1*piAngle[bin+1][z] + E2*piAngle[bin][z])/(E1+E2);
+    }
+    void dump(const double *V)
+    {
+      if(nD>1) cout<<endl;
+      for (int i=0;i<nE;i++)
+        {
+          if(nD>1) cout<<setw(8)<<E[i]<<": ";
+        for(int j=0;j<max(nD,1);j++)
+            cout<<setw(10)<<V[i*max(nD,1)+j]<<' ';
+          if (nD>1) cout<<endl;
+        }
+        cout<<endl;
+    }
+    void dump()
+    {
+      #define echo(x) cout<<#x<<":"; dump(x);
+              echo(s[0]);echo(s[1]);echo(s[2]);
+      //              echo(F[0]);echo(F[1]);echo(F[2]);
+      //              echo(Fc[0]);echo(Fc[1]);echo(Fc[2]);
+      //              echo(A[0]);echo(A[1]);echo(A[2]);
+      //              echo(B[0]);echo(B[1]);echo(B[2]);
+      //              echo(Cel[0]);echo(Cel[1]);echo(Cel[2]);
+      //              echo(Cinel[0]);echo(Cinel[1]);echo(Cinel[2]);
+      //              echo(Fp[0]);echo(Fp[1]);echo(Fp[2]);
+      //              echo(F2p);
+      }
+
 public:
-
-  PiData(int k);
+  PiData(int k, double scale_piN, double scale_abs);
   void setMetropolis();
   void set(double tab[11][16][26],double tab2[6][29]);
   void set_Ek(double NewEk)
@@ -412,20 +413,24 @@ public:
   /// Ek = kinetic energy
 double PiData::sij (int k)
 {
-    if (Ek <= 49*MeV && xsec==0)
-      {	// Low energy Metropolis formula
-        double x = Ek / PDG::mass_pi;
-        switch (k)
+  double sig = 0;
+  if (Ek <= 49*MeV && xsec==0)	// Low energy Metropolis formula
+  {
+    double x = Ek / PDG::mass_pi;
+    switch (k)
 		{
-		  case 0:  return (3.7 + 286 * x * x * x);
-		  case 1:  return (6.5 + 23.9 * x);
-		  case 2:  double p = sqrt(x*(x + 2));
-					return (16.4 * (0.14 / p + p));
+		  case 0:  sig = (3.7 + 286 * x * x * x);
+               break;
+		  case 1:  sig = (6.5 + 23.9 * x);
+               break;
+		  case 2: {double p = sqrt(x*(x + 2));
+					     sig = (16.4 * (0.14 / p + p));
+               break;}
 		}
-        return 0;
 	}
 	else
-		return max(0.0,dval2(s[k]));
+		sig = max(0.0,dval2(s[k]));
+  return sig*scale[k];
 }
 
 ///////////////////////////////////////////////////////////
@@ -572,7 +577,7 @@ bool PiData::pion_tpp (particle& p1, particle& p2, int &n, particle p[])
 ///////////////////////////////////////////////////////////
 /// pion absorption on a pair of nucleons
 bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particle p[])
-  {
+{
 	static particle p2a, p3a;
 	if(t.Ar()<2) return 0;
     n=2;
@@ -605,87 +610,96 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
 
     if (p1.pdg == pdg_piP)
     {
-    if ( frandom ()<7.0/8.0 )
-    { p[0].set_proton ();
-      p[1].set_proton ();
-      if (p2.pdg==pdg_proton)
-      t.remove_nucleon(p3a);
-      if (p2.pdg==pdg_neutron)
-      t.remove_nucleon(p2a);
-    }
-      else
-      { p[0].set_neutron ();
+      if ( frandom ()<7.0/8.0 )
+      {
+        p[0].set_proton ();
         p[1].set_proton ();
-	if (p2.pdg==pdg_proton)
-	{t.remove_nucleon(p3a);
-	t.remove_nucleon(p3a);
-	t.insert_nucleon(p2a);
-	}
+        if (p2.pdg==pdg_proton)
+          t.remove_nucleon(p3a);
         if (p2.pdg==pdg_neutron)
-        t.remove_nucleon(p3a);
+          t.remove_nucleon(p2a);
+      }
+      else
+      {
+        p[0].set_neutron ();
+        p[1].set_proton ();
+        if (p2.pdg==pdg_proton)
+        {
+          t.remove_nucleon(p3a);
+          t.remove_nucleon(p3a);
+          t.insert_nucleon(p2a);
+        }
+        if (p2.pdg==pdg_neutron)
+          t.remove_nucleon(p3a);
        }
       }
 
       if (p1.pdg == -pdg_piP)
-    {
-    if ( frandom ()<7.0/8.0 )
-    { p[0].set_neutron ();
-      p[1].set_neutron ();
-      if (p2.pdg==pdg_neutron)
-      t.remove_nucleon(p2a);
-      if (p2.pdg==pdg_proton)
-      t.remove_nucleon(p3a);
-    }
-      else
-      { p[0].set_neutron ();
-        p[1].set_proton ();
-	if (p2.pdg==pdg_neutron)
-	{t.remove_nucleon(p2a);
-	t.remove_nucleon(p2a);
-	t.insert_nucleon(p3a);
-	}
-        if (p2.pdg==pdg_proton)
-        t.remove_nucleon(p2a);
-       }
+      {
+        if ( frandom ()<7.0/8.0 )
+        {
+          p[0].set_neutron ();
+          p[1].set_neutron ();
+          if (p2.pdg==pdg_neutron)
+            t.remove_nucleon(p2a);
+          if (p2.pdg==pdg_proton)
+            t.remove_nucleon(p3a);
+        }
+        else
+        {
+          p[0].set_neutron ();
+          p[1].set_proton ();
+          if (p2.pdg==pdg_neutron)
+          {
+            t.remove_nucleon(p2a);
+            t.remove_nucleon(p2a);
+            t.insert_nucleon(p3a);
+          }
+          if (p2.pdg==pdg_proton)
+            t.remove_nucleon(p2a);
+        }
       }
 
-      if (p1.pdg == 111)//p2a=proton p3a=neutron
-    {
-    if ( frandom ()<4.0/5.0 )
-    { p[0].set_neutron ();
-      p[1].set_proton ();
-      if (p2.pdg==pdg_neutron)
-      t.remove_nucleon(p2a);
-      if (p2.pdg==pdg_proton)
-      t.remove_nucleon(p3a);
-    }
-      else
+      if (p1.pdg == 111) // p2a=proton p3a=neutron
       {
-	if ( frandom ()<0.5 )
-	{
-	  p[0].set_neutron ();
-          p[1].set_neutron ();
-	  if (p2.pdg==pdg_neutron)
-      t.remove_nucleon(p3a);
-      if (p2.pdg==pdg_proton)
-      {t.remove_nucleon(p3a);
-      t.remove_nucleon(p3a);
-      t.insert_nucleon(p2a); // compensate for the target proton removed by the caller
-      }
-	}
-	else
-	{
-	  p[0].set_proton ();
+        if ( frandom ()<4.0/5.0 )
+        {
+          p[0].set_neutron ();
           p[1].set_proton ();
-	  if (p2.pdg==pdg_proton)
-      t.remove_nucleon(p2a);
-      if (p2.pdg==pdg_neutron)
-      {t.remove_nucleon(p2a);
-      t.remove_nucleon(p2a);
-      t.insert_nucleon(p3a); // compensate for the target neutron removed by the caller
-      }
-	}
-       }
+          if (p2.pdg==pdg_neutron)
+            t.remove_nucleon(p2a);
+          if (p2.pdg==pdg_proton)
+            t.remove_nucleon(p3a);
+        }
+        else
+        {
+          if ( frandom ()<0.5 )
+          {
+            p[0].set_neutron ();
+            p[1].set_neutron ();
+            if (p2.pdg==pdg_neutron)
+              t.remove_nucleon(p3a);
+            if (p2.pdg==pdg_proton)
+            {
+              t.remove_nucleon(p3a);
+              t.remove_nucleon(p3a);
+              t.insert_nucleon(p2a); // compensate for the target proton removed by the caller
+            }
+          }
+          else
+          {
+	          p[0].set_proton ();
+            p[1].set_proton ();
+	          if (p2.pdg==pdg_proton)
+              t.remove_nucleon(p2a);
+            if (p2.pdg==pdg_neutron)
+            {
+              t.remove_nucleon(p2a);
+              t.remove_nucleon(p2a);
+              t.insert_nucleon(p3a); // compensate for the target neutron removed by the caller
+            }
+	        }
+        }
       }
       /*
     if (p1.pdg == - pdg_piP)
@@ -703,10 +717,8 @@ bool PiData::pion_abs (particle& p1, particle& p2, nucleus & t, int & n, particl
     }
     */
 
-
-    //cout<<"abs"<<"  "<<endl;
-    return ::decay (p1 + p2 + p2a, p[0], p[1]);
-  }
+  return ::decay (p1 + p2 + p2a, p[0], p[1]);
+}
 
 ////////////////////////////////////////
 
@@ -729,9 +741,9 @@ class Interaction
 
   public:
     Interaction(data_container* _NN_xsec, data_container* _NN_inel, data_container* _NN_angle,
-                int xsec_piN):
+                int xsec_piN, double scale_piN=1.0, double scale_abs=1.0):
                 NN_xsec(_NN_xsec), NN_inel(_NN_inel), NN_angle(_NN_angle),
-                PD(xsec_piN){}
+                PD(xsec_piN, scale_piN, scale_abs){}
                                               //!< The default constructor.
                                               /*!< Takes the data containers storing information about NN:
                                                    cross sections, and the coeeficients of inelasticity

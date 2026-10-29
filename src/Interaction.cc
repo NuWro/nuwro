@@ -4,7 +4,7 @@
 
 
 ///////////////////////////////////////////////////////////
-PiData::PiData(int xs):Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0),xsec(xs)
+PiData::PiData(int xs, double scale_piN, double scale_abs):Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0),xsec(xs)
 {
 	switch(xs)
 	{
@@ -16,6 +16,11 @@ PiData::PiData(int xs):Ek(0),ij(0),nE(0),iE(0),aE(0),nD(1),iD(0),aD(0),xsec(xs)
 	             exit(29);
 			 }
 	}
+  // Scale pion cascade cross sections
+  assert(scale_piN >= 0 && scale_abs >= 0);
+  scale[0]=scale_piN;
+  scale[1]=scale_piN;
+  scale[2]=scale_abs;
 }
 
 ///////////////////////////////////////////////////////////
@@ -62,7 +67,7 @@ static const double   f2p[] ={ 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1
 
 void PiData::set(double tab[11][16][26],double tab2[6][29]=pdataHE)
 {
-static double     E[20];
+static double     E[21];
 static const int nE=sizeof(E)/sizeof(E[0])+1;
 static const int nD=11;
 static double   sii[nE][nD],  sij[nE][nD], sabs[nE][nD];

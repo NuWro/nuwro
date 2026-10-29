@@ -12,7 +12,9 @@ kaskada::kaskada(params &p, event &e1, input_data *input)
   nucl = make_nucleus(par);       // create nucleus defined in params
   radius = nucl->radius();        // calculate radius of the nucleus
 
-  I = new Interaction(input->get_data_container(0), input->get_data_container(1), input->get_data_container(2),par.kaskada_piN_xsec);
+  I = new Interaction(input->get_data_container(0), input->get_data_container(1),
+                      input->get_data_container(2), par.kaskada_piN_xsec,
+                      par.kaskada_piN_sct_scale,    par.kaskada_piN_abs_scale);
   corr_func = input->get_nucl_data_container(0, par.nucleus_p, par.nucleus_n);
   shell_dist = nullptr;
 }
@@ -267,7 +269,7 @@ int kaskada::kaskadaevent(bool bare_kaskada)
                }
 
               }
-              
+
               if (!intercated) { // fallback
                 for (int nod_i = 0; nod_i < 18; ++nod_i) {
                   e->nod[nod_i] = nod_before_ntuc[nod_i];
@@ -650,13 +652,13 @@ void kaskada::prepare_single_nucleon_for_redraw(particle N1, int index)
 
         if (index == 1) {
            pN.nucleon_id = 1;
-        }   
+        }
         else if (index == 2) {
            pN.nucleon_id = 2;
-        }   
+        }
         else {
            pN.nucleon_id = 0;
-        }   
+        }
 
     double kaskada_w = par.kaskada_w;
 
@@ -724,24 +726,24 @@ interaction_parameters kaskada::prepare_interaction()
   double norm_ii = corr_func->get_value( 3 );
   double norm_ij = corr_func->get_value( 4 );
 
-  if( !e->out[0].nucleon() || e->number_of_interactions() || par.beam_placement != 2 )
   // no correlations for incoming nucleons in the scattering mode (kaskada.cc)
+  bool use_corr = !e->out[0].nucleon() || e->number_of_interactions() || par.beam_placement != 2;
+  double s = 1.0 / par.kaskada_NN_mfp_scale;
+
+  switch (res.pdg) // mean free path modifications: effective density and scaling
   {
-    switch (res.pdg) // mean free path modifications: effective density and scaling
-    {
-      case pdg_neutron:
-        res.xsec_n *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
-        res.xsec_p *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
-        break;
+    case pdg_neutron:
+      res.xsec_n *= (use_corr ? corr_ii / norm_ii : 1.0) * s;
+      res.xsec_p *= (use_corr ? corr_ij / norm_ij : 1.0) * s;
+      break;
 
-      case pdg_proton:
-        res.xsec_n *= corr_ij / norm_ij / par.kaskada_NN_mfp_scale;
-        res.xsec_p *= corr_ii / norm_ii / par.kaskada_NN_mfp_scale;
-        break;
+    case pdg_proton:
+      res.xsec_n *= (use_corr ? corr_ij / norm_ij : 1.0) * s;
+      res.xsec_p *= (use_corr ? corr_ii / norm_ii : 1.0) * s;
+      break;
 
-      default:
-        break;
-    }
+    default:
+      break;
   }
 
   res.xsec = res.dens_n*res.xsec_n + res.dens_p*res.xsec_p; // calculate the inverse of the mean free path

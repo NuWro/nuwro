@@ -139,6 +139,8 @@ PARAM(int,kaskada_NN_inel,2)\
 PARAM(int,kaskada_NN_angle,3)\
 PARAM(int,kaskada_NN_corr,1)\
 PARAM(int,kaskada_piN_xsec,1)\
+PARAM(double,kaskada_piN_sct_scale,1.0)\
+PARAM(double,kaskada_piN_abs_scale,1.0)\
 PARAM(bool,pauli_blocking,1)\
 PARAM(bool,mixed_order,1)\
 PARAM(double,res_dis_blending_start,1600)\
