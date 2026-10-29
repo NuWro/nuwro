@@ -46,9 +46,10 @@ inline void box_top()
 
 inline string parse_nuwro_version(const string& tag)
 {
-  static const std::regex re(R"(nuwro_(\d+)\.(\d+).*)");
+  // Accepts nuwro_yy.mm, nuwro_yy.mm.p, NuWro_yy_mm, NuWro_yy_mm_p
+  static const std::regex re(R"(nuwro_(\d+)[._](\d+).*)",
+                             std::regex::ECMAScript | std::regex::icase);
   std::smatch m;
-  // Use regex_match so the string must start with the expected prefix
   if (!std::regex_match(tag, m, re))
     return "";
   return m[1].str() + "." + m[2].str();

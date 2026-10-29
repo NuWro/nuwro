@@ -17,6 +17,8 @@ double kin4part(vect neutr, vect finlep, double hama, int nukleon2, int meson, v
 
 void   rotation(vect& cztero, vec trzy);
 
+void   rotation(vect& cztero, vec trzy, double chi);
+
 double binen(vec mom, int p, int n);
 
 double binen2(double pp, int p, int n);

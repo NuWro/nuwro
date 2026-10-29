@@ -323,6 +323,28 @@ void rotation(vect& cztero, vec trzy) {
   cztero.z = piaty.z;
 }
 
+void rotation(vect& cztero, vec trzy, double chi) {
+  vec wybrany = vec(1, 0, 0);
+  vec nowy1 = vecprod(trzy, wybrany);
+  vec nowy2 = vecprod(nowy1, trzy);
+
+  trzy = trzy / trzy.length();
+  nowy1 = nowy1 / nowy1.length();
+  nowy2 = nowy2 / nowy2.length();
+
+  // Spin nowy1/nowy2 around trzy by a random angle chi.
+  // This is a proper rotation in the plane perpendicular to trzy,
+  // so trzy itself is untouched and nowy1r/nowy2r stay orthonormal.
+  vec nowy1r =  cos(chi) * nowy1 + sin(chi) * nowy2;
+  vec nowy2r = -sin(chi) * nowy1 + cos(chi) * nowy2;
+
+  vec piaty = cztero.z * trzy + cztero.x * nowy1r + cztero.y * nowy2r;
+
+  cztero.x = piaty.x;
+  cztero.y = piaty.y;
+  cztero.z = piaty.z;
+}
+
 ////////////////////////////////////////////////////////////////////////
 /////////// Binding energy in the effective approach
 ///////////////////////////////////////////////////////////////////////
