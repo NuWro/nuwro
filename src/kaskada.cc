@@ -77,6 +77,12 @@ int main(int argc,  char** argv)
   {
     cout << "     -> Building the target nuclei..." << endl;
     nucl = make_nucleus(p);
+    if (p.beam_placement == 2)
+    {
+      const double R = nucl->radius();
+      cout << "     -> Scattering-mode normalization: R = " << R/fermi << " fm; pi R^2 = "
+           << M_PI*R*R/millibarn << " mb" << endl;
+    }
 
     cout << "     -> Creating the beam..." << endl;
     b = new beam_uniform(p);
